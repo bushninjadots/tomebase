@@ -2,6 +2,7 @@
 
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import type { Components } from 'react-markdown';
 import { preprocessWikiLinks } from '@/lib/wiki';
 
@@ -11,6 +12,89 @@ interface MarkdownProps {
   projectId?: string;
   pages?: { title: string; slug: string }[];
   basePath?: string;
+}
+
+const CALLOUT_ICONS: Record<string, string> = {
+  note: '📝',
+  tip: '💡',
+  important: '❗',
+  warning: '⚠️',
+  danger: '🚨',
+  caution: '⚡',
+  info: 'ℹ️',
+  success: '✅',
+  question: '❓',
+  bug: '🐛',
+  example: '📋',
+  quote: '💬',
+};
+
+const CALLOUT_COLORS: Record<string, string> = {
+  note: 'border-l-blue-500 bg-blue-50',
+  tip: 'border-l-emerald-500 bg-emerald-50',
+  important: 'border-l-purple-500 bg-purple-50',
+  warning: 'border-l-amber-500 bg-amber-50',
+  danger: 'border-l-red-500 bg-red-50',
+  caution: 'border-l-orange-500 bg-orange-50',
+  info: 'border-l-sky-500 bg-sky-50',
+  success: 'border-l-green-500 bg-green-50',
+  question: 'border-l-violet-500 bg-violet-50',
+  bug: 'border-l-rose-500 bg-rose-50',
+  example: 'border-l-indigo-500 bg-indigo-50',
+  quote: 'border-l-gray-500 bg-gray-50',
+};
+
+function preprocessCallouts(content: string): string {
+  const lines = content.split('\n');
+  const result: string[] = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i]!;
+    const calloutMatch = line.match(/^>\s*\[!(\w+)\]\s*(.*)/i);
+
+    if (calloutMatch) {
+      const type = calloutMatch[1]!.toLowerCase();
+      const title = calloutMatch[2]?.trim() || type.charAt(0).toUpperCase() + type.slice(1);
+      const icon = CALLOUT_ICONS[type] || '📌';
+      const colorClass = CALLOUT_COLORS[type] || 'border-l-gray-500 bg-gray-50';
+
+      const bodyLines: string[] = [];
+      i++;
+      while (i < lines.length) {
+        const nextLine = lines[i]!;
+        if (nextLine.startsWith('>')) {
+          bodyLines.push(nextLine.replace(/^>\s?/, ''));
+          i++;
+        } else {
+          break;
+        }
+      }
+
+      const body = bodyLines.join('\n');
+      result.push(
+        `<div class="callout ${colorClass} rounded-r-xl border-l-4 px-4 py-3 my-4">` +
+          `<div class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-1">` +
+          `<span>${icon}</span><span>${escapeHtml(title)}</span>` +
+          `</div>` +
+          (body ? `<div class="text-sm text-gray-700 [&_p]:mb-1">${body}</div>` : '') +
+          `</div>`
+      );
+    } else {
+      result.push(line);
+      i++;
+    }
+  }
+
+  return result.join('\n');
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 const components: Components = {
@@ -130,10 +214,16 @@ export function Markdown({
       ? preprocessWikiLinks(content, pages, basePath)
       : content;
 
+  const withCallouts = preprocessCallouts(processed);
+
   return (
     <div className={className}>
-      <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
-        {processed}
+      <ReactMarkdown
+        components={components}
+        remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeRaw]}
+      >
+        {withCallouts}
       </ReactMarkdown>
     </div>
   );

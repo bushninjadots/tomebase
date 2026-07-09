@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import {
   Plus, BookOpen, Code2, Settings, ChevronDown, ChevronRight,
   ArrowUp, ArrowDown, IndentIncrease, IndentDecrease,
-  Trash2, Hash,
+  Trash2, Hash, Tags,
 } from 'lucide-react';
 import { useState, useCallback, useMemo } from 'react';
 import { extractTags } from '@/lib/wiki';
@@ -430,6 +430,37 @@ export function DocSidebar({ project }: { project: Project }) {
 
       <div className="border-t border-gray-100 p-3 space-y-1">
         <GraphButton projectId={project.id} pages={project.pages} />
+        <button
+          onClick={() => setActiveTag(null)}
+          className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors w-full ${
+            allTags.length > 0
+              ? 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+              : 'text-gray-300'
+          }`}
+        >
+          <Tags className="h-4 w-4 shrink-0" />
+          <span className="flex-1 text-left">All Tags</span>
+          <span className="text-xs text-gray-400">{allTags.length}</span>
+        </button>
+        {allTags.length > 0 && (
+          <div className="ml-6 space-y-0.5 max-h-32 overflow-y-auto">
+            {allTags.slice(0, 15).map(({ tag, count }) => (
+              <button
+                key={tag}
+                onClick={() => setActiveTag(activeTag === tag ? null : tag)}
+                className={`flex w-full items-center gap-2 rounded-md px-2 py-1 text-xs transition-colors ${
+                  activeTag === tag
+                    ? 'bg-fluid-50 text-fluid-700 font-medium'
+                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+                }`}
+              >
+                <Hash className="h-3 w-3 shrink-0 opacity-60" />
+                <span className="truncate flex-1 text-left">{tag.replace(/^#/, '')}</span>
+                <span className="opacity-50">{count}</span>
+              </button>
+            ))}
+          </div>
+        )}
         <Link
           href={`/dashboard/${project.id}/import`}
           className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"

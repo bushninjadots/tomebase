@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Save, Eye, Edit3, FileText, ChevronRight, ArrowRight, Hash, Cloud, CloudOff, Bold, Italic, Heading1, Heading2, Link as LinkIcon, Code, List, ListOrdered, Quote, MoreHorizontal, Copy, Trash2, Layers, BookOpen, Clock, Type, AlertTriangle, ListOrdered as ListOrderedIcon } from 'lucide-react';
 import { Markdown } from '@/components/markdown';
 import { ShortcutsModal } from '@/components/shortcuts';
+import { GraphModalOpener } from '@/components/graph';
 import { findBacklinks, extractTags } from '@/lib/wiki';
 import { extractDescription, extractHeadings } from '@/lib/content';
 import Link from 'next/link';
@@ -31,7 +32,7 @@ export function DocEditor({ project }: { project: Project }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [saving, setSaving] = useState(false);
-  const [preview, setPreview] = useState(false);
+  const [viewMode, setViewMode] = useState<'edit' | 'preview' | 'split'>('edit');
   const [pageList, setPageList] = useState<Page[]>(project.pages);
   const [showActions, setShowActions] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -253,7 +254,7 @@ export function DocEditor({ project }: { project: Project }) {
       }
       if (isMeta && e.shiftKey && e.key === 'P') {
         e.preventDefault();
-        setPreview((v) => !v);
+        setViewMode((v) => v === 'edit' ? 'preview' : v === 'preview' ? 'split' : 'edit');
       }
     }
     document.addEventListener('keydown', handleKeyDown);
@@ -323,7 +324,7 @@ export function DocEditor({ project }: { project: Project }) {
     setSelectedPage(page);
     setTitle(page.title);
     setContent(page.content);
-    setPreview(false);
+    setViewMode('edit');
   }
 
   if (!selectedPage && pageList.length === 0) {
@@ -364,7 +365,7 @@ export function DocEditor({ project }: { project: Project }) {
                 <kbd className="font-medium text-gray-600">⌘I</kbd> Italic
               </span>
               <span className="rounded-lg bg-white px-3 py-1.5 shadow-sm border border-gray-100">
-                <kbd className="font-medium text-gray-600">⌘⇧P</kbd> Preview
+                <kbd className="font-medium text-gray-600">⌘⇧P</kbd> Split preview
               </span>
             </div>
           </div>
@@ -422,16 +423,28 @@ export function DocEditor({ project }: { project: Project }) {
           />
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setPreview(!preview)}
+            onClick={() => setViewMode((v) => v === 'edit' ? 'preview' : v === 'preview' ? 'split' : 'edit')}
             className={`rounded-lg p-2 transition-colors ${
-              preview
+              viewMode === 'preview'
                 ? 'bg-fluid-50 text-fluid-600'
                 : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'
             }`}
-            title={preview ? 'Edit (⌘⇧P)' : 'Preview (⌘⇧P)'}
+            title={`${viewMode === 'edit' ? 'Preview' : viewMode === 'preview' ? 'Split view' : 'Edit'} (⌘⇧P)`}
           >
-            {preview ? <Edit3 className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            {viewMode === 'edit' ? <Eye className="h-4 w-4" /> : viewMode === 'preview' ? <Edit3 className="h-4 w-4" /> : (
+              <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" stroke="currentColor" strokeWidth="2">
+                <rect x="2" y="3" width="20" height="18" rx="2" />
+                <line x1="12" y1="3" x2="12" y2="21" />
+              </svg>
+            )}
           </button>
+          {selectedPage && (
+            <GraphModalOpener
+              projectId={project.id}
+              pages={pageList}
+              currentPageId={selectedPage.id}
+            />
+          )}
           <ShortcutsModal />
 
           <div className="relative" ref={actionsRef}>
@@ -528,7 +541,7 @@ export function DocEditor({ project }: { project: Project }) {
           </div>
         )}
 
-      {!preview && (
+      {viewMode !== 'preview' && (
         <div className="flex items-center gap-0.5 border-b border-gray-100 px-4 py-1.5">
           {formattingActions.map((btn) => (
             <button
@@ -543,7 +556,7 @@ export function DocEditor({ project }: { project: Project }) {
         </div>
       )}
       <div className="flex flex-1 overflow-y-auto">
-        {preview ? (
+        {viewMode === 'preview' ? (
           <div className="flex w-full">
             <div className="min-w-0 flex-1 mx-auto max-w-3xl p-8">
               <h1 className="mb-6 text-3xl font-bold tracking-tight text-gray-900">{title}</h1>
@@ -586,6 +599,34 @@ export function DocEditor({ project }: { project: Project }) {
               </aside>
             )}
           </div>
+        ) : viewMode === 'split' ? (
+          <div className="flex w-full divide-x divide-gray-100">
+            <div className="flex-1 overflow-y-auto">
+              <textarea
+                ref={textareaRef}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                className="h-full w-full resize-none bg-transparent p-8 font-mono text-sm leading-relaxed text-gray-800 outline-none placeholder:text-gray-300"
+                placeholder="Write your documentation in Markdown..."
+                spellCheck={false}
+              />
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              <div className="p-8">
+                <h1 className="mb-6 text-3xl font-bold tracking-tight text-gray-900">{title}</h1>
+                {content ? (
+                  <Markdown
+                    content={content}
+                    projectId={project.id}
+                    pages={pageList}
+                    basePath={`/docs/${project.id}`}
+                  />
+                ) : (
+                  <p className="text-gray-400 italic">No content yet</p>
+                )}
+              </div>
+            </div>
+          </div>
         ) : (
           <textarea
             ref={textareaRef}
@@ -614,7 +655,16 @@ export function DocEditor({ project }: { project: Project }) {
             {readingTime} min read
           </span>
         </div>
-        <span className="text-[10px] text-gray-300">Markdown</span>
+        <div className="flex items-center gap-2">
+          <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+            viewMode === 'edit' ? 'bg-gray-100 text-gray-500' :
+            viewMode === 'preview' ? 'bg-fluid-50 text-fluid-600' :
+            'bg-purple-50 text-purple-600'
+          }`}>
+            {viewMode === 'edit' ? 'Edit' : viewMode === 'preview' ? 'Preview' : 'Split'}
+          </span>
+          <span className="text-[10px] text-gray-300">Markdown</span>
+        </div>
       </div>
 
       {/* Delete confirmation modal */}

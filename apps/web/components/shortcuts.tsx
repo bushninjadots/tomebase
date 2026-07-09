@@ -8,7 +8,7 @@ const SHORTCUTS = [
   { keys: ['⌘S', 'Ctrl+S'], label: 'Save page' },
   { keys: ['⌘B', 'Ctrl+B'], label: 'Bold text' },
   { keys: ['⌘I', 'Ctrl+I'], label: 'Italic text' },
-  { keys: ['⌘⇧P', 'Ctrl+Shift+P'], label: 'Toggle preview' },
+  { keys: ['⌘⇧P', 'Ctrl+Shift+P'], label: 'Cycle edit/preview/split' },
   { keys: ['⌘/', 'Ctrl+/'], label: 'Show shortcuts' },
   { keys: ['Esc'], label: 'Close modal / cancel' },
 ];
