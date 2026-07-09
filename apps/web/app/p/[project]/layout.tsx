@@ -2,6 +2,7 @@ import { prisma } from '@fluid/database';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { PublicSearchOverlay } from '@/components/public-search';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -84,7 +85,10 @@ export default async function PublicLayout({ children, params }: LayoutProps) {
             </svg>
             <span className="text-sm font-semibold text-gray-900">{project.name}</span>
           </Link>
-          <span className="text-xs text-gray-400">Powered by Fluid</span>
+          <div className="flex items-center gap-3">
+            <PublicSearchOverlay projectId={projectId} />
+            <span className="text-xs text-gray-400">Powered by Fluid</span>
+          </div>
         </div>
       </nav>
       <div className="mx-auto flex max-w-6xl">

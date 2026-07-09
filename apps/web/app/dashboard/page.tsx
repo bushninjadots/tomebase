@@ -7,6 +7,7 @@ import { getOrCreatePersonalTeam } from '@/lib/team';
 import { TIERS } from '@/lib/limits';
 import { ProjectCard } from '@/components/project-card';
 import { UsageMeter } from '@/components/usage-meter';
+import { OnboardingChecklist } from '@/components/onboarding-checklist';
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -124,6 +125,14 @@ export default async function DashboardPage() {
             </Link>
           </div>
         </div>
+
+        <OnboardingChecklist
+          hasProject={projects.length > 0}
+          hasContent={totalPages > 0}
+          hasPublished={publishedCount > 0}
+          hasTeamMember={memberCount >= 2}
+          projectId={projects[0]?.id}
+        />
 
         <div className="mb-8 grid gap-6 lg:grid-cols-4">
           <div className="lg:col-span-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

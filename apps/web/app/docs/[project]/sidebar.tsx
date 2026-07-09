@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import {
   Plus, BookOpen, Code2, Settings, ChevronDown, ChevronRight,
   ArrowUp, ArrowDown, IndentIncrease, IndentDecrease,
-  Trash2, Hash, Tags, Download,
+  Trash2, Hash, Tags, Download, HeartPulse,
 } from 'lucide-react';
 import { useState, useCallback, useMemo } from 'react';
 import { extractTags } from '@/lib/wiki';
@@ -481,6 +481,13 @@ export function DocSidebar({ project }: { project: Project }) {
           <Download className="h-4 w-4" />
           Export
         </a>
+        <Link
+          href={`/dashboard/${project.id}/health`}
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+        >
+          <HeartPulse className="h-4 w-4" />
+          Health
+        </Link>
         <Link
           href={`/dashboard/${project.id}/settings`}
           className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
