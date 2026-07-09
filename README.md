@@ -1,123 +1,70 @@
 # Fluid
 
-**Knowledge that flows into action.**
+Knowledge that flows into action. An AI-powered documentation platform for modern engineering teams.
 
-Fluid is an AI-powered documentation platform for modern engineering teams. Auto-generate beautiful API docs, chat with your codebase, and keep knowledge in flow.
+## Quick Start
+
+```bash
+npm install
+npm run db:push
+npm run dev
+```
+
+Visit `http://localhost:3000` — sign up with email/password to get started.
 
 ## Features
 
-- **Auto-Generated API Docs** — Connect your codebase and Fluid generates beautiful, searchable documentation
-- **AI Chat Over Docs** — Ask questions about your documentation and get instant answers
-- **Semantic Search** — AI-powered search that understands intent, not just keywords
-- **MDX Support** — Write docs in Markdown with embedded interactive components
-- **Version Control** — Every change tracked with diff views and rollback support
-- **API Playground** — Interactive API testing directly from documentation
-- **Team Collaboration** — Real-time editing, comments, and approval workflows
+- **Markdown editor** with live preview, auto-save, and formatting toolbar
+- **Hierarchical pages** with nested sidebar, drag-style reorder, and breadcrumbs
+- **Wiki links** — `[[Page Name]]` auto-resolves to internal links in preview and published docs
+- **Backlinks & Tags** — see which pages reference the current page; filter by extracted `#tags`
+- **Search** — Cmd+K palette searches titles and content across the project
+- **Graph view** — visualize page connections as a force-directed graph
+- **Page templates** — Getting Started, API Reference, Troubleshooting, Release Notes
+- **Code import** — paste TypeScript/JavaScript to auto-generate documentation pages
+- **Public docs** — publish projects to a public URL at `/p/[project]`
+- **Team collaboration** — invite members via shareable links (7-day expiry)
+- **API keys** — generate `fl_` prefixed keys for programmatic access
+- **Tier limits** — Free: 1 project, 50 pages, 3 members
 
 ## Architecture
 
 ```
 fluid/
-├── apps/
-│   └── web/           Next.js 15 application (App Router)
+├── apps/web/          # Next.js 15 App Router
 ├── packages/
-│   ├── ai/            OpenAI/AI SDK client wrapper
-│   ├── config/        Shared TypeScript, ESLint, Tailwind configs
-│   ├── database/      Prisma ORM with SQLite (dev) / PostgreSQL (prod)
-│   ├── types/         Shared TypeScript types
-│   ├── ui/            Component library (React, Tailwind CSS)
-│   └── utils/         Shared utilities (cn, slugify, formatters)
-├── docs/              Project documentation
-└── turbo.json         Turborepo pipeline config
+│   ├── ui/            # Shared components (Button, Input, Card, etc.)
+│   ├── utils/         # Helpers (cn, slugify, truncate, etc.)
+│   ├── database/      # Prisma schema + client
+│   ├── codegen/       # TypeScript/JS parser → Markdown docs
+│   ├── ai/            # AI SDK placeholder (Coming Soon)
+│   ├── types/         # Shared TypeScript types
+│   └── config/        # Shared configuration
+```
+
+## Auth
+
+| Provider    | Setup needed                          |
+|-------------|---------------------------------------|
+| Email/pwd   | None (works out of the box)           |
+| GitHub      | Set `AUTH_GITHUB_ID` + `AUTH_GITHUB_SECRET` |
+| Google      | Set `AUTH_GOOGLE_ID` + `AUTH_GOOGLE_SECRET` |
+
+## Environment
+
+Copy `apps/web/.env.example` to `apps/web/.env.local` — the defaults work for local development with SQLite.
+
+## Commands
+
+```bash
+npm run dev          # Start all apps
+npm run build        # Production build
+npm run lint         # Lint all packages
+npm run typecheck    # TypeScript check
+npm run db:push      # Push schema to database
+npm run db:generate  # Regenerate Prisma client
 ```
 
 ## Tech Stack
 
-| Layer | Choice |
-|-------|--------|
-| Framework | Next.js 15 (App Router) |
-| Language | TypeScript (strict) |
-| Styling | Tailwind CSS v4 |
-| UI Library | Custom components in `@fluid/ui` |
-| Database | SQLite (dev) / PostgreSQL (prod) via Prisma |
-| Auth | NextAuth v5 (GitHub, Google) |
-| AI | OpenAI SDK via Vercel AI SDK |
-| Monorepo | Turborepo + npm workspaces |
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js >= 20
-- npm
-
-### Installation
-
-```bash
-# Install dependencies
-npm install
-
-# Generate Prisma client
-npm run db:generate
-
-# Push database schema
-npm run db:push
-
-# Start development
-npm run dev
-```
-
-The web app will be available at `http://localhost:3000`.
-
-### Environment Variables
-
-Copy `.env.example` from `apps/web/` and configure:
-
-```bash
-cp apps/web/.env.example apps/web/.env.local
-```
-
-Required variables:
-- `AUTH_SECRET` — Random string for session encryption
-- `OPENAI_API_KEY` — OpenAI API key (for AI features)
-
-Optional (for OAuth):
-- `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET`
-- `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET`
-
-## Development
-
-```bash
-# Start all apps in dev mode
-npm run dev
-
-# Type check all packages
-npm run typecheck
-
-# Lint all packages
-npm run lint
-
-# Build all packages
-npm run build
-```
-
-## Deployment
-
-The web app can be deployed to any platform supporting Next.js (Vercel, Railway, Docker).
-
-For production database, replace SQLite with PostgreSQL by updating `packages/database/prisma/schema.prisma` and setting `DATABASE_URL`.
-
-## Monetization
-
-Fluid uses a tiered SaaS model:
-1. **Free** — 3 projects, 50 pages/project, limited AI
-2. **Pro ($29/mo)** — Unlimited projects/pages, full AI, API playground
-3. **Enterprise (Custom)** — SSO, audit logs, self-hosted, SLA
-
-## Roadmap
-
-See [ROADMAP.md](ROADMAP.md) for the full roadmap.
-
-## License
-
-MIT
+Next.js 15 · TypeScript · Tailwind CSS v4 · Prisma (SQLite/PostgreSQL) · NextAuth v5 · Turborepo
