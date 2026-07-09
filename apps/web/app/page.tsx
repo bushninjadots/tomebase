@@ -377,6 +377,8 @@ export default function Home() {
             <div className="flex items-center gap-6 text-sm text-gray-500">
               <Link href="/pricing" className="hover:text-gray-900 transition-colors">Pricing</Link>
               <span className="text-gray-200">·</span>
+              <Link href="/roadmap" className="hover:text-gray-900 transition-colors">Roadmap</Link>
+              <span className="text-gray-200">·</span>
               <Link href="https://github.com/anomalyco/fluid" className="hover:text-gray-900 transition-colors">GitHub</Link>
               <span className="text-gray-200">·</span>
               <Link href="/terms" className="hover:text-gray-900 transition-colors">Terms</Link>
