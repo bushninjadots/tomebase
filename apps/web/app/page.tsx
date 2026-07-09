@@ -3,7 +3,7 @@ import { Container } from '@fluid/ui';
 import {
   ArrowRight, BookOpen, Code2, GitBranch, Search, Sparkles,
   FileText, Users, Zap, Shield,
-  Globe, Layers, Star, Github,
+  Globe, Layers, Github,
 } from 'lucide-react';
 
 const stats = [
@@ -11,24 +11,6 @@ const stats = [
   { value: '500+', label: 'Active teams' },
   { value: '99.9%', label: 'Uptime' },
   { value: 'Open Source', label: 'MIT licensed' },
-];
-
-const testimonials = [
-  {
-    quote: 'Fluid replaced our three separate documentation tools. The auto-save and wiki links alone saved us hours every week.',
-    author: 'Sarah Chen',
-    role: 'Engineering Manager, Amplify Health',
-  },
-  {
-    quote: 'We migrated our entire API docs from a static site generator in an afternoon. The OpenAPI importer is magic.',
-    author: 'Marcus Rivera',
-    role: 'Lead Developer, Stackform',
-  },
-  {
-    quote: 'The graph view shows us exactly where our documentation has gaps. It\'s become an essential part of our docs review process.',
-    author: 'Priya Patel',
-    role: 'Technical Writer, Nexus Robotics',
-  },
 ];
 
 const features = [
@@ -249,35 +231,6 @@ export default function Home() {
                 </div>
                 <h3 className="mt-4 text-base font-semibold text-gray-900">{feature.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-gray-500">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      <section className="bg-gray-50 py-24">
-        <Container>
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Loved by engineering teams
-            </h2>
-            <p className="mt-4 text-lg text-gray-600">
-              Here&apos;s what teams are saying about Fluid.
-            </p>
-          </div>
-          <div className="mt-16 grid gap-8 sm:grid-cols-3">
-            {testimonials.map((t) => (
-              <div key={t.author} className="rounded-2xl border border-gray-100 bg-white p-6">
-                <div className="flex gap-0.5 text-amber-400 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-current" />
-                  ))}
-                </div>
-                <p className="text-sm leading-relaxed text-gray-600">&ldquo;{t.quote}&rdquo;</p>
-                <div className="mt-4 border-t border-gray-50 pt-4">
-                  <div className="text-sm font-medium text-gray-900">{t.author}</div>
-                  <div className="text-xs text-gray-500">{t.role}</div>
-                </div>
               </div>
             ))}
           </div>

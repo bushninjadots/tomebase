@@ -32,6 +32,7 @@ export async function PATCH(
     if (typeof body.published === 'boolean') updateData.published = body.published;
     if (typeof body.customDomain === 'string') updateData.customDomain = body.customDomain;
     if (body.customDomain === '') updateData.customDomain = null;
+    if (typeof body.logoUrl === 'string') updateData.logoUrl = body.logoUrl;
 
     const updated = await prisma.project.update({
       where: { id },

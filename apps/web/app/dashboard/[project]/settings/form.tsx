@@ -12,6 +12,7 @@ interface Project {
   description: string | null;
   published: boolean;
   customDomain: string | null;
+  logoUrl: string | null;
   _count: { pages: number };
 }
 
@@ -21,6 +22,7 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
   const [name, setName] = useState(project.name);
   const [description, setDescription] = useState(project.description ?? '');
   const [customDomain, setCustomDomain] = useState(project.customDomain ?? '');
+  const [logoUrl, setLogoUrl] = useState(project.logoUrl ?? '');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -35,7 +37,7 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
     const res = await fetch(`/api/projects/${project.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, description, published, customDomain }),
+      body: JSON.stringify({ name, description, published, customDomain, logoUrl }),
     });
 
     if (res.ok) {
@@ -76,6 +78,16 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
               className="block w-full rounded-lg border border-gray-200 px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
             />
           </div>
+          <Input
+            id="logoUrl"
+            label="Logo URL (for exported docs)"
+            value={logoUrl}
+            onChange={(e) => setLogoUrl(e.target.value)}
+            placeholder="https://yourdomain.com/logo.png"
+          />
+          <p className="text-xs text-gray-400 -mt-3">
+            Used as branding in exported Markdown files.
+          </p>
         </div>
       </div>
 

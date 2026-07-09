@@ -63,8 +63,9 @@ model Project {
   slug        String
   description String?
   userId      String
-  published   Boolean  @default(false)
+  published    Boolean  @default(false)
   customDomain String?
+  logoUrl      String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

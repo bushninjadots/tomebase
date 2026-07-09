@@ -26,7 +26,7 @@ const shipped = [
   { label: 'Doc health scans (broken links, orphans, empty pages)' },
   { label: 'SEO — sitemap, canonical URLs, Open Graph' },
   { label: 'Public search (Cmd+K on published docs)' },
-  { label: 'Landing page with stats, testimonials, pricing' },
+  { label: 'Landing page with stats and pricing' },
   { label: 'Onboarding checklist for new users' },
   { label: 'Tier limits (Free/Pro/Enterprise) with usage metering' },
   { label: 'Pricing page with comparison table' },

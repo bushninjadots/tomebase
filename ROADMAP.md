@@ -25,7 +25,7 @@
 - [x] Doc health scans (broken links, orphans, empty pages)
 - [x] SEO — dynamic sitemap, canonical URLs, Open Graph, Twitter cards
 - [x] Public search (Cmd+K on published docs)
-- [x] Landing page with stats, testimonials, pricing section
+- [x] Landing page with stats and pricing section
 - [x] Onboarding checklist for new users
 - [x] Tier limits (Free/Pro/Enterprise) with usage metering
 - [x] Pricing page with comparison table
@@ -63,7 +63,7 @@
 
 ### 2026-07-09
 - Page version history with snapshot browse/restore
-- Landing page redesign with hero, stats, testimonials, pricing
+- Landing page redesign with hero, stats, pricing
 - Onboarding checklist for new dashboard users
 - Public search on published docs
 - SEO: dynamic sitemap, canonical URLs
