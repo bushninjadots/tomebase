@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Hash } from 'lucide-react';
 import { Markdown } from '@/components/markdown';
+import { ViewTracker } from '@/components/view-tracker';
 import { extractTags } from '@/lib/wiki';
 import type { Metadata } from 'next';
 
@@ -85,8 +86,21 @@ export default async function PublicDocPage({ params }: PageProps) {
         </div>
       </article>
 
+      <ViewTracker pageId={page.id} />
+
       <div className="mt-16 border-t border-gray-100 pt-6 text-xs text-gray-400">
-        Last updated: {new Date(page.updatedAt).toLocaleDateString()}
+        <div className="flex items-center justify-between">
+          <span>Last updated: {new Date(page.updatedAt).toLocaleDateString()}</span>
+          {page.viewCount > 0 && (
+            <span className="flex items-center gap-1">
+              <svg viewBox="0 0 24 24" fill="none" className="h-3 w-3" stroke="currentColor" strokeWidth="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              {page.viewCount} view{page.viewCount !== 1 ? 's' : ''}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );

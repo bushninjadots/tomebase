@@ -86,12 +86,26 @@ model DocPage {
   parentId    String?
   order       Int      @default(0)
   published   Boolean  @default(false)
+  viewCount   Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  project  Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  parent   DocPage?  @relation("DocPageHierarchy", fields: [parentId], references: [id])
-  children DocPage[] @relation("DocPageHierarchy")
+  project   Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  parent    DocPage?        @relation("DocPageHierarchy", fields: [parentId], references: [id])
+  children  DocPage[]       @relation("DocPageHierarchy")
+  snapshots PageSnapshot[]
+}
+
+model PageSnapshot {
+  id        String   @id @default(cuid())
+  pageId    String
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+
+  page DocPage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@index([pageId, createdAt])
 }
 
 model ChatMessage {

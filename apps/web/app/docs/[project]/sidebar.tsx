@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import {
   Plus, BookOpen, Code2, Settings, ChevronDown, ChevronRight,
   ArrowUp, ArrowDown, IndentIncrease, IndentDecrease,
-  Trash2, Hash, Tags,
+  Trash2, Hash, Tags, Download,
 } from 'lucide-react';
 import { useState, useCallback, useMemo } from 'react';
 import { extractTags } from '@/lib/wiki';
@@ -405,6 +405,12 @@ export function DocSidebar({ project }: { project: Project }) {
           <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-gray-400 mb-2">
             <Hash className="h-3 w-3" />
             Tags
+            <span className="group relative ml-auto">
+              <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-gray-200 text-[9px] text-gray-500 cursor-help font-bold">?</span>
+              <span className="absolute right-0 top-full mt-1 w-56 rounded-xl border border-gray-200 bg-white p-3 shadow-lg text-[11px] font-normal text-gray-600 normal-case opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                Use <code className="text-[10px] bg-gray-100 px-1 rounded">#tag</code> anywhere in your page content. Tags appear here and can be used to filter pages. Click a tag to show only pages with that tag.
+              </span>
+            </span>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {allTags.map(({ tag, count }) => (
@@ -468,6 +474,13 @@ export function DocSidebar({ project }: { project: Project }) {
           <Code2 className="h-4 w-4" />
           Import from Code
         </Link>
+        <a
+          href={`/api/projects/${project.id}/export`}
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+        >
+          <Download className="h-4 w-4" />
+          Export
+        </a>
         <Link
           href={`/dashboard/${project.id}/settings`}
           className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"

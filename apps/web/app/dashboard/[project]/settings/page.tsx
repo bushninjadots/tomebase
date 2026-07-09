@@ -3,7 +3,7 @@ import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@fluid/database';
 import { Container } from '@fluid/ui';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Download } from 'lucide-react';
 import { ProjectSettingsForm } from './form';
 import { ApiKeyManager } from './api-keys';
 
@@ -43,6 +43,25 @@ export default async function ProjectSettingsPage({ params }: PageProps) {
 
           <div className="mt-8 space-y-8">
             <ProjectSettingsForm project={project} />
+
+            <div className="rounded-xl border border-gray-100 bg-white p-6">
+              <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                <Download className="h-4 w-4 text-gray-400" />
+                Export
+              </h2>
+              <p className="mt-1 text-sm text-gray-500">
+                Download all pages as Markdown files with frontmatter metadata.
+              </p>
+              <div className="mt-4">
+                <a
+                  href={`/api/projects/${project.id}/export`}
+                  className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  <Download className="h-4 w-4" />
+                  Export as .zip
+                </a>
+              </div>
+            </div>
 
             <ApiKeyManager projectId={project.id} />
 

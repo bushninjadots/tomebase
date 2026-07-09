@@ -2,7 +2,7 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { prisma } from '@fluid/database';
 import Link from 'next/link';
-import { Plus, BookOpen, Users, FileText, Globe, Clock, ArrowRight, Zap } from 'lucide-react';
+import { Plus, BookOpen, Users, FileText, Globe, Clock, ArrowRight, Zap, Eye } from 'lucide-react';
 import { getOrCreatePersonalTeam } from '@/lib/team';
 import { TIERS } from '@/lib/limits';
 import { ProjectCard } from '@/components/project-card';
@@ -23,21 +23,32 @@ export default async function DashboardPage() {
 
   const projectIds = projects.map((p) => p.id);
 
-  const [memberCount, publishedCount, totalPages, recentPages] = await Promise.all([
+  const [memberCount, publishedCount, totalPages, totalViews, recentPages] = await Promise.all([
     prisma.teamMember.count({ where: { teamId: team.id } }),
     prisma.docPage.count({ where: { projectId: { in: projectIds }, published: true } }),
     prisma.docPage.count({ where: { projectId: { in: projectIds } } }),
+    prisma.docPage.aggregate({ where: { projectId: { in: projectIds } }, _sum: { viewCount: true } }),
     prisma.docPage.findMany({
       where: { projectId: { in: projectIds } },
-      select: { id: true, title: true, slug: true, updatedAt: true, projectId: true, project: { select: { name: true } } },
+      select: { id: true, title: true, slug: true, updatedAt: true, viewCount: true, projectId: true, project: { select: { name: true } } },
       orderBy: { updatedAt: 'desc' },
       take: 6,
     }),
   ]);
 
+  const totalViewCount = totalViews._sum.viewCount || 0;
+
+  const topPages = await prisma.docPage.findMany({
+    where: { projectId: { in: projectIds } },
+    select: { id: true, title: true, slug: true, viewCount: true, projectId: true, project: { select: { name: true } } },
+    orderBy: { viewCount: 'desc' },
+    take: 5,
+  });
+
   const stats = [
     { label: 'Total Pages', value: totalPages, icon: FileText, color: 'text-blue-600 bg-blue-50' },
     { label: 'Published', value: publishedCount, icon: Globe, color: 'text-green-600 bg-green-50' },
+    { label: 'Page Views', value: totalViewCount, icon: Eye, color: 'text-violet-600 bg-violet-50' },
     { label: 'Projects', value: projects.length, icon: BookOpen, color: 'text-purple-600 bg-purple-50' },
     { label: 'Team Members', value: memberCount, icon: Users, color: 'text-amber-600 bg-amber-50' },
   ];
@@ -156,10 +167,46 @@ export default async function DashboardPage() {
                       {page.title}
                     </p>
                     <p className="text-xs text-gray-400">
-                      {page.project.name} · {new Date(page.updatedAt).toLocaleDateString()}
+                      {page.project.name}
+                      {page.viewCount > 0 && ` · ${page.viewCount} view${page.viewCount !== 1 ? 's' : ''}`}
                     </p>
                   </div>
                   <ArrowRight className="ml-3 h-4 w-4 shrink-0 text-gray-300 group-hover:text-fluid-500 transition-colors" />
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {topPages.length > 0 && totalViewCount > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <Eye className="h-4 w-4 text-gray-400" />
+              <h2 className="text-sm font-semibold text-gray-900">Most Viewed</h2>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {topPages.map((page, i) => (
+                <Link
+                  key={page.id}
+                  href={`/docs/${page.projectId}/${page.slug}`}
+                  className="group flex items-center justify-between rounded-xl border border-gray-100 bg-white px-4 py-3 transition-all hover:border-fluid-200 hover:shadow-sm"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="shrink-0 flex items-center justify-center w-6 h-6 rounded-md bg-gray-100 text-[11px] font-bold text-gray-500">
+                      {i + 1}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-gray-900 group-hover:text-fluid-600 transition-colors">
+                        {page.title}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {page.project.name}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="ml-3 shrink-0 text-xs font-medium text-gray-500">
+                    {page.viewCount} view{page.viewCount !== 1 ? 's' : ''}
+                  </span>
                 </Link>
               ))}
             </div>

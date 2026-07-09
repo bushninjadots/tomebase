@@ -123,13 +123,33 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
               {publicUrl}
             </div>
 
-            <Input
-              id="customDomain"
-              label="Custom Domain (optional)"
-              value={customDomain}
-              onChange={(e) => setCustomDomain(e.target.value)}
-              placeholder="docs.yourcompany.com"
-            />
+            <div className="rounded-xl border border-gray-100 p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Globe className="h-4 w-4 text-gray-400" />
+                <span className="text-sm font-medium text-gray-700">Custom Domain</span>
+                <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700">Pro</span>
+              </div>
+              <Input
+                id="customDomain"
+                label=""
+                value={customDomain}
+                onChange={(e) => setCustomDomain(e.target.value)}
+                placeholder="docs.yourcompany.com"
+              />
+              {customDomain && (
+                <div className="mt-3 rounded-lg bg-gray-50 p-3 text-xs text-gray-600 space-y-2">
+                  <p className="font-medium text-gray-700">DNS Setup Instructions</p>
+                  <p>Add a CNAME record pointing your domain to:</p>
+                  <code className="block rounded bg-white px-2 py-1 font-mono text-[11px] text-fluid-600 border border-gray-200">
+                    {window.location.host}
+                  </code>
+                  <p className="text-gray-400">SSL certificates are provisioned automatically. Propagation may take up to 24 hours.</p>
+                </div>
+              )}
+              <p className="mt-1.5 text-xs text-gray-400">
+                Point your own domain to your published documentation site.
+              </p>
+            </div>
           </div>
         )}
       </div>

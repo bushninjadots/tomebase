@@ -6,8 +6,10 @@ import { Save, Eye, Edit3, FileText, ChevronRight, ArrowRight, Hash, Cloud, Clou
 import { Markdown } from '@/components/markdown';
 import { ShortcutsModal } from '@/components/shortcuts';
 import { GraphModalOpener } from '@/components/graph';
+import { HistoryButton } from '@/components/history';
 import { findBacklinks, extractTags } from '@/lib/wiki';
 import { extractDescription, extractHeadings } from '@/lib/content';
+import { WikiAutocomplete } from '@/components/wiki-autocomplete';
 import Link from 'next/link';
 
 interface Page {
@@ -231,6 +233,12 @@ export function DocEditor({ project }: { project: Project }) {
       setPageList((prev) =>
         prev.map((p) => (p.id === selectedPage.id ? { ...p, title, content } : p)),
       );
+      // Create a snapshot in the background
+      fetch(`/api/pages/${selectedPage.id}/snapshots`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, content }),
+      }).catch(() => {});
     }
 
     setSaving(false);
@@ -445,6 +453,7 @@ export function DocEditor({ project }: { project: Project }) {
               currentPageId={selectedPage.id}
             />
           )}
+          {selectedPage && <HistoryButton pageId={selectedPage.id} />}
           <ShortcutsModal />
 
           <div className="relative" ref={actionsRef}>
@@ -601,7 +610,13 @@ export function DocEditor({ project }: { project: Project }) {
           </div>
         ) : viewMode === 'split' ? (
           <div className="flex w-full divide-x divide-gray-100">
-            <div className="flex-1 overflow-y-auto">
+            <div className="relative flex-1 overflow-y-auto">
+              <WikiAutocomplete
+                textareaRef={textareaRef}
+                content={content}
+                setContent={setContent}
+                pages={pageList}
+              />
               <textarea
                 ref={textareaRef}
                 value={content}
@@ -628,14 +643,22 @@ export function DocEditor({ project }: { project: Project }) {
             </div>
           </div>
         ) : (
-          <textarea
-            ref={textareaRef}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="h-full w-full resize-none bg-transparent p-8 font-mono text-sm leading-relaxed text-gray-800 outline-none placeholder:text-gray-300"
-            placeholder="Write your documentation in Markdown..."
-            spellCheck={false}
-          />
+          <div className="relative flex-1">
+            <WikiAutocomplete
+              textareaRef={textareaRef}
+              content={content}
+              setContent={setContent}
+              pages={pageList}
+            />
+            <textarea
+              ref={textareaRef}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="h-full w-full resize-none bg-transparent p-8 font-mono text-sm leading-relaxed text-gray-800 outline-none placeholder:text-gray-300"
+              placeholder="Write your documentation in Markdown..."
+              spellCheck={false}
+            />
+          </div>
         )}
       </div>
 

@@ -3,8 +3,8 @@ import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@fluid/database';
 import { Container } from '@fluid/ui';
 import Link from 'next/link';
-import { ImportForm } from './form';
 import { ArrowLeft } from 'lucide-react';
+import { ImportTabs } from './tabs';
 
 interface PageProps {
   params: Promise<{ project: string }>;
@@ -34,13 +34,13 @@ export default async function ImportPage({ params }: PageProps) {
         </Link>
 
         <div className="mx-auto max-w-3xl">
-          <h1 className="text-2xl font-bold text-gray-900">Import from Code</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Import</h1>
           <p className="mt-1 text-sm text-gray-500">
-            Paste your source code below. Fluid will parse JSDoc comments, types, and signatures to auto-generate documentation pages.
+            Auto-generate documentation from source code or OpenAPI specs.
           </p>
 
           <div className="mt-8">
-            <ImportForm projectId={project.id} />
+            <ImportTabs projectId={project.id} />
           </div>
         </div>
       </Container>

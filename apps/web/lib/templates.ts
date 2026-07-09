@@ -153,4 +153,93 @@ If you continue to experience issues, reach out to our support team with:
 - Features that are deprecated and will be removed in a future version
 `,
   },
+  {
+    id: 'architecture',
+    name: 'Architecture Overview',
+    description: 'System architecture and design decisions',
+    content: `# {{title}}
+
+## Overview
+
+The system follows a modular monolith architecture with clear separation of concerns across three primary layers: the presentation layer (Next.js frontend), the application layer (API routes and server actions), and the data layer (Prisma ORM with SQLite/PostgreSQL). This structure keeps concerns isolated while allowing each layer to evolve independently.
+
+## Key Design Decisions
+
+- **Monorepo with Turborepo**: All packages live under a single repository, sharing TypeScript types, UI components, and utility libraries without the overhead of managing multiple repos.
+- **Server-First Rendering**: Pages default to React Server Components, minimizing client-side JavaScript and improving initial load performance.
+- **AI-Native Architecture**: The AI SDK is integrated at the application layer, allowing AI features to access the same data layer as traditional UI components.
+
+## Related Pages
+
+- [[Getting Started]] — set up your local development environment
+- [[API Reference]] — explore available endpoints
+- [[Configuration]] — environment and project configuration
+- [[Authentication]] — auth flow and security
+- [[Database]] — schema and migrations
+`,
+  },
+  {
+    id: 'configuration',
+    name: 'Configuration',
+    description: 'Environment and project configuration',
+    content: `# {{title}}
+
+## Environment Variables
+
+Configuration is managed through environment variables defined in \`.env\` files at the project root. Required variables include database connection strings, auth provider credentials, and API keys for external services. A \`.env.example\` file is provided as a reference.
+
+## Application Settings
+
+Runtime configuration lives in \`packages/config/\`, which exports typed configuration objects consumed by both the web app and shared packages. This centralised approach ensures consistent values across the monorepo and makes it easy to validate configuration at startup.
+
+## Related Pages
+
+- [[API Reference]] — endpoint configuration details
+- [[Architecture Overview]] — how configuration fits into the system
+- [[Getting Started]] — quick start guide
+- [[Database]] — database connection configuration
+`,
+  },
+  {
+    id: 'database',
+    name: 'Database',
+    description: 'Database schema and migrations',
+    content: `# {{title}}
+
+## Schema
+
+The database schema is defined in \`packages/database/prisma/schema.prisma\` using Prisma's schema language. It includes models for users, documents, workspaces, and audit logs. Relationships are enforced at the database level through foreign key constraints.
+
+## Migrations
+
+Schema changes are managed through Prisma Migrations. After editing the schema file, run \`npm run db:generate\` to regenerate the Prisma client and \`npm run db:push\` to apply changes to the local SQLite database. Production migrations use the \`prisma migrate deploy\` command.
+
+## Related Pages
+
+- [[Configuration]] — database connection settings
+- [[API Reference]] — data access patterns
+- [[Architecture Overview]] — data layer design
+`,
+  },
+  {
+    id: 'authentication',
+    name: 'Authentication',
+    description: 'Auth flow and security',
+    content: `# {{title}}
+
+## Auth Providers
+
+Authentication is handled by NextAuth v5 with support for GitHub and Google OAuth providers. Users can sign in using their existing accounts from these providers, eliminating the need for separate credentials. Additional providers can be added through the NextAuth configuration in \`apps/web/lib/auth.ts\`.
+
+## Session Management
+
+Sessions are managed via JWT tokens stored in HTTP-only cookies. The session is verified on every request through middleware at the application layer, and the current user context is available to server components and server actions without additional database lookups.
+
+## Related Pages
+
+- [[API Reference]] — authenticated endpoint requirements
+- [[Configuration]] — OAuth credentials and environment setup
+- [[Architecture Overview]] — security architecture
+`,
+  },
 ];
