@@ -274,16 +274,18 @@ function GraphModal({ projectId, pages, onClose, currentPageId }: GraphModalProp
   }
 
   function handlePointerMove(e: React.PointerEvent) {
-    if (!dragRef.current) return;
+    const drag = dragRef.current;
+    if (!drag) return;
     const svg = svgRef.current;
     if (!svg) return;
     const rect = svg.getBoundingClientRect();
-    const dx = (e.clientX - rect.left - dragRef.current.startX) / zoom;
-    const dy = (e.clientY - rect.top - dragRef.current.startY) / zoom;
+    const dx = (e.clientX - rect.left - drag.startX) / zoom;
+    const dy = (e.clientY - rect.top - drag.startY) / zoom;
+    const { nodeId, nodeStartX, nodeStartY } = drag;
     setDisplayNodes((prev) =>
       prev.map((n) =>
-        n.id === dragRef.current!.nodeId
-          ? { ...n, x: dragRef.current!.nodeStartX + dx, y: dragRef.current!.nodeStartY + dy }
+        n.id === nodeId
+          ? { ...n, x: nodeStartX + dx, y: nodeStartY + dy }
           : n
       )
     );
