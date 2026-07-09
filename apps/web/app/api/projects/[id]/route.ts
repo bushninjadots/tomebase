@@ -1,15 +1,26 @@
 import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
 
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { id } = await params;
     const body = await request.json();
 
-    const project = await prisma.project.findUnique({ where: { id } });
+    const project = await prisma.project.findFirst({
+      where: {
+        id,
+        team: { members: { some: { userId: session.user.id } } },
+      },
+    });
     if (!project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
     }
@@ -34,14 +45,55 @@ export async function PATCH(
   }
 }
 
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { id } = await params;
+
+    const project = await prisma.project.findFirst({
+      where: {
+        id,
+        team: { members: { some: { userId: session.user.id, role: 'admin' } } },
+      },
+    });
+    if (!project) {
+      return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+    }
+
+    await prisma.docPage.deleteMany({ where: { projectId: id } });
+    await prisma.apiKey.deleteMany({ where: { projectId: id } });
+    await prisma.project.delete({ where: { id } });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Failed to delete project:', error);
+    return NextResponse.json({ error: 'Failed to delete project' }, { status: 500 });
+  }
+}
+
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { id } = await params;
-    const project = await prisma.project.findUnique({
-      where: { id },
+    const project = await prisma.project.findFirst({
+      where: {
+        id,
+        team: { members: { some: { userId: session.user.id } } },
+      },
       include: { _count: { select: { pages: true } } },
     });
     if (!project) {

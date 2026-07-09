@@ -122,7 +122,7 @@ export function SearchOverlay({ projectId, pages }: SearchOverlayProps) {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Search pages..."
+                placeholder="Search pages by title or content..."
                 className="flex-1 bg-transparent text-sm text-gray-900 outline-none placeholder:text-gray-400"
                 autoFocus
               />

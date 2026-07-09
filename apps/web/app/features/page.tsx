@@ -1,52 +1,127 @@
 import { Container } from '@fluid/ui';
 import Link from 'next/link';
-import { ArrowRight, BookOpen, MessageSquare, Code2, Sparkles, Search, Shield, Zap, Globe, Users, GitBranch } from 'lucide-react';
+import { ArrowRight, BookOpen, Search, Code2, Sparkles, Globe, Users, GitBranch, Hash, Network, FileText, Layers, ExternalLink, Zap, Key, Shield } from 'lucide-react';
 
 const features = [
   {
     icon: BookOpen,
-    title: 'Auto-Generated API Docs',
-    description: 'Connect your codebase and Fluid automatically generates beautiful, searchable API documentation. Supports OpenAPI, GraphQL, and custom schemas.',
+    title: 'Markdown Editor',
+    description: 'A full-featured documentation editor with live preview, auto-save, and formatting toolbar. Write in Markdown and see the result instantly.',
+    capabilities: [
+      'Auto-saves every 2 seconds with visible save status (Saved/Saving/Unsaved)',
+      'Live preview toggle — switch between source and rendered view',
+      'Formatting toolbar: headings, bold, italic, links, inline code, lists, blockquotes',
+      'Page templates for quick starts: Getting Started, API Reference, Troubleshooting, Release Notes',
+      'Keyboard shortcuts: Cmd+S (save), Cmd+B/I (bold/italic), Cmd+Shift+P (preview toggle)',
+    ],
   },
   {
-    icon: MessageSquare,
-    title: 'AI Chat Over Docs',
-    description: 'Ask natural language questions about your documentation and get accurate answers. On the roadmap — coming when the product is ready.',
+    icon: Layers,
+    title: 'Page Organization',
+    description: 'Organize pages in a hierarchical tree structure. Drag-free controls let you reorder, nest, and manage pages with ease.',
+    capabilities: [
+      'Hierarchical parent-child page relationships with breadcrumb navigation',
+      'Move up/down and indent/outdent controls in the sidebar',
+      'Inline delete with confirmation',
+      'Tag pages with #tags extracted from content — filter by tag in the sidebar',
+      'Page descriptions shown in the page list for quick identification',
+    ],
+  },
+  {
+    icon: Network,
+    title: 'Wiki Links & Graph View',
+    description: 'Connect pages using wiki-style [[Page Name]] links. A force-directed graph visualizes the relationships between all your pages.',
+    capabilities: [
+      'Wiki links resolved in both the editor preview and public documentation',
+      'Backlinks panel shows every page that references the current page',
+      'Force-directed SVG graph with node hover highlighting',
+      'Click any node in the graph to navigate directly to that page',
+      'Graph shows the full connection network — no orphan pages',
+    ],
   },
   {
     icon: Search,
-    title: 'Semantic Search',
-    description: 'Find anything instantly with AI-powered semantic search. Understands intent, not just keywords.',
-  },
-  {
-    icon: Code2,
-    title: 'MDX Support',
-    description: 'Write docs in Markdown with embedded JSX components. Custom interactive examples, API playgrounds, and live code editors.',
-  },
-  {
-    icon: GitBranch,
-    title: 'Version Control',
-    description: 'Every change is tracked. Compare versions, roll back changes, and maintain docs for multiple API versions simultaneously.',
-  },
-  {
-    icon: Shield,
-    title: 'Enterprise Security',
-    description: 'SOC 2 compliant, SSO, audit logs, and role-based access control. Your documentation stays secure.',
-  },
-  {
-    icon: Zap,
-    title: 'Lightning Fast',
-    description: 'Edge-optimized delivery ensures your docs load instantly anywhere in the world. Built on Next.js and CDN-enabled.',
+    title: 'Command Palette Search',
+    description: 'Find any page instantly with Cmd+K. Full-text search across titles and content with contextual snippets.',
+    capabilities: [
+      'Cmd+K / Ctrl+K opens the search palette from anywhere',
+      'Searches both page titles and full content',
+      'Shows contextual snippets around matching text',
+      'Keyboard-navigable results with arrow keys and Enter',
+      'Fuzzy matching catches partial and approximate queries',
+    ],
   },
   {
     icon: Globe,
-    title: 'API Playground',
-    description: 'Interactive API playground lets users try endpoints directly from the documentation. Built-in authentication support.',
+    title: 'Public Documentation',
+    description: 'Publish your docs to the world with a single toggle. Each project gets a public URL at /p/[project] — no login required to read.',
+    capabilities: [
+      'Publish toggle in project settings — on/off with one click',
+      'Public pages render at /p/[project]/[slug]',
+      'SEO meta tags with Open Graph and Twitter Card support',
+      'Wiki links work in published docs for seamless navigation',
+      'Full-text search available on public documentation',
+    ],
+  },
+  {
+    icon: Code2,
+    title: 'Code Generation',
+    description: 'Auto-generate documentation from your TypeScript and JavaScript source code. Parse functions, types, interfaces, and classes into clean Markdown.',
+    capabilities: [
+      'Parses TypeScript and JavaScript source files',
+      'Extracts functions, interfaces, types, enums, and classes',
+      'JSDoc comments become descriptions in generated docs',
+      'Outputs clean Markdown ready to publish or edit further',
+      'API endpoint at /api/codegen for programmatic access',
+    ],
   },
   {
     icon: Users,
     title: 'Team Collaboration',
-    description: 'Real-time collaboration, comments, suggestions, and approval workflows. Documentation is a team effort.',
+    description: 'Invite teammates, assign roles, and collaborate on documentation. Teams are auto-created on signup with tier-based member limits.',
+    capabilities: [
+      'Personal team auto-created when you sign up',
+      'Invite team members via shareable invite links (7-day expiry)',
+      'Admin and member roles with distinct permissions',
+      'Member limit enforcement: Free (3), Pro (15), Enterprise (100)',
+      'Team settings page to manage invites and members',
+    ],
+  },
+  {
+    icon: Key,
+    title: 'API Key Management',
+    description: 'Generate scoped API keys for programmatic access. Perfect for CI/CD pipelines, automation, and third-party integrations.',
+    capabilities: [
+      'Create API keys with optional expiry dates from project settings',
+      'Keys prefixed with fl_ for easy identification',
+      'One-time display after creation — copy immediately or regenerate',
+      'Revoke keys instantly to revoke access',
+      'Full CRUD API under /api/projects/[id]/keys',
+    ],
+  },
+  {
+    icon: Shield,
+    title: 'Access Control',
+    description: 'Authentication via email/password or GitHub/Google OAuth. Tier-based feature enforcement ensures fair usage.',
+    capabilities: [
+      'Email/password authentication with bcryptjs hashing',
+      'GitHub and Google OAuth (configure credentials in .env.local)',
+      'Project-level limits: Free (1 project, 50 pages), Pro (10/500), Enterprise (100/10000)',
+      'API routes enforce limits at project creation, page creation, and team invites',
+      'JWT-based sessions via NextAuth v5',
+    ],
+  },
+  {
+    icon: FileText,
+    title: 'Pricing Tiers',
+    description: 'Start free and scale as you grow. From solo developers to enterprise teams — pick the plan that fits.',
+    capabilities: [
+      'Free: 1 project, 50 pages, 3 team members — everything you need to start',
+      'Pro: 10 projects, 500 pages, 15 team members — for growing teams',
+      'Enterprise: 100 projects, 10000 pages, 100 team members — unlimited potential',
+      'Stripe integration coming for Pro and Enterprise billing',
+      'All tiers include the full editor, wiki links, graph view, and public docs',
+    ],
   },
 ];
 
@@ -63,12 +138,15 @@ export default function FeaturesPage() {
               </svg>
               <span className="font-bold tracking-tight">Fluid</span>
             </Link>
-            <Link
-              href="/login"
-              className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
-            >
-              Get Started
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link href="/pricing" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Pricing</Link>
+              <Link
+                href="/login"
+                className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+              >
+                Get Started
+              </Link>
+            </div>
           </div>
         </Container>
       </nav>
@@ -79,18 +157,30 @@ export default function FeaturesPage() {
             Everything you need to <span className="gradient-text">document</span>
           </h1>
           <p className="mt-4 text-lg text-gray-600">
-            Fluid combines auto-generation, AI, and collaboration into one premium platform.
+            A powerful editor, wiki-style linking, public hosting, and team tools — all in one platform.
           </p>
         </div>
 
-        <div className="mt-20 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-20 space-y-6">
           {features.map((feature) => (
             <div key={feature.title} className="group rounded-2xl border border-gray-100 bg-white p-6 transition-all hover:border-fluid-200 hover:shadow-md">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-fluid-50 text-fluid-600 group-hover:bg-fluid-100 transition-colors">
-                <feature.icon className="h-6 w-6" />
+              <div className="flex items-start gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-fluid-50 text-fluid-600 group-hover:bg-fluid-100 transition-colors">
+                  <feature.icon className="h-6 w-6" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900">{feature.title}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-gray-600">{feature.description}</p>
+                  <ul className="mt-3 space-y-1">
+                    {feature.capabilities.map((cap) => (
+                      <li key={cap} className="flex items-start gap-2 text-sm text-gray-500">
+                        <span className="mt-1.5 block h-1 w-1 shrink-0 rounded-full bg-gray-300" />
+                        {cap}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">{feature.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">{feature.description}</p>
             </div>
           ))}
         </div>

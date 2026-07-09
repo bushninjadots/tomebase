@@ -1,17 +1,23 @@
 import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
 import { slugify } from '@fluid/utils';
+import { auth } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
-    const { name, description, userId } = await request.json();
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-    if (!name || !userId) {
-      return NextResponse.json({ error: 'Name and userId are required' }, { status: 400 });
+    const { name, description } = await request.json();
+
+    if (!name) {
+      return NextResponse.json({ error: 'Name is required' }, { status: 400 });
     }
 
     const { getOrCreatePersonalTeam } = await import('@/lib/team');
-    const team = await getOrCreatePersonalTeam(userId);
+    const team = await getOrCreatePersonalTeam(session.user.id);
 
     const { checkProjectLimit } = await import('@/lib/limits');
     const limit = await checkProjectLimit(team.id);
@@ -25,13 +31,13 @@ export async function POST(request: Request) {
     let slug = baseSlug;
     let counter = 1;
 
-    while (await prisma.project.findFirst({ where: { slug, userId } })) {
+    while (await prisma.project.findFirst({ where: { slug, userId: session.user.id } })) {
       slug = `${baseSlug}-${counter}`;
       counter++;
     }
 
     const project = await prisma.project.create({
-      data: { name, slug, description, userId, teamId: team.id },
+      data: { name, slug, description, userId: session.user.id, teamId: team.id },
     });
 
     return NextResponse.json(project, { status: 201 });
@@ -43,7 +49,13 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const projects = await prisma.project.findMany({
+      where: { team: { members: { some: { userId: session.user.id } } } },
       include: { _count: { select: { pages: true } } },
       orderBy: { updatedAt: 'desc' },
     });

@@ -1,40 +1,104 @@
 import Link from 'next/link';
 import { Container } from '@fluid/ui';
-import { ArrowRight, BookOpen, Code2, GitBranch, Search, Sparkles } from 'lucide-react';
+import { ArrowRight, BookOpen, Code2, GitBranch, Search, Sparkles, FileText, Hash, Network, Users, ExternalLink, Zap, Shield, Globe, Layers } from 'lucide-react';
 
 const features = [
   {
     icon: BookOpen,
-    title: 'Auto-Generated Docs',
-    description: 'Beautiful API documentation generated from your codebase. Keep docs in sync without the manual effort.',
+    title: 'Documentation Editor',
+    description: 'Full-featured Markdown editor with live preview, auto-save, and formatting toolbar. Organize pages in a hierarchical tree with drag-free reordering.',
+    details: [
+      'Auto-save with 2-second debounce — never lose your work',
+      'Live Markdown preview with wiki link resolution',
+      'Formatting toolbar: headings, bold, italic, links, code, lists, blockquotes',
+      'Page templates: Getting Started, API Reference, Troubleshooting, Release Notes',
+      'Hierarchical sidebar with drag-free move up/down and indent/outdent',
+    ],
   },
   {
     icon: GitBranch,
-    title: 'Version Control',
-    description: 'Every change is tracked. Compare versions, roll back, and maintain docs across API versions.',
+    title: 'Wiki Links & Backlinks',
+    description: 'Connect your documentation with wiki-style [[links]]. See which pages reference the current page, and navigate your knowledge graph effortlessly.',
+    details: [
+      'Wiki link syntax: [[Page Name]] auto-links to any page in your project',
+      'Backlinks panel below each page shows all referring pages',
+      'Force-directed graph view visualizes your entire documentation network',
+      'Cmd+K search finds pages by title and full-text content',
+      'Tag pages with #tags, filter sidebar by tag',
+    ],
   },
   {
     icon: Code2,
-    title: 'Developer-First',
-    description: 'MDX support, version control, and API playgrounds built for how developers actually work.',
+    title: 'Public Documentation',
+    description: 'Publish your documentation to the world with a single toggle. Each project gets its own public URL at /p/[project].',
+    details: [
+      'Toggle publish on/off per project from settings',
+      'Public pages rendered at /p/[project]/[slug] — no auth required',
+      'SEO metadata with Open Graph and Twitter cards',
+      'Wiki links work in published docs — navigation stays seamless',
+      'Full content search available on public pages',
+    ],
   },
   {
     icon: Sparkles,
-    title: 'AI Chat',
-    description: 'Ask questions about your documentation and get answers. On the roadmap — coming when the product is ready.',
+    title: 'AI Integration',
+    description: 'Auto-generate documentation from your source code. Parse TypeScript/JavaScript files into structured Markdown docs.',
+    details: [
+      'Codegen endpoint parses functions, interfaces, types, enums, classes',
+      'Extracts JSDoc comments as descriptions',
+      'Generates clean Markdown ready to publish',
+      'TypeScript and JavaScript support',
+      'AI chat and smart suggestions coming soon',
+    ],
   },
   {
     icon: Search,
-    title: 'Smart Search',
-    description: 'Full-text search across all your documentation. Find exactly what you need, when you need it.',
+    title: 'Full-Text Search',
+    description: 'Find anything instantly across all your documentation. Searches both titles and content with relevant snippets.',
+    details: [
+      'Cmd+K / Ctrl+K search palette from anywhere in the editor',
+      'Searches page titles and full content',
+      'Shows contextual snippets around matches',
+      'Keyboard-navigable results with arrow keys',
+      'Tag-based filtering in the sidebar',
+    ],
   },
-];
-
-const stats = [
-  { label: 'Docs Auto-Generated', value: '10K+' },
-  { label: 'Active Teams', value: '500+' },
-  { label: 'API Calls Served', value: '1M+' },
-  { label: 'Uptime', value: '99.9%' },
+  {
+    icon: Users,
+    title: 'Team Collaboration',
+    description: 'Invite your team, assign roles, and collaborate on documentation together. Free tier supports up to 3 members.',
+    details: [
+      'Team invite links with 7-day expiry',
+      'Admin and member roles with appropriate permissions',
+      'Personal team auto-created on signup',
+      'Usage dashboard with page counts and member limits',
+      'Tier-based limits: Free (3 members), Pro (15), Enterprise (100)',
+    ],
+  },
+  {
+    icon: Shield,
+    title: 'API Key Management',
+    description: 'Generate API keys for programmatic access to your documentation. Create, manage, and revoke keys from project settings.',
+    details: [
+      'Create scoped API keys with optional expiry dates',
+      'Prefix-identified keys (fl_) for easy recognition',
+      'One-time display after creation — copy it immediately',
+      'Revoke keys instantly from project settings',
+      'Perfect for CI/CD pipelines and automation',
+    ],
+  },
+  {
+    icon: Globe,
+    title: 'Custom Domains',
+    description: 'Host your documentation on your own domain. Pro and Enterprise plans support custom domains for branded docs sites.',
+    details: [
+      'Custom domain support on Pro and Enterprise plans',
+      'SSL certificates automatically provisioned',
+      'Point your CNAME and we handle the rest',
+      'Seamless integration with your existing site',
+      'White-label option on Enterprise',
+    ],
+  },
 ];
 
 export default function Home() {
@@ -57,7 +121,19 @@ export default function Home() {
               </svg>
               <span className="text-lg font-bold tracking-tight">Fluid</span>
             </Link>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
+              <Link
+                href="/features"
+                className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors"
+              >
+                Features
+              </Link>
+              <Link
+                href="/pricing"
+                className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors"
+              >
+                Pricing
+              </Link>
               <Link
                 href="/login"
                 className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
@@ -82,6 +158,10 @@ export default function Home() {
         <div className="hero-glow -right-40 -bottom-40" />
         <Container>
           <div className="relative mx-auto max-w-4xl text-center">
+            <div className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-fluid-200 bg-fluid-50/50 px-4 py-1.5 text-xs font-medium text-fluid-700">
+              <Zap className="h-3.5 w-3.5" />
+              Open source · Free tier available
+            </div>
             <h1 className="text-5xl font-bold tracking-tight text-gray-900 sm:text-6xl lg:text-7xl">
               Knowledge that{' '}
               <span className="gradient-text">flows into action</span>
@@ -100,7 +180,7 @@ export default function Home() {
                 <ArrowRight className="h-5 w-5" />
               </Link>
               <Link
-                href="/docs"
+                href="/login"
                 className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-6 py-3 text-base font-medium text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-colors"
               >
                 View Demo
@@ -111,17 +191,48 @@ export default function Home() {
         </Container>
       </section>
 
-      {/* Stats */}
-      <Container>
-        <div className="grid grid-cols-2 gap-8 border-y border-gray-100 py-12 sm:grid-cols-4">
-          {stats.map((stat) => (
-            <div key={stat.label} className="text-center">
-              <div className="text-3xl font-bold text-gray-900">{stat.value}</div>
-              <div className="mt-1 text-sm text-gray-500">{stat.label}</div>
+      {/* How It Works */}
+      <section className="py-24">
+        <Container>
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              How it works
+            </h2>
+            <p className="mt-4 text-lg text-gray-600">
+              Three steps to go from zero to published documentation.
+            </p>
+          </div>
+          <div className="mt-16 grid gap-8 sm:grid-cols-3">
+            <div className="text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-fluid-50 text-fluid-600">
+                <FileText className="h-7 w-7" />
+              </div>
+              <h3 className="mt-5 text-lg font-semibold text-gray-900">1. Create pages</h3>
+              <p className="mt-2 text-sm leading-relaxed text-gray-500">
+                Write documentation in Markdown with live preview. Use templates, wiki links, and tags to structure your knowledge. The editor auto-saves every change.
+              </p>
             </div>
-          ))}
-        </div>
-      </Container>
+            <div className="text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-fluid-50 text-fluid-600">
+                <Layers className="h-7 w-7" />
+              </div>
+              <h3 className="mt-5 text-lg font-semibold text-gray-900">2. Organize & connect</h3>
+              <p className="mt-2 text-sm leading-relaxed text-gray-500">
+                Nest pages in a hierarchy, link them with wiki syntax, and tag them by topic. The graph view shows how everything connects. Your documentation grows organically.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-fluid-50 text-fluid-600">
+                <Globe className="h-7 w-7" />
+              </div>
+              <h3 className="mt-5 text-lg font-semibold text-gray-900">3. Share & publish</h3>
+              <p className="mt-2 text-sm leading-relaxed text-gray-500">
+                Share invite links with your team to collaborate. Toggle public publishing for a live docs site. Generate API keys for programmatic access. Host on your own domain with Pro.
+              </p>
+            </div>
+          </div>
+        </Container>
+      </section>
 
       {/* Features */}
       <section className="py-24">
@@ -131,20 +242,32 @@ export default function Home() {
               Everything your team needs to document
             </h2>
             <p className="mt-4 text-lg text-gray-600">
-              From auto-generated API references to AI-powered search — Fluid keeps your documentation flowing.
+              From a powerful editor to public hosting — Fluid has you covered.
             </p>
           </div>
-          <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-16 space-y-6">
             {features.map((feature) => (
               <div
                 key={feature.title}
                 className="group rounded-2xl border border-gray-100 bg-white p-6 transition-all hover:border-fluid-200 hover:shadow-md"
               >
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-fluid-50 text-fluid-600 group-hover:bg-fluid-100 transition-colors">
-                  <feature.icon className="h-6 w-6" />
+                <div className="flex items-start gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-fluid-50 text-fluid-600 group-hover:bg-fluid-100 transition-colors">
+                    <feature.icon className="h-6 w-6" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900">{feature.title}</h3>
+                    <p className="mt-1 text-sm leading-relaxed text-gray-600">{feature.description}</p>
+                    <ul className="mt-3 space-y-1">
+                      {feature.details.map((detail) => (
+                        <li key={detail} className="flex items-start gap-2 text-sm text-gray-500">
+                          <span className="mt-1.5 block h-1 w-1 shrink-0 rounded-full bg-gray-300" />
+                          {detail}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900">{feature.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-gray-600">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -195,6 +318,8 @@ export default function Home() {
               <Link href="/docs" className="hover:text-gray-900 transition-colors">Docs</Link>
               <Link href="/pricing" className="hover:text-gray-900 transition-colors">Pricing</Link>
               <Link href="/features" className="hover:text-gray-900 transition-colors">Features</Link>
+              <Link href="/terms" className="hover:text-gray-900 transition-colors">Terms</Link>
+              <Link href="/privacy" className="hover:text-gray-900 transition-colors">Privacy</Link>
             </div>
           </div>
         </Container>

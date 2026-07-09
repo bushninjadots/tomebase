@@ -33,6 +33,7 @@ export function GraphButton({ projectId, pages }: GraphViewProps) {
       <button
         onClick={() => setOpen(true)}
         className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors w-full"
+        title="Visualize wiki link connections between pages"
       >
         <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="5" r="2" />

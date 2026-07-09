@@ -1,19 +1,26 @@
 import { Container } from '@fluid/ui';
 import Link from 'next/link';
-import { Check, ArrowRight } from 'lucide-react';
+import { Check, ArrowRight, Info } from 'lucide-react';
 
 const plans = [
   {
     name: 'Free',
     price: '$0',
-    description: 'Perfect for individuals and small projects.',
+    description: 'For solo developers and small projects. Everything you need to start documenting.',
     features: [
-      'Up to 3 projects',
+      '1 project',
       '50 pages per project',
-      'AI chat (100 messages/month)',
-      'Basic markdown support',
-      'Community support',
+      '3 team members',
+      'Full Markdown editor with live preview',
+      'Wiki links & backlinks',
+      'Graph view',
+      'Cmd+K search',
+      'Public docs hosting',
+      'Code generation (TS/JS)',
+      'API key management',
+      'Email/password or OAuth login',
     ],
+    note: 'No credit card required.',
     cta: 'Get Started',
     popular: false,
   },
@@ -21,38 +28,48 @@ const plans = [
     name: 'Pro',
     price: '$29',
     period: '/month',
-    description: 'For growing teams that need more power.',
+    description: 'For growing teams that need more projects, pages, and members.',
     features: [
-      'Unlimited projects',
-      'Unlimited pages',
-      'AI chat (10,000 messages/month)',
-      'MDX & custom components',
-      'API playground',
-      'Semantic search',
-      'Version control',
+      '10 projects',
+      '500 pages per project',
+      '15 team members',
+      'Everything in Free',
+      'Custom domain support',
       'Priority support',
+      'Advanced analytics',
+      'API access (higher rate limits)',
     ],
+    note: 'Stripe billing coming soon.',
     cta: 'Start Free Trial',
     popular: true,
   },
   {
     name: 'Enterprise',
     price: 'Custom',
-    description: 'For organizations that need control and compliance.',
+    description: 'For organizations that need maximum scale, control, and support.',
     features: [
+      '100 projects',
+      '10,000 pages per project',
+      'Unlimited team members',
       'Everything in Pro',
-      'Unlimited AI messages',
       'SSO / SAML',
-      'SOC 2 compliance',
       'Audit logs',
-      'Role-based access',
+      'Role-based access control',
+      'Dedicated support & SLA',
       'Self-hosted option',
-      'Dedicated support',
-      'SLA guarantee',
+      'Custom integrations',
     ],
+    note: 'Contact us for a tailored quote.',
     cta: 'Contact Sales',
     popular: false,
   },
+];
+
+const faq = [
+  { q: 'Can I upgrade from Free to Pro later?', a: 'Yes. You can upgrade at any time. Your data and pages are preserved.' },
+  { q: 'Is there a free trial for Pro?', a: 'Yes — start a 14-day free trial with no credit card required.' },
+  { q: 'What payment methods do you accept?', a: 'Stripe-powered billing with credit/debit card support.' },
+  { q: 'Can I self-host Enterprise?', a: 'Yes, Enterprise plans include a self-hosted option for full data control.' },
 ];
 
 export default function PricingPage() {
@@ -68,12 +85,15 @@ export default function PricingPage() {
               </svg>
               <span className="font-bold tracking-tight">Fluid</span>
             </Link>
-            <Link
-              href="/login"
-              className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
-            >
-              Get Started
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link href="/features" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Features</Link>
+              <Link
+                href="/login"
+                className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+              >
+                Get Started
+              </Link>
+            </div>
           </div>
         </Container>
       </nav>
@@ -84,7 +104,7 @@ export default function PricingPage() {
             Simple, transparent <span className="gradient-text">pricing</span>
           </h1>
           <p className="mt-4 text-lg text-gray-600">
-            Start for free. Upgrade when you need more power.
+            Start for free. Upgrade when you need more projects, pages, or team members.
           </p>
         </div>
 
@@ -111,7 +131,7 @@ export default function PricingPage() {
                 </div>
                 <p className="mt-2 text-sm text-gray-500">{plan.description}</p>
               </div>
-              <ul className="mb-8 space-y-3">
+              <ul className="mb-6 space-y-3">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-3 text-sm text-gray-600">
                     <Check className="mt-0.5 h-4 w-4 shrink-0 text-fluid-600" />
@@ -119,6 +139,12 @@ export default function PricingPage() {
                   </li>
                 ))}
               </ul>
+              {plan.note && (
+                <p className="mb-6 flex items-start gap-2 text-xs text-gray-400">
+                  <Info className="mt-0.5 h-3 w-3 shrink-0" />
+                  {plan.note}
+                </p>
+              )}
               <Link
                 href="/login"
                 className={`inline-flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
@@ -132,6 +158,20 @@ export default function PricingPage() {
               </Link>
             </div>
           ))}
+        </div>
+
+        <div className="mx-auto mt-24 max-w-2xl">
+          <h2 className="text-center text-2xl font-bold tracking-tight text-gray-900">
+            Frequently asked questions
+          </h2>
+          <div className="mt-10 space-y-6">
+            {faq.map((item) => (
+              <div key={item.q}>
+                <h3 className="text-sm font-semibold text-gray-900">{item.q}</h3>
+                <p className="mt-1 text-sm text-gray-500">{item.a}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </Container>
 

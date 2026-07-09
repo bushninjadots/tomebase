@@ -1,44 +1,52 @@
 import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
-import { generateInviteToken } from '@/lib/team';
 import { slugify } from '@fluid/utils';
+import { auth } from '@/lib/auth';
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const userId = searchParams.get('userId');
+export async function GET() {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-  if (!userId) {
-    return NextResponse.json({ error: 'userId is required' }, { status: 400 });
-  }
-
-  const membership = await prisma.teamMember.findFirst({
-    where: { userId },
-    include: {
-      team: {
-        include: {
-          _count: { select: { projects: true, members: true } },
+    const membership = await prisma.teamMember.findFirst({
+      where: { userId: session.user.id },
+      include: {
+        team: {
+          include: {
+            _count: { select: { projects: true, members: true } },
+          },
         },
       },
-    },
-  });
+    });
 
-  if (!membership) {
-    return NextResponse.json({ error: 'No team found' }, { status: 404 });
+    if (!membership) {
+      return NextResponse.json({ error: 'No team found' }, { status: 404 });
+    }
+
+    return NextResponse.json(membership.team);
+  } catch (error) {
+    console.error('Failed to fetch team:', error);
+    return NextResponse.json({ error: 'Failed to fetch team' }, { status: 500 });
   }
-
-  return NextResponse.json(membership.team);
 }
 
 export async function PATCH(request: Request) {
   try {
-    const { teamId, name, userId } = await request.json();
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-    if (!teamId || !userId) {
-      return NextResponse.json({ error: 'teamId and userId are required' }, { status: 400 });
+    const { teamId, name } = await request.json();
+
+    if (!teamId) {
+      return NextResponse.json({ error: 'teamId is required' }, { status: 400 });
     }
 
     const membership = await prisma.teamMember.findFirst({
-      where: { userId, teamId, role: 'admin' },
+      where: { userId: session.user.id, teamId, role: 'admin' },
     });
 
     if (!membership) {

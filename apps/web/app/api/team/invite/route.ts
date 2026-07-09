@@ -1,17 +1,23 @@
 import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
 import { generateInviteToken } from '@/lib/team';
+import { auth } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
-    const { teamId, userId } = await request.json();
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-    if (!teamId || !userId) {
-      return NextResponse.json({ error: 'teamId and userId are required' }, { status: 400 });
+    const { teamId } = await request.json();
+
+    if (!teamId) {
+      return NextResponse.json({ error: 'teamId is required' }, { status: 400 });
     }
 
     const membership = await prisma.teamMember.findFirst({
-      where: { userId, teamId, role: 'admin' },
+      where: { userId: session.user.id, teamId, role: 'admin' },
     });
 
     if (!membership) {
@@ -27,7 +33,7 @@ export async function POST(request: Request) {
     }
 
     const token = generateInviteToken();
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
     const invitation = await prisma.invitation.create({
       data: { email: '', teamId, token, expiresAt },
@@ -43,17 +49,35 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const teamId = searchParams.get('teamId');
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-  if (!teamId) {
-    return NextResponse.json({ error: 'teamId is required' }, { status: 400 });
+    const { searchParams } = new URL(request.url);
+    const teamId = searchParams.get('teamId');
+
+    if (!teamId) {
+      return NextResponse.json({ error: 'teamId is required' }, { status: 400 });
+    }
+
+    const membership = await prisma.teamMember.findFirst({
+      where: { userId: session.user.id, teamId },
+    });
+
+    if (!membership) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const invitations = await prisma.invitation.findMany({
+      where: { teamId, accepted: false, expiresAt: { gt: new Date() } },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return NextResponse.json(invitations);
+  } catch (error) {
+    console.error('Failed to fetch invitations:', error);
+    return NextResponse.json({ error: 'Failed to fetch invitations' }, { status: 500 });
   }
-
-  const invitations = await prisma.invitation.findMany({
-    where: { teamId, accepted: false, expiresAt: { gt: new Date() } },
-    orderBy: { createdAt: 'desc' },
-  });
-
-  return NextResponse.json(invitations);
 }

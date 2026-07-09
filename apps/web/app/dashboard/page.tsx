@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { Plus, BookOpen, Users, FileText, Globe, Clock, ArrowRight, Zap } from 'lucide-react';
 import { getOrCreatePersonalTeam } from '@/lib/team';
 import { TIERS } from '@/lib/limits';
+import { ProjectCard } from '@/components/project-card';
+import { UsageMeter } from '@/components/usage-meter';
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -112,24 +114,8 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {tier === 'free' && (
-          <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-amber-800">
-                Free plan: {projects.length}/{TIERS.free.maxProjects} project
-                {TIERS.free.maxProjects !== 1 ? 's' : ''} · {totalPages}/{TIERS.free.maxPages} pages · {memberCount}/{TIERS.free.maxMembers} team members
-              </p>
-              <Link
-                href="/pricing"
-                className="text-sm font-medium text-amber-900 underline hover:text-amber-950"
-              >
-                Upgrade
-              </Link>
-            </div>
-          </div>
-        )}
-
-        <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-8 grid gap-6 lg:grid-cols-4">
+          <div className="lg:col-span-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {stats.map((stat) => (
             <div key={stat.label} className="rounded-xl border border-gray-100 bg-white p-5">
               <div className="flex items-center gap-3">
@@ -144,6 +130,13 @@ export default async function DashboardPage() {
             </div>
           ))}
         </div>
+        <UsageMeter
+          tier={tier}
+          projects={{ current: projects.length, limit: TIERS[tier].maxProjects }}
+          pages={{ current: totalPages, limit: TIERS[tier].maxPages }}
+          members={{ current: memberCount, limit: TIERS[tier].maxMembers }}
+        />
+      </div>
 
         {recentPages.length > 0 && (
           <div className="mb-8">
@@ -212,37 +205,15 @@ export default async function DashboardPage() {
             <h2 className="text-sm font-semibold text-gray-900 mb-4">All Projects</h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {projects.map((project) => (
-                <Link
+                <ProjectCard
                   key={project.id}
-                  href={`/docs/${project.id}`}
-                  className="group rounded-xl border border-gray-100 bg-white p-6 transition-all hover:border-fluid-200 hover:shadow-md"
-                >
-                  <div className="flex items-start justify-between">
-                    <h3 className="font-semibold text-gray-900 group-hover:text-fluid-600 transition-colors">
-                      {project.name}
-                    </h3>
-                    {project.published && (
-                      <span className="shrink-0 rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
-                        Live
-                      </span>
-                    )}
-                  </div>
-                  {project.description && (
-                    <p className="mt-1 text-sm text-gray-500 line-clamp-2">{project.description}</p>
-                  )}
-                  <div className="mt-4 flex items-center gap-4 text-xs text-gray-400">
-                    <span className="flex items-center gap-1">
-                      <BookOpen className="h-3.5 w-3.5" />
-                      {project._count.pages} pages
-                    </span>
-                    {project.published && (
-                      <span className="flex items-center gap-1">
-                        <Globe className="h-3.5 w-3.5" />
-                        Public
-                      </span>
-                    )}
-                  </div>
-                </Link>
+                  id={project.id}
+                  name={project.name}
+                  slug={project.slug}
+                  description={project.description}
+                  published={project.published}
+                  pageCount={project._count.pages}
+                />
               ))}
             </div>
           </div>

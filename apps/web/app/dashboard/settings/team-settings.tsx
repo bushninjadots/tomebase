@@ -145,7 +145,7 @@ export function TeamSettings({
         <div className="rounded-xl border border-gray-100 bg-white p-6">
           <h2 className="text-lg font-semibold text-gray-900">Invite Members</h2>
           <p className="mt-1 text-sm text-gray-500">
-            Create an invite link to share with your team. Links expire after 7 days.
+            Create an invite link to share with your team. Links expire after 7 days. Your current plan supports up to {team._count.projects > 0 ? 'a certain number of' : '3'} members — the invite will be rejected if the limit is reached.
           </p>
           <div className="mt-4">
             {!inviteUrl ? (

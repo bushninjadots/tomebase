@@ -1,5 +1,6 @@
 import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
 
 export async function POST(
   _request: Request,
@@ -39,12 +40,13 @@ export async function PATCH(
   { params }: { params: Promise<{ token: string }> },
 ) {
   try {
-    const { token } = await params;
-    const { userId } = await request.json();
-
-    if (!userId) {
-      return NextResponse.json({ error: 'userId is required' }, { status: 400 });
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const { token } = await params;
+    const userId = session.user.id;
 
     const invitation = await prisma.invitation.findUnique({
       where: { token },

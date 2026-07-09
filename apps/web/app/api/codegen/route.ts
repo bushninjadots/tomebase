@@ -2,10 +2,16 @@ import { prisma } from '@fluid/database';
 import { parseCode, exportsToMarkdown } from '@fluid/codegen';
 import { slugify } from '@fluid/utils';
 import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
 import type { SupportedLanguage } from '@fluid/codegen';
 
 export async function POST(request: Request) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { code, language, projectId } = await request.json();
 
     if (!code || !projectId || !language) {
@@ -15,9 +21,22 @@ export async function POST(request: Request) {
       );
     }
 
-    const project = await prisma.project.findUnique({ where: { id: projectId } });
+    const project = await prisma.project.findFirst({
+      where: {
+        id: projectId,
+        team: { members: { some: { userId: session.user.id } } },
+      },
+    });
     if (!project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+    }
+
+    const supportedLanguages: SupportedLanguage[] = ['typescript', 'javascript'];
+    if (!supportedLanguages.includes(language as SupportedLanguage)) {
+      return NextResponse.json(
+        { error: `Unsupported language. Must be one of: ${supportedLanguages.join(', ')}` },
+        { status: 400 },
+      );
     }
 
     const result = parseCode(code, language as SupportedLanguage);

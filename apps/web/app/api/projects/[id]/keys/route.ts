@@ -1,6 +1,7 @@
 import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
+import { auth } from '@/lib/auth';
 
 function generateApiKey(): string {
   return `fl_${crypto.randomBytes(24).toString('hex')}`;
@@ -11,8 +12,18 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { id } = await params;
-    const project = await prisma.project.findUnique({ where: { id } });
+    const project = await prisma.project.findFirst({
+      where: {
+        id,
+        team: { members: { some: { userId: session.user.id } } },
+      },
+    });
     if (!project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
     }
@@ -35,8 +46,18 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { id } = await params;
-    const project = await prisma.project.findUnique({ where: { id } });
+    const project = await prisma.project.findFirst({
+      where: {
+        id,
+        team: { members: { some: { userId: session.user.id } } },
+      },
+    });
     if (!project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
     }
@@ -46,6 +67,13 @@ export async function POST(
       return NextResponse.json({ error: 'Name is required' }, { status: 400 });
     }
 
+    const expiresInDays = body.expiresInDays;
+    if (expiresInDays !== null && expiresInDays !== undefined) {
+      if (typeof expiresInDays !== 'number' || !Number.isInteger(expiresInDays) || expiresInDays < 1) {
+        return NextResponse.json({ error: 'expiresInDays must be a positive integer or null' }, { status: 400 });
+      }
+    }
+
     const key = generateApiKey();
 
     const apiKey = await prisma.apiKey.create({
@@ -53,8 +81,8 @@ export async function POST(
         name: body.name,
         key,
         projectId: id,
-        expiresAt: body.expiresInDays
-          ? new Date(Date.now() + body.expiresInDays * 86400000)
+        expiresAt: expiresInDays
+          ? new Date(Date.now() + expiresInDays * 86400000)
           : null,
       },
       select: { id: true, name: true, key: true, createdAt: true, expiresAt: true },

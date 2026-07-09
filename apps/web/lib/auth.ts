@@ -73,8 +73,12 @@ const result: any = NextAuth({
   events: {
     createUser: async ({ user }) => {
       if (!user.id) return;
-      const { getOrCreatePersonalTeam } = await import('@/lib/team');
-      await getOrCreatePersonalTeam(user.id);
+      try {
+        const { getOrCreatePersonalTeam } = await import('@/lib/team');
+        await getOrCreatePersonalTeam(user.id);
+      } catch (e) {
+        console.error('Failed to create team for user:', e);
+      }
     },
   },
 });
