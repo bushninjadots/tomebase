@@ -1,7 +1,7 @@
 # Sprint 001: Repository Foundation + MVP
 
 ## Objective
-Establish the Fluid monorepo and build the MVP of an AI-powered documentation platform.
+Establish the TomeBase monorepo and build the MVP of an AI-powered documentation platform.
 
 ## Completed
 
@@ -35,7 +35,7 @@ Establish the Fluid monorepo and build the MVP of an AI-powered documentation pl
 1. **SQLite for dev** — Zero-config database for development; PostgreSQL for production
 2. **Direct source imports** — Workspace packages imported from TypeScript source (no build step needed)
 3. **Server functions for auth** — Sign in/out use server actions for security
-4. **Fluid-600 blue** — Primary brand color derived from name; #0c8ee7 main brand color
+4. **TomeBase-600 blue** — Primary brand color derived from name; #0c8ee7 main brand color (originally "Fluid-600" before rename)
 
 ## Known Issues
 - OAuth providers need actual credentials to function

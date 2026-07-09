@@ -19,7 +19,7 @@ const shipped = [
   { label: 'Page view analytics (counter, dashboard stats)' },
   { label: 'Version history (snapshots, browse, restore)' },
   { label: 'Team invites with admin/member roles' },
-  { label: 'API key management (fl_ prefix, expiry)' },
+  { label: 'API key management (tb_ prefix, expiry)' },
   { label: 'OpenAPI spec import (JSON/YAML, endpoint pages)' },
   { label: 'Code import (TypeScript/JavaScript JSDoc)' },
   { label: 'Export to Markdown (.zip with frontmatter)' },
@@ -36,7 +36,7 @@ const categories = [
   {
     title: 'High Priority',
     icon: Zap,
-    color: 'text-amber-600 bg-amber-50 border-amber-100',
+    color: 'text-amber-600 bg-amber-50 border-amber-100 dark:text-amber-400 dark:bg-amber-950/30 dark:border-amber-900/50',
     items: [
       'Revision diff — side-by-side snapshot comparison',
       'Page comments & discussions with @mentions',
@@ -47,7 +47,7 @@ const categories = [
   {
     title: 'Medium Priority',
     icon: Clock,
-    color: 'text-blue-600 bg-blue-50 border-blue-100',
+    color: 'text-blue-600 bg-blue-50 border-blue-100 dark:text-blue-400 dark:bg-blue-950/30 dark:border-blue-900/50',
     items: [
       'GitHub/GitLab sync (connect repo, auto-import .md)',
       'Webhook notifications (page create/update/publish)',
@@ -59,7 +59,7 @@ const categories = [
   {
     title: 'Future',
     icon: Circle,
-    color: 'text-gray-600 bg-gray-50 border-gray-100',
+    color: 'text-gray-600 bg-gray-50 border-gray-100 dark:text-gray-400 dark:bg-gray-900/50 dark:border-gray-800',
     items: [
       'SSO/SAML (enterprise single sign-on)',
       'Audit log for compliance',
@@ -76,7 +76,7 @@ const categories = [
 export default function RoadmapPage() {
   return (
     <div className="gradient-bg">
-      <nav className="sticky top-0 z-50 border-b border-gray-100/80 bg-white/70 backdrop-blur-xl">
+      <nav className="sticky top-0 z-50 border-b border-gray-100/80 bg-white/70 backdrop-blur-xl dark:border-gray-800/80 dark:bg-gray-950/70">
         <Container>
           <div className="flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
@@ -90,11 +90,11 @@ export default function RoadmapPage() {
                 <rect width="32" height="32" rx="8" fill="url(#logo-nav-r)" />
                 <circle cx="16" cy="16" r="4" fill="white" />
               </svg>
-              <span className="text-lg font-bold tracking-tight">Fluid</span>
+              <span className="text-lg font-bold tracking-tight dark:text-white">TomeBase</span>
             </Link>
             <div className="flex items-center gap-6">
-              <Link href="/pricing" className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">Pricing</Link>
-              <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Sign in</Link>
+              <Link href="/pricing" className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors dark:text-gray-400 dark:hover:text-white">Pricing</Link>
+              <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors dark:text-gray-400 dark:hover:text-white">Sign in</Link>
               <Link
                 href="/login"
                 className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
@@ -114,43 +114,43 @@ export default function RoadmapPage() {
               <Github className="h-3.5 w-3.5" />
               Open source · Active development
             </div>
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl dark:text-white">
               Public Roadmap
             </h1>
-            <p className="mx-auto mt-4 max-w-xl text-lg text-gray-600">
-              Fluid is in active development. Here&apos;s what we&apos;ve shipped
+            <p className="mx-auto mt-4 max-w-xl text-lg text-gray-600 dark:text-gray-400">
+              TomeBase is in active development. Here&apos;s what we&apos;ve shipped
               and what&apos;s coming next.
             </p>
           </div>
 
           {/* Stats */}
           <div className="mx-auto mt-12 grid max-w-2xl grid-cols-3 gap-6 text-center">
-            <div className="rounded-xl border border-gray-100 bg-white p-5">
-              <div className="text-2xl font-bold text-gray-900">43</div>
-              <div className="mt-0.5 text-xs text-gray-500">API routes</div>
+            <div className="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">43</div>
+              <div className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">API routes</div>
             </div>
-            <div className="rounded-xl border border-gray-100 bg-white p-5">
-              <div className="text-2xl font-bold text-green-600">27</div>
-              <div className="mt-0.5 text-xs text-gray-500">Features shipped</div>
+            <div className="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">27</div>
+              <div className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Features shipped</div>
             </div>
-            <div className="rounded-xl border border-gray-100 bg-white p-5">
-              <div className="text-2xl font-bold text-gray-900">17</div>
-              <div className="mt-0.5 text-xs text-gray-500">In progress / planned</div>
+            <div className="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">17</div>
+              <div className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">In progress / planned</div>
             </div>
           </div>
 
           {/* Shipped */}
           <div className="mx-auto mt-16 max-w-2xl">
-            <h2 className="flex items-center gap-2 text-xl font-bold text-gray-900 mb-1">
+            <h2 className="flex items-center gap-2 text-xl font-bold text-gray-900 mb-1 dark:text-white">
               <CheckCircle className="h-5 w-5 text-green-500" />
               Shipped
             </h2>
-            <p className="text-sm text-gray-500 mb-6">Everything available in Fluid today.</p>
+            <p className="text-sm text-gray-500 mb-6 dark:text-gray-400">Everything available in TomeBase today.</p>
             <div className="grid gap-2">
               {shipped.map((item) => (
-                <div key={item.label} className="flex items-center gap-3 rounded-lg border border-green-100 bg-green-50/30 px-4 py-2.5">
+                <div key={item.label} className="flex items-center gap-3 rounded-lg border border-green-100 bg-green-50/30 px-4 py-2.5 dark:border-green-900/50 dark:bg-green-950/30">
                   <CheckCircle className="h-4 w-4 shrink-0 text-green-500" />
-                  <span className="text-sm text-gray-700">{item.label}</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">{item.label}</span>
                 </div>
               ))}
             </div>
@@ -158,11 +158,11 @@ export default function RoadmapPage() {
 
           {/* Planned */}
           <div className="mx-auto mt-20 max-w-2xl">
-            <h2 className="flex items-center gap-2 text-xl font-bold text-gray-900 mb-1">
+            <h2 className="flex items-center gap-2 text-xl font-bold text-gray-900 mb-1 dark:text-white">
               <Clock className="h-5 w-5 text-fluid-600" />
               Planned
             </h2>
-            <p className="text-sm text-gray-500 mb-6">What we&apos;re building next. Priorities may shift based on feedback.</p>
+            <p className="text-sm text-gray-500 mb-6 dark:text-gray-400">What we&apos;re building next. Priorities may shift based on feedback.</p>
             <div className="space-y-8">
               {categories.map((cat) => (
                 <div key={cat.title}>
@@ -172,9 +172,9 @@ export default function RoadmapPage() {
                   </div>
                   <div className="grid gap-2">
                     {cat.items.map((item) => (
-                      <div key={item} className="flex items-center gap-3 rounded-lg border border-gray-100 bg-white px-4 py-2.5">
+                      <div key={item} className="flex items-center gap-3 rounded-lg border border-gray-100 bg-white px-4 py-2.5 dark:border-gray-800 dark:bg-gray-900">
                         <Circle className="h-4 w-4 shrink-0 text-gray-300" />
-                        <span className="text-sm text-gray-600">{item}</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">{item}</span>
                       </div>
                     ))}
                   </div>
@@ -184,9 +184,9 @@ export default function RoadmapPage() {
           </div>
 
           {/* CTA */}
-          <div className="mx-auto mt-20 max-w-lg text-center rounded-2xl border border-gray-100 bg-white p-8">
-            <h2 className="text-lg font-semibold text-gray-900">Have feedback?</h2>
-            <p className="mt-2 text-sm text-gray-500">
+          <div className="mx-auto mt-20 max-w-lg text-center rounded-2xl border border-gray-100 bg-white p-8 dark:border-gray-800 dark:bg-gray-900">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Have feedback?</h2>
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
               Open an issue on GitHub to report bugs, request features, or vote on what we build next.
             </p>
             <Link
@@ -200,25 +200,25 @@ export default function RoadmapPage() {
         </Container>
       </section>
 
-      <footer className="border-t border-gray-100 py-12">
+      <footer className="border-t border-gray-100 py-12 dark:border-gray-800">
         <Container>
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
               <svg viewBox="0 0 32 32" fill="none" className="h-5 w-5" aria-hidden="true">
                 <rect width="32" height="32" rx="8" fill="#0c8ee7" />
                 <circle cx="16" cy="16" r="4" fill="white" />
               </svg>
-              Fluid — Knowledge that flows into action.
+              TomeBase — Your knowledge base.
             </div>
-            <div className="flex items-center gap-6 text-sm text-gray-500">
-              <Link href="/pricing" className="hover:text-gray-900 transition-colors">Pricing</Link>
+            <div className="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400">
+              <Link href="/pricing" className="hover:text-gray-900 transition-colors dark:hover:text-white">Pricing</Link>
               <span className="text-gray-200">·</span>
-              <Link href="/roadmap" className="hover:text-gray-900 transition-colors">Roadmap</Link>
+              <Link href="/roadmap" className="hover:text-gray-900 transition-colors dark:hover:text-white">Roadmap</Link>
               <span className="text-gray-200">·</span>
-              <Link href="https://github.com/anomalyco/fluid" className="hover:text-gray-900 transition-colors">GitHub</Link>
+              <Link href="https://github.com/anomalyco/fluid" className="hover:text-gray-900 transition-colors dark:hover:text-white">GitHub</Link>
               <span className="text-gray-200">·</span>
-              <Link href="/terms" className="hover:text-gray-900 transition-colors">Terms</Link>
-              <Link href="/privacy" className="hover:text-gray-900 transition-colors">Privacy</Link>
+              <Link href="/terms" className="hover:text-gray-900 transition-colors dark:hover:text-white">Terms</Link>
+              <Link href="/privacy" className="hover:text-gray-900 transition-colors dark:hover:text-white">Privacy</Link>
             </div>
           </div>
         </Container>

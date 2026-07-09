@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     select: { title: true, description: true },
   });
   if (!page) return { title: 'Not Found' };
-  const baseUrl = process.env.APP_URL || 'https://usedocs.com';
+  const baseUrl = process.env.APP_URL || 'https://tomebase.io';
   return {
     title: page.title,
     description: page.description || undefined,

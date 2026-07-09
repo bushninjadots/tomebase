@@ -42,7 +42,7 @@ export function ImportTabs({ projectId }: ImportTabsProps) {
       {tab === 'code' ? (
         <div>
           <p className="text-sm text-gray-500 mb-6">
-            Paste your TypeScript or JavaScript source code. Fluid parses JSDoc comments, types, and signatures to
+            Paste your TypeScript or JavaScript source code. TomeBase parses JSDoc comments, types, and signatures to
             generate documentation pages.
           </p>
           <ImportForm projectId={projectId} />

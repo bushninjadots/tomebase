@@ -13,7 +13,7 @@ export default function DocsPage() {
                 <rect width="32" height="32" rx="8" fill="#0c8ee7" />
                 <circle cx="16" cy="16" r="4" fill="white" />
               </svg>
-              <span className="font-bold tracking-tight">Fluid</span>
+              <span className="font-bold tracking-tight">TomeBase</span>
             </Link>
             <Link
               href="/login"
@@ -29,10 +29,10 @@ export default function DocsPage() {
         <div className="mx-auto max-w-2xl text-center">
           <BookOpen className="mx-auto h-12 w-12 text-fluid-600" />
           <h1 className="mt-6 text-4xl font-bold tracking-tight text-gray-900">
-            Fluid Documentation
+            TomeBase Documentation
           </h1>
           <p className="mt-4 text-lg text-gray-600">
-            Learn how to use Fluid to create beautiful documentation for your team.
+            Learn how to use TomeBase to create beautiful documentation for your team.
           </p>
         </div>
 
@@ -41,9 +41,9 @@ export default function DocsPage() {
             { title: 'Getting Started', description: 'Set up your first documentation project in minutes.', href: '#' },
             { title: 'Writing Docs', description: 'Learn Markdown, MDX, and how to structure your documentation.', href: '#' },
             { title: 'AI Features', description: 'AI-powered documentation assistance — coming soon.', href: '#' },
-            { title: 'API Reference', description: 'Complete API reference for integrating with Fluid.', href: '#' },
+            { title: 'API Reference', description: 'Complete API reference for integrating with TomeBase.', href: '#' },
             { title: 'Team Guide', description: 'Collaborate with your team on documentation projects.', href: '#' },
-            { title: 'Deployment', description: 'Deploy Fluid on your own infrastructure or use our cloud.', href: '#' },
+            { title: 'Deployment', description: 'Deploy TomeBase on your own infrastructure or use our cloud.', href: '#' },
           ].map((section) => (
             <Link
               key={section.title}

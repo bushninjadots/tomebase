@@ -4,7 +4,7 @@
 Accepted
 
 ## Context
-Fluid needs a modern web framework with:
+TomeBase needs a modern web framework with:
 - Server-side rendering for SEO and performance
 - API routes for backend functionality
 - Type safety for maintainability

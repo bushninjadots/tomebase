@@ -1,7 +1,7 @@
-# Fluid — AI Agent Instructions
+# TomeBase — AI Agent Instructions
 
 ## Project Context
-Fluid is an AI-powered documentation platform for engineering teams. Monorepo with npm workspaces + Turborepo.
+TomeBase is an AI-powered documentation platform for engineering teams. Monorepo with npm workspaces + Turborepo.
 
 ## Commands
 

@@ -6,6 +6,7 @@ import { Key, Plus, Trash2, Copy, Check, Eye, EyeOff } from 'lucide-react';
 interface ApiKey {
   id: string;
   name: string;
+  prefix: string;
   key?: string;
   createdAt: string;
   expiresAt: string | null;
@@ -172,6 +173,7 @@ export function ApiKeyManager({ projectId }: { projectId: string }) {
               <div>
                 <p className="text-sm font-medium text-gray-900">{apiKey.name}</p>
                 <p className="text-xs text-gray-400">
+                  <code className="text-fluid-600 mr-2">{apiKey.prefix}...</code>
                   Created {new Date(apiKey.createdAt).toLocaleDateString()}
                   {apiKey.expiresAt && ` · Expires ${new Date(apiKey.expiresAt).toLocaleDateString()}`}
                 </p>

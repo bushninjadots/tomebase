@@ -55,8 +55,8 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="border-b border-gray-100 bg-white">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      <nav className="border-b border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="flex h-16 items-center justify-between">
             <Link href="/dashboard" className="flex items-center gap-2">
@@ -64,12 +64,12 @@ export default async function DashboardPage() {
                 <rect width="32" height="32" rx="8" fill="#0c8ee7" />
                 <circle cx="16" cy="16" r="4" fill="white" />
               </svg>
-              <span className="text-base font-bold tracking-tight">Fluid</span>
+              <span className="text-base font-bold tracking-tight dark:text-white">TomeBase</span>
             </Link>
             <div className="flex items-center gap-4">
               <Link
                 href="/dashboard/settings"
-                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors"
+                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300"
               >
                 <Users className="h-4 w-4" />
                 Team
@@ -83,7 +83,7 @@ export default async function DashboardPage() {
               >
                 <button
                   type="submit"
-                  className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                  className="text-sm text-gray-500 hover:text-gray-700 transition-colors dark:text-gray-400 dark:hover:text-gray-300"
                 >
                   Sign out
                 </button>
@@ -97,11 +97,11 @@ export default async function DashboardPage() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold text-gray-900">{team.name}</h1>
-              <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{team.name}</h1>
+              <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400">
                 {memberCount} {memberCount === 1 ? 'member' : 'members'}
               </span>
-              <span className="rounded-full bg-fluid-50 px-2.5 py-0.5 text-xs font-medium text-fluid-700 capitalize">
+              <span className="rounded-full bg-fluid-50 px-2.5 py-0.5 text-xs font-medium text-fluid-700 capitalize dark:bg-fluid-900/30 dark:text-fluid-400">
                 {tier}
               </span>
             </div>
@@ -110,7 +110,7 @@ export default async function DashboardPage() {
             {tier === 'free' && (
               <Link
                 href="/pricing"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-fluid-200 px-3 py-1.5 text-sm font-medium text-fluid-700 hover:bg-fluid-50 transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-fluid-200 px-3 py-1.5 text-sm font-medium text-fluid-700 hover:bg-fluid-50 transition-colors dark:border-fluid-700 dark:text-fluid-400 dark:hover:bg-fluid-900/30"
               >
                 <Zap className="h-3.5 w-3.5" />
                 Upgrade
@@ -137,14 +137,14 @@ export default async function DashboardPage() {
         <div className="mb-8 grid gap-6 lg:grid-cols-4">
           <div className="lg:col-span-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {stats.map((stat) => (
-            <div key={stat.label} className="rounded-xl border border-gray-100 bg-white p-5">
+            <div key={stat.label} className="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
               <div className="flex items-center gap-3">
                 <div className={`rounded-lg p-2 ${stat.color}`}>
                   <stat.icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                  <p className="text-xs text-gray-500">{stat.label}</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{stat.label}</p>
                 </div>
               </div>
             </div>
@@ -161,26 +161,26 @@ export default async function DashboardPage() {
         {recentPages.length > 0 && (
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-4">
-              <Clock className="h-4 w-4 text-gray-400" />
-              <h2 className="text-sm font-semibold text-gray-900">Recently Updated</h2>
+              <Clock className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Recently Updated</h2>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {recentPages.map((page) => (
                 <Link
                   key={page.id}
                   href={`/docs/${page.projectId}/${page.slug}`}
-                  className="group flex items-center justify-between rounded-xl border border-gray-100 bg-white px-4 py-3 transition-all hover:border-fluid-200 hover:shadow-sm"
+                  className="group flex items-center justify-between rounded-xl border border-gray-100 bg-white px-4 py-3 transition-all hover:border-fluid-200 hover:shadow-sm dark:border-gray-800 dark:bg-gray-900 dark:hover:border-fluid-700"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-gray-900 group-hover:text-fluid-600 transition-colors">
+                    <p className="truncate text-sm font-medium text-gray-900 group-hover:text-fluid-600 transition-colors dark:text-white dark:group-hover:text-fluid-400">
                       {page.title}
                     </p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-gray-400 dark:text-gray-500">
                       {page.project.name}
                       {page.viewCount > 0 && ` · ${page.viewCount} view${page.viewCount !== 1 ? 's' : ''}`}
                     </p>
                   </div>
-                  <ArrowRight className="ml-3 h-4 w-4 shrink-0 text-gray-300 group-hover:text-fluid-500 transition-colors" />
+                  <ArrowRight className="ml-3 h-4 w-4 shrink-0 text-gray-300 group-hover:text-fluid-500 transition-colors dark:text-gray-600 dark:group-hover:text-fluid-400" />
                 </Link>
               ))}
             </div>
@@ -190,30 +190,30 @@ export default async function DashboardPage() {
         {topPages.length > 0 && totalViewCount > 0 && (
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-4">
-              <Eye className="h-4 w-4 text-gray-400" />
-              <h2 className="text-sm font-semibold text-gray-900">Most Viewed</h2>
+              <Eye className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Most Viewed</h2>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {topPages.map((page, i) => (
                 <Link
                   key={page.id}
                   href={`/docs/${page.projectId}/${page.slug}`}
-                  className="group flex items-center justify-between rounded-xl border border-gray-100 bg-white px-4 py-3 transition-all hover:border-fluid-200 hover:shadow-sm"
+                  className="group flex items-center justify-between rounded-xl border border-gray-100 bg-white px-4 py-3 transition-all hover:border-fluid-200 hover:shadow-sm dark:border-gray-800 dark:bg-gray-900 dark:hover:border-fluid-700"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <span className="shrink-0 flex items-center justify-center w-6 h-6 rounded-md bg-gray-100 text-[11px] font-bold text-gray-500">
+                    <span className="shrink-0 flex items-center justify-center w-6 h-6 rounded-md bg-gray-100 text-[11px] font-bold text-gray-500 dark:bg-gray-800 dark:text-gray-400">
                       {i + 1}
                     </span>
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-gray-900 group-hover:text-fluid-600 transition-colors">
+                      <p className="truncate text-sm font-medium text-gray-900 group-hover:text-fluid-600 transition-colors dark:text-white dark:group-hover:text-fluid-400">
                         {page.title}
                       </p>
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-gray-400 dark:text-gray-500">
                         {page.project.name}
                       </p>
                     </div>
                   </div>
-                  <span className="ml-3 shrink-0 text-xs font-medium text-gray-500">
+                  <span className="ml-3 shrink-0 text-xs font-medium text-gray-500 dark:text-gray-400">
                     {page.viewCount} view{page.viewCount !== 1 ? 's' : ''}
                   </span>
                 </Link>
@@ -223,29 +223,29 @@ export default async function DashboardPage() {
         )}
 
         {projects.length === 0 ? (
-          <div className="rounded-2xl border-2 border-dashed border-gray-200 bg-white p-12 text-center">
+          <div className="rounded-2xl border-2 border-dashed border-gray-200 bg-white p-12 text-center dark:border-gray-700 dark:bg-gray-900">
             <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-fluid-50">
               <BookOpen className="h-8 w-8 text-fluid-600" />
             </div>
-            <h2 className="text-lg font-semibold text-gray-900">Welcome to Fluid</h2>
-            <p className="mt-2 text-sm text-gray-500 max-w-md mx-auto">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Welcome to TomeBase</h2>
+            <p className="mt-2 text-sm text-gray-500 max-w-md mx-auto dark:text-gray-400">
               Document your APIs, products, and internal tools. Start by creating your first project.
             </p>
             <div className="mt-8 grid gap-4 sm:grid-cols-3 text-left max-w-lg mx-auto">
               <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2">1</div>
-                <h3 className="text-sm font-medium text-gray-900">Create a Project</h3>
-                <p className="mt-1 text-xs text-gray-500">Name your documentation project</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2 dark:bg-fluid-700">1</div>
+                <h3 className="text-sm font-medium text-gray-900 dark:text-white">Create a Project</h3>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Name your documentation project</p>
               </div>
               <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2">2</div>
-                <h3 className="text-sm font-medium text-gray-900">Write Pages</h3>
-                <p className="mt-1 text-xs text-gray-500">Add docs with Markdown or templates</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2 dark:bg-fluid-700">2</div>
+                <h3 className="text-sm font-medium text-gray-900 dark:text-white">Write Pages</h3>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Add docs with Markdown or templates</p>
               </div>
               <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2">3</div>
-                <h3 className="text-sm font-medium text-gray-900">Publish & Share</h3>
-                <p className="mt-1 text-xs text-gray-500">Go live with a public link</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2 dark:bg-fluid-700">3</div>
+                <h3 className="text-sm font-medium text-gray-900 dark:text-white">Publish & Share</h3>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Go live with a public link</p>
               </div>
             </div>
             <Link
@@ -258,7 +258,7 @@ export default async function DashboardPage() {
           </div>
         ) : (
           <div>
-            <h2 className="text-sm font-semibold text-gray-900 mb-4">All Projects</h2>
+            <h2 className="text-sm font-semibold text-gray-900 mb-4 dark:text-white">All Projects</h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {projects.map((project) => (
                 <ProjectCard

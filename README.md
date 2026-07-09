@@ -1,8 +1,8 @@
-# Fluid
+# TomeBase
 
-**Knowledge that flows into action.**
+**Your knowledge base.**
 
-Fluid is an open-source documentation platform for engineering teams. It
+TomeBase is an open-source documentation platform for engineering teams. It
 generates docs from code, publishes to the web, and keeps teams in sync —
 without build steps, separate hosting, or configuration overhead.
 
@@ -49,7 +49,7 @@ without build steps, separate hosting, or configuration overhead.
 
 ### Imports
 
-- **Code import** — paste TypeScript/JavaScript; Fluid parses functions,
+- **Code import** — paste TypeScript/JavaScript; TomeBase parses functions,
   interfaces, types, enums, and classes into structured Markdown pages.
 - **OpenAPI import** — paste JSON/YAML specs or fetch from a URL. Creates one
   page per endpoint with method, path, parameters, request body, responses,
@@ -73,7 +73,7 @@ without build steps, separate hosting, or configuration overhead.
   credentials are configured.
 - **Team invites** — share invite links with 7-day expiry; assign admin or
   member roles.
-- **API keys** — generate `fl_`-prefixed keys for programmatic access to your
+- **API keys** — generate `tb_`-prefixed keys for programmatic access to your
   documentation.
 - **Doc health** — scan for broken wiki links, orphan pages (zero inbound
   links), and empty pages.
@@ -88,7 +88,7 @@ without build steps, separate hosting, or configuration overhead.
 | Pro        | 15      | Custom  | API keys, OpenAPI import, email support |
 | Enterprise | 100     | White-label | SSO/SAML, audit logs, priority support |
 
-Pricing details at [usedocs.com/pricing](https://usedocs.com/pricing).
+Pricing details at [tomebase.io/pricing](https://tomebase.io/pricing).
 
 ## Quick Start
 
@@ -108,7 +108,7 @@ email/password.
 ## Architecture
 
 ```
-fluid/
+tomebase/
 ├── apps/
 │   └── web/                  # Next.js 15 App Router
 │       ├── app/

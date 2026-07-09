@@ -27,7 +27,7 @@ export function ChatPanel({ project: _project }: { project: Project }) {
           <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
             <div className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-fluid-600" />
-              <span className="text-sm font-semibold text-gray-900">Fluid AI</span>
+              <span className="text-sm font-semibold text-gray-900">TomeBase AI</span>
             </div>
             <button
               onClick={() => setIsOpen(false)}

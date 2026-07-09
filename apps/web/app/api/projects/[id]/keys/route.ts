@@ -1,11 +1,7 @@
 import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
-import crypto from 'crypto';
 import { auth } from '@/lib/auth';
-
-function generateApiKey(): string {
-  return `fl_${crypto.randomBytes(24).toString('hex')}`;
-}
+import { generateApiKey, hashApiKey, extractPrefix } from '@/lib/api-auth';
 
 export async function GET(
   _request: Request,
@@ -30,7 +26,7 @@ export async function GET(
 
     const keys = await prisma.apiKey.findMany({
       where: { projectId: id },
-      select: { id: true, name: true, createdAt: true, expiresAt: true },
+      select: { id: true, name: true, prefix: true, createdAt: true, expiresAt: true },
       orderBy: { createdAt: 'desc' },
     });
 
@@ -74,21 +70,22 @@ export async function POST(
       }
     }
 
-    const key = generateApiKey();
+    const rawKey = generateApiKey();
 
     const apiKey = await prisma.apiKey.create({
       data: {
         name: body.name,
-        key,
+        prefix: extractPrefix(rawKey),
+        key: hashApiKey(rawKey),
         projectId: id,
         expiresAt: expiresInDays
           ? new Date(Date.now() + expiresInDays * 86400000)
           : null,
       },
-      select: { id: true, name: true, key: true, createdAt: true, expiresAt: true },
+      select: { id: true, name: true, prefix: true, createdAt: true, expiresAt: true },
     });
 
-    return NextResponse.json(apiKey, { status: 201 });
+    return NextResponse.json({ ...apiKey, key: rawKey }, { status: 201 });
   } catch (error) {
     console.error('Failed to create API key:', error);
     return NextResponse.json({ error: 'Failed to create API key' }, { status: 500 });

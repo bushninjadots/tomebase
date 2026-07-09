@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-fluid-50: #f0f7ff;
   --color-fluid-100: #e0effe;
@@ -30,6 +32,11 @@ body {
   color: var(--color-fluid-900);
 }
 
+.dark ::selection {
+  background-color: var(--color-fluid-800);
+  color: var(--color-fluid-100);
+}
+
 .gradient-text {
   background: linear-gradient(135deg, #0c8ee7, #7cc8fb);
   -webkit-background-clip: text;
@@ -41,6 +48,10 @@ body {
   background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 50%, #f0f7ff 100%);
 }
 
+.dark .gradient-bg {
+  background: linear-gradient(135deg, #0b406d 0%, #111827 50%, #0b406d 100%);
+}
+
 .hero-glow {
   position: absolute;
   width: 600px;
@@ -48,4 +59,8 @@ body {
   border-radius: 50%;
   background: radial-gradient(circle, rgba(12, 142, 231, 0.08) 0%, transparent 70%);
   pointer-events: none;
+}
+
+.dark .hero-glow {
+  background: radial-gradient(circle, rgba(12, 142, 231, 0.15) 0%, transparent 70%);
 }

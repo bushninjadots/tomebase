@@ -93,7 +93,7 @@ const features = [
     description: 'Generate scoped API keys for programmatic access. Perfect for CI/CD pipelines, automation, and third-party integrations.',
     capabilities: [
       'Create API keys with optional expiry dates from project settings',
-      'Keys prefixed with fl_ for easy identification',
+      'Keys prefixed with tb_ for easy identification',
       'One-time display after creation — copy immediately or regenerate',
       'Revoke keys instantly to revoke access',
       'Full CRUD API under /api/projects/[id]/keys',
@@ -136,7 +136,7 @@ export default function FeaturesPage() {
                 <rect width="32" height="32" rx="8" fill="#0c8ee7" />
                 <circle cx="16" cy="16" r="4" fill="white" />
               </svg>
-              <span className="font-bold tracking-tight">Fluid</span>
+              <span className="font-bold tracking-tight">TomeBase</span>
             </Link>
             <div className="flex items-center gap-4">
               <Link href="/pricing" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Pricing</Link>
@@ -194,7 +194,7 @@ export default function FeaturesPage() {
                 <rect width="32" height="32" rx="8" fill="#0c8ee7" />
                 <circle cx="16" cy="16" r="4" fill="white" />
               </svg>
-              Fluid — Knowledge that flows into action.
+              TomeBase — Your knowledge base.
             </div>
             <Link href="/login" className="inline-flex items-center gap-2 text-sm font-medium text-fluid-600 hover:text-fluid-700 transition-colors">
               Get Started <ArrowRight className="h-4 w-4" />

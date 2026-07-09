@@ -37,7 +37,7 @@
 - [ ] **Revision diff** — side-by-side comparison of snapshot versions
 - [ ] **Page comments / discussions** — inline feedback on pages with @mentions
 - [ ] **Stripe billing** — real payment integration for Pro/Enterprise upgrades
-- [ ] **AI writing assistant** — smart suggestions, auto-summarize, tone rewrite
+- [ ] **AI writing assistant** — smart suggestions, auto-summarize, rewrite
 
 ### Medium Priority
 

@@ -1,10 +1,10 @@
 # Brand Guidelines
 
 ## Name
-Fluid
+TomeBase
 
 ## Tagline
-Knowledge that flows into action.
+Your knowledge base.
 
 ## Colors
 - Primary Blue: #0c8ee7 (fluid-500)

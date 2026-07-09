@@ -26,16 +26,16 @@ export default function PrivacyPage() {
         <p>We retain your data as long as your account is active. Upon account deletion, data is removed within 30 days. Backup copies may persist temporarily.</p>
 
         <h2 className="text-lg font-semibold text-gray-900 mt-8">7. Your Rights</h2>
-        <p>Depending on your jurisdiction, you may have the right to access, correct, delete, or port your data. Contact us at privacy@fluid.dev to exercise these rights.</p>
+        <p>Depending on your jurisdiction, you may have the right to access, correct, delete, or port your data. Contact us at privacy@tomebase.io to exercise these rights.</p>
 
         <h2 className="text-lg font-semibold text-gray-900 mt-8">8. Changes to Policy</h2>
         <p>We may update this policy. Material changes will be communicated via email or in-app notice.</p>
 
         <h2 className="text-lg font-semibold text-gray-900 mt-8">9. Contact</h2>
-        <p>For privacy-related inquiries, contact us at privacy@fluid.dev.</p>
+        <p>For privacy-related inquiries, contact us at privacy@tomebase.io.</p>
       </div>
       <div className="mt-12 border-t border-gray-100 pt-6">
-        <Link href="/" className="text-sm text-fluid-600 hover:text-fluid-700">&larr; Back to Fluid</Link>
+        <Link href="/" className="text-sm text-fluid-600 hover:text-fluid-700">&larr; Back to TomeBase</Link>
       </div>
     </div>
   );

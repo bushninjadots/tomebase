@@ -8,7 +8,7 @@ export default function ChatPage() {
       <Container className="py-24">
         <div className="mx-auto max-w-lg text-center">
           <Sparkles className="mx-auto h-12 w-12 text-gray-200" />
-          <h1 className="mt-6 text-3xl font-bold text-gray-900">Fluid AI</h1>
+          <h1 className="mt-6 text-3xl font-bold text-gray-900">TomeBase AI</h1>
           <p className="mt-3 text-gray-500">
             AI-powered answers over your documentation is on the roadmap.
             Check back soon.

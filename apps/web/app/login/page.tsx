@@ -72,7 +72,7 @@ export default async function LoginPage() {
                 <circle cx="16" cy="16" r="4" fill="white" />
               </svg>
             </Link>
-            <h1 className="text-xl font-bold text-gray-900">Welcome to Fluid</h1>
+            <h1 className="text-xl font-bold text-gray-900">Welcome to TomeBase</h1>
             <p className="mt-2 text-sm text-gray-600">Sign in to start documenting</p>
           </div>
 

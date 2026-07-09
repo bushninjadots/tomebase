@@ -1,6 +1,6 @@
 # Architecture
 
-Fluid follows Clean Architecture principles within a monorepo structure.
+TomeBase follows Clean Architecture principles within a monorepo structure.
 
 ## Overview
 
@@ -38,7 +38,7 @@ packages/config   — Shared configuration presets
 
 ### Tailwind CSS v4
 - Utility-first CSS framework
-- Custom design tokens for Fluid brand
+- Custom design tokens for TomeBase brand
 - Consistent spacing, typography, and color system
 
 ## Data Flow

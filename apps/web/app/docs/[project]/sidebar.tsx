@@ -86,14 +86,14 @@ function PageRow({
       <div
         className={`group flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm transition-colors ${
           isActive
-            ? 'bg-fluid-50 text-fluid-700 font-medium'
-            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+            ? 'bg-fluid-50 text-fluid-700 font-medium dark:bg-fluid-900/30 dark:text-fluid-400'
+            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white'
         }`}
         style={{ paddingLeft: `${8 + node.depth * 16}px` }}
       >
         <button
           onClick={() => setExpanded(!expanded)}
-          className={`shrink-0 rounded p-0.5 text-gray-400 hover:text-gray-600 transition-colors ${
+          className={`shrink-0 rounded p-0.5 text-gray-400 hover:text-gray-600 dark:text-gray-600 dark:hover:text-gray-400 transition-colors ${
             !hasChildren && 'invisible'
           }`}
         >
@@ -104,20 +104,20 @@ function PageRow({
           href={`/docs/${projectId}/${node.slug}`}
           className="flex flex-1 items-center gap-1.5 overflow-hidden"
         >
-          <BookOpen className="h-3.5 w-3.5 shrink-0 text-gray-400" />
+          <BookOpen className="h-3.5 w-3.5 shrink-0 text-gray-400 dark:text-gray-500" />
           <span className="truncate">{node.title}</span>
           {nodeTags.length > 0 && (
             <span className="flex items-center gap-0.5 shrink-0">
               {nodeTags.slice(0, 2).map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500"
+                  className="inline-flex items-center rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-gray-800 dark:text-gray-400"
                 >
                   {tag}
                 </span>
               ))}
               {nodeTags.length > 2 && (
-                <span className="text-[10px] text-gray-400">+{nodeTags.length - 2}</span>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500">+{nodeTags.length - 2}</span>
               )}
             </span>
           )}
@@ -126,35 +126,35 @@ function PageRow({
         <div className="hidden items-center gap-0.5 group-hover:flex">
           <button
             onClick={() => onMove(node.id, 'up')}
-            className="rounded p-0.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition-colors"
+            className="rounded p-0.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200 dark:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-400 transition-colors"
             title="Move up"
           >
             <ArrowUp className="h-3 w-3" />
           </button>
           <button
             onClick={() => onMove(node.id, 'down')}
-            className="rounded p-0.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition-colors"
+            className="rounded p-0.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200 dark:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-400 transition-colors"
             title="Move down"
           >
             <ArrowDown className="h-3 w-3" />
           </button>
           <button
             onClick={() => onIndent(node.id, 'in', node.parentId, [])}
-            className="rounded p-0.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition-colors"
+            className="rounded p-0.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200 dark:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-400 transition-colors"
             title="Indent (make child of previous)"
           >
             <IndentIncrease className="h-3 w-3" />
           </button>
           <button
             onClick={() => onIndent(node.id, 'out', node.parentId, [])}
-            className="rounded p-0.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition-colors"
+            className="rounded p-0.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200 dark:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-400 transition-colors"
             title="Outdent (move up a level)"
           >
             <IndentDecrease className="h-3 w-3" />
           </button>
           <button
             onClick={() => onDelete(node.id)}
-            className="rounded p-0.5 text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+            className="rounded p-0.5 text-red-400 hover:text-red-600 hover:bg-red-50 dark:text-red-500 dark:hover:text-red-400 dark:hover:bg-red-900/30 transition-colors"
             title="Delete"
           >
             <Trash2 className="h-3 w-3" />
@@ -314,11 +314,11 @@ export function DocSidebar({ project }: { project: Project }) {
   }
 
   return (
-    <aside className="flex w-72 flex-col border-r border-gray-100 bg-gray-50/50">
-      <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
+    <aside className="flex w-72 flex-col border-r border-gray-100 bg-gray-50/50 dark:border-gray-800 dark:bg-gray-900">
+      <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3 dark:border-gray-800">
         <Link
           href="/dashboard"
-          className="flex items-center gap-2 text-sm font-semibold text-gray-900"
+          className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white"
         >
           <svg viewBox="0 0 32 32" fill="none" className="h-5 w-5">
             <rect width="32" height="32" rx="8" fill="#0c8ee7" />
@@ -333,7 +333,7 @@ export function DocSidebar({ project }: { project: Project }) {
           <SearchOverlay projectId={project.id} pages={project.pages} />
         </div>
         <div className="mb-3 flex items-center justify-between">
-          <span className="text-xs font-medium uppercase tracking-wider text-gray-400">
+          <span className="text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500">
             Pages
           </span>
           <button
@@ -343,7 +343,7 @@ export function DocSidebar({ project }: { project: Project }) {
               setNewTemplate('blank');
               setIsCreating((v) => !v);
             }}
-            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
           >
             <Plus className="h-3.5 w-3.5" />
           </button>
@@ -356,13 +356,13 @@ export function DocSidebar({ project }: { project: Project }) {
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               placeholder="New page title..."
-              className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm placeholder:text-gray-400 focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
+              className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm placeholder:text-gray-400 focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-500"
               autoFocus
             />
             <select
               value={newTemplate}
               onChange={(e) => setNewTemplate(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-500 focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
+              className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-500 focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300"
             >
               {templates.map((t) => (
                 <option key={t.id} value={t.id}>
@@ -374,7 +374,7 @@ export function DocSidebar({ project }: { project: Project }) {
               <select
                 value={newParentId ?? ''}
                 onChange={(e) => setNewParentId(e.target.value || null)}
-                className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-500 focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
+                className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-500 focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300"
               >
                 <option value="">Top level (no parent)</option>
                 {project.pages.map((p) => (
@@ -402,13 +402,13 @@ export function DocSidebar({ project }: { project: Project }) {
         </nav>
 
         <div className="mt-4">
-          <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-gray-400 mb-2">
-            <Hash className="h-3 w-3" />
+          <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-gray-400 mb-2 dark:text-gray-500">
+            <Hash className="h-3 w-3 dark:text-gray-500" />
             Tags
             <span className="group relative ml-auto">
-              <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-gray-200 text-[9px] text-gray-500 cursor-help font-bold">?</span>
-              <span className="absolute right-0 top-full mt-1 w-56 rounded-xl border border-gray-200 bg-white p-3 shadow-lg text-[11px] font-normal text-gray-600 normal-case opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                Use <code className="text-[10px] bg-gray-100 px-1 rounded">#tag</code> anywhere in your page content. Tags appear here and can be used to filter pages. Click a tag to show only pages with that tag.
+              <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-gray-200 text-[9px] text-gray-500 cursor-help font-bold dark:bg-gray-700 dark:text-gray-400">?</span>
+              <span className="absolute right-0 top-full mt-1 w-56 rounded-xl border border-gray-200 bg-white p-3 shadow-lg text-[11px] font-normal text-gray-600 normal-case opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
+                Use <code className="text-[10px] bg-gray-100 px-1 rounded dark:bg-gray-700 dark:text-gray-300">#tag</code> anywhere in your page content. Tags appear here and can be used to filter pages. Click a tag to show only pages with that tag.
               </span>
             </span>
           </div>
@@ -420,7 +420,7 @@ export function DocSidebar({ project }: { project: Project }) {
                 className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${
                   activeTag === tag
                     ? 'bg-fluid-600 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
                 }`}
               >
                 {tag}
@@ -428,25 +428,25 @@ export function DocSidebar({ project }: { project: Project }) {
               </button>
             ))}
             {allTags.length === 0 && (
-              <span className="text-xs text-gray-400 italic">None yet</span>
+              <span className="text-xs text-gray-400 italic dark:text-gray-500">None yet</span>
             )}
           </div>
         </div>
       </div>
 
-      <div className="border-t border-gray-100 p-3 space-y-1">
+      <div className="border-t border-gray-100 p-3 space-y-1 dark:border-gray-800">
         <GraphButton projectId={project.id} pages={project.pages} />
         <button
           onClick={() => setActiveTag(null)}
           className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors w-full ${
             allTags.length > 0
-              ? 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
-              : 'text-gray-300'
+              ? 'text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+              : 'text-gray-300 dark:text-gray-600'
           }`}
         >
-          <Tags className="h-4 w-4 shrink-0" />
+          <Tags className="h-4 w-4 shrink-0 dark:text-gray-500" />
           <span className="flex-1 text-left">All Tags</span>
-          <span className="text-xs text-gray-400">{allTags.length}</span>
+          <span className="text-xs text-gray-400 dark:text-gray-500">{allTags.length}</span>
         </button>
         {allTags.length > 0 && (
           <div className="ml-6 space-y-0.5 max-h-32 overflow-y-auto">
@@ -456,41 +456,41 @@ export function DocSidebar({ project }: { project: Project }) {
                 onClick={() => setActiveTag(activeTag === tag ? null : tag)}
                 className={`flex w-full items-center gap-2 rounded-md px-2 py-1 text-xs transition-colors ${
                   activeTag === tag
-                    ? 'bg-fluid-50 text-fluid-700 font-medium'
-                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+                    ? 'bg-fluid-50 text-fluid-700 font-medium dark:bg-fluid-900/30 dark:text-fluid-400'
+                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300'
                 }`}
               >
-                <Hash className="h-3 w-3 shrink-0 opacity-60" />
+                <Hash className="h-3 w-3 shrink-0 opacity-60 dark:text-gray-500" />
                 <span className="truncate flex-1 text-left">{tag.replace(/^#/, '')}</span>
-                <span className="opacity-50">{count}</span>
+                <span className="opacity-50 dark:text-gray-500">{count}</span>
               </button>
             ))}
           </div>
         )}
         <Link
           href={`/dashboard/${project.id}/import`}
-          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
         >
           <Code2 className="h-4 w-4" />
           Import from Code
         </Link>
         <a
           href={`/api/projects/${project.id}/export`}
-          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
         >
           <Download className="h-4 w-4" />
           Export
         </a>
         <Link
           href={`/dashboard/${project.id}/health`}
-          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
         >
           <HeartPulse className="h-4 w-4" />
           Health
         </Link>
         <Link
           href={`/dashboard/${project.id}/settings`}
-          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
         >
           <Settings className="h-4 w-4" />
           Settings

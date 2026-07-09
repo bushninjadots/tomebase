@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
   if (!project || !project.published) return { title: 'Not Found' };
 
   return {
-    title: `${project.name} — Fluid Docs`,
+    title: `${project.name} — TomeBase Docs`,
     description: project.description ?? undefined,
   };
 }
@@ -87,7 +87,7 @@ export default async function PublicLayout({ children, params }: LayoutProps) {
           </Link>
           <div className="flex items-center gap-3">
             <PublicSearchOverlay projectId={projectId} />
-            <span className="text-xs text-gray-400">Powered by Fluid</span>
+            <span className="text-xs text-gray-400">Powered by TomeBase</span>
           </div>
         </div>
       </nav>
