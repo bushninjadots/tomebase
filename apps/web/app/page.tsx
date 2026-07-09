@@ -1,0 +1,1 @@
+export default function Home(){return <main><h1>Fluid</h1><p>Knowledge that flows into action.</p></main>}
