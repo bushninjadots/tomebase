@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme {
+  --color-fluid-50: #f0f7ff;
+  --color-fluid-100: #e0effe;
+  --color-fluid-200: #bae0fd;
+  --color-fluid-300: #7cc8fb;
+  --color-fluid-400: #36aaf5;
+  --color-fluid-500: #0c8ee7;
+  --color-fluid-600: #0070c4;
+  --color-fluid-700: #01599f;
+  --color-fluid-800: #064c83;
+  --color-fluid-900: #0b406d;
+  --color-fluid-950: #072849;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: var(--color-fluid-200);
+  color: var(--color-fluid-900);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #0c8ee7, #7cc8fb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 50%, #f0f7ff 100%);
+}
+
+.hero-glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(12, 142, 231, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
