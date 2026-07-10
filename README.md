@@ -80,15 +80,7 @@ without build steps, separate hosting, or configuration overhead.
 - **Export** — download all pages as `.zip` of Markdown files with YAML
   frontmatter.
 
-### Plans
-
-| Tier       | Members | Domains | Features                               |
-|------------|---------|---------|----------------------------------------|
-| Free       | 3       | —       | Unlimited pages, public hosting, search |
-| Pro        | 15      | Custom  | API keys, OpenAPI import, email support |
-| Enterprise | 100     | White-label | SSO/SAML, audit logs, priority support |
-
-Pricing details at [tomebase.io/pricing](https://tomebase.io/pricing).
+### Team & Administration
 
 ## Quick Start
 

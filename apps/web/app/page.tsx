@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { Container } from '@fluid/ui';
-import { ThemeSelector } from '@/components/theme-selector';
 import {
   ArrowRight, BookOpen, Code2, GitBranch, Search,
   FileText, Users, Zap, Shield,
@@ -99,7 +98,6 @@ export default function Home() {
               <span className="text-lg font-bold tracking-tight dark:text-white">TomeBase</span>
             </Link>
             <div className="flex items-center gap-6">
-              <ThemeSelector />
               <Link href="/pricing" className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors dark:text-gray-400 dark:hover:text-white">Pricing</Link>
               <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors dark:text-gray-400 dark:hover:text-white">Sign in</Link>
               <Link
