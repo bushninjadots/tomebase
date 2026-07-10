@@ -3,9 +3,10 @@ import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@fluid/database';
 import { Container } from '@fluid/ui';
 import Link from 'next/link';
-import { ArrowLeft, Download } from 'lucide-react';
+import { ArrowLeft, Download, Webhook } from 'lucide-react';
 import { ProjectSettingsForm } from './form';
 import { ApiKeyManager } from './api-keys';
+import { WebhookSettings } from '@/components/webhook-settings';
 
 interface PageProps {
   params: Promise<{ project: string }>;
@@ -64,6 +65,10 @@ export default async function ProjectSettingsPage({ params }: PageProps) {
             </div>
 
             <ApiKeyManager projectId={project.id} />
+
+            <div className="rounded-xl border border-gray-100 bg-white p-6">
+              <WebhookSettings projectId={project.id} />
+            </div>
 
             <div className="rounded-xl border border-gray-100 bg-white p-6">
               <h2 className="text-lg font-semibold text-gray-900">Danger Zone</h2>

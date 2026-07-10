@@ -41,11 +41,11 @@
 
 ### Medium Priority
 
+- [x] **Bookmarks** — save pages for quick access from the dashboard
+- [x] **Scheduled publishing** — set future publish/unpublish dates
+- [x] **Webhook notifications** — trigger webhooks on page create/update/publish
 - [ ] **GitHub/GitLab sync** — connect a repository, auto-import and sync `.md` files
-- [ ] **Webhook notifications** — trigger webhooks on page create/update/publish
-- [ ] **Scheduled publishing** — set future publish/unpublish dates
-- [ ] **Bookmarks** — save pages for quick access from the dashboard
-- [ ] **Guided tutorial** — interactive walkthrough for first-time users
+- [x] **Guided tutorial** — interactive walkthrough for first-time users
 
 ### Low Priority
 
@@ -60,6 +60,13 @@
 - [ ] **SOC 2 compliance** — enterprise security certifications
 
 ## Changelog
+
+### 2026-07-10
+- Bookmarks: save pages for quick access from dashboard
+- Scheduled publishing: set future publish/unpublish dates on pages
+- Webhook notifications: configure webhooks for page create/update/publish/delete events
+- Guided tutorial: interactive walkthrough for first-time users
+- Sidebar/editor UI redesign: collapsible creation, template modal, side panel comments
 
 ### 2026-07-10
 - Page comments/discussions with threaded replies

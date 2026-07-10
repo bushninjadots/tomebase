@@ -2,6 +2,7 @@ import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
 import { slugify } from '@fluid/utils';
 import { auth } from '@/lib/auth';
+import { triggerWebhooks } from '@/lib/webhooks';
 
 export async function POST(request: Request) {
   try {
@@ -58,6 +59,12 @@ export async function POST(request: Request) {
         parentId: parentId ?? null,
         order: (maxOrder?.order ?? -1) + 1,
       },
+    });
+
+    triggerWebhooks(projectId, 'page.created', {
+      pageId: page.id,
+      title: page.title,
+      slug: page.slug,
     });
 
     return NextResponse.json(page, { status: 201 });

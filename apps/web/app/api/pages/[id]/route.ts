@@ -1,6 +1,7 @@
 import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
+import { triggerWebhooks } from '@/lib/webhooks';
 
 export async function PATCH(
   request: Request,
@@ -33,6 +34,23 @@ export async function PATCH(
       },
     });
 
+    const wasPublished = page.published;
+    const isNowPublished = updated.published;
+
+    if (!wasPublished && isNowPublished) {
+      triggerWebhooks(page.projectId, 'page.published', {
+        pageId: updated.id,
+        title: updated.title,
+        slug: updated.slug,
+      });
+    } else {
+      triggerWebhooks(page.projectId, 'page.updated', {
+        pageId: updated.id,
+        title: updated.title,
+        slug: updated.slug,
+      });
+    }
+
     return NextResponse.json(updated);
   } catch (error) {
     console.error('Failed to update page:', error);
@@ -63,6 +81,13 @@ export async function DELETE(
     }
 
     await prisma.docPage.delete({ where: { id } });
+
+    triggerWebhooks(page.projectId, 'page.deleted', {
+      pageId: page.id,
+      title: page.title,
+      slug: page.slug,
+    });
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Failed to delete page:', error);

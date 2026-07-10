@@ -21,6 +21,7 @@ model User {
   sessions  Session[]
   accounts  Account[]
   comments  Comment[]
+  bookmarks Bookmark[]
 }
 
 model Account {
@@ -74,6 +75,7 @@ model Project {
   pages     DocPage[]
   chatMessages ChatMessage[]
   apiKeys   ApiKey[]
+  webhooks  Webhook[]
   teamId    String?
   team      Team?      @relation(fields: [teamId], references: [id])
 }
@@ -95,8 +97,10 @@ model DocPage {
   project   Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
   parent    DocPage?        @relation("DocPageHierarchy", fields: [parentId], references: [id])
   children  DocPage[]       @relation("DocPageHierarchy")
-  snapshots PageSnapshot[]
-  comments  Comment[]
+  snapshots        PageSnapshot[]
+  comments         Comment[]
+  bookmarks        Bookmark[]
+  scheduledPublish ScheduledPublish?
 }
 
 model PageSnapshot {
@@ -170,6 +174,48 @@ model Invitation {
   createdAt DateTime @default(now())
 
   team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  pageId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  page DocPage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  user User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, userId])
+  @@index([userId, createdAt])
+}
+
+model Webhook {
+  id        String   @id @default(cuid())
+  url       String
+  secret    String?
+  events    String   @default("page.created,page.updated,page.published")
+  projectId String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model ScheduledPublish {
+  id          String   @id @default(cuid())
+  pageId      String
+  publishAt   DateTime
+  unpublishAt DateTime?
+  createdAt   DateTime @default(now())
+
+  page DocPage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId])
+  @@index([publishAt])
+  @@index([unpublishAt])
 }
 
 model Comment {

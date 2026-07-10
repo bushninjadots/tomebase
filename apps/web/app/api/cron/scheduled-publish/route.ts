@@ -1,0 +1,60 @@
+import { NextResponse } from 'next/server';
+import { prisma } from '@fluid/database';
+import { triggerWebhooks } from '@/lib/webhooks';
+
+export async function GET() {
+  try {
+    // Find pages that should be published now
+    const toPublish = await prisma.scheduledPublish.findMany({
+      where: {
+        publishAt: { lte: new Date() },
+      },
+      include: { page: true },
+    });
+
+    for (const schedule of toPublish) {
+      await prisma.docPage.update({
+        where: { id: schedule.pageId },
+        data: { published: true },
+      });
+
+      await triggerWebhooks(schedule.page.projectId, 'page.published', {
+        pageId: schedule.page.id,
+        title: schedule.page.title,
+        slug: schedule.page.slug,
+      });
+
+      await prisma.scheduledPublish.delete({ where: { id: schedule.id } });
+    }
+
+    // Find pages that should be unpublished now
+    const toUnpublish = await prisma.scheduledPublish.findMany({
+      where: {
+        unpublishAt: { not: null, lte: new Date() },
+      },
+      include: { page: true },
+    });
+
+    for (const schedule of toUnpublish) {
+      await prisma.docPage.update({
+        where: { id: schedule.pageId },
+        data: { published: false },
+      });
+
+      await triggerWebhooks(schedule.page.projectId, 'page.unpublished', {
+        pageId: schedule.page.id,
+        title: schedule.page.title,
+        slug: schedule.page.slug,
+      });
+
+      await prisma.scheduledPublish.delete({ where: { id: schedule.id } });
+    }
+
+    return NextResponse.json({
+      published: toPublish.length,
+      unpublished: toUnpublish.length,
+    });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to process scheduled publishes' }, { status: 500 });
+  }
+}

@@ -11,6 +11,8 @@ import { findBacklinks, extractTags } from '@/lib/wiki';
 import { extractDescription, extractHeadings } from '@/lib/content';
 import { WikiAutocomplete } from '@/components/wiki-autocomplete';
 import { Comments } from '@/components/comments';
+import { BookmarkButton } from '@/components/bookmark-button';
+import { SchedulePublish } from '@/components/schedule-publish';
 import Link from 'next/link';
 
 interface Page {
@@ -550,7 +552,7 @@ export function DocEditor({ project }: { project: Project }) {
                   <MoreHorizontal className="h-4 w-4" />
                 </button>
                 {showActions && (
-                  <div className="absolute right-0 top-full mt-1 z-50 w-48 rounded-xl border border-gray-200 bg-white shadow-xl py-1 dark:border-gray-700 dark:bg-gray-900">
+                  <div className="absolute right-0 top-full mt-1 z-50 w-56 rounded-xl border border-gray-200 bg-white shadow-xl py-1 dark:border-gray-700 dark:bg-gray-900">
                     <button
                       onClick={handleCopyLink}
                       className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors dark:text-gray-300 dark:hover:bg-gray-800"
@@ -566,6 +568,10 @@ export function DocEditor({ project }: { project: Project }) {
                       <Layers className="h-4 w-4 text-gray-400" />
                       Duplicate Page
                     </button>
+                    <div className="border-t border-gray-100 my-1 dark:border-gray-800" />
+                    <div className="px-4 py-2">
+                      <SchedulePublish pageId={selectedPage!.id} />
+                    </div>
                     <div className="border-t border-gray-100 my-1 dark:border-gray-800" />
                     <button
                       onClick={() => { setShowDeleteConfirm(true); setShowActions(false); }}
@@ -590,6 +596,8 @@ export function DocEditor({ project }: { project: Project }) {
               >
                 <MessageSquare className="h-4 w-4" />
               </button>
+
+              {selectedPage && <BookmarkButton pageId={selectedPage.id} />}
 
               {autoSaveStatus === 'saving' && (
                 <span className="flex items-center gap-1 text-xs text-gray-400">

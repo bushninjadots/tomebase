@@ -2,12 +2,13 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { prisma } from '@fluid/database';
 import Link from 'next/link';
-import { Plus, BookOpen, Users, FileText, Globe, Clock, ArrowRight, Zap, Eye } from 'lucide-react';
+import { Plus, BookOpen, Users, FileText, Globe, Clock, ArrowRight, Zap, Eye, Bookmark } from 'lucide-react';
 import { getOrCreatePersonalTeam } from '@/lib/team';
 import { TIERS } from '@/lib/limits';
 import { ProjectCard } from '@/components/project-card';
 import { UsageMeter } from '@/components/usage-meter';
 import { OnboardingChecklist } from '@/components/onboarding-checklist';
+import { GuidedTutorial } from '@/components/guided-tutorial';
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -46,6 +47,26 @@ export default async function DashboardPage() {
     take: 5,
   });
 
+  const bookmarks = await prisma.bookmark.findMany({
+    where: { userId: session.user.id },
+    include: {
+      page: {
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          description: true,
+          projectId: true,
+          updatedAt: true,
+          project: { select: { name: true } },
+        },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+    take: 6,
+  });
+  const bookmarkedPages = bookmarks.map((b) => b.page);
+
   const stats = [
     { label: 'Total Pages', value: totalPages, icon: FileText, color: 'text-blue-600 bg-blue-50' },
     { label: 'Published', value: publishedCount, icon: Globe, color: 'text-green-600 bg-green-50' },
@@ -56,6 +77,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      <GuidedTutorial projectId={projects[0]?.id} />
       <nav className="border-b border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="flex h-16 items-center justify-between">
@@ -181,6 +203,34 @@ export default async function DashboardPage() {
                     </p>
                   </div>
                   <ArrowRight className="ml-3 h-4 w-4 shrink-0 text-gray-300 group-hover:text-fluid-500 transition-colors dark:text-gray-600 dark:group-hover:text-fluid-400" />
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {bookmarkedPages.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <Bookmark className="h-4 w-4 text-amber-500" />
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Bookmarked</h2>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {bookmarkedPages.map((page) => (
+                <Link
+                  key={page.id}
+                  href={`/docs/${page.projectId}/${page.slug}`}
+                  className="group flex items-center justify-between rounded-xl border border-amber-100 bg-amber-50/50 px-4 py-3 transition-all hover:border-amber-200 hover:shadow-sm dark:border-amber-900/30 dark:bg-amber-900/10 dark:hover:border-amber-800/50"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-gray-900 group-hover:text-amber-700 transition-colors dark:text-white dark:group-hover:text-amber-400">
+                      {page.title}
+                    </p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">
+                      {page.project.name}
+                    </p>
+                  </div>
+                  <ArrowRight className="ml-3 h-4 w-4 shrink-0 text-amber-300 group-hover:text-amber-500 transition-colors dark:text-amber-700 dark:group-hover:text-amber-500" />
                 </Link>
               ))}
             </div>
