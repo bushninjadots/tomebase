@@ -38,7 +38,7 @@ export default async function ProjectSettingsPage({ params }: PageProps) {
         </div>
 
         <div className="mx-auto max-w-2xl">
-          <h1 className="text-2xl font-bold text-gray-900">Project Settings</h1>
+          <h1 className="text-2xl font-bold text-theme-main">Project Settings</h1>
           <p className="mt-1 text-sm text-gray-500">
             Manage your project visibility, domain, and details.
           </p>
@@ -47,7 +47,7 @@ export default async function ProjectSettingsPage({ params }: PageProps) {
             <ProjectSettingsForm project={project} />
 
             <div className="rounded-xl border border-gray-100 bg-white p-6">
-              <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-theme-main flex items-center gap-2">
                 <Download className="h-4 w-4 text-gray-400" />
                 Export
               </h2>
@@ -76,7 +76,7 @@ export default async function ProjectSettingsPage({ params }: PageProps) {
             </div>
 
             <div className="rounded-xl border border-gray-100 bg-white p-6">
-              <h2 className="text-lg font-semibold text-gray-900">Danger Zone</h2>
+              <h2 className="text-lg font-semibold text-theme-main">Danger Zone</h2>
               <p className="mt-1 text-sm text-gray-500">
                 Irreversible actions for this project.
               </p>

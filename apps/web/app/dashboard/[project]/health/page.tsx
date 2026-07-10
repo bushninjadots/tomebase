@@ -154,7 +154,7 @@ export default async function ProjectHealthPage({ params }: PageProps) {
 
         <div className="mx-auto max-w-4xl">
           <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-2xl font-bold text-gray-900">Documentation Health</h1>
+            <h1 className="text-2xl font-bold text-theme-main">Documentation Health</h1>
             <span className={`flex items-center gap-1 rounded-full px-3 py-0.5 text-xs font-medium ${getHealthColor(healthScore)}`}>
               {healthScore >= 80 ? (
                 <CheckCircle className="h-3 w-3" />
@@ -176,7 +176,7 @@ export default async function ProjectHealthPage({ params }: PageProps) {
                 <FileText className="h-4 w-4" />
                 Total Pages
               </div>
-              <div className="mt-2 text-2xl font-bold text-gray-900">{pages.length}</div>
+              <div className="mt-2 text-2xl font-bold text-theme-main">{pages.length}</div>
             </div>
             <div className="rounded-lg border border-gray-100 bg-white p-4">
               <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -206,7 +206,7 @@ export default async function ProjectHealthPage({ params }: PageProps) {
 
           {brokenLinks.length > 0 && (
             <section className="mt-8">
-              <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+              <h2 className="flex items-center gap-2 text-lg font-semibold text-theme-main">
                 <AlertTriangle className="h-4 w-4 text-amber-500" />
                 Broken Wiki Links
                 <span className="ml-auto text-sm font-normal text-gray-400">{brokenLinks.length}</span>
@@ -217,7 +217,7 @@ export default async function ProjectHealthPage({ params }: PageProps) {
               <div className="space-y-2">
                 {brokenLinks.map((bl, i) => (
                   <div key={i} className="rounded-lg border border-amber-100 bg-amber-50/50 px-4 py-3 text-sm">
-                    <span className="font-medium text-gray-900">{bl.linkText}</span>
+                    <span className="font-medium text-theme-main">{bl.linkText}</span>
                     <span className="text-gray-400 mx-1.5">in</span>
                     <Link href={`/docs/${project.id}/${bl.sourceId}`} className="text-fluid-600 hover:text-fluid-700 underline underline-offset-2">
                       {bl.sourceTitle}
@@ -230,7 +230,7 @@ export default async function ProjectHealthPage({ params }: PageProps) {
 
           {stalePages.length > 0 && (
             <section className="mt-8">
-              <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+              <h2 className="flex items-center gap-2 text-lg font-semibold text-theme-main">
                 <Clock className="h-4 w-4 text-amber-500" />
                 Stale Pages
                 <span className="ml-auto text-sm font-normal text-gray-400">{stalePages.length}</span>
@@ -242,7 +242,7 @@ export default async function ProjectHealthPage({ params }: PageProps) {
                 {stalePages.slice(0, 10).map((p) => (
                   <div key={p.id} className="flex items-center justify-between rounded-lg border border-gray-100 bg-white px-4 py-3 text-sm">
                     <div className="flex items-center gap-3">
-                      <span className="font-medium text-gray-900">{p.title}</span>
+                      <span className="font-medium text-theme-main">{p.title}</span>
                       <span className="text-xs text-gray-400">
                         {p.daysSinceUpdate} days ago
                       </span>
@@ -269,7 +269,7 @@ export default async function ProjectHealthPage({ params }: PageProps) {
 
           {lowViewPages.length > 0 && (
             <section className="mt-8">
-              <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+              <h2 className="flex items-center gap-2 text-lg font-semibold text-theme-main">
                 <Eye className="h-4 w-4 text-blue-500" />
                 Low Engagement Pages
                 <span className="ml-auto text-sm font-normal text-gray-400">{lowViewPages.length}</span>
@@ -281,7 +281,7 @@ export default async function ProjectHealthPage({ params }: PageProps) {
                 {lowViewPages.slice(0, 10).map((p) => (
                   <div key={p.id} className="flex items-center justify-between rounded-lg border border-gray-100 bg-white px-4 py-3 text-sm">
                     <div className="flex items-center gap-3">
-                      <span className="font-medium text-gray-900">{p.title}</span>
+                      <span className="font-medium text-theme-main">{p.title}</span>
                       <span className="text-xs text-gray-400">
                         {p.viewCount} view{p.viewCount === 1 ? '' : 's'}
                       </span>
@@ -310,7 +310,7 @@ export default async function ProjectHealthPage({ params }: PageProps) {
 
           {orphans.length > 0 && (
             <section className="mt-8">
-              <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+              <h2 className="flex items-center gap-2 text-lg font-semibold text-theme-main">
                 <Unlink className="h-4 w-4 text-blue-500" />
                 Orphan Pages
                 <span className="ml-auto text-sm font-normal text-gray-400">{orphans.length}</span>
@@ -322,7 +322,7 @@ export default async function ProjectHealthPage({ params }: PageProps) {
                 {orphans.map((o) => (
                   <div key={o.id} className="flex items-center justify-between rounded-lg border border-gray-100 bg-white px-4 py-3 text-sm">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-gray-900">{o.title}</span>
+                      <span className="font-medium text-theme-main">{o.title}</span>
                       {!o.published && (
                         <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-500">draft</span>
                       )}
@@ -341,7 +341,7 @@ export default async function ProjectHealthPage({ params }: PageProps) {
 
           {emptyPages.length > 0 && (
             <section className="mt-8">
-              <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+              <h2 className="flex items-center gap-2 text-lg font-semibold text-theme-main">
                 <FileText className="h-4 w-4 text-gray-400" />
                 Empty Pages
                 <span className="ml-auto text-sm font-normal text-gray-400">{emptyPages.length}</span>
@@ -353,7 +353,7 @@ export default async function ProjectHealthPage({ params }: PageProps) {
                 {emptyPages.map((e) => (
                   <div key={e.id} className="flex items-center justify-between rounded-lg border border-gray-100 bg-white px-4 py-3 text-sm">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-gray-900">{e.title}</span>
+                      <span className="font-medium text-theme-main">{e.title}</span>
                       {!e.published && (
                         <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-500">draft</span>
                       )}
@@ -372,7 +372,7 @@ export default async function ProjectHealthPage({ params }: PageProps) {
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-50">
                 <CheckCircle className="h-8 w-8 text-green-500" />
               </div>
-              <h2 className="mt-4 text-lg font-semibold text-gray-900">Documentation is healthy!</h2>
+              <h2 className="mt-4 text-lg font-semibold text-theme-main">Documentation is healthy!</h2>
               <p className="mt-1 text-sm text-gray-500">
                 All pages have content, links resolve, and engagement is good.
               </p>

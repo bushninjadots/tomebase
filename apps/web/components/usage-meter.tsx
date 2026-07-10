@@ -26,12 +26,12 @@ function Bar({
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between text-xs">
-        <span className="text-gray-500 dark:text-gray-400">{label}</span>
-        <span className={isAtLimit ? 'text-red-600 font-medium' : isNearLimit ? 'text-amber-600' : 'text-gray-500 dark:text-gray-400'}>
+        <span className="text-theme-subtle">{label}</span>
+        <span className={isAtLimit ? 'text-red-600 font-medium' : isNearLimit ? 'text-amber-600' : 'text-theme-subtle'}>
           {current}/{limit}
         </span>
       </div>
-      <div className="h-1.5 w-full rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
+      <div className="h-1.5 w-full rounded-full bg-theme-hover overflow-hidden">
         <div
           className={`h-full rounded-full transition-all ${color}`}
           style={{ width: `${pct}%` }}
@@ -46,13 +46,13 @@ export function UsageMeter({ tier, projects, pages, members }: UsageMeterProps) 
   const isEnterprise = tier === 'enterprise';
 
   return (
-    <div className="rounded-xl border border-gray-100 bg-white p-5 space-y-4 dark:border-gray-800 dark:bg-gray-900">
+    <div className="rounded-xl border border-theme-border bg-theme-card p-5 space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-900 capitalize dark:text-white">{tier} plan</h3>
+        <h3 className="text-sm font-semibold text-theme-main capitalize">{tier} plan</h3>
         {!isEnterprise && (
           <a
             href="/pricing"
-            className="text-xs font-medium text-fluid-600 hover:text-fluid-700 transition-colors dark:text-fluid-400 dark:hover:text-fluid-300"
+            className="text-xs font-medium text-theme-accent hover:text-theme-accent-hover transition-colors"
           >
             Upgrade
           </a>
@@ -79,7 +79,7 @@ export function UsageMeter({ tier, projects, pages, members }: UsageMeterProps) 
         />
       </div>
       {!isEnterprise && tierConfig.customDomain && (
-        <p className="text-xs text-gray-400 dark:text-gray-500">Custom domains included</p>
+        <p className="text-xs text-theme-muted">Custom domains included</p>
       )}
     </div>
   );

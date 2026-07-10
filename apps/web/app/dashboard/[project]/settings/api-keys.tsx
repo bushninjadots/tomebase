@@ -76,7 +76,7 @@ export function ApiKeyManager({ projectId }: { projectId: string }) {
     <div className="rounded-xl border border-gray-100 bg-white p-6">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">API Keys</h2>
+          <h2 className="text-lg font-semibold text-theme-main">API Keys</h2>
           <p className="mt-1 text-sm text-gray-500">
             Keys allow programmatic access to your documentation.
           </p>
@@ -101,7 +101,7 @@ export function ApiKeyManager({ projectId }: { projectId: string }) {
               Dismiss
             </button>
           </div>
-          <div className="flex items-center gap-2 rounded-lg bg-white px-3 py-2 font-mono text-sm text-gray-900 border border-fluid-200">
+          <div className="flex items-center gap-2 rounded-lg bg-white px-3 py-2 font-mono text-sm text-theme-main border border-fluid-200">
             <code className="flex-1 break-all">{newKeyValue}</code>
             <button
               onClick={() => copyKey(newKeyValue)}
@@ -171,7 +171,7 @@ export function ApiKeyManager({ projectId }: { projectId: string }) {
               className="flex items-center justify-between rounded-lg border border-gray-100 px-4 py-3"
             >
               <div>
-                <p className="text-sm font-medium text-gray-900">{apiKey.name}</p>
+                <p className="text-sm font-medium text-theme-main">{apiKey.name}</p>
                 <p className="text-xs text-gray-400">
                   <code className="text-fluid-600 mr-2">{apiKey.prefix}...</code>
                   Created {new Date(apiKey.createdAt).toLocaleDateString()}

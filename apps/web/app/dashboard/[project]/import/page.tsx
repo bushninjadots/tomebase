@@ -34,7 +34,7 @@ export default async function ImportPage({ params }: PageProps) {
         </div>
 
         <div className="mx-auto max-w-3xl">
-          <h1 className="text-2xl font-bold text-gray-900">Import</h1>
+          <h1 className="text-2xl font-bold text-theme-main">Import</h1>
           <p className="mt-1 text-sm text-gray-500">
             Auto-generate documentation from source code or OpenAPI specs.
           </p>

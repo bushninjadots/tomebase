@@ -90,7 +90,7 @@ export function CreateProjectForm({ userId }: { userId: string }) {
                   <Icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className={`text-sm font-medium ${isSelected ? 'text-fluid-700' : 'text-gray-900'}`}>
+                  <p className={`text-sm font-medium ${isSelected ? 'text-fluid-700' : 'text-theme-main'}`}>
                     {tpl.name}
                   </p>
                   <p className="mt-0.5 text-xs text-gray-500">{tpl.description}</p>

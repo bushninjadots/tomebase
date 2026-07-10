@@ -58,7 +58,7 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
   return (
     <form onSubmit={handleSave} className="space-y-6">
       <div className="rounded-xl border border-gray-100 bg-white p-6">
-        <h2 className="text-lg font-semibold text-gray-900">General</h2>
+        <h2 className="text-lg font-semibold text-theme-main">General</h2>
         <div className="mt-4 space-y-4">
           <Input
             id="name"
@@ -94,7 +94,7 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
       <div className="rounded-xl border border-gray-100 bg-white p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Publish</h2>
+            <h2 className="text-lg font-semibold text-theme-main">Publish</h2>
             <p className="mt-1 text-sm text-gray-500">
               Make your documentation accessible to anyone with the link.
             </p>

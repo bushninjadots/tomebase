@@ -84,7 +84,7 @@ export function TeamSettings({
     <div className="space-y-8">
       {!team.personal && (
         <div className="rounded-xl border border-gray-100 bg-white p-6">
-          <h2 className="text-lg font-semibold text-gray-900">Team Name</h2>
+          <h2 className="text-lg font-semibold text-theme-main">Team Name</h2>
           <form onSubmit={handleSave} className="mt-4 space-y-4">
             <Input
               id="team-name"
@@ -109,7 +109,7 @@ export function TeamSettings({
       )}
 
       <div className="rounded-xl border border-gray-100 bg-white p-6">
-        <h2 className="text-lg font-semibold text-gray-900">Members</h2>
+        <h2 className="text-lg font-semibold text-theme-main">Members</h2>
         <p className="mt-1 text-sm text-gray-500">
           {team.members.length} member{team.members.length !== 1 ? 's' : ''}
         </p>
@@ -123,7 +123,7 @@ export function TeamSettings({
                 {member.user.name?.charAt(0)?.toUpperCase() ?? '?'}
               </div>
               <div className="flex-1">
-                <div className="text-sm font-medium text-gray-900">
+                <div className="text-sm font-medium text-theme-main">
                   {member.user.name ?? 'Unknown'}
                   {member.user.id === currentUserId && (
                     <span className="ml-2 text-xs text-gray-400">(you)</span>
@@ -143,7 +143,7 @@ export function TeamSettings({
 
       {isAdmin && (
         <div className="rounded-xl border border-gray-100 bg-white p-6">
-          <h2 className="text-lg font-semibold text-gray-900">Invite Members</h2>
+          <h2 className="text-lg font-semibold text-theme-main">Invite Members</h2>
           <p className="mt-1 text-sm text-gray-500">
             Create an invite link to share with your team. Links expire after 7 days. Your current plan supports up to {team._count.projects > 0 ? 'a certain number of' : '3'} members — the invite will be rejected if the limit is reached.
           </p>
@@ -199,7 +199,7 @@ export function TeamSettings({
       )}
 
       <div className="rounded-xl border border-gray-100 bg-white p-6">
-        <h2 className="text-lg font-semibold text-gray-900">Projects</h2>
+        <h2 className="text-lg font-semibold text-theme-main">Projects</h2>
         <p className="mt-1 text-sm text-gray-500">
           {team._count.projects} project{team._count.projects !== 1 ? 's' : ''} in this team.
           All team members can view and edit team projects.

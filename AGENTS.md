@@ -34,3 +34,19 @@ npm run db:generate # Regenerate Prisma client
 - `apps/web/lib/auth.ts` — Auth configuration
 - `apps/web/app/` — All pages and API routes
 - `packages/ui/src/` — UI component library
+- `apps/web/app/globals.css` — Theme CSS variables for 5 themes (light/dark/gruvbox/dracula/nord) + Tailwind `@theme` semantic aliases
+- `apps/web/components/theme-provider.tsx` — Multi-theme context with `data-theme` / `.dark` attribute management
+- `apps/web/components/theme-selector.tsx` — Dropdown theme picker (replaces old `theme-toggle.tsx`)
+
+## Theme Migration (Remaining Work)
+Most visible chrome is themed (dashboard page, editor wrapper, sidebar, graph, notifications, search, welcome help, usage meter). Files still with hardcoded Tailwind colors:
+- `apps/web/app/dashboard/[project]/health/page.tsx` — many `text-gray-*`, `bg-amber-*`, `bg-gray-*` throughout
+- `apps/web/app/dashboard/[project]/import/` — breadcrumbs use `text-gray-*`
+- `apps/web/app/dashboard/[project]/settings/` — breadcrumbs, form borders/buttons use `text-gray-*`, `border-gray-*`
+- `apps/web/app/dashboard/new/` — `text-gray-*`
+- `apps/web/app/dashboard/settings/` — `text-gray-*`
+- `apps/web/components/project-card.tsx` — may still use hardcoded colors
+- `apps/web/components/onboarding-checklist.tsx` — may still use hardcoded colors
+- `apps/web/components/guided-tutorial.tsx` — may still use hardcoded colors
+
+These are lower-priority because they're inside individual content areas (not chrome chrome). Convert to theme variables when editing those files next.

@@ -115,7 +115,7 @@ function PageRow({
               {nodeTags.slice(0, 2).map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-gray-800 dark:text-gray-400"
+                  className="inline-flex items-center rounded-full bg-theme-hover px-1.5 py-0.5 text-[10px] font-medium text-theme-subtle"
                 >
                   {tag}
                 </span>
@@ -130,35 +130,35 @@ function PageRow({
         <div className="hidden items-center gap-0.5 group-hover:flex">
           <button
             onClick={() => onMove(node.id, 'up')}
-            className="rounded p-0.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200 dark:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-400 transition-colors"
+            className="rounded p-0.5 text-theme-muted hover:text-theme-subtle hover:bg-theme-hover transition-colors"
             title="Move up"
           >
             <ArrowUp className="h-3 w-3" />
           </button>
           <button
             onClick={() => onMove(node.id, 'down')}
-            className="rounded p-0.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200 dark:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-400 transition-colors"
+            className="rounded p-0.5 text-theme-muted hover:text-theme-subtle hover:bg-theme-hover transition-colors"
             title="Move down"
           >
             <ArrowDown className="h-3 w-3" />
           </button>
           <button
             onClick={() => onIndent(node.id, 'in', node.parentId, [])}
-            className="rounded p-0.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200 dark:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-400 transition-colors"
+            className="rounded p-0.5 text-theme-muted hover:text-theme-subtle hover:bg-theme-hover transition-colors"
             title="Indent (make child of previous)"
           >
             <IndentIncrease className="h-3 w-3" />
           </button>
           <button
             onClick={() => onIndent(node.id, 'out', node.parentId, [])}
-            className="rounded p-0.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200 dark:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-400 transition-colors"
+            className="rounded p-0.5 text-theme-muted hover:text-theme-subtle hover:bg-theme-hover transition-colors"
             title="Outdent (move up a level)"
           >
             <IndentDecrease className="h-3 w-3" />
           </button>
           <button
             onClick={() => onDelete(node.id)}
-            className="rounded p-0.5 text-red-400 hover:text-red-600 hover:bg-red-50 dark:text-red-500 dark:hover:text-red-400 dark:hover:bg-red-900/30 transition-colors"
+            className="rounded p-0.5 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-900/30 transition-colors"
             title="Delete"
           >
             <Trash2 className="h-3 w-3" />
@@ -197,17 +197,17 @@ function TemplateModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-gray-700 dark:bg-gray-900">
+      <div className="w-full max-w-lg rounded-2xl border border-theme-border bg-theme-page p-6 shadow-2xl">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400">
               <Sparkles className="h-4 w-4" />
             </div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Choose a template</h2>
+            <h2 className="text-lg font-semibold text-theme-main">Choose a template</h2>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
+            className="rounded-lg p-1.5 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
@@ -376,11 +376,11 @@ export function DocSidebar({ project }: { project: Project }) {
   }
 
   return (
-    <aside className="flex w-72 flex-col border-r border-gray-100 bg-gray-50/50 dark:border-gray-800 dark:bg-gray-900">
-      <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3 dark:border-gray-800">
+    <aside className="flex w-72 flex-col border-r border-theme-border bg-theme-card/50">
+      <div className="flex items-center justify-between border-b border-theme-border px-4 py-3">
         <Link
           href="/dashboard"
-          className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white"
+          className="flex items-center gap-2 text-sm font-semibold text-theme-main"
         >
           <svg viewBox="0 0 32 32" fill="none" className="h-5 w-5">
             <rect width="32" height="32" rx="8" fill="#0c8ee7" />
@@ -555,7 +555,7 @@ export function DocSidebar({ project }: { project: Project }) {
       <div className="border-t border-gray-100 p-3 space-y-1 dark:border-gray-800">
         <Link
           href="/dashboard"
-          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Dashboard
@@ -563,28 +563,28 @@ export function DocSidebar({ project }: { project: Project }) {
         <GraphButtonWithHealth projectId={project.id} pages={project.pages} />
         <Link
           href={`/dashboard/${project.id}/import`}
-          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
         >
           <Code2 className="h-4 w-4" />
           Import from Code
         </Link>
         <a
           href={`/api/projects/${project.id}/export`}
-          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
         >
           <Download className="h-4 w-4" />
           Export
         </a>
         <Link
           href={`/dashboard/${project.id}/health`}
-          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
         >
           <HeartPulse className="h-4 w-4" />
           Health
         </Link>
         <Link
           href={`/dashboard/${project.id}/settings`}
-          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
         >
           <Settings className="h-4 w-4" />
           Settings

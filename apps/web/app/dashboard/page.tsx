@@ -104,7 +104,7 @@ export default async function DashboardPage() {
               <span className="rounded-full bg-theme-hover px-2.5 py-0.5 text-xs font-medium text-theme-subtle">
                 {memberCount} {memberCount === 1 ? 'member' : 'members'}
               </span>
-              <span className="rounded-full bg-fluid-50 px-2.5 py-0.5 text-xs font-medium text-fluid-700 capitalize dark:bg-fluid-900/30 dark:text-fluid-400">
+              <span className="rounded-full bg-theme-hover px-2.5 py-0.5 text-xs font-medium text-theme-subtle capitalize">
                 {tier}
               </span>
             </div>
@@ -113,7 +113,7 @@ export default async function DashboardPage() {
             {tier === 'free' && (
               <Link
                 href="/pricing"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-fluid-200 px-3 py-1.5 text-sm font-medium text-fluid-700 hover:bg-fluid-50 transition-colors dark:border-fluid-700 dark:text-fluid-400 dark:hover:bg-fluid-900/30"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-theme-border px-3 py-1.5 text-sm font-medium text-theme-subtle hover:bg-theme-hover transition-colors"
               >
                 <Zap className="h-3.5 w-3.5" />
                 Upgrade
@@ -140,7 +140,7 @@ export default async function DashboardPage() {
         <div className="mb-8 grid gap-6 lg:grid-cols-4">
           <div className="lg:col-span-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {stats.map((stat) => (
-            <div key={stat.label} className="rounded-xl border border-theme-border bg-theme-page p-5 border-theme-border bg-theme-page">
+            <div key={stat.label} className="rounded-xl border border-theme-border bg-theme-page p-5">
               <div className="flex items-center gap-3">
                 <div className={`rounded-lg p-2 ${stat.color}`}>
                   <stat.icon className="h-5 w-5" />
@@ -172,10 +172,10 @@ export default async function DashboardPage() {
                 <Link
                   key={page.id}
                   href={`/docs/${page.projectId}/${page.slug}`}
-                  className="group flex items-center justify-between rounded-xl border border-theme-border bg-theme-page px-4 py-3 transition-all hover:border-fluid-200 hover:shadow-sm dark:hover:border-fluid-700"
+                  className="group flex items-center justify-between rounded-xl border border-theme-border bg-theme-page px-4 py-3 transition-all hover:border-theme-accent hover:shadow-sm"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-gray-900 group-hover:text-fluid-600 transition-colors dark:text-white dark:group-hover:text-fluid-400">
+                    <p className="truncate text-sm font-medium text-theme-main group-hover:text-theme-accent transition-colors">
                       {page.title}
                     </p>
                     <p className="text-xs text-theme-muted">
@@ -183,7 +183,7 @@ export default async function DashboardPage() {
                       {page.viewCount > 0 && ` · ${page.viewCount} view${page.viewCount !== 1 ? 's' : ''}`}
                     </p>
                   </div>
-                  <ArrowRight className="ml-3 h-4 w-4 shrink-0 text-theme-border group-hover:text-fluid-500 transition-colors dark:group-hover:text-fluid-400" />
+                  <ArrowRight className="ml-3 h-4 w-4 shrink-0 text-theme-border group-hover:text-theme-accent transition-colors" />
                 </Link>
               ))}
             </div>
@@ -204,7 +204,7 @@ export default async function DashboardPage() {
                   className="group flex items-center justify-between rounded-xl border border-amber-100 bg-amber-50/50 px-4 py-3 transition-all hover:border-amber-200 hover:shadow-sm dark:border-amber-900/30 dark:bg-amber-900/10 dark:hover:border-amber-800/50"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-gray-900 group-hover:text-amber-700 transition-colors dark:text-white dark:group-hover:text-amber-400">
+                    <p className="truncate text-sm font-medium text-theme-main group-hover:text-amber-700 transition-colors dark:group-hover:text-amber-400">
                       {page.title}
                     </p>
                     <p className="text-xs text-theme-muted">
@@ -229,14 +229,14 @@ export default async function DashboardPage() {
                 <Link
                   key={page.id}
                   href={`/docs/${page.projectId}/${page.slug}`}
-                  className="group flex items-center justify-between rounded-xl border border-theme-border bg-theme-page px-4 py-3 transition-all hover:border-fluid-200 hover:shadow-sm dark:hover:border-fluid-700"
+                  className="group flex items-center justify-between rounded-xl border border-theme-border bg-theme-page px-4 py-3 transition-all hover:border-theme-accent hover:shadow-sm"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <span className="shrink-0 flex items-center justify-center w-6 h-6 rounded-md bg-theme-hover text-[11px] font-bold text-theme-subtle">
                       {i + 1}
                     </span>
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-gray-900 group-hover:text-fluid-600 transition-colors dark:text-white dark:group-hover:text-fluid-400">
+                      <p className="truncate text-sm font-medium text-theme-main group-hover:text-theme-accent transition-colors">
                         {page.title}
                       </p>
                       <p className="text-xs text-theme-muted">
@@ -264,7 +264,7 @@ export default async function DashboardPage() {
                 <Link
                   key={comment.id}
                   href={`/docs/${comment.page.projectId}/${comment.page.slug}`}
-                  className="flex items-start gap-3 rounded-xl border border-theme-border bg-theme-page px-4 py-3 transition-all hover:border-fluid-200 hover:shadow-sm dark:hover:border-fluid-700"
+                  className="flex items-start gap-3 rounded-xl border border-theme-border bg-theme-page px-4 py-3 transition-all hover:border-theme-accent hover:shadow-sm"
                 >
                   <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-theme-hover text-xs font-medium text-theme-subtle">
                     {comment.user.name?.charAt(0)?.toUpperCase() ?? '?'}
@@ -289,7 +289,7 @@ export default async function DashboardPage() {
         )}
 
         {projects.length === 0 ? (
-          <div className="rounded-2xl border-2 border-dashed border-theme-border bg-theme-page p-12 text-center border-theme-border bg-theme-page">
+          <div className="rounded-2xl border-2 border-dashed border-theme-border bg-theme-page p-12 text-center">
             <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-fluid-50">
               <BookOpen className="h-8 w-8 text-fluid-600" />
             </div>
@@ -298,22 +298,22 @@ export default async function DashboardPage() {
               Document your APIs, products, and internal tools. Start by creating your first project.
             </p>
             <div className="mt-8 grid gap-4 sm:grid-cols-4 text-left max-w-2xl mx-auto">
-              <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+              <div className="rounded-xl border border-theme-border bg-theme-card p-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2 dark:bg-fluid-700">1</div>
                 <h3 className="text-sm font-medium text-theme-main">Create a Project</h3>
                 <p className="mt-1 text-xs text-theme-subtle">Pick a template or start blank</p>
               </div>
-              <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+              <div className="rounded-xl border border-theme-border bg-theme-card p-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2 dark:bg-fluid-700">2</div>
                 <h3 className="text-sm font-medium text-theme-main">Write or Import</h3>
                 <p className="mt-1 text-xs text-theme-subtle">Use Markdown or import from code</p>
               </div>
-              <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+              <div className="rounded-xl border border-theme-border bg-theme-card p-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2 dark:bg-fluid-700">3</div>
                 <h3 className="text-sm font-medium text-theme-main">Connect Pages</h3>
                 <p className="mt-1 text-xs text-theme-subtle">Use [[wiki links]] and the graph</p>
               </div>
-              <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+              <div className="rounded-xl border border-theme-border bg-theme-card p-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2 dark:bg-fluid-700">4</div>
                 <h3 className="text-sm font-medium text-theme-main">Publish & Share</h3>
                 <p className="mt-1 text-xs text-theme-subtle">Go live with a public link</p>
@@ -321,7 +321,7 @@ export default async function DashboardPage() {
             </div>
             <Link
               href="/dashboard/new"
-              className="mt-8 inline-flex items-center gap-2 rounded-lg bg-gray-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+              className="mt-8 inline-flex items-center gap-2 rounded-lg bg-theme-main px-6 py-2.5 text-sm font-medium text-theme-page hover:opacity-80 transition-opacity"
             >
               <Plus className="h-4 w-4" />
               Create Your First Project
@@ -329,7 +329,7 @@ export default async function DashboardPage() {
           </div>
         ) : (
           <div>
-            <h2 className="text-sm font-semibold text-gray-900 mb-4 dark:text-white">All Projects</h2>
+            <h2 className="text-sm font-semibold text-theme-main mb-4">All Projects</h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {projects.map((project) => (
                 <ProjectCard

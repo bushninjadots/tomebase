@@ -18,7 +18,7 @@ export default async function NewProjectPage() {
           Back to Dashboard
         </Link>
         <div className="mx-auto max-w-lg">
-          <h1 className="text-2xl font-bold text-gray-900">Create Project</h1>
+          <h1 className="text-2xl font-bold text-theme-main">Create Project</h1>
           <p className="mt-1 text-sm text-gray-500">
             Give your documentation project a name and description.
           </p>

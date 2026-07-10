@@ -404,7 +404,7 @@ export function DocEditor({ project }: { project: Project }) {
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-fluid-50 text-fluid-500 dark:bg-fluid-900/30 dark:text-fluid-400">
             <FileText className="h-8 w-8" />
           </div>
-          <h2 className="mt-6 text-xl font-semibold text-gray-900 dark:text-white">Create your first page</h2>
+          <h2 className="mt-6 text-xl font-semibold text-theme-main">Create your first page</h2>
           <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
             Start documenting by creating a page from the sidebar. Use{' '}
             <kbd className="rounded-md border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-xs font-medium text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
@@ -413,25 +413,25 @@ export function DocEditor({ project }: { project: Project }) {
             to search anytime.
           </p>
           <div className="mt-8 grid grid-cols-3 gap-3 text-left">
-            <Link href={`/dashboard/${project.id}/import`} className="rounded-xl border border-gray-100 bg-white p-4 transition-all hover:border-fluid-200 hover:shadow-sm dark:border-gray-800 dark:bg-gray-900">
+            <Link href={`/dashboard/${project.id}/import`} className="rounded-xl border border-theme-border bg-theme-page p-4 transition-all hover:border-fluid-200 hover:shadow-sm">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400">
                 <Code2 className="h-4 w-4" />
               </div>
-              <p className="mt-2 text-xs font-medium text-gray-900 dark:text-white">Import from Code</p>
+              <p className="mt-2 text-xs font-medium text-theme-main">Import from Code</p>
               <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Auto-generate from TS/JS or OpenAPI</p>
             </Link>
-            <div className="rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+            <div className="rounded-xl border border-theme-border bg-theme-page p-4">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400">
                 <Bold className="h-4 w-4" />
               </div>
-              <p className="mt-2 text-xs font-medium text-gray-900 dark:text-white">Rich Markdown</p>
+              <p className="mt-2 text-xs font-medium text-theme-main">Rich Markdown</p>
               <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Bold, italic, code, tables, and more</p>
             </div>
-            <div className="rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+            <div className="rounded-xl border border-theme-border bg-theme-page p-4">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400">
                 <LinkIcon className="h-4 w-4" />
               </div>
-              <p className="mt-2 text-xs font-medium text-gray-900 dark:text-white">Wiki Links</p>
+              <p className="mt-2 text-xs font-medium text-theme-main">Wiki Links</p>
               <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Connect pages with [[double brackets]]</p>
             </div>
           </div>
@@ -449,18 +449,18 @@ export function DocEditor({ project }: { project: Project }) {
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-fluid-100 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400">
               <BookOpen className="h-6 w-6" />
             </div>
-            <h2 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">Welcome back</h2>
+            <h2 className="mt-4 text-lg font-semibold text-theme-main">Welcome back</h2>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               Select a page from the sidebar or create a new one.
             </p>
             <div className="mt-4 flex flex-wrap justify-center gap-2 text-xs text-gray-400">
-              <span className="rounded-lg bg-white px-3 py-1.5 shadow-sm border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+              <span className="rounded-lg bg-theme-page px-3 py-1.5 shadow-sm border border-theme-border">
                 <kbd className="font-medium text-gray-600 dark:text-gray-300">⌘K</kbd> Search
               </span>
-              <span className="rounded-lg bg-white px-3 py-1.5 shadow-sm border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+              <span className="rounded-lg bg-theme-page px-3 py-1.5 shadow-sm border border-theme-border">
                 <kbd className="font-medium text-gray-600 dark:text-gray-300">⌘S</kbd> Save
               </span>
-              <span className="rounded-lg bg-white px-3 py-1.5 shadow-sm border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+              <span className="rounded-lg bg-theme-page px-3 py-1.5 shadow-sm border border-theme-border">
                 <kbd className="font-medium text-gray-600 dark:text-gray-300">⌘⇧P</kbd> Preview
               </span>
             </div>
@@ -474,7 +474,7 @@ export function DocEditor({ project }: { project: Project }) {
                   <button
                     key={page.id}
                     onClick={() => selectPage(page)}
-                    className="flex items-start gap-3 rounded-xl border border-gray-100 bg-white p-4 text-left transition-all hover:border-fluid-200 hover:shadow-sm dark:border-gray-800 dark:bg-gray-900 dark:hover:border-fluid-800"
+                    className="flex items-start gap-3 rounded-xl border border-theme-border bg-theme-page p-4 text-left transition-all hover:border-fluid-200 hover:shadow-sm dark:hover:border-fluid-800"
                   >
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-50 text-gray-400 dark:bg-gray-800 dark:text-gray-500">
                       <FileText className="h-4 w-4" />
@@ -505,7 +505,7 @@ export function DocEditor({ project }: { project: Project }) {
       {/* Main editor area */}
       <div className="flex flex-1 flex-col min-w-0">
         {/* Header */}
-          <div className="border-b border-gray-100 px-4 sm:px-6 py-2 dark:border-gray-800">
+          <div className="border-b border-gray-100 px-4 sm:px-6 py-2 border-theme-border">
             {breadcrumbs.length > 0 && (
               <div className="flex items-center gap-1 text-xs text-gray-400 mb-1 overflow-x-auto">
                 {breadcrumbs.map((crumb) => (
@@ -581,11 +581,11 @@ export function DocEditor({ project }: { project: Project }) {
                         <Layers className="h-4 w-4 text-gray-400" />
                         Duplicate Page
                       </button>
-                      <div className="border-t border-gray-100 my-1 dark:border-gray-800" />
+                      <div className="border-t border-gray-100 my-1 border-theme-border" />
                       <div className="px-4 py-2">
                         <SchedulePublish pageId={selectedPage!.id} />
                       </div>
-                      <div className="border-t border-gray-100 my-1 dark:border-gray-800" />
+                      <div className="border-t border-gray-100 my-1 border-theme-border" />
                       <button
                         onClick={() => { setShowDeleteConfirm(true); setShowActions(false); }}
                         className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors dark:text-red-400 dark:hover:bg-red-900/30"
@@ -670,7 +670,7 @@ export function DocEditor({ project }: { project: Project }) {
 
         {/* Formatting toolbar */}
         {viewMode !== 'preview' && (
-          <div className="flex items-center gap-0.5 overflow-x-auto border-b border-gray-100 px-3 py-1.5 dark:border-gray-800 sm:px-4">
+          <div className="flex items-center gap-0.5 overflow-x-auto border-b border-gray-100 px-3 py-1.5 border-theme-border sm:px-4">
             {formattingActions.map((btn) => (
               <button
                 key={btn.label}
@@ -692,7 +692,7 @@ export function DocEditor({ project }: { project: Project }) {
           {viewMode === 'preview' ? (
             <div className="flex w-full">
               <div className="min-w-0 flex-1 mx-auto max-w-3xl p-4 sm:p-8">
-                <h1 className="mb-6 text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">{title}</h1>
+                <h1 className="mb-6 text-2xl sm:text-3xl font-bold tracking-tight text-theme-main">{title}</h1>
                 {content ? (
                   <Markdown
                     content={content}
@@ -705,8 +705,8 @@ export function DocEditor({ project }: { project: Project }) {
                 )}
               </div>
               {headings.length > 0 && (
-                <aside className="hidden xl:block w-64 shrink-0 border-l border-gray-100 p-4 dark:border-gray-800">
-                  <div className="rounded-xl border border-gray-100 bg-white p-4 sticky top-4 dark:border-gray-800 dark:bg-gray-900">
+                <aside className="hidden xl:block w-64 shrink-0 border-l border-gray-100 p-4 border-theme-border">
+                  <div className="rounded-xl border border-theme-border bg-theme-page p-4 sticky top-4">
                     <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-gray-400 mb-3 dark:text-gray-500">
                       <ListOrdered className="h-3 w-3" />
                       On this page
@@ -755,7 +755,7 @@ export function DocEditor({ project }: { project: Project }) {
               </div>
               <div className="hidden sm:block flex-1 overflow-y-auto">
                 <div className="p-4 sm:p-8">
-                  <h1 className="mb-6 text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">{title}</h1>
+                  <h1 className="mb-6 text-2xl sm:text-3xl font-bold tracking-tight text-theme-main">{title}</h1>
                   {content ? (
                     <Markdown
                       content={content}
@@ -793,7 +793,7 @@ export function DocEditor({ project }: { project: Project }) {
         </div>
 
         {/* Status bar */}
-        <div className="flex items-center justify-between border-t border-gray-100 px-6 py-1.5 text-xs text-gray-400 dark:border-gray-800">
+        <div className="flex items-center justify-between border-t border-gray-100 px-6 py-1.5 text-xs text-gray-400 border-theme-border">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
               <Type className="h-3 w-3" />
@@ -837,11 +837,11 @@ export function DocEditor({ project }: { project: Project }) {
 
       {/* Comments side panel */}
       {showComments && selectedPage && (
-        <div className="w-80 shrink-0 border-l border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900 flex flex-col">
-          <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3 dark:border-gray-800">
+        <div className="w-80 shrink-0 border-l border-theme-border bg-theme-page flex flex-col">
+          <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3 border-theme-border">
             <div className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4 text-fluid-600 dark:text-fluid-400" />
-              <span className="text-sm font-medium text-gray-900 dark:text-white">Discussion</span>
+              <span className="text-sm font-medium text-theme-main">Discussion</span>
             </div>
             <button
               onClick={() => setShowComments(false)}
@@ -868,7 +868,7 @@ export function DocEditor({ project }: { project: Project }) {
                 <AlertTriangle className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Delete page</h3>
+                <h3 className="text-sm font-semibold text-theme-main">Delete page</h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400">This action cannot be undone.</p>
               </div>
             </div>
