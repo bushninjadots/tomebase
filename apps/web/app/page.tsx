@@ -10,8 +10,8 @@ import {
 const stats = [
   { value: 'Free', label: 'No credit card' },
   { value: 'Open Source', label: 'MIT licensed' },
+  { value: '50', label: 'Pages free tier' },
   { value: '3', label: 'Team members free' },
-  { value: '∞', label: 'Unlimited pages' },
 ];
 
 const features = [
