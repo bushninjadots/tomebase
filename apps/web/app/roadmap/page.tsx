@@ -8,7 +8,7 @@ const shipped = [
   { label: 'Markdown editor — split pane, live preview, auto-save' },
   { label: 'Wiki links ([[Page Name]]) with autocomplete' },
   { label: 'Hierarchical page tree with reorder & indent/outdent' },
-  { label: '9 page templates with cross-linking wiki links' },
+  { label: 'Page templates with cross-linking wiki links' },
   { label: 'Full-text search (Cmd+K, title + content, snippets)' },
   { label: 'Force-directed graph view (local/global, drag, zoom)' },
   { label: 'Obsidian-style callout blocks (12 types)' },
@@ -30,44 +30,52 @@ const shipped = [
   { label: 'Onboarding checklist for new users' },
   { label: 'Tier limits (Free/Pro/Enterprise) with usage metering' },
   { label: 'Pricing page with comparison table' },
+  { label: 'GitHub sync (connect repo, import .md files)' },
+  { label: 'Webhook notifications (page create/update/publish)' },
+  { label: 'Scheduled publishing (future dates)' },
+  { label: 'Bookmarks — save pages for quick access' },
+  { label: 'Guided tutorial for first-time users' },
+  { label: 'Page comments & discussions with @mentions' },
+  { label: 'Revision diff — snapshot comparison' },
+  { label: 'Breadcrumb navigation across dashboard' },
 ];
 
 const categories = [
   {
-    title: 'High Priority',
+    title: 'Now',
     icon: Zap,
     color: 'text-amber-600 bg-amber-50 border-amber-100 dark:text-amber-400 dark:bg-amber-950/30 dark:border-amber-900/50',
     items: [
-      'Revision diff — side-by-side snapshot comparison',
-      'Page comments & discussions with @mentions',
-      'Stripe billing integration',
+      'Mobile responsive public docs and editor',
+      'Global search across all projects',
+      'Email notifications for comments, @mentions, and invites',
+      'Project-level export button in settings (done)',
     ],
   },
   {
-    title: 'Medium Priority',
+    title: 'Next',
     icon: Clock,
     color: 'text-blue-600 bg-blue-50 border-blue-100 dark:text-blue-400 dark:bg-blue-950/30 dark:border-blue-900/50',
     items: [
-      'GitHub/GitLab sync (connect repo, auto-import .md)',
-      'Webhook notifications (page create/update/publish)',
-      'Scheduled publishing (future dates)',
-      'Bookmarks — save pages for quick access',
-      'Guided tutorial for first-time users',
+      'Stripe billing integration (paid tiers)',
+      'Welcome email with onboarding flow',
+      'Empty-state templates when creating first project',
+      'Self-hosted deployment guide (Docker)',
+      'Live doc health — real code repo integration',
     ],
   },
   {
-    title: 'Future',
+    title: 'Later',
     icon: Circle,
     color: 'text-gray-600 bg-gray-50 border-gray-100 dark:text-gray-400 dark:bg-gray-900/50 dark:border-gray-800',
     items: [
       'SSO/SAML (enterprise single sign-on)',
       'Audit log for compliance',
       'Read-only sharing links',
-      'Mobile responsive editor',
-      'Self-hosted deployment (Docker + PostgreSQL)',
       'Plugin system (custom blocks, themes)',
       'Community marketplace for templates',
       'Multi-region edge delivery',
+      'AI-powered answers over your docs',
     ],
   },
 ];
@@ -125,11 +133,11 @@ export default function RoadmapPage() {
           {/* Stats */}
           <div className="mx-auto mt-12 grid max-w-2xl grid-cols-3 gap-6 text-center">
             <div className="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">43</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">30</div>
               <div className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">API routes</div>
             </div>
             <div className="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400">27</div>
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">35</div>
               <div className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Features shipped</div>
             </div>
             <div className="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
@@ -189,7 +197,7 @@ export default function RoadmapPage() {
               Open an issue on GitHub to report bugs, request features, or vote on what we build next.
             </p>
             <Link
-              href="https://github.com/anomalyco/fluid/issues"
+              href="https://github.com/bushninjadots/fluid/issues"
               className="mt-6 inline-flex items-center gap-2 rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
             >
               <Github className="h-4 w-4" />
@@ -214,7 +222,7 @@ export default function RoadmapPage() {
               <span className="text-gray-200">·</span>
               <Link href="/roadmap" className="hover:text-gray-900 transition-colors dark:hover:text-white">Roadmap</Link>
               <span className="text-gray-200">·</span>
-              <Link href="https://github.com/anomalyco/fluid" className="hover:text-gray-900 transition-colors dark:hover:text-white">GitHub</Link>
+              <Link href="https://github.com/bushninjadots/fluid" className="hover:text-gray-900 transition-colors dark:hover:text-white">GitHub</Link>
               <span className="text-gray-200">·</span>
               <Link href="/terms" className="hover:text-gray-900 transition-colors dark:hover:text-white">Terms</Link>
               <Link href="/privacy" className="hover:text-gray-900 transition-colors dark:hover:text-white">Privacy</Link>

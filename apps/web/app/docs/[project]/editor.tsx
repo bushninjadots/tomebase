@@ -505,148 +505,145 @@ export function DocEditor({ project }: { project: Project }) {
       {/* Main editor area */}
       <div className="flex flex-1 flex-col min-w-0">
         {/* Header */}
-        <div className="border-b border-gray-100 px-6 py-2 dark:border-gray-800">
-          {breadcrumbs.length > 0 && (
-            <div className="flex items-center gap-1 text-xs text-gray-400 mb-1">
-              {breadcrumbs.map((crumb) => (
-                <span key={crumb.id} className="flex items-center gap-1">
-                  <Link
-                    href={`/docs/${project.id}/${crumb.slug}`}
-                    className="hover:text-gray-600 transition-colors dark:hover:text-gray-300"
-                  >
-                    {crumb.title}
-                  </Link>
-                  <ChevronRight className="h-3 w-3" />
-                </span>
-              ))}
-            </div>
-          )}
-          <div className="flex items-center justify-between">
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="flex-1 bg-transparent text-lg font-semibold text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-gray-500"
-              placeholder="Page title"
-            />
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setViewMode((v) => v === 'edit' ? 'preview' : v === 'preview' ? 'split' : 'edit')}
-                className={`rounded-lg p-2 transition-colors ${
-                  viewMode === 'preview'
-                    ? 'bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400'
-                    : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
-                }`}
-                title={`${viewMode === 'edit' ? 'Preview' : viewMode === 'preview' ? 'Split view' : 'Edit'} (⌘⇧P)`}
-              >
-                {viewMode === 'edit' ? <Eye className="h-4 w-4" /> : viewMode === 'preview' ? <Edit3 className="h-4 w-4" /> : (
-                  <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" stroke="currentColor" strokeWidth="2">
-                    <rect x="2" y="3" width="20" height="18" rx="2" />
-                    <line x1="12" y1="3" x2="12" y2="21" />
-                  </svg>
-                )}
-              </button>
-              {selectedPage && (
-                <GraphModalOpener
-                  projectId={project.id}
-                  pages={pageList}
-                  currentPageId={selectedPage.id}
-                />
-              )}
-              {selectedPage && <HistoryButton pageId={selectedPage.id} />}
-              <ShortcutsModal />
-
-              <div className="relative" ref={actionsRef}>
-                <button
-                  onClick={() => setShowActions((v) => !v)}
-                  className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors dark:hover:bg-gray-800 dark:hover:text-gray-300"
-                  title="Page actions"
-                >
-                  <MoreHorizontal className="h-4 w-4" />
-                </button>
-                {showActions && (
-                  <div className="absolute right-0 top-full mt-1 z-50 w-56 rounded-xl border border-gray-200 bg-white shadow-xl py-1 dark:border-gray-700 dark:bg-gray-900">
-                    <button
-                      onClick={handleCopyLink}
-                      className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors dark:text-gray-300 dark:hover:bg-gray-800"
+          <div className="border-b border-gray-100 px-4 sm:px-6 py-2 dark:border-gray-800">
+            {breadcrumbs.length > 0 && (
+              <div className="flex items-center gap-1 text-xs text-gray-400 mb-1 overflow-x-auto">
+                {breadcrumbs.map((crumb) => (
+                  <span key={crumb.id} className="flex items-center gap-1 shrink-0">
+                    <Link
+                      href={`/docs/${project.id}/${crumb.slug}`}
+                      className="hover:text-gray-600 transition-colors dark:hover:text-gray-300"
                     >
-                      <Copy className="h-4 w-4 text-gray-400" />
-                      Copy Link
-                      {showCopiedTip && <span className="ml-auto text-xs text-green-600">Copied!</span>}
-                    </button>
-                    <button
-                      onClick={handleDuplicatePage}
-                      className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors dark:text-gray-300 dark:hover:bg-gray-800"
-                    >
-                      <Layers className="h-4 w-4 text-gray-400" />
-                      Duplicate Page
-                    </button>
-                    <div className="border-t border-gray-100 my-1 dark:border-gray-800" />
-                    <div className="px-4 py-2">
-                      <SchedulePublish pageId={selectedPage!.id} />
-                    </div>
-                    <div className="border-t border-gray-100 my-1 dark:border-gray-800" />
-                    <button
-                      onClick={() => { setShowDeleteConfirm(true); setShowActions(false); }}
-                      className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors dark:text-red-400 dark:hover:bg-red-900/30"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      Delete Page
-                    </button>
-                  </div>
-                )}
+                      {crumb.title}
+                    </Link>
+                    <ChevronRight className="h-3 w-3" />
+                  </span>
+                ))}
               </div>
+            )}
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full bg-transparent text-lg font-semibold text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-gray-500"
+                placeholder="Page title"
+              />
+              <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0">
+                <button
+                  onClick={() => setViewMode((v) => v === 'edit' ? 'preview' : v === 'preview' ? 'split' : 'edit')}
+                  className={`rounded-lg p-1.5 shrink-0 transition-colors ${
+                    viewMode === 'preview'
+                      ? 'bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400'
+                      : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+                  }`}
+                  title={`${viewMode === 'edit' ? 'Preview' : viewMode === 'preview' ? 'Split view' : 'Edit'} (⌘⇧P)`}
+                >
+                  {viewMode === 'edit' ? <Eye className="h-4 w-4" /> : viewMode === 'preview' ? <Edit3 className="h-4 w-4" /> : (
+                    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" stroke="currentColor" strokeWidth="2">
+                      <rect x="2" y="3" width="20" height="18" rx="2" />
+                      <line x1="12" y1="3" x2="12" y2="21" />
+                    </svg>
+                  )}
+                </button>
+                {selectedPage && (
+                  <GraphModalOpener
+                    projectId={project.id}
+                    pages={pageList}
+                    currentPageId={selectedPage.id}
+                  />
+                )}
+                {selectedPage && <HistoryButton pageId={selectedPage.id} />}
+                <ShortcutsModal />
 
-              {/* Comments toggle */}
-              <button
-                onClick={() => setShowComments(!showComments)}
-                className={`rounded-lg p-2 transition-colors ${
-                  showComments
-                    ? 'bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400'
-                    : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
-                }`}
-                title="Toggle discussion"
-              >
-                <MessageSquare className="h-4 w-4" />
-              </button>
+                <div className="relative shrink-0" ref={actionsRef}>
+                  <button
+                    onClick={() => setShowActions((v) => !v)}
+                    className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                    title="Page actions"
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </button>
+                  {showActions && (
+                    <div className="absolute right-0 top-full mt-1 z-50 w-56 rounded-xl border border-gray-200 bg-white shadow-xl py-1 dark:border-gray-700 dark:bg-gray-900">
+                      <button
+                        onClick={handleCopyLink}
+                        className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors dark:text-gray-300 dark:hover:bg-gray-800"
+                      >
+                        <Copy className="h-4 w-4 text-gray-400" />
+                        Copy Link
+                        {showCopiedTip && <span className="ml-auto text-xs text-green-600">Copied!</span>}
+                      </button>
+                      <button
+                        onClick={handleDuplicatePage}
+                        className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors dark:text-gray-300 dark:hover:bg-gray-800"
+                      >
+                        <Layers className="h-4 w-4 text-gray-400" />
+                        Duplicate Page
+                      </button>
+                      <div className="border-t border-gray-100 my-1 dark:border-gray-800" />
+                      <div className="px-4 py-2">
+                        <SchedulePublish pageId={selectedPage!.id} />
+                      </div>
+                      <div className="border-t border-gray-100 my-1 dark:border-gray-800" />
+                      <button
+                        onClick={() => { setShowDeleteConfirm(true); setShowActions(false); }}
+                        className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors dark:text-red-400 dark:hover:bg-red-900/30"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Delete Page
+                      </button>
+                    </div>
+                  )}
+                </div>
 
-              {selectedPage && <BookmarkButton pageId={selectedPage.id} />}
+                {/* Comments toggle */}
+                <button
+                  onClick={() => setShowComments(!showComments)}
+                  className={`rounded-lg p-1.5 shrink-0 transition-colors ${
+                    showComments
+                      ? 'bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400'
+                      : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+                  }`}
+                  title="Toggle discussion"
+                >
+                  <MessageSquare className="h-4 w-4" />
+                </button>
 
-              {autoSaveStatus === 'saving' && (
-                <span className="flex items-center gap-1 text-xs text-gray-400">
-                  <Cloud className="h-3 w-3 animate-pulse" />
-                  Saving...
-                </span>
-              )}
-              {autoSaveStatus === 'saved' && !dirty && (
-                <span className="flex items-center gap-1 text-xs text-gray-400">
-                  <Cloud className="h-3 w-3" />
-                  Saved
-                </span>
-              )}
-              {autoSaveStatus === 'unsaved' && (
-                <span className="flex items-center gap-1 text-xs text-amber-500">
-                  <CloudOff className="h-3 w-3" />
-                  Unsaved
-                </span>
-              )}
-              {dirty && (
-                <>
-                  <span className="text-xs text-gray-300 dark:text-gray-600">|</span>
+                {selectedPage && <BookmarkButton pageId={selectedPage.id} />}
+
+                {autoSaveStatus === 'saving' && (
+                  <span className="flex items-center gap-1 text-xs text-gray-400 shrink-0">
+                    <Cloud className="h-3 w-3 animate-pulse" />
+                    <span className="hidden sm:inline">Saving...</span>
+                  </span>
+                )}
+                {autoSaveStatus === 'saved' && !dirty && (
+                  <span className="flex items-center gap-1 text-xs text-gray-400 shrink-0">
+                    <Cloud className="h-3 w-3" />
+                    <span className="hidden sm:inline">Saved</span>
+                  </span>
+                )}
+                {autoSaveStatus === 'unsaved' && (
+                  <span className="flex items-center gap-1 text-xs text-amber-500 shrink-0">
+                    <CloudOff className="h-3 w-3" />
+                    <span className="hidden sm:inline">Unsaved</span>
+                  </span>
+                )}
+                {dirty && (
                   <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors disabled:opacity-50 dark:bg-fluid-600 dark:hover:bg-fluid-700"
+                    className="inline-flex items-center gap-1 rounded-lg bg-gray-900 px-2.5 py-1.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors disabled:opacity-50 shrink-0 dark:bg-fluid-600 dark:hover:bg-fluid-700"
                     title="Save (⌘S)"
                   >
                     <Save className="h-4 w-4" />
-                    {saving ? 'Saving...' : 'Save'}
+                    <span className="hidden sm:inline">{saving ? 'Saving...' : 'Save'}</span>
                   </button>
-                </>
-              )}
+                )}
+              </div>
             </div>
           </div>
-        </div>
 
         {/* Draft banner */}
         {draftAvailable && (
@@ -673,12 +670,12 @@ export function DocEditor({ project }: { project: Project }) {
 
         {/* Formatting toolbar */}
         {viewMode !== 'preview' && (
-          <div className="flex items-center gap-0.5 border-b border-gray-100 px-4 py-1.5 dark:border-gray-800">
+          <div className="flex items-center gap-0.5 overflow-x-auto border-b border-gray-100 px-3 py-1.5 dark:border-gray-800 sm:px-4">
             {formattingActions.map((btn) => (
               <button
                 key={btn.label}
                 onClick={btn.action}
-                className="group relative rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                className="group relative shrink-0 rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors dark:hover:bg-gray-800 dark:hover:text-gray-300"
                 title={btn.shortcut ? `${btn.label} (${btn.shortcut})` : btn.label}
               >
                 <btn.icon className="h-3.5 w-3.5" />
@@ -694,8 +691,8 @@ export function DocEditor({ project }: { project: Project }) {
         <div className="flex flex-1 overflow-y-auto">
           {viewMode === 'preview' ? (
             <div className="flex w-full">
-              <div className="min-w-0 flex-1 mx-auto max-w-3xl p-8">
-                <h1 className="mb-6 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">{title}</h1>
+              <div className="min-w-0 flex-1 mx-auto max-w-3xl p-4 sm:p-8">
+                <h1 className="mb-6 text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">{title}</h1>
                 {content ? (
                   <Markdown
                     content={content}
@@ -737,7 +734,7 @@ export function DocEditor({ project }: { project: Project }) {
             </div>
           ) : viewMode === 'split' ? (
             <div className="flex w-full divide-x divide-gray-100 dark:divide-gray-800">
-              <div className="relative flex-1 overflow-y-auto">
+              <div className="relative min-w-0 flex-1 overflow-y-auto">
                 <WikiAutocomplete
                   textareaRef={textareaRef}
                   content={content}
@@ -751,14 +748,14 @@ export function DocEditor({ project }: { project: Project }) {
                   onSelect={saveSelection}
                   onClick={saveSelection}
                   onKeyUp={saveSelection}
-                  className="h-full w-full resize-none bg-transparent p-8 font-mono text-sm leading-relaxed text-gray-800 outline-none placeholder:text-gray-300 dark:text-gray-200 dark:placeholder:text-gray-600"
+                  className="h-full w-full resize-none bg-transparent p-4 sm:p-8 font-mono text-sm leading-relaxed text-gray-800 outline-none placeholder:text-gray-300 dark:text-gray-200 dark:placeholder:text-gray-600"
                   placeholder="Write your documentation in Markdown..."
                   spellCheck={false}
                 />
               </div>
-              <div className="flex-1 overflow-y-auto">
-                <div className="p-8">
-                  <h1 className="mb-6 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">{title}</h1>
+              <div className="hidden sm:block flex-1 overflow-y-auto">
+                <div className="p-4 sm:p-8">
+                  <h1 className="mb-6 text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">{title}</h1>
                   {content ? (
                     <Markdown
                       content={content}

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { PublicSearchOverlay } from '@/components/public-search';
 import { CopyLinkButton } from '@/components/copy-link';
+import { PublicMobileNav } from './mobile-nav';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -78,18 +79,21 @@ export default async function PublicLayout({ children, params }: LayoutProps) {
   return (
     <div className="min-h-screen bg-white">
       <nav className="border-b border-gray-100 bg-white">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
-          <Link href={`/p/${projectId}`} className="flex items-center gap-2">
-            <svg viewBox="0 0 32 32" fill="none" className="h-6 w-6">
-              <rect width="32" height="32" rx="8" fill="#0c8ee7" />
-              <circle cx="16" cy="16" r="4" fill="white" />
-            </svg>
-            <span className="text-sm font-semibold text-gray-900">{project.name}</span>
-          </Link>
-          <div className="flex items-center gap-3">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-2 px-4">
+          <div className="flex items-center gap-2 min-w-0">
+            {pages.length > 0 && <PublicMobileNav pages={pages} projectId={projectId} />}
+            <Link href={`/p/${projectId}`} className="flex items-center gap-2 min-w-0">
+              <svg viewBox="0 0 32 32" fill="none" className="h-6 w-6 shrink-0">
+                <rect width="32" height="32" rx="8" fill="#0c8ee7" />
+                <circle cx="16" cy="16" r="4" fill="white" />
+              </svg>
+              <span className="truncate text-sm font-semibold text-gray-900">{project.name}</span>
+            </Link>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
             <PublicSearchOverlay projectId={projectId} />
             <CopyLinkButton />
-            <span className="text-xs text-gray-400">Powered by TomeBase</span>
+            <span className="hidden text-xs text-gray-400 sm:inline">Powered by TomeBase</span>
           </div>
         </div>
       </nav>
@@ -101,7 +105,7 @@ export default async function PublicLayout({ children, params }: LayoutProps) {
             </nav>
           </aside>
         )}
-        <main className="min-w-0 flex-1">{children}</main>
+        <main className="min-w-0 flex-1 overflow-x-hidden px-4 sm:px-6 lg:px-8">{children}</main>
       </div>
     </div>
   );
