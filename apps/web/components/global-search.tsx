@@ -88,11 +88,11 @@ export function GlobalSearch() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-400 hover:border-gray-300 hover:text-gray-600 transition-colors w-full max-w-sm"
+        className="flex items-center gap-2 rounded-lg border border-theme-border bg-theme-page px-3 py-1.5 text-sm text-theme-muted hover:border-gray-300 hover:text-theme-subtle transition-colors w-full max-w-sm"
       >
         <Search className="h-4 w-4 shrink-0" />
         <span className="flex-1 text-left">Search all projects...</span>
-        <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded-md border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-xs text-gray-400">
+        <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded-md border border-theme-border bg-theme-card px-1.5 py-0.5 text-xs text-theme-muted">
           ⌘K
         </kbd>
       </button>
@@ -100,9 +100,9 @@ export function GlobalSearch() {
       {open && (
         <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]">
           <div className="fixed inset-0 bg-black/30" onClick={() => setOpen(false)} />
-          <div className="relative w-full max-w-lg rounded-xl border border-gray-200 bg-white shadow-2xl">
-            <div className="flex items-center gap-3 border-b border-gray-100 px-4 py-3">
-              <Search className="h-4 w-4 text-gray-400 shrink-0" />
+          <div className="relative w-full max-w-lg rounded-xl border border-theme-border bg-theme-page shadow-2xl">
+            <div className="flex items-center gap-3 border-b border-theme-border px-4 py-3">
+              <Search className="h-4 w-4 text-theme-muted shrink-0" />
               <input
                 ref={inputRef}
                 type="text"
@@ -110,15 +110,15 @@ export function GlobalSearch() {
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Search pages..."
-                className="flex-1 bg-transparent text-sm text-gray-900 outline-none placeholder:text-gray-400"
+                className="flex-1 bg-transparent text-sm text-theme-main outline-none placeholder:text-theme-muted"
                 autoFocus
               />
-              {loading && <span className="text-xs text-gray-400 shrink-0">Searching...</span>}
+              {loading && <span className="text-xs text-theme-muted shrink-0">Searching...</span>}
               <button
                 onClick={() => setOpen(false)}
-                className="rounded-md p-1 text-gray-400 hover:bg-gray-100"
+                className="rounded-md p-1 text-theme-muted hover:bg-theme-hover"
               >
-                <kbd className="text-xs text-gray-400">ESC</kbd>
+                <kbd className="text-xs text-theme-muted">ESC</kbd>
               </button>
             </div>
 
@@ -130,13 +130,13 @@ export function GlobalSearch() {
                     onClick={() => navigate(result)}
                     onMouseEnter={() => setSelectedIdx(i)}
                     className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
-                      i === selectedIdx ? 'bg-gray-100' : 'hover:bg-gray-50'
+                      i === selectedIdx ? 'bg-theme-hover' : 'hover:bg-theme-card'
                     }`}
                   >
-                    <FileText className="h-4 w-4 shrink-0 text-gray-400" />
+                    <FileText className="h-4 w-4 shrink-0 text-theme-muted" />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-gray-900">{result.title}</p>
-                      <p className="truncate text-xs text-gray-400">{result.projectName}</p>
+                      <p className="truncate text-sm font-medium text-theme-main">{result.title}</p>
+                      <p className="truncate text-xs text-theme-muted">{result.projectName}</p>
                     </div>
                     <ArrowRight className="h-4 w-4 shrink-0 text-gray-300" />
                   </button>
@@ -145,7 +145,7 @@ export function GlobalSearch() {
             )}
 
             {query.length >= 2 && results.length === 0 && !loading && (
-              <div className="p-6 text-center text-sm text-gray-400">No pages found.</div>
+              <div className="p-6 text-center text-sm text-theme-muted">No pages found.</div>
             )}
           </div>
         </div>

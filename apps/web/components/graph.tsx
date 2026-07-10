@@ -262,6 +262,7 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
     nodeId: string; startX: number; startY: number;
     nodeStartX: number; nodeStartY: number;
   } | null>(null);
+  const rafRef = useRef<number | null>(null);
 
   const [mode, setMode] = useState<'global' | 'local'>(currentPageId ? 'local' : 'global');
   const [viewMode, setViewMode] = useState<'force' | 'radial' | 'compact'>('force');
@@ -413,23 +414,30 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
     }
     const drag = dragRef.current;
     if (!drag) return;
-    const svg = svgRef.current;
-    if (!svg) return;
-    const rect = svg.getBoundingClientRect();
-    const dx = (e.clientX - rect.left - drag.startX) / zoom;
-    const dy = (e.clientY - rect.top - drag.startY) / zoom;
+    const clientX = e.clientX;
+    const clientY = e.clientY;
     const { nodeId, nodeStartX, nodeStartY } = drag;
-    setDisplayNodes((prev) =>
-      prev.map((n) =>
-        n.id === nodeId ? { ...n, x: nodeStartX + dx, y: nodeStartY + dy } : n,
-      ),
-    );
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      const svg = svgRef.current;
+      if (!svg) return;
+      const rect = svg.getBoundingClientRect();
+      const dx = (clientX - rect.left - drag.startX) / zoom;
+      const dy = (clientY - rect.top - drag.startY) / zoom;
+      setDisplayNodes((prev) =>
+        prev.map((n) =>
+          n.id === nodeId ? { ...n, x: nodeStartX + dx, y: nodeStartY + dy } : n,
+        ),
+      );
+    });
   }
 
   function handlePointerUp() {
     dragRef.current = null;
     setIsDragging(false);
     setPanning(false);
+    if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
   }
 
   function handleSvgPointerDown(e: React.PointerEvent) {
@@ -448,18 +456,18 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
         if (e.target === e.currentTarget && !isDragging && !panning) onClose();
       }}
     >
-      <div className="relative flex flex-col rounded-2xl border border-gray-200 bg-white shadow-2xl w-[880px] max-w-[95vw] max-h-[90vh] overflow-hidden">
+      <div className="relative flex flex-col rounded-2xl border border-theme-border bg-theme-page shadow-2xl w-[880px] max-w-[95vw] max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3 shrink-0">
+        <div className="flex items-center justify-between border-b border-theme-border px-5 py-3 shrink-0">
           <div className="flex items-center gap-3">
             {/* View mode */}
-            <div className="flex rounded-lg border border-gray-200 p-0.5 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
+            <div className="flex rounded-lg border border-theme-border p-0.5 bg-theme-card">
               <button
                 onClick={() => setViewMode('force')}
                 className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                   viewMode === 'force'
-                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600'
-                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                    ? 'bg-theme-page text-theme-main shadow-sm border border-theme-border'
+                    : 'text-theme-subtle hover:text-theme-main'
                 }`}
                 title="Force-directed layout"
               >
@@ -469,8 +477,8 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
                 onClick={() => setViewMode('radial')}
                 className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                   viewMode === 'radial'
-                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600'
-                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                    ? 'bg-theme-page text-theme-main shadow-sm border border-theme-border'
+                    : 'text-theme-subtle hover:text-theme-main'
                 }`}
                 title="Concentric radial layout"
               >
@@ -480,8 +488,8 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
                 onClick={() => setViewMode('compact')}
                 className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                   viewMode === 'compact'
-                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600'
-                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                    ? 'bg-theme-page text-theme-main shadow-sm border border-theme-border'
+                    : 'text-theme-subtle hover:text-theme-main'
                 }`}
                 title="Compact grid layout"
               >
@@ -490,13 +498,13 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
             </div>
 
             {/* Filter: global / local */}
-            <div className="flex rounded-lg border border-gray-200 p-0.5 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
+            <div className="flex rounded-lg border border-theme-border p-0.5 bg-theme-card">
               <button
                 onClick={() => setMode('global')}
                 className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                   mode === 'global'
-                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600'
-                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                    ? 'bg-theme-page text-theme-main shadow-sm border border-theme-border'
+                    : 'text-theme-subtle hover:text-theme-main'
                 }`}
                 title="Show all pages"
               >
@@ -506,8 +514,8 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
                 onClick={() => setMode('local')}
                 className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                   mode === 'local'
-                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600'
-                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                    ? 'bg-theme-page text-theme-main shadow-sm border border-theme-border'
+                    : 'text-theme-subtle hover:text-theme-main'
                 }`}
                 title="Show connected pages only"
               >
@@ -515,27 +523,27 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
               </button>
             </div>
             {mode === 'local' && currentPage && (
-              <span className="text-xs text-gray-400 flex items-center gap-1.5">
+              <span className="text-xs text-theme-muted flex items-center gap-1.5">
                 <span className="inline-block w-2 h-2 rounded-full bg-blue-500" />
-                focused on <span className="font-medium text-gray-600">{currentPage.title}</span>
+                focused on <span className="font-medium text-theme-subtle">{currentPage.title}</span>
               </span>
             )}
             {mode === 'global' && (
-              <span className="text-xs text-gray-400">
-                <span className="font-medium text-gray-600">{displayNodes.length}</span> pages ·{' '}
-                <span className="font-medium text-gray-600">{edges.length}</span> connections
+              <span className="text-xs text-theme-muted">
+                <span className="font-medium text-theme-subtle">{displayNodes.length}</span> pages ·{' '}
+                <span className="font-medium text-theme-subtle">{edges.length}</span> connections
               </span>
             )}
           </div>
           <div className="flex items-center gap-1.5">
             {/* Color scheme */}
-            <div className="flex rounded-lg border border-gray-200 p-0.5 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
+            <div className="flex rounded-lg border border-theme-border p-0.5 bg-theme-card">
               <button
                 onClick={() => setColorBy('default')}
                 className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${
                   colorBy === 'default'
-                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600'
-                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                    ? 'bg-theme-page text-theme-main shadow-sm border border-theme-border'
+                    : 'text-theme-subtle hover:text-theme-main'
                 }`}
                 title="Color by node ID"
               >
@@ -545,8 +553,8 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
                 onClick={() => setColorBy('health')}
                 className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${
                   colorBy === 'health'
-                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600'
-                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                    ? 'bg-theme-page text-theme-main shadow-sm border border-theme-border'
+                    : 'text-theme-subtle hover:text-theme-main'
                 }`}
                 title="Color by health score"
               >
@@ -554,20 +562,20 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
               </button>
             </div>
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-gray-400" />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-theme-muted" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Filter nodes..."
-                className="w-40 rounded-lg border border-gray-200 py-1.5 pl-7 pr-2 text-xs outline-none focus:border-fluid-500 focus:ring-1 focus:ring-fluid-500/20"
+                className="w-40 rounded-lg border border-theme-border py-1.5 pl-7 pr-2 text-xs outline-none focus:border-fluid-500 focus:ring-1 focus:ring-fluid-500/20 bg-transparent"
               />
             </div>
-            <div className="w-px h-4 bg-gray-200 mx-1" />
+            <div className="w-px h-4 bg-theme-border mx-1" />
             <button
               onClick={() => setShowInfo((v) => !v)}
               className={`rounded-lg p-1.5 transition-colors ${
-                showInfo ? 'bg-fluid-50 text-fluid-600' : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'
+                showInfo ? 'bg-fluid-50 text-fluid-600' : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
               }`}
               title="Legend"
             >
@@ -575,33 +583,33 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
             </button>
             <button
               onClick={() => setZoom((z) => Math.max(z / 1.35, 0.15))}
-              className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+              className="rounded-lg p-1.5 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
               title="Zoom out"
             >
               <ZoomOut className="h-3.5 w-3.5" />
             </button>
-            <span className="text-[11px] text-gray-400 min-w-[3ch] text-center font-mono">
+            <span className="text-[11px] text-theme-muted min-w-[3ch] text-center font-mono">
               {Math.round(zoom * 100)}%
             </span>
             <button
               onClick={() => setZoom((z) => Math.min(z * 1.35, 5))}
-              className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+              className="rounded-lg p-1.5 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
               title="Zoom in"
             >
               <ZoomIn className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}
-              className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+              className="rounded-lg p-1.5 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
               title="Reset view"
             >
               <Maximize2 className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={onClose}
-              className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+              className="rounded-lg p-1.5 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
             >
-              <X className="h-4 w-4" />
+              <X className="h-3.5 w-3.5" />
             </button>
           </div>
         </div>
@@ -845,20 +853,20 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
 
           {/* Info/Legend panel */}
           {showInfo && (
-            <div className="w-52 shrink-0 border-l border-gray-100 bg-gray-50/80 p-4 overflow-y-auto">
-              <h4 className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-3">
+            <div className="w-52 shrink-0 border-l border-theme-border bg-theme-card/80 p-4 overflow-y-auto">
+              <h4 className="text-[11px] font-semibold uppercase tracking-wider text-theme-muted mb-3">
                 Legend
               </h4>
               <div className="space-y-2.5 mb-4">
-                <div className="flex items-center gap-2 text-xs text-gray-500">
+                <div className="flex items-center gap-2 text-xs text-theme-subtle">
                   <span className="inline-block w-3 h-3 rounded-full bg-blue-500" />
                   <span>Connected to hovered</span>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-gray-500">
+                <div className="flex items-center gap-2 text-xs text-theme-subtle">
                   <span className="inline-block w-3 h-3 rounded-full bg-gray-200" />
                   <span>No connection</span>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-gray-500">
+                <div className="flex items-center gap-2 text-xs text-theme-subtle">
                   <span className="inline-flex items-center justify-center w-3 h-3 rounded-full border-2 border-blue-500 border-dashed" />
                   <span>Current page (local)</span>
                 </div>
@@ -866,21 +874,21 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
 
               {hoveredNode && (
                 <>
-                  <div className="border-t border-gray-200 my-3" />
-                  <h4 className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-2">
+                  <div className="border-t border-theme-border my-3" />
+                  <h4 className="text-[11px] font-semibold uppercase tracking-wider text-theme-muted mb-2">
                     Selected
                   </h4>
                   <div className="space-y-1.5">
-                    <p className="text-sm font-medium text-gray-900 truncate">
+                    <p className="text-sm font-medium text-theme-main truncate">
                       {hoveredNode.title}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-theme-subtle">
                       {hoveredNode.degree} connection{hoveredNode.degree !== 1 ? 's' : ''}
                     </p>
                     {hoveredNode.health && (
                       <div className="space-y-1 mt-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-gray-400">Health</span>
+                            <span className="text-[10px] text-theme-muted">Health</span>
                           <span className={`text-[10px] font-medium ${
                             hoveredNode.health.healthScore >= 80 ? 'text-green-600' :
                             hoveredNode.health.healthScore >= 60 ? 'text-amber-600' :
@@ -890,7 +898,7 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-gray-400">Freshness</span>
+                            <span className="text-[10px] text-theme-muted">Freshness</span>
                           <span className={`text-[10px] font-medium ${
                             hoveredNode.health.freshness === 'fresh' ? 'text-green-600' :
                             hoveredNode.health.freshness === 'aging' ? 'text-amber-600' :
@@ -900,7 +908,7 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-gray-400">Engagement</span>
+                            <span className="text-[10px] text-theme-muted">Engagement</span>
                           <span className={`text-[10px] font-medium ${
                             hoveredNode.health.engagement === 'high' ? 'text-green-600' :
                             hoveredNode.health.engagement === 'medium' ? 'text-amber-600' :
@@ -926,11 +934,11 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
                 </>
               )}
 
-              <div className="border-t border-gray-200 my-3" />
-              <h4 className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-2">
+              <div className="border-t border-theme-border my-3" />
+              <h4 className="text-[11px] font-semibold uppercase tracking-wider text-theme-muted mb-2">
                 Tips
               </h4>
-              <ul className="space-y-1.5 text-[11px] text-gray-500">
+              <ul className="space-y-1.5 text-[11px] text-theme-subtle">
                 <li>• Hover nodes to highlight connections</li>
                 <li>• Drag nodes to rearrange</li>
                 <li>• Click to navigate to page</li>
@@ -944,39 +952,39 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
               )}
               {maxDegree > 0 && (
                 <div>
-                  <p className="text-[11px] text-gray-500 mb-1">Node size by links</p>
+                  <p className="text-[11px] text-theme-subtle mb-1">Node size by links</p>
                   <div className="flex items-center gap-2">
                     <span className="inline-block w-4 h-4 rounded-full bg-gray-300" />
-                    <span className="text-[10px] text-gray-400">1 link</span>
+                    <span className="text-[10px] text-theme-muted">1 link</span>
                   </div>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="inline-block w-6 h-6 rounded-full bg-gray-300" />
-                    <span className="text-[10px] text-gray-400">{maxDegree} links</span>
+                    <span className="text-[10px] text-theme-muted">{maxDegree} links</span>
                   </div>
                 </div>
               )}
 
               {healthData && healthData.size > 0 && (
                 <>
-                  <div className="border-t border-gray-200 my-3" />
+                <div className="border-t border-theme-border my-3" />
                   <div>
-                    <p className="text-[11px] text-gray-500 mb-1">Health Score</p>
+                    <p className="text-[11px] text-theme-subtle mb-1">Health Score</p>
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <span className="inline-block w-3 h-3 rounded-full bg-green-500" />
-                        <span className="text-[10px] text-gray-400">80-100% (Excellent)</span>
+                        <span className="text-[10px] text-theme-muted">80-100% (Excellent)</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="inline-block w-3 h-3 rounded-full bg-amber-500" />
-                        <span className="text-[10px] text-gray-400">60-79% (Good)</span>
+                        <span className="text-[10px] text-theme-muted">60-79% (Good)</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="inline-block w-3 h-3 rounded-full bg-orange-500" />
-                        <span className="text-[10px] text-gray-400">40-59% (Needs Attention)</span>
+                        <span className="text-[10px] text-theme-muted">40-59% (Needs Attention)</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="inline-block w-3 h-3 rounded-full bg-red-500" />
-                        <span className="text-[10px] text-gray-400">0-39% (Critical)</span>
+                        <span className="text-[10px] text-theme-muted">0-39% (Critical)</span>
                       </div>
                     </div>
                   </div>
@@ -987,7 +995,7 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between border-t border-gray-100 px-5 py-2.5 text-[11px] text-gray-400 shrink-0">
+        <div className="flex items-center justify-between border-t border-theme-border px-5 py-2.5 text-[11px] text-theme-muted shrink-0">
           <span>
             {mode === 'local' && currentPageId
               ? `${displayNodes.length} connected page${displayNodes.length !== 1 ? 's' : ''}`
@@ -997,7 +1005,7 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
           </span>
           <div className="flex items-center gap-3">
             <span className="hidden sm:flex items-center gap-1">
-              <span className="inline-block w-2 h-2 rounded-full bg-gray-300" />
+              <span className="inline-block w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600" />
               Drag nodes to rearrange · Click to navigate
             </span>
           </div>
@@ -1042,7 +1050,7 @@ export function GraphModalOpener(props: GraphViewProps & { currentPageId?: strin
     <>
       <button
         onClick={() => setOpen(true)}
-        className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+        className="rounded-lg p-2 text-theme-muted hover:bg-theme-hover hover:text-theme-main transition-colors"
         title="Open graph view"
       >
         <Network className="h-4 w-4" />

@@ -17,6 +17,7 @@ const plans = [
       'Cmd+K search',
       'Public docs hosting',
       'Code generation (TS/JS)',
+      'Real-time notifications',
       'API key management',
       'Email/password or OAuth login',
     ],

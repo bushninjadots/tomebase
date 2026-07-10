@@ -46,7 +46,7 @@ export function NotificationBell() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="relative rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+        className="relative rounded-lg p-2 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
         title="Notifications"
       >
         <Bell className="h-5 w-5" />
@@ -58,22 +58,22 @@ export function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 z-50 w-80 rounded-xl border border-gray-200 bg-white shadow-xl">
-          <div className="flex items-center justify-between border-b border-gray-100 px-4 py-2.5">
-            <span className="text-sm font-semibold text-gray-900">
+        <div className="absolute right-0 top-full mt-2 z-50 w-80 rounded-xl border border-theme-border bg-theme-page shadow-xl">
+          <div className="flex items-center justify-between border-b border-theme-border px-4 py-2.5">
+            <span className="text-sm font-semibold text-theme-main">
               Notifications
-              {count > 0 && <span className="ml-1.5 text-xs font-normal text-gray-400">({count})</span>}
+              {count > 0 && <span className="ml-1.5 text-xs font-normal text-theme-muted">({count})</span>}
             </span>
             <button
               onClick={() => setOpen(false)}
-              className="rounded-lg p-0.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              className="rounded-lg p-0.5 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
 
           {comments.length === 0 ? (
-            <div className="px-4 py-8 text-center text-sm text-gray-400">
+            <div className="px-4 py-8 text-center text-sm text-theme-muted">
               No notifications yet.
             </div>
           ) : (
@@ -85,19 +85,19 @@ export function NotificationBell() {
                     setOpen(false);
                     router.push(`/docs/${c.projectId}/${c.pageSlug}`);
                   }}
-                  className="flex w-full items-start gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0"
+                  className="flex w-full items-start gap-3 px-4 py-3 text-left hover:bg-theme-card transition-colors border-b border-theme-border last:border-0"
                 >
                   <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-fluid-50 text-fluid-600">
                     <MessageSquare className="h-3.5 w-3.5" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-gray-900">
+                    <p className="text-sm text-theme-main">
                       <span className="font-medium">{c.userName}</span>
                       {' '}commented on{' '}
                       <span className="font-medium">{c.pageTitle}</span>
                     </p>
-                    <p className="mt-0.5 line-clamp-1 text-xs text-gray-500">{c.content}</p>
-                    <p className="mt-0.5 text-xs text-gray-400">
+                    <p className="mt-0.5 line-clamp-1 text-xs text-theme-subtle">{c.content}</p>
+                    <p className="mt-0.5 text-xs text-theme-muted">
                       {formatDistanceToNow(new Date(c.createdAt), { addSuffix: true })}
                     </p>
                   </div>
