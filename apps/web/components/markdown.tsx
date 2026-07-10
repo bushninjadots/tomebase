@@ -153,7 +153,7 @@ const components: Components = {
   a: ({ children, href, ...props }) => (
     <a
       href={href}
-      className="text-fluid-600 underline-offset-2 hover:text-fluid-700 hover:underline"
+      className="text-fluid-600 underline-offset-2 hover:text-fluid-700 hover:underline font-medium"
       target={href?.startsWith('http') ? '_blank' : undefined}
       rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
       {...props}
@@ -161,6 +161,16 @@ const components: Components = {
       {children}
     </a>
   ),
+  span: ({ className, children, ...props }) => {
+    if (className?.includes('wiki-link-unresolved')) {
+      return (
+        <span className="inline-flex items-center gap-1 text-gray-400 italic bg-gray-100 rounded px-1.5 py-0.5 text-sm cursor-not-allowed" title="Page not found">
+          {children}
+        </span>
+      );
+    }
+    return <span className={className} {...props}>{children}</span>;
+  },
   blockquote: ({ children, ...props }) => (
     <blockquote
       className="mb-4 border-l-4 border-fluid-200 bg-fluid-50 py-2 pl-4 italic text-gray-700"

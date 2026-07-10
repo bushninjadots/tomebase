@@ -8,10 +8,10 @@ import {
 } from 'lucide-react';
 
 const stats = [
-  { value: '10,000+', label: 'Pages created' },
-  { value: '500+', label: 'Active teams' },
-  { value: '99.9%', label: 'Uptime' },
+  { value: 'Free', label: 'No credit card' },
   { value: 'Open Source', label: 'MIT licensed' },
+  { value: '3', label: 'Team members free' },
+  { value: '∞', label: 'Unlimited pages' },
 ];
 
 const features = [

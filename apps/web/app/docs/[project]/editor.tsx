@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Save, Eye, Edit3, FileText, ChevronRight, ArrowRight, Hash, Cloud, CloudOff, Bold, Italic, Heading1, Heading2, Link as LinkIcon, Code, List, ListOrdered, Quote, MoreHorizontal, Copy, Trash2, Layers, BookOpen, Clock, Type, AlertTriangle, ListOrdered as ListOrderedIcon } from 'lucide-react';
+import { Save, Eye, Edit3, FileText, ChevronRight, ArrowRight, Hash, Cloud, CloudOff, Bold, Italic, Heading1, Heading2, Link as LinkIcon, Code, List, ListOrdered, Quote, MoreHorizontal, Copy, Trash2, Layers, BookOpen, Clock, Type, AlertTriangle, ListOrdered as ListOrderedIcon, Minus, Image, Table, CheckSquare } from 'lucide-react';
 import { Markdown } from '@/components/markdown';
 import { ShortcutsModal } from '@/components/shortcuts';
 import { GraphModalOpener } from '@/components/graph';
@@ -68,15 +68,18 @@ export function DocEditor({ project }: { project: Project }) {
   }
 
   const formattingActions = [
-    { icon: Bold, label: 'Bold', action: () => insertFormatting('**', '**', 'bold text') },
-    { icon: Italic, label: 'Italic', action: () => insertFormatting('*', '*', 'italic text') },
-    { icon: Heading1, label: 'Heading 2', action: () => insertFormatting('\n## ', '', 'Heading') },
-    { icon: Heading2, label: 'Heading 3', action: () => insertFormatting('\n### ', '', 'Heading') },
+    { icon: Bold, label: 'Bold', shortcut: '⌘B', action: () => insertFormatting('**', '**', 'bold text') },
+    { icon: Italic, label: 'Italic', shortcut: '⌘I', action: () => insertFormatting('*', '*', 'italic text') },
+    { icon: Code, label: 'Code', action: () => insertFormatting('`', '`', 'code') },
+    { icon: Heading1, label: 'H2', action: () => insertFormatting('\n## ', '', 'Heading') },
+    { icon: Heading2, label: 'H3', action: () => insertFormatting('\n### ', '', 'Heading') },
     { icon: LinkIcon, label: 'Link', action: () => insertFormatting('[', '](url)', 'link text') },
-    { icon: Code, label: 'Inline Code', action: () => insertFormatting('`', '`', 'code') },
-    { icon: List, label: 'Bullet List', action: () => insertFormatting('\n- ', '', 'item') },
-    { icon: ListOrdered, label: 'Numbered List', action: () => insertFormatting('\n1. ', '', 'item') },
-    { icon: Quote, label: 'Blockquote', action: () => insertFormatting('\n> ', '', 'quote') },
+    { icon: List, label: 'Bullets', action: () => insertFormatting('\n- ', '', 'item') },
+    { icon: ListOrdered, label: 'Numbers', action: () => insertFormatting('\n1. ', '', 'item') },
+    { icon: Quote, label: 'Quote', action: () => insertFormatting('\n> ', '', 'quote') },
+    { icon: Minus, label: 'Divider', action: () => insertFormatting('\n---\n', '', '') },
+    { icon: Table, label: 'Table', action: () => insertFormatting('\n| Header | Header |\n|--------|--------|\n| Cell   | Cell   |\n', '', '') },
+    { icon: CheckSquare, label: 'Task', action: () => insertFormatting('\n- [ ] ', '', 'task') },
   ];
 
   useEffect(() => {
@@ -267,9 +270,43 @@ export function DocEditor({ project }: { project: Project }) {
         e.preventDefault();
         insertFormatting('*', '*', 'italic text');
       }
+      if (isMeta && e.key === 'k') {
+        e.preventDefault();
+        insertFormatting('[', '](url)', 'link text');
+      }
       if (isMeta && e.shiftKey && e.key === 'P') {
         e.preventDefault();
         setViewMode((v) => v === 'edit' ? 'preview' : v === 'preview' ? 'split' : 'edit');
+      }
+      if (e.key === 'Tab' && !isMeta) {
+        e.preventDefault();
+        const ta = textareaRef.current;
+        if (!ta) return;
+        const start = ta.selectionStart;
+        const end = ta.selectionEnd;
+        if (start === end) {
+          // No selection - insert tab
+          const newContent = content.slice(0, start) + '  ' + content.slice(end);
+          setContent(newContent);
+          requestAnimationFrame(() => {
+            ta.setSelectionRange(start + 2, start + 2);
+          });
+        } else {
+          // Selection - indent/outdent lines
+          const selected = content.slice(start, end);
+          const lines = selected.split('\n');
+          if (e.shiftKey) {
+            // Outdent
+            const outdented = lines.map((line) => line.replace(/^  /, '')).join('\n');
+            const newContent = content.slice(0, start) + outdented + content.slice(end);
+            setContent(newContent);
+          } else {
+            // Indent
+            const indented = lines.map((line) => '  ' + line).join('\n');
+            const newContent = content.slice(0, start) + indented + content.slice(end);
+            setContent(newContent);
+          }
+        }
       }
     }
     document.addEventListener('keydown', handleKeyDown);

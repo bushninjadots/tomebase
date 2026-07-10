@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { X, ExternalLink, ZoomIn, ZoomOut, Maximize2, Search, Network, Info } from 'lucide-react';
+import { X, ExternalLink, ZoomIn, ZoomOut, Maximize2, Search, Network, Info, ArrowRight } from 'lucide-react';
 import { extractWikiLinks } from '@/lib/wiki';
 
 interface GraphNode {
@@ -14,6 +14,8 @@ interface GraphNode {
   vx: number;
   vy: number;
   degree: number;
+  targetX?: number;
+  targetY?: number;
 }
 
 interface GraphEdge {
@@ -32,14 +34,14 @@ interface GraphModalProps extends GraphViewProps {
 }
 
 const NODE_COLORS = [
-  { fill: '#0c8ee7', label: 'API & Core' },
-  { fill: '#7c3aed', label: 'Architecture' },
-  { fill: '#059669', label: 'Database' },
-  { fill: '#d97706', label: 'Configuration' },
-  { fill: '#dc2626', label: 'Auth & Security' },
-  { fill: '#db2777', label: 'Troubleshooting' },
-  { fill: '#0891b2', label: 'Release Notes' },
-  { fill: '#4f46e5', label: 'Getting Started' },
+  { fill: '#3b82f6', label: 'Blue' },
+  { fill: '#8b5cf6', label: 'Purple' },
+  { fill: '#10b981', label: 'Green' },
+  { fill: '#f59e0b', label: 'Amber' },
+  { fill: '#ef4444', label: 'Red' },
+  { fill: '#ec4899', label: 'Pink' },
+  { fill: '#06b6d4', label: 'Cyan' },
+  { fill: '#6366f1', label: 'Indigo' },
 ];
 
 function getNodeColor(nodeId: string): string {
@@ -57,12 +59,16 @@ function simulateForceLayout(
 
   if (nodeList.length === 0) return;
 
+  // Better initial positions - circular with some randomness
   const sorted = [...nodeList].sort((a, b) => b.degree - a.degree);
   const angleStep = (2 * Math.PI) / Math.max(nodeList.length, 1);
   sorted.forEach((n, i) => {
-    const radius = Math.min(120 + i * 12, 320);
-    n.x = centerX + Math.cos(angleStep * i) * radius;
-    n.y = centerY + Math.sin(angleStep * i) * radius;
+    const radius = Math.min(100 + i * 15, 280);
+    const jitter = (Math.random() - 0.5) * 20;
+    n.x = centerX + Math.cos(angleStep * i) * (radius + jitter);
+    n.y = centerY + Math.sin(angleStep * i) * (radius + jitter);
+    n.targetX = n.x;
+    n.targetY = n.y;
   });
 
   const edgeSet = new Map<string, boolean>();
@@ -70,47 +76,55 @@ function simulateForceLayout(
     edgeSet.set([e.source, e.target].sort().join(':'), true);
   }
 
-  for (let iter = 0; iter < 150; iter++) {
-    const cooling = 0.95 - iter / 150;
+  // Run simulation with better parameters
+  for (let iter = 0; iter < 200; iter++) {
+    const cooling = Math.max(0.1, 1 - iter / 200);
+    const repulsionStrength = 5000 / Math.max(nodeList.length, 1);
+
     for (const a of nodeList) {
       a.vx = 0;
       a.vy = 0;
 
+      // Repulsion between all nodes
       for (const b of nodeList) {
         if (a === b) continue;
         const dx = a.x - b.x;
         const dy = a.y - b.y;
         const dist = Math.max(Math.sqrt(dx * dx + dy * dy), 1);
-        const aMass = Math.max(a.degree, 1);
-        const bMass = Math.max(b.degree, 1);
-        const repulsion = (4000 * aMass * bMass) / (dist * dist);
-        a.vx += (dx / dist) * repulsion * 0.01;
-        a.vy += (dy / dist) * repulsion * 0.01;
+        const repulsion = repulsionStrength / (dist * dist);
+        a.vx += (dx / dist) * repulsion;
+        a.vy += (dy / dist) * repulsion;
       }
 
-      const keyA = a.id;
+      // Attraction along edges
       for (const b of nodeList) {
         if (a === b) continue;
-        const key = [keyA, b.id].sort().join(':');
+        const key = [a.id, b.id].sort().join(':');
         if (edgeSet.has(key)) {
           const dx = b.x - a.x;
           const dy = b.y - a.y;
           const dist = Math.max(Math.sqrt(dx * dx + dy * dy), 1);
-          const attraction = dist * 0.0015;
+          const attraction = dist * 0.002;
           a.vx += (dx / dist) * attraction;
           a.vy += (dy / dist) * attraction;
         }
       }
 
-      a.vx += (centerX - a.x) * 0.003;
-      a.vy += (centerY - a.y) * 0.003;
-      a.vx *= 0.88;
-      a.vy *= 0.88;
+      // Center gravity
+      a.vx += (centerX - a.x) * 0.004;
+      a.vy += (centerY - a.y) * 0.004;
+
+      // Damping
+      a.vx *= 0.85;
+      a.vy *= 0.85;
+
+      // Apply velocity
       a.x += a.vx * cooling;
       a.y += a.vy * cooling;
 
-      a.x = Math.max(30, Math.min(dims.width - 30, a.x));
-      a.y = Math.max(30, Math.min(dims.height - 30, a.y));
+      // Boundary clamping
+      a.x = Math.max(40, Math.min(dims.width - 40, a.x));
+      a.y = Math.max(40, Math.min(dims.height - 40, a.y));
     }
   }
 }
@@ -154,10 +168,9 @@ function GraphModal({ projectId, pages, onClose, currentPageId }: GraphModalProp
   const [search, setSearch] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const [panning, setPanning] = useState(false);
-  const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   const [showInfo, setShowInfo] = useState(false);
 
-  const dims = { width: 780, height: 560 };
+  const dims = { width: 800, height: 580 };
 
   const { filteredPages, filteredEdges, allEdges, localFilteredIds } = useMemo(() => {
     const titleMap = new Map(pages.map((p) => [p.title.toLowerCase(), p]));
@@ -310,12 +323,7 @@ function GraphModal({ projectId, pages, onClose, currentPageId }: GraphModalProp
   function handleSvgPointerDown(e: React.PointerEvent) {
     if (e.target === svgRef.current || (e.target as Element)?.tagName === 'svg') {
       setPanning(true);
-      setPanStart({ x: e.clientX, y: e.clientY });
     }
-  }
-
-  function cycleViewMode() {
-    setMode((m) => (m === 'global' ? 'local' : 'global'));
   }
 
   const currentPage = currentPageId ? pages.find((p) => p.id === currentPageId) : null;
@@ -323,12 +331,12 @@ function GraphModal({ projectId, pages, onClose, currentPageId }: GraphModalProp
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
       onClick={(e) => {
         if (e.target === e.currentTarget && !isDragging && !panning) onClose();
       }}
     >
-      <div className="relative flex flex-col rounded-2xl border border-gray-200 bg-white shadow-2xl w-[860px] max-w-[95vw] max-h-[90vh]">
+      <div className="relative flex flex-col rounded-2xl border border-gray-200 bg-white shadow-2xl w-[880px] max-w-[95vw] max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3 shrink-0">
           <div className="flex items-center gap-3">
@@ -375,7 +383,7 @@ function GraphModal({ projectId, pages, onClose, currentPageId }: GraphModalProp
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Filter nodes..."
-                className="w-36 rounded-lg border border-gray-200 py-1 pl-7 pr-2 text-xs outline-none focus:border-fluid-500 focus:ring-1 focus:ring-fluid-500/20"
+                className="w-40 rounded-lg border border-gray-200 py-1.5 pl-7 pr-2 text-xs outline-none focus:border-fluid-500 focus:ring-1 focus:ring-fluid-500/20"
               />
             </div>
             <div className="w-px h-4 bg-gray-200 mx-1" />
@@ -430,12 +438,28 @@ function GraphModal({ projectId, pages, onClose, currentPageId }: GraphModalProp
               width={dims.width}
               height={dims.height}
               className="bg-[#fafbfc]"
-              style={{ backgroundImage: 'radial-gradient(circle, #e5e7eb 0.5px, transparent 0.5px)', backgroundSize: '20px 20px' }}
+              style={{ backgroundImage: 'radial-gradient(circle, #e5e7eb 0.5px, transparent 0.5px)', backgroundSize: '24px 24px' }}
               onPointerDown={handleSvgPointerDown}
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
               onPointerLeave={handlePointerUp}
             >
+              <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                  <polygon points="0 0, 10 3.5, 0 7" fill="#d1d5db" />
+                </marker>
+                <marker id="arrowhead-highlight" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                  <polygon points="0 0, 10 3.5, 0 7" fill="#3b82f6" />
+                </marker>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+
               <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}>
                 {/* Edges */}
                 {edges.map((e, i) => {
@@ -446,17 +470,27 @@ function GraphModal({ projectId, pages, onClose, currentPageId }: GraphModalProp
                   const currentConn =
                     currentPageId && (e.source === currentPageId || e.target === currentPageId);
                   const isDimmed = hoveredId && !highlight;
+
+                  // Calculate edge endpoint to stop at node border
+                  const dx = target.x - source.x;
+                  const dy = target.y - source.y;
+                  const dist = Math.max(Math.sqrt(dx * dx + dy * dy), 1);
+                  const targetRadius = Math.max(18, Math.min(32, 14 + target.degree * 4));
+                  const endX = target.x - (dx / dist) * (targetRadius + 4);
+                  const endY = target.y - (dy / dist) * (targetRadius + 4);
+
                   return (
                     <line
                       key={i}
                       x1={source.x}
                       y1={source.y}
-                      x2={target.x}
-                      y2={target.y}
-                      stroke={highlight ? '#0c8ee7' : currentConn && mode === 'local' ? '#93c5fd' : '#d1d5db'}
+                      x2={endX}
+                      y2={endY}
+                      stroke={highlight ? '#3b82f6' : currentConn && mode === 'local' ? '#93c5fd' : '#d1d5db'}
                       strokeWidth={highlight ? 2.5 : currentConn ? 1.5 : 1}
-                      opacity={isDimmed ? 0.1 : highlight ? 1 : 0.5}
-                      className="transition-all duration-200"
+                      opacity={isDimmed ? 0.08 : highlight ? 1 : 0.6}
+                      markerEnd={highlight ? 'url(#arrowhead-highlight)' : 'url(#arrowhead)'}
+                      className="transition-all duration-300"
                     />
                   );
                 })}
@@ -468,10 +502,10 @@ function GraphModal({ projectId, pages, onClose, currentPageId }: GraphModalProp
                   const isConnected = connected.has(node.id);
                   const isDimmed = hoveredId && !isHovered && !isConnected;
                   const isCurrent = node.id === currentPageId;
-                  const baseRadius = Math.max(18, Math.min(32, 14 + node.degree * 4));
-                  const radius = isHovered ? baseRadius + 6 : baseRadius;
+                  const baseRadius = Math.max(20, Math.min(36, 16 + node.degree * 4));
+                  const radius = isHovered ? baseRadius + 8 : baseRadius;
                   const color = getNodeColor(node.id);
-                  const fontSize = node.title.length > 14 ? '8px' : node.title.length > 10 ? '9px' : '10px';
+                  const fontSize = node.title.length > 14 ? '9px' : node.title.length > 10 ? '10px' : '11px';
 
                   return (
                     <g
@@ -497,27 +531,37 @@ function GraphModal({ projectId, pages, onClose, currentPageId }: GraphModalProp
                         <circle
                           cx={node.x}
                           cy={node.y}
-                          r={radius + 8}
+                          r={radius + 10}
                           fill="none"
-                          stroke="#0c8ee7"
+                          stroke="#3b82f6"
                           strokeWidth={2}
                           strokeDasharray="4 3"
-                          opacity={0.5}
+                          opacity={0.6}
                         />
                       )}
 
-                      {/* Glow effect on hover */}
+                      {/* Outer glow on hover */}
                       {isHovered && (
                         <circle
                           cx={node.x}
                           cy={node.y}
-                          r={radius + 4}
+                          r={radius + 6}
                           fill="none"
                           stroke={color}
-                          strokeWidth={3}
-                          opacity={0.25}
+                          strokeWidth={4}
+                          opacity={0.2}
+                          filter="url(#glow)"
                         />
                       )}
+
+                      {/* Shadow */}
+                      <circle
+                        cx={node.x + 2}
+                        cy={node.y + 2}
+                        r={radius}
+                        fill="rgba(0,0,0,0.1)"
+                        className="pointer-events-none"
+                      />
 
                       {/* Main circle */}
                       <circle
@@ -525,28 +569,26 @@ function GraphModal({ projectId, pages, onClose, currentPageId }: GraphModalProp
                         cy={node.y}
                         r={radius}
                         fill={color}
-                        fillOpacity={isDimmed ? 0.2 : isHovered ? 1 : isConnected ? 0.9 : 0.8}
-                        stroke={
-                          isHovered ? color : isConnected ? color : 'rgba(0,0,0,0.08)'
-                        }
-                        strokeWidth={isHovered ? 3 : 1.5}
+                        fillOpacity={isDimmed ? 0.15 : 1}
+                        stroke={isHovered ? '#fff' : isConnected ? color : 'rgba(255,255,255,0.8)'}
+                        strokeWidth={isHovered ? 3 : 2}
                         className="transition-all duration-200"
                       />
 
                       {/* Inner highlight */}
                       <circle
-                        cx={node.x - radius * 0.25}
-                        cy={node.y - radius * 0.25}
-                        r={radius * 0.35}
+                        cx={node.x - radius * 0.2}
+                        cy={node.y - radius * 0.2}
+                        r={radius * 0.4}
                         fill="white"
-                        fillOpacity={isDimmed ? 0.05 : 0.25}
+                        fillOpacity={isDimmed ? 0.03 : 0.3}
                         className="pointer-events-none"
                       />
 
                       {/* Title text on node */}
                       <text
                         x={node.x}
-                        y={node.y + 0.5}
+                        y={node.y + 1}
                         textAnchor="middle"
                         dominantBaseline="middle"
                         className="pointer-events-none select-none"
@@ -554,9 +596,9 @@ function GraphModal({ projectId, pages, onClose, currentPageId }: GraphModalProp
                         style={{
                           fontSize,
                           fontWeight: 600,
-                          textShadow: '0 1px 3px rgba(0,0,0,0.4)',
+                          textShadow: '0 1px 3px rgba(0,0,0,0.5)',
                         }}
-                        opacity={isDimmed ? 0.2 : 1}
+                        opacity={isDimmed ? 0.15 : 1}
                       >
                         {node.title.length > 14 ? node.title.slice(0, 13) + '…' : node.title}
                       </text>
@@ -565,23 +607,23 @@ function GraphModal({ projectId, pages, onClose, currentPageId }: GraphModalProp
                       {node.degree > 0 && (isHovered || !hoveredId) && (
                         <g>
                           <circle
-                            cx={node.x + radius - 5}
-                            cy={node.y - radius + 5}
-                            r={9}
+                            cx={node.x + radius - 4}
+                            cy={node.y - radius + 4}
+                            r={10}
                             fill={isHovered ? '#1f2937' : '#374151'}
                             stroke="white"
-                            strokeWidth={1.5}
-                            opacity={isDimmed ? 0.2 : 1}
+                            strokeWidth={2}
+                            opacity={isDimmed ? 0.15 : 1}
                           />
                           <text
-                            x={node.x + radius - 5}
-                            y={node.y - radius + 5 + 0.5}
+                            x={node.x + radius - 4}
+                            y={node.y - radius + 4 + 0.5}
                             textAnchor="middle"
                             dominantBaseline="middle"
                             className="pointer-events-none select-none"
                             fill="white"
-                            style={{ fontSize: '8px', fontWeight: 700 }}
-                            opacity={isDimmed ? 0.2 : 1}
+                            style={{ fontSize: '9px', fontWeight: 700 }}
+                            opacity={isDimmed ? 0.15 : 1}
                           >
                             {node.degree}
                           </text>
@@ -592,23 +634,23 @@ function GraphModal({ projectId, pages, onClose, currentPageId }: GraphModalProp
                       {(isHovered || (isConnected && hoveredId)) && (
                         <g>
                           <rect
-                            x={node.x - 70}
-                            y={node.y + radius + 6}
-                            width={140}
-                            height={20}
-                            rx={4}
+                            x={node.x - 80}
+                            y={node.y + radius + 8}
+                            width={160}
+                            height={24}
+                            rx={6}
                             fill="white"
                             stroke="#e5e7eb"
                             strokeWidth={1}
-                            opacity={0.95}
+                            opacity={0.98}
                           />
                           <text
                             x={node.x}
-                            y={node.y + radius + 18}
+                            y={node.y + radius + 23}
                             textAnchor="middle"
                             className="pointer-events-none select-none"
                             fill={isHovered ? '#111827' : '#6b7280'}
-                            style={{ fontSize: '10px', fontWeight: isHovered ? 600 : 400 }}
+                            style={{ fontSize: '11px', fontWeight: isHovered ? 600 : 400 }}
                           >
                             {node.title}
                             {isHovered && ` · ${node.degree} link${node.degree !== 1 ? 's' : ''}`}
@@ -624,7 +666,7 @@ function GraphModal({ projectId, pages, onClose, currentPageId }: GraphModalProp
 
           {/* Info/Legend panel */}
           {showInfo && (
-            <div className="w-48 shrink-0 border-l border-gray-100 bg-gray-50/50 p-4 overflow-y-auto">
+            <div className="w-52 shrink-0 border-l border-gray-100 bg-gray-50/80 p-4 overflow-y-auto">
               <h4 className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-3">
                 Legend
               </h4>
@@ -678,8 +720,9 @@ function GraphModal({ projectId, pages, onClose, currentPageId }: GraphModalProp
               <ul className="space-y-1.5 text-[11px] text-gray-500">
                 <li>• Hover nodes to highlight connections</li>
                 <li>• Drag nodes to rearrange</li>
-                <li>• Click to navigate</li>
-                <li>• Scroll to pan the canvas</li>
+                <li>• Click to navigate to page</li>
+                <li>• Scroll to zoom in/out</li>
+                <li>• Drag canvas to pan</li>
                 <li>• Bigger nodes = more links</li>
               </ul>
 
