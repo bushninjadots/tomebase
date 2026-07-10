@@ -1,59 +1,27 @@
+import { prisma } from '@fluid/database';
 import { Container } from '@fluid/ui';
 import Link from 'next/link';
-import { ArrowRight, BookOpen, FileText, Code2, Users, Globe, Key, Layers } from 'lucide-react';
+import { ArrowRight, BookOpen, FileText, Code2, Users, Globe, Key, Layers, HeartPulse } from 'lucide-react';
+
+const DOCS_SLUG = 'tomebase-docs';
 
 const sections = [
-  {
-    icon: FileText,
-    title: 'Getting Started',
-    description: 'Create your first project, write a page, and publish it to the web in under 5 minutes.',
-    href: '/dashboard/new',
-  },
-  {
-    icon: BookOpen,
-    title: 'Writing Docs',
-    description: 'Markdown editor, wiki links, page organization, templates, callouts, and version history.',
-    href: '/dashboard',
-  },
-  {
-    icon: Code2,
-    title: 'Importing Code',
-    description: 'Auto-generate docs from TypeScript, JavaScript, or OpenAPI specs. No manual formatting needed.',
-    href: '/dashboard',
-  },
-  {
-    icon: Layers,
-    title: 'Page Organization',
-    description: 'Hierarchical pages, drag-free reordering, tags, backlinks, and the knowledge graph view.',
-    href: '/dashboard',
-  },
-  {
-    icon: Users,
-    title: 'Team Setup',
-    description: 'Invite members, assign roles, and collaborate on documentation in real time.',
-    href: '/dashboard/settings',
-  },
-  {
-    icon: Globe,
-    title: 'Publishing',
-    description: 'One-click public hosting, custom domains, SEO metadata, and sitemaps.',
-    href: '/dashboard',
-  },
-  {
-    icon: Key,
-    title: 'API & Automation',
-    description: 'API keys, webhooks, programmatic import/export, and CI/CD integration.',
-    href: '/dashboard',
-  },
-  {
-    icon: Globe,
-    title: 'Doc Health',
-    description: 'Scan for broken links, orphan pages, stale content, and low-engagement pages.',
-    href: '/dashboard',
-  },
+  { icon: FileText, title: 'Getting Started', description: 'Create your first project, write a page, and publish it.', slug: 'getting-started' },
+  { icon: BookOpen, title: 'Writing Docs', description: 'Markdown editor, wiki links, templates, callouts, and version history.', slug: 'writing-docs' },
+  { icon: Code2, title: 'Importing Code', description: 'Auto-generate docs from TypeScript, JavaScript, or OpenAPI specs.', slug: 'importing-code' },
+  { icon: Layers, title: 'Page Organization', description: 'Hierarchical pages, tags, backlinks, and the knowledge graph.', slug: 'page-organization' },
+  { icon: Users, title: 'Team Setup', description: 'Invite members, assign roles, and collaborate in real time.', slug: 'team-setup' },
+  { icon: Globe, title: 'Publishing', description: 'Public hosting, custom domains, SEO, and sharing.', slug: 'publishing' },
+  { icon: Key, title: 'API & Automation', description: 'API keys, webhooks, and programmatic access.', slug: 'api-automation' },
+  { icon: HeartPulse, title: 'Doc Health', description: 'Automated quality scanning for broken links, orphans, and stale content.', slug: 'doc-health' },
 ];
 
-export default function DocsPage() {
+export default async function DocsPage() {
+  const docsProject = await prisma.project.findFirst({
+    where: { slug: DOCS_SLUG, published: true },
+    select: { id: true },
+  });
+
   return (
     <div className="gradient-bg min-h-screen">
       <nav className="sticky top-0 z-50 border-b border-gray-100/80 bg-white/70 backdrop-blur-xl">
@@ -87,36 +55,57 @@ export default function DocsPage() {
           </p>
         </div>
 
-        <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {sections.map((section) => (
-            <Link
-              key={section.title}
-              href={section.href}
-              className="group rounded-2xl border border-gray-100 bg-white p-6 transition-all hover:border-fluid-200 hover:shadow-md"
-            >
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-fluid-50 text-fluid-600 group-hover:bg-fluid-100 transition-colors">
-                <section.icon className="h-5 w-5" />
+        {docsProject ? (
+          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {sections.map((section) => (
+              <Link
+                key={section.title}
+                href={`/p/${docsProject.id}/${section.slug}`}
+                className="group rounded-2xl border border-gray-100 bg-white p-6 transition-all hover:border-fluid-200 hover:shadow-md"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-fluid-50 text-fluid-600 group-hover:bg-fluid-100 transition-colors">
+                  <section.icon className="h-5 w-5" />
+                </div>
+                <h3 className="mt-4 font-semibold text-gray-900 group-hover:text-fluid-600 transition-colors">
+                  {section.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-gray-500">
+                  {section.description}
+                </p>
+                <div className="mt-4 flex items-center gap-1 text-sm font-medium text-fluid-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                  Read more <ArrowRight className="h-4 w-4" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {sections.map((section) => (
+              <div
+                key={section.title}
+                className="rounded-2xl border border-gray-100 bg-white p-6"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-fluid-50 text-fluid-600">
+                  <section.icon className="h-5 w-5" />
+                </div>
+                <h3 className="mt-4 font-semibold text-gray-900">
+                  {section.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-gray-500">
+                  {section.description}
+                </p>
               </div>
-              <h3 className="mt-4 font-semibold text-gray-900 group-hover:text-fluid-600 transition-colors">
-                {section.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-gray-500">
-                {section.description}
-              </p>
-              <div className="mt-4 flex items-center gap-1 text-sm font-medium text-fluid-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                Learn more <ArrowRight className="h-4 w-4" />
-              </div>
-            </Link>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         <div className="mx-auto mt-20 max-w-lg text-center rounded-2xl border border-gray-100 bg-white p-8">
-          <h2 className="text-lg font-semibold text-gray-900">Need help?</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Also available on GitHub</h2>
           <p className="mt-2 text-sm text-gray-500">
-            Open an issue on GitHub or check the repository README for detailed guides.
+            The same documentation lives as Markdown files in the repository. Read, edit, or submit improvements.
           </p>
           <Link
-            href="https://github.com/anomalyco/fluid"
+            href="https://github.com/bushninjadots/fluid/tree/main/docs/usage"
             className="mt-6 inline-flex items-center gap-2 rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
           >
             View on GitHub

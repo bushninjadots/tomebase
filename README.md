@@ -138,6 +138,15 @@ tomebase/
 | `npm run db:push`   | Push schema to database  |
 | `npm run db:generate` | Regenerate Prisma client |
 
+## Project Documentation
+
+The user-facing product documentation is maintained in two places:
+
+- **In-app** — a "TomeBase Docs" project inside the app (published at `/p/tomebase-docs`). Run `npm run db:seed` to create or refresh it.
+- **Markdown files** — the same content in `docs/usage/` as plain Markdown for editing on GitHub.
+
+The `/docs` page on the site pulls from the in-app project and links to the GitHub source.
+
 ## Environment
 
 Copy `apps/web/.env.example` → `apps/web/.env.local`. Defaults work for local
