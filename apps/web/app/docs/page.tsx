@@ -65,7 +65,7 @@ export default async function DocsPage() {
           {sections.map((section) => {
             const href = docsProjectId
               ? `/p/${docsProjectId}/${section.slug}`
-              : `https://github.com/bushninjadots/fluid/blob/main/docs/usage/${section.slug}.md`;
+              : `https://github.com/bushninjadots/tomebase/blob/main/docs/usage/${section.slug}.md`;
             return (
               <Link
                 key={section.title}
@@ -95,7 +95,7 @@ export default async function DocsPage() {
             All documentation is available as Markdown in the repository. Submit improvements via pull request.
           </p>
           <Link
-            href="https://github.com/bushninjadots/fluid/tree/main/docs/usage"
+            href="https://github.com/bushninjadots/tomebase/tree/main/docs/usage"
             className="mt-6 inline-flex items-center gap-2 rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
           >
             View on GitHub

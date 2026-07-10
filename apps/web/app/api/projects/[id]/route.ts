@@ -30,7 +30,17 @@ export async function PATCH(
     if (typeof body.name === 'string') updateData.name = body.name;
     if (typeof body.description === 'string') updateData.description = body.description;
     if (typeof body.published === 'boolean') updateData.published = body.published;
-    if (typeof body.customDomain === 'string') updateData.customDomain = body.customDomain;
+    if (typeof body.customDomain === 'string' && body.customDomain !== '') {
+      const { getTeamTier, TIERS } = await import('@/lib/limits');
+      const tier = project.teamId ? await getTeamTier(project.teamId) : 'free';
+      if (!TIERS[tier].customDomain) {
+        return NextResponse.json(
+          { error: 'Custom domains require a Pro or Enterprise plan' },
+          { status: 403 },
+        );
+      }
+      updateData.customDomain = body.customDomain;
+    }
     if (body.customDomain === '') updateData.customDomain = null;
     if (typeof body.logoUrl === 'string') updateData.logoUrl = body.logoUrl;
 

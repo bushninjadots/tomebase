@@ -51,7 +51,7 @@ const plans = [
     features: [
       '100 projects',
       '10,000 pages per project',
-      'Unlimited team members',
+      'Up to 100 team members',
       'Everything in Pro',
       'SSO / SAML',
       'Audit logs',

@@ -56,23 +56,23 @@ const plans = [
     name: 'Free',
     price: '$0',
     period: '/month',
-    features: ['Up to 5 team members', 'Unlimited pages', 'Public docs hosting', 'Full-text search', 'Community support'],
+    features: ['1 project', '50 pages per project', 'Up to 5 team members', 'Public docs hosting', 'Full-text search'],
     cta: 'Get Started',
     highlighted: false,
   },
   {
     name: 'Pro',
-    price: '$19',
+    price: '$29',
     period: '/month',
-    features: ['Up to 15 team members', 'Custom domains', 'API key management', 'OpenAPI & code import', 'Email support'],
+    features: ['10 projects', '500 pages per project', 'Up to 15 team members', 'Custom domains', 'Email support'],
     cta: 'Start Free Trial',
     highlighted: true,
   },
   {
     name: 'Enterprise',
-    price: '$99',
-    period: '/month',
-    features: ['Up to 100 team members', 'SSO/SAML', 'White-label domains', 'Audit logs', 'Priority support'],
+    price: 'Custom',
+    period: '',
+    features: ['100 projects', '10,000 pages per project', 'Up to 100 team members', 'SSO/SAML', 'Priority support'],
     cta: 'Contact Sales',
     highlighted: false,
   },
@@ -138,7 +138,7 @@ export default function Home() {
                 <ArrowRight className="h-5 w-5" />
               </Link>
               <Link
-                href="https://github.com/anomalyco/fluid"
+                href="https://github.com/bushninjadots/tomebase"
                 className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-6 py-3 text-base font-medium text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-colors dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
               >
                 <Github className="h-5 w-5" />
@@ -327,7 +327,7 @@ export default function Home() {
               <span className="text-gray-200 dark:text-gray-700">·</span>
               <Link href="/roadmap" className="hover:text-gray-900 transition-colors dark:hover:text-white">Roadmap</Link>
               <span className="text-gray-200 dark:text-gray-700">·</span>
-              <Link href="https://github.com/anomalyco/fluid" className="hover:text-gray-900 transition-colors dark:hover:text-white">GitHub</Link>
+              <Link href="https://github.com/bushninjadots/tomebase" className="hover:text-gray-900 transition-colors dark:hover:text-white">GitHub</Link>
               <span className="text-gray-200 dark:text-gray-700">·</span>
               <Link href="/terms" className="hover:text-gray-900 transition-colors dark:hover:text-white">Terms</Link>
               <Link href="/privacy" className="hover:text-gray-900 transition-colors dark:hover:text-white">Privacy</Link>

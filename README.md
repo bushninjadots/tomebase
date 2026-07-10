@@ -154,6 +154,25 @@ development with SQLite.
 | `AUTH_GOOGLE_SECRET`   | No       | Google OAuth client secret      |
 | `APP_URL`              | No       | Public URL (used for sitemap)   |
 
+## Roadmap
+
+Most core features are shipped and working (editor, wiki links, graph view,
+search, imports, public hosting, team management — see [ROADMAP.md](ROADMAP.md)
+for the full shipped list, or the live [/roadmap](https://tomebase.vercel.app/roadmap)
+page). What's still outstanding:
+
+- **Stripe billing** — Pro/Enterprise plans can't be paid for yet; tier is
+  currently set manually.
+- **AI writing assistant** — not started.
+- **GitHub/GitLab sync** — not started.
+- **SSO/SAML, audit logs, self-hosted deployment** — not started; not yet
+  enforced or offered despite appearing on the Enterprise pricing tier, so
+  don't sell Enterprise until these are either built or removed from the
+  pricing page.
+
+See [ROADMAP.md](ROADMAP.md) for the complete, up-to-date breakdown by
+priority.
+
 ## Tech Stack
 
 Next.js 15 · TypeScript · Tailwind CSS v4 · Prisma (SQLite / PostgreSQL) ·

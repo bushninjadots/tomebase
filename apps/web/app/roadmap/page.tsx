@@ -197,7 +197,7 @@ export default function RoadmapPage() {
               Open an issue on GitHub to report bugs, request features, or vote on what we build next.
             </p>
             <Link
-              href="https://github.com/bushninjadots/fluid/issues"
+              href="https://github.com/bushninjadots/tomebase/issues"
               className="mt-6 inline-flex items-center gap-2 rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
             >
               <Github className="h-4 w-4" />
@@ -222,7 +222,7 @@ export default function RoadmapPage() {
               <span className="text-gray-200">·</span>
               <Link href="/roadmap" className="hover:text-gray-900 transition-colors dark:hover:text-white">Roadmap</Link>
               <span className="text-gray-200">·</span>
-              <Link href="https://github.com/bushninjadots/fluid" className="hover:text-gray-900 transition-colors dark:hover:text-white">GitHub</Link>
+              <Link href="https://github.com/bushninjadots/tomebase" className="hover:text-gray-900 transition-colors dark:hover:text-white">GitHub</Link>
               <span className="text-gray-200">·</span>
               <Link href="/terms" className="hover:text-gray-900 transition-colors dark:hover:text-white">Terms</Link>
               <Link href="/privacy" className="hover:text-gray-900 transition-colors dark:hover:text-white">Privacy</Link>
