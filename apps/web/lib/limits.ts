@@ -1,7 +1,7 @@
 import { prisma } from '@fluid/database';
 
 export const TIERS = {
-  free: { maxProjects: 1, maxPages: 50, maxMembers: 3, customDomain: false },
+  free: { maxProjects: 1, maxPages: 50, maxMembers: 5, customDomain: false },
   pro: { maxProjects: 10, maxPages: 500, maxMembers: 15, customDomain: true },
   enterprise: { maxProjects: 100, maxPages: 10000, maxMembers: 100, customDomain: true },
 } as const;

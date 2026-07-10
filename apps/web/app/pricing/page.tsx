@@ -10,7 +10,7 @@ const plans = [
     features: [
       '1 project',
       '50 pages per project',
-      '3 team members',
+      '5 team members',
       'Full Markdown editor with live preview',
       'Wiki links & backlinks',
       'Graph view',

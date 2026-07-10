@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Container } from '@fluid/ui';
 import { ThemeToggle } from '@/components/theme-toggle';
 import {
-  ArrowRight, BookOpen, Code2, GitBranch, Search, Sparkles,
+  ArrowRight, BookOpen, Code2, GitBranch, Search,
   FileText, Users, Zap, Shield,
   Globe, Layers, Github,
 } from 'lucide-react';
@@ -11,7 +11,7 @@ const stats = [
   { value: 'Free', label: 'No credit card' },
   { value: 'Open Source', label: 'MIT licensed' },
   { value: '50', label: 'Pages free tier' },
-  { value: '3', label: 'Team members free' },
+  { value: '5', label: 'Team members free' },
 ];
 
 const features = [
@@ -43,17 +43,12 @@ const features = [
   {
     icon: Users,
     title: 'Team Collaboration',
-    description: 'Invite team members, assign admin or member roles, and collaborate in real-time. Free tier supports up to 3 members.',
+    description: 'Invite team members, assign admin or member roles, and collaborate in real-time. Free tier supports up to 5 members.',
   },
   {
     icon: Shield,
     title: 'API Keys & Automation',
     description: 'Generate scoped API keys for CI/CD pipelines. Import, export, and manage documentation programmatically.',
-  },
-  {
-    icon: Sparkles,
-    title: 'AI-Powered (Coming Soon)',
-    description: 'Smart content suggestions, automated summaries, and AI-assisted writing to help you document faster.',
   },
 ];
 
@@ -62,7 +57,7 @@ const plans = [
     name: 'Free',
     price: '$0',
     period: '/month',
-    features: ['Up to 3 team members', 'Unlimited pages', 'Public docs hosting', 'Full-text search', 'Community support'],
+    features: ['Up to 5 team members', 'Unlimited pages', 'Public docs hosting', 'Full-text search', 'Community support'],
     cta: 'Get Started',
     highlighted: false,
   },
@@ -152,7 +147,7 @@ export default function Home() {
                 Star on GitHub
               </Link>
             </div>
-            <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">No credit card required · 3 team members free forever</p>
+            <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">No credit card required · 5 team members free forever</p>
           </div>
         </Container>
       </section>

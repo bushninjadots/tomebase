@@ -83,7 +83,7 @@ const features = [
       'Personal team auto-created when you sign up',
       'Invite team members via shareable invite links (7-day expiry)',
       'Admin and member roles with distinct permissions',
-      'Member limit enforcement: Free (3), Pro (15), Enterprise (100)',
+      'Member limit enforcement: Free (5), Pro (15), Enterprise (100)',
       'Team settings page to manage invites and members',
     ],
   },
@@ -116,7 +116,7 @@ const features = [
     title: 'Pricing Tiers',
     description: 'Start free and scale as you grow. From solo developers to enterprise teams — pick the plan that fits.',
     capabilities: [
-      'Free: 1 project, 50 pages, 3 team members — everything you need to start',
+      'Free: 1 project, 50 pages, 5 team members — everything you need to start',
       'Pro: 10 projects, 500 pages, 15 team members — for growing teams',
       'Enterprise: 100 projects, 10000 pages, 100 team members — unlimited potential',
       'Stripe integration coming for Pro and Enterprise billing',

@@ -41,7 +41,6 @@ const categories = [
       'Revision diff — side-by-side snapshot comparison',
       'Page comments & discussions with @mentions',
       'Stripe billing integration',
-      'AI writing assistant (suggestions, summarize, rewrite)',
     ],
   },
   {

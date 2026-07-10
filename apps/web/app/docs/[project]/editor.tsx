@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Save, Eye, Edit3, FileText, ChevronRight, ArrowRight, Hash, Cloud, CloudOff, Bold, Italic, Heading1, Heading2, Link as LinkIcon, Code, List, ListOrdered, Quote, MoreHorizontal, Copy, Trash2, Layers, BookOpen, Clock, Type, AlertTriangle, Minus, Table, CheckSquare, MessageSquare, X, PanelRightClose, PanelRightOpen } from 'lucide-react';
+import { Save, Eye, Edit3, FileText, ChevronRight, ArrowRight, Hash, Cloud, CloudOff, Bold, Italic, Heading1, Heading2, Link as LinkIcon, Code, Code2, List, ListOrdered, Quote, MoreHorizontal, Copy, Trash2, Layers, BookOpen, Clock, Type, AlertTriangle, Minus, Table, CheckSquare, MessageSquare, X, PanelRightClose, PanelRightOpen } from 'lucide-react';
 import { Markdown } from '@/components/markdown';
 import { ShortcutsModal } from '@/components/shortcuts';
 import { GraphModalOpener } from '@/components/graph';
@@ -412,7 +412,14 @@ export function DocEditor({ project }: { project: Project }) {
             </kbd>{' '}
             to search anytime.
           </p>
-          <div className="mt-8 grid grid-cols-2 gap-3 text-left">
+          <div className="mt-8 grid grid-cols-3 gap-3 text-left">
+            <Link href={`/dashboard/${project.id}/import`} className="rounded-xl border border-gray-100 bg-white p-4 transition-all hover:border-fluid-200 hover:shadow-sm dark:border-gray-800 dark:bg-gray-900">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400">
+                <Code2 className="h-4 w-4" />
+              </div>
+              <p className="mt-2 text-xs font-medium text-gray-900 dark:text-white">Import from Code</p>
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Auto-generate from TS/JS or OpenAPI</p>
+            </Link>
             <div className="rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400">
                 <Bold className="h-4 w-4" />

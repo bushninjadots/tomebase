@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, ChevronRight, ChevronLeft, BookOpen, FileText, Globe, Sparkles } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, BookOpen, FileText, Globe, Users, Code2, Sparkles } from 'lucide-react';
 
 interface TutorialStep {
   title: string;
@@ -14,24 +14,38 @@ interface TutorialStep {
 const steps: TutorialStep[] = [
   {
     title: 'Welcome to TomeBase',
-    description: 'This quick tour will help you get started with your documentation platform.',
+    description: 'Get your team\'s docs online in minutes. Write, link, and publish — no build steps, no separate hosting.',
     icon: Sparkles,
   },
   {
     title: 'Create a Project',
-    description: 'Start by creating a project to organize your documentation. Each project gets its own set of pages and settings.',
+    description: 'Each project is a separate documentation site. Create one to get started with your own pages and settings.',
     icon: BookOpen,
     action: 'Create Project',
     href: '/dashboard/new',
   },
   {
-    title: 'Write Documentation',
-    description: 'Use the Markdown editor with live preview, wiki links to connect pages, and auto-save so you never lose work.',
+    title: 'Import Your Code',
+    description: 'Already have code? Import TypeScript, JavaScript, or OpenAPI specs to auto-generate docs in one click.',
+    icon: Code2,
+    action: 'Import',
+    href: '/dashboard',
+  },
+  {
+    title: 'Write & Link Pages',
+    description: 'Use the Markdown editor with live preview. Connect pages with [[Wiki Links]] and see the knowledge graph.',
     icon: FileText,
   },
   {
+    title: 'Invite Your Team',
+    description: 'Add team members so everyone can contribute. Free plan includes up to 5 members.',
+    icon: Users,
+    action: 'Invite',
+    href: '/dashboard/settings',
+  },
+  {
     title: 'Publish & Share',
-    description: 'Toggle public publishing to share your docs with the world. Each project gets a unique URL.',
+    description: 'Toggle public publishing to share your docs with the world. Each project gets a unique public URL.',
     icon: Globe,
   },
 ];
