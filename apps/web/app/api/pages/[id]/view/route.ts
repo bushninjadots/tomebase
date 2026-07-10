@@ -2,7 +2,7 @@ import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
 
 export async function POST(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
@@ -13,10 +13,26 @@ export async function POST(
       return NextResponse.json({ error: 'Page not found' }, { status: 404 });
     }
 
-    await prisma.docPage.update({
-      where: { id },
-      data: { viewCount: { increment: 1 } },
-    });
+    const now = new Date();
+    
+    await prisma.$transaction([
+      prisma.docPage.update({
+        where: { id },
+        data: { 
+          viewCount: { increment: 1 },
+          lastViewedAt: now
+        },
+      }),
+      prisma.viewEvent.create({
+        data: {
+          pageId: id,
+          referrer: request.headers.get('referer') || null,
+          userAgent: request.headers.get('user-agent') || null,
+          ipAddress: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || null,
+          createdAt: now
+        }
+      })
+    ]);
 
     return NextResponse.json({ success: true });
   } catch (error) {

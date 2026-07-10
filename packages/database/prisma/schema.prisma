@@ -81,26 +81,28 @@ model Project {
 }
 
 model DocPage {
-  id          String   @id @default(cuid())
-  title       String
-  slug        String
-  content     String
-  description String?
-  projectId   String
-  parentId    String?
-  order       Int      @default(0)
-  published   Boolean  @default(false)
-  viewCount   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String    @id @default(cuid())
+  title        String
+  slug         String
+  content      String
+  description  String?
+  projectId    String
+  parentId     String?
+  order        Int       @default(0)
+  published    Boolean   @default(false)
+  viewCount    Int       @default(0)
+  lastViewedAt DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
-  project   Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  parent    DocPage?        @relation("DocPageHierarchy", fields: [parentId], references: [id])
-  children  DocPage[]       @relation("DocPageHierarchy")
-  snapshots        PageSnapshot[]
-  comments         Comment[]
-  bookmarks        Bookmark[]
-  scheduledPublish ScheduledPublish?
+  project      Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  parent       DocPage?        @relation("DocPageHierarchy", fields: [parentId], references: [id])
+  children     DocPage[]       @relation("DocPageHierarchy")
+  snapshots         PageSnapshot[]
+  comments          Comment[]
+  bookmarks         Bookmark[]
+  scheduledPublish  ScheduledPublish?
+  viewEvents        ViewEvent[]
 }
 
 model PageSnapshot {
@@ -233,4 +235,19 @@ model Comment {
   replies Comment[]  @relation("CommentReplies")
 
   @@index([pageId, createdAt])
+}
+
+model ViewEvent {
+  id        String   @id @default(cuid())
+  pageId    String
+  visitorId String?
+  referrer  String?
+  userAgent String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  page DocPage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@index([pageId, createdAt])
+  @@index([createdAt])
 }

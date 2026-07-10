@@ -16,6 +16,12 @@ interface GraphNode {
   degree: number;
   targetX?: number;
   targetY?: number;
+  health?: {
+    healthScore: number;
+    freshness: 'fresh' | 'aging' | 'stale' | 'critical';
+    engagement: 'high' | 'medium' | 'low' | 'none';
+    quality: 'rich' | 'adequate' | 'thin' | 'empty';
+  };
 }
 
 interface GraphEdge {
@@ -26,6 +32,12 @@ interface GraphEdge {
 interface GraphViewProps {
   projectId: string;
   pages: { id: string; title: string; slug: string; content: string }[];
+  healthData?: Map<string, {
+    healthScore: number;
+    freshness: 'fresh' | 'aging' | 'stale' | 'critical';
+    engagement: 'high' | 'medium' | 'low' | 'none';
+    quality: 'rich' | 'adequate' | 'thin' | 'empty';
+  }>;
 }
 
 interface GraphModalProps extends GraphViewProps {
@@ -47,6 +59,25 @@ const NODE_COLORS = [
 function getNodeColor(nodeId: string): string {
   const idx = nodeId.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
   return NODE_COLORS[idx % NODE_COLORS.length]!.fill;
+}
+
+function getHealthColor(health: {
+  healthScore: number;
+  freshness: 'fresh' | 'aging' | 'stale' | 'critical';
+}): string {
+  if (health.healthScore >= 80) return '#10b981';
+  if (health.healthScore >= 60) return '#f59e0b';
+  if (health.healthScore >= 40) return '#f97316';
+  return '#ef4444';
+}
+
+function getFreshnessColor(freshness: 'fresh' | 'aging' | 'stale' | 'critical'): string {
+  switch (freshness) {
+    case 'fresh': return '#10b981';
+    case 'aging': return '#f59e0b';
+    case 'stale': return '#f97316';
+    case 'critical': return '#ef4444';
+  }
 }
 
 function simulateForceLayout(
@@ -129,7 +160,7 @@ function simulateForceLayout(
   }
 }
 
-export function GraphButton({ projectId, pages }: GraphViewProps) {
+export function GraphButton({ projectId, pages, healthData }: GraphViewProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -146,6 +177,7 @@ export function GraphButton({ projectId, pages }: GraphViewProps) {
         <GraphModal
           projectId={projectId}
           pages={pages}
+          healthData={healthData}
           onClose={() => setOpen(false)}
         />
       )}
@@ -205,6 +237,7 @@ function GraphModal({ projectId, pages, onClose, currentPageId }: GraphModalProp
       slug: p.slug,
       x: 0, y: 0, vx: 0, vy: 0,
       degree: degree.get(p.id) || 0,
+      health: healthData?.get(p.id),
     }));
 
     const localIds = new Set<string>();
@@ -504,7 +537,7 @@ function GraphModal({ projectId, pages, onClose, currentPageId }: GraphModalProp
                   const isCurrent = node.id === currentPageId;
                   const baseRadius = Math.max(20, Math.min(36, 16 + node.degree * 4));
                   const radius = isHovered ? baseRadius + 8 : baseRadius;
-                  const color = getNodeColor(node.id);
+                  const color = node.health ? getHealthColor(node.health) : getNodeColor(node.id);
                   const fontSize = node.title.length > 14 ? '9px' : node.title.length > 10 ? '10px' : '11px';
 
                   return (
@@ -698,6 +731,40 @@ function GraphModal({ projectId, pages, onClose, currentPageId }: GraphModalProp
                     <p className="text-xs text-gray-500">
                       {hoveredNode.degree} connection{hoveredNode.degree !== 1 ? 's' : ''}
                     </p>
+                    {hoveredNode.health && (
+                      <div className="space-y-1 mt-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] text-gray-400">Health</span>
+                          <span className={`text-[10px] font-medium ${
+                            hoveredNode.health.healthScore >= 80 ? 'text-green-600' :
+                            hoveredNode.health.healthScore >= 60 ? 'text-amber-600' :
+                            hoveredNode.health.healthScore >= 40 ? 'text-orange-600' : 'text-red-600'
+                          }`}>
+                            {hoveredNode.health.healthScore}%
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] text-gray-400">Freshness</span>
+                          <span className={`text-[10px] font-medium ${
+                            hoveredNode.health.freshness === 'fresh' ? 'text-green-600' :
+                            hoveredNode.health.freshness === 'aging' ? 'text-amber-600' :
+                            hoveredNode.health.freshness === 'stale' ? 'text-orange-600' : 'text-red-600'
+                          }`}>
+                            {hoveredNode.health.freshness}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] text-gray-400">Engagement</span>
+                          <span className={`text-[10px] font-medium ${
+                            hoveredNode.health.engagement === 'high' ? 'text-green-600' :
+                            hoveredNode.health.engagement === 'medium' ? 'text-amber-600' :
+                            hoveredNode.health.engagement === 'low' ? 'text-orange-600' : 'text-red-600'
+                          }`}>
+                            {hoveredNode.health.engagement}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                     <button
                       onClick={() => {
                         onClose();
@@ -742,6 +809,33 @@ function GraphModal({ projectId, pages, onClose, currentPageId }: GraphModalProp
                   </div>
                 </div>
               )}
+
+              {healthData && healthData.size > 0 && (
+                <>
+                  <div className="border-t border-gray-200 my-3" />
+                  <div>
+                    <p className="text-[11px] text-gray-500 mb-1">Health Score</p>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="inline-block w-3 h-3 rounded-full bg-green-500" />
+                        <span className="text-[10px] text-gray-400">80-100% (Excellent)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="inline-block w-3 h-3 rounded-full bg-amber-500" />
+                        <span className="text-[10px] text-gray-400">60-79% (Good)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="inline-block w-3 h-3 rounded-full bg-orange-500" />
+                        <span className="text-[10px] text-gray-400">40-59% (Needs Attention)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="inline-block w-3 h-3 rounded-full bg-red-500" />
+                        <span className="text-[10px] text-gray-400">0-39% (Critical)</span>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -769,6 +863,35 @@ function GraphModal({ projectId, pages, onClose, currentPageId }: GraphModalProp
 
 export function GraphModalOpener(props: GraphViewProps & { currentPageId?: string }) {
   const [open, setOpen] = useState(false);
+  const [healthData, setHealthData] = useState<Map<string, {
+    healthScore: number;
+    freshness: 'fresh' | 'aging' | 'stale' | 'critical';
+    engagement: 'high' | 'medium' | 'low' | 'none';
+    quality: 'rich' | 'adequate' | 'thin' | 'empty';
+  }> | null>(null);
+
+  useEffect(() => {
+    if (open && !healthData) {
+      fetch(`/api/projects/${props.projectId}/health`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.pages) {
+            const map = new Map();
+            for (const page of data.pages) {
+              map.set(page.id, {
+                healthScore: page.healthScore,
+                freshness: page.freshness,
+                engagement: page.engagement,
+                quality: page.quality
+              });
+            }
+            setHealthData(map);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [open, healthData, props.projectId]);
+
   return (
     <>
       <button
@@ -782,6 +905,7 @@ export function GraphModalOpener(props: GraphViewProps & { currentPageId?: strin
         <GraphModal
           projectId={props.projectId}
           pages={props.pages}
+          healthData={healthData || undefined}
           currentPageId={props.currentPageId}
           onClose={() => setOpen(false)}
         />

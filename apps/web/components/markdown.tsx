@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import type { Components } from 'react-markdown';
 import { preprocessWikiLinks } from '@/lib/wiki';
+import { CodeBlock } from '@/components/interactive-code-block';
 
 interface MarkdownProps {
   content: string;
@@ -110,12 +111,16 @@ const components: Components = {
         </code>
       );
     }
+    
+    const language = className?.replace('language-', '') || 'text';
+    const code = typeof children === 'string' ? children : String(children);
+    
     return (
-      <pre className="overflow-x-auto rounded-xl bg-gray-900 p-4 text-sm text-gray-100">
-        <code className={className} {...props}>
-          {children}
-        </code>
-      </pre>
+      <CodeBlock
+        code={code}
+        language={language}
+        showLineNumbers={code.split('\n').length > 5}
+      />
     );
   },
   pre: ({ children }) => <>{children}</>,

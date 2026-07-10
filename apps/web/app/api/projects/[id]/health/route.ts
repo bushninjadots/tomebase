@@ -1,100 +1,88 @@
 import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { extractWikiLinks } from '@/lib/wiki';
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { id } = await params;
-
-    const project = await prisma.project.findFirst({
-      where: {
-        id,
-        team: { members: { some: { userId: session.user.id } } },
-      },
-    });
-    if (!project) {
-      return NextResponse.json({ error: 'Project not found' }, { status: 404 });
-    }
+    const { id: projectId } = await params;
 
     const pages = await prisma.docPage.findMany({
-      where: { projectId: id },
-      select: { id: true, title: true, slug: true, content: true, published: true, createdAt: true },
-      orderBy: { title: 'asc' },
-    });
-
-    const pageTitles = new Set(pages.map((p) => p.title.toLowerCase()));
-    const pageTitleMap = new Map(pages.map((p) => [p.title.toLowerCase(), p]));
-
-    const brokenLinks: {
-      sourceTitle: string;
-      sourceId: string;
-      linkText: string;
-    }[] = [];
-
-    const linkCounts = new Map<string, number>();
-    for (const p of pages) {
-      linkCounts.set(p.title.toLowerCase(), 0);
-    }
-
-    for (const page of pages) {
-      const links = extractWikiLinks(page.content);
-      for (const link of links) {
-        const normalized = link.toLowerCase();
-        const existing = linkCounts.get(normalized);
-        if (existing !== undefined) {
-          linkCounts.set(normalized, existing + 1);
-        }
-        if (!pageTitles.has(normalized)) {
-          brokenLinks.push({
-            sourceTitle: page.title,
-            sourceId: page.id,
-            linkText: link,
-          });
-        }
+      where: { projectId },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        published: true,
+        viewCount: true,
+        lastViewedAt: true,
+        updatedAt: true,
+        createdAt: true,
+        content: true
       }
-    }
-
-    const orphans = pages
-      .filter((p) => {
-        const normalized = p.title.toLowerCase();
-        const inbound = linkCounts.get(normalized) ?? 0;
-        return inbound === 0;
-      })
-      .map((p) => ({
-        id: p.id,
-        title: p.title,
-        slug: p.slug,
-        published: p.published,
-        createdAt: p.createdAt,
-      }));
-
-    const emptyPages = pages
-      .filter((p) => !p.content || p.content.trim().length === 0)
-      .map((p) => ({
-        id: p.id,
-        title: p.title,
-        slug: p.slug,
-        published: p.published,
-        createdAt: p.createdAt,
-      }));
-
-    return NextResponse.json({
-      totalPages: pages.length,
-      brokenLinks,
-      orphans,
-      emptyPages,
     });
+
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const pageHealth = pages.map(page => {
+      const daysSinceUpdate = Math.floor(
+        (Date.now() - new Date(page.updatedAt).getTime()) / (1000 * 60 * 60 * 24)
+      );
+      const daysSinceCreation = Math.floor(
+        (Date.now() - new Date(page.createdAt).getTime()) / (1000 * 60 * 60 * 24)
+      );
+      
+      let freshness: 'fresh' | 'aging' | 'stale' | 'critical' = 'fresh';
+      if (daysSinceUpdate > 90) freshness = 'critical';
+      else if (daysSinceUpdate > 30) freshness = 'stale';
+      else if (daysSinceUpdate > 14) freshness = 'aging';
+
+      const engagement: 'high' | 'medium' | 'low' | 'none' = 
+        page.viewCount >= 10 ? 'high' :
+        page.viewCount >= 5 ? 'medium' :
+        page.viewCount >= 1 ? 'low' : 'none';
+
+      const contentLength = page.content?.length || 0;
+      const quality: 'rich' | 'adequate' | 'thin' | 'empty' =
+        contentLength >= 1000 ? 'rich' :
+        contentLength >= 200 ? 'adequate' :
+        contentLength > 0 ? 'thin' : 'empty';
+
+      let healthScore = 100;
+      if (freshness === 'critical') healthScore -= 40;
+      else if (freshness === 'stale') healthScore -= 25;
+      else if (freshness === 'aging') healthScore -= 10;
+
+      if (engagement === 'none') healthScore -= 30;
+      else if (engagement === 'low') healthScore -= 15;
+
+      if (quality === 'empty') healthScore -= 30;
+      else if (quality === 'thin') healthScore -= 15;
+
+      healthScore = Math.max(0, healthScore);
+
+      return {
+        id: page.id,
+        title: page.title,
+        slug: page.slug,
+        published: page.published,
+        viewCount: page.viewCount,
+        lastViewedAt: page.lastViewedAt,
+        updatedAt: page.updatedAt,
+        daysSinceUpdate,
+        daysSinceCreation,
+        freshness,
+        engagement,
+        quality,
+        healthScore
+      };
+    });
+
+    return NextResponse.json({ pages: pageHealth });
   } catch (error) {
-    console.error('Health check error:', error);
-    return NextResponse.json({ error: 'Failed to check project health' }, { status: 500 });
+    console.error('Failed to fetch health data:', error);
+    return NextResponse.json({ error: 'Failed to fetch health data' }, { status: 500 });
   }
 }

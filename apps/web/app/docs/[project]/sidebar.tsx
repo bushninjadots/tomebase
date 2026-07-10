@@ -10,7 +10,7 @@ import {
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { extractTags } from '@/lib/wiki';
 import { SearchOverlay } from '@/components/search';
-import { GraphButton } from '@/components/graph';
+import { GraphButtonWithHealth } from '@/components/graph-button-with-health';
 import { templates } from '@/lib/templates';
 
 interface Page {
@@ -553,7 +553,7 @@ export function DocSidebar({ project }: { project: Project }) {
       </div>
 
       <div className="border-t border-gray-100 p-3 space-y-1 dark:border-gray-800">
-        <GraphButton projectId={project.id} pages={project.pages} />
+        <GraphButtonWithHealth projectId={project.id} pages={project.pages} />
         <Link
           href={`/dashboard/${project.id}/import`}
           className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
