@@ -185,7 +185,7 @@ export function GraphButton({ projectId, pages, healthData }: GraphViewProps) {
   );
 }
 
-function GraphModal({ projectId, pages, onClose, currentPageId }: GraphModalProps) {
+function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: GraphModalProps) {
   const router = useRouter();
   const svgRef = useRef<SVGSVGElement>(null);
   const dragRef = useRef<{
