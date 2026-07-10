@@ -10,6 +10,7 @@ import { UsageMeter } from '@/components/usage-meter';
 import { OnboardingChecklist } from '@/components/onboarding-checklist';
 import { GuidedTutorial } from '@/components/guided-tutorial';
 import { GlobalSearch } from '@/components/global-search';
+import { WelcomeHelp } from '@/components/welcome-help';
 import { formatDistanceToNow } from 'date-fns';
 
 export default async function DashboardPage() {
@@ -95,6 +96,7 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <GuidedTutorial projectId={projects[0]?.id} />
+      <WelcomeHelp />
       <nav className="border-b border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="flex h-16 items-center justify-between">
