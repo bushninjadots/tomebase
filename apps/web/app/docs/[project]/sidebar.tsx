@@ -5,9 +5,9 @@ import { useRouter, usePathname } from 'next/navigation';
 import {
   Plus, BookOpen, Code2, Settings, ChevronDown, ChevronRight,
   ArrowUp, ArrowDown, IndentIncrease, IndentDecrease,
-  Trash2, Hash, Tags, Download, HeartPulse,
+  Trash2, Hash, Download, HeartPulse, X, FileText, Sparkles,
 } from 'lucide-react';
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { extractTags } from '@/lib/wiki';
 import { SearchOverlay } from '@/components/search';
 import { GraphButton } from '@/components/graph';
@@ -84,17 +84,21 @@ function PageRow({
   return (
     <div>
       <div
-        className={`group flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm transition-colors ${
+        className={`group flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm transition-all duration-150 ${
           isActive
-            ? 'bg-fluid-50 text-fluid-700 font-medium dark:bg-fluid-900/30 dark:text-fluid-400'
+            ? 'bg-fluid-50 text-fluid-700 font-medium shadow-sm dark:bg-fluid-900/30 dark:text-fluid-400'
             : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white'
         }`}
         style={{ paddingLeft: `${8 + node.depth * 16}px` }}
       >
         <button
           onClick={() => setExpanded(!expanded)}
-          className={`shrink-0 rounded p-0.5 text-gray-400 hover:text-gray-600 dark:text-gray-600 dark:hover:text-gray-400 transition-colors ${
+          className={`shrink-0 rounded p-0.5 transition-colors ${
             !hasChildren && 'invisible'
+          } ${
+            isActive
+              ? 'text-fluid-600 hover:text-fluid-700 dark:text-fluid-400 dark:hover:text-fluid-300'
+              : 'text-gray-400 hover:text-gray-600 dark:text-gray-600 dark:hover:text-gray-400'
           }`}
         >
           {expanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
@@ -104,7 +108,7 @@ function PageRow({
           href={`/docs/${projectId}/${node.slug}`}
           className="flex flex-1 items-center gap-1.5 overflow-hidden"
         >
-          <BookOpen className="h-3.5 w-3.5 shrink-0 text-gray-400 dark:text-gray-500" />
+          <BookOpen className={`h-3.5 w-3.5 shrink-0 ${isActive ? 'text-fluid-500' : 'text-gray-400 dark:text-gray-500'}`} />
           <span className="truncate">{node.title}</span>
           {nodeTags.length > 0 && (
             <span className="flex items-center gap-0.5 shrink-0">
@@ -181,6 +185,56 @@ function PageRow({
   );
 }
 
+function TemplateModal({
+  onClose,
+  onSelect,
+}: {
+  onClose: () => void;
+  onSelect: (templateId: string) => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-gray-700 dark:bg-gray-900">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400">
+              <Sparkles className="h-4 w-4" />
+            </div>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Choose a template</h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+          Start with a pre-built structure or begin from scratch.
+        </p>
+        <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto">
+          {templates.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => {
+                onSelect(t.id);
+                onClose();
+              }}
+              className="flex flex-col items-start rounded-xl border border-gray-100 bg-white p-4 text-left transition-all hover:border-fluid-200 hover:shadow-md dark:border-gray-800 dark:bg-gray-800/50 dark:hover:border-fluid-700"
+            >
+              <span className="text-sm font-medium text-gray-900 dark:text-white">{t.name}</span>
+              <span className="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-2">{t.description}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function DocSidebar({ project }: { project: Project }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -191,6 +245,14 @@ export function DocSidebar({ project }: { project: Project }) {
   const [newParentId, setNewParentId] = useState<string | null>(null);
   const [newTemplate, setNewTemplate] = useState('blank');
   const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const titleInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isCreating && titleInputRef.current) {
+      titleInputRef.current.focus();
+    }
+  }, [isCreating]);
 
   const allTags = useMemo(() => {
     const freq = new Map<string, number>();
@@ -332,51 +394,98 @@ export function DocSidebar({ project }: { project: Project }) {
         <div className="mb-3">
           <SearchOverlay projectId={project.id} pages={project.pages} />
         </div>
-        <div className="mb-3 flex items-center justify-between">
+
+        {/* Tags section at top */}
+        {allTags.length > 0 && (
+          <div className="mb-4">
+            <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-gray-400 mb-2 dark:text-gray-500">
+              <Hash className="h-3 w-3 dark:text-gray-500" />
+              Tags
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {allTags.slice(0, 8).map(({ tag, count }) => (
+                <button
+                  key={tag}
+                  onClick={() => setActiveTag(activeTag === tag ? null : tag)}
+                  className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${
+                    activeTag === tag
+                      ? 'bg-fluid-600 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  {tag}
+                  <span className="opacity-60">{count}</span>
+                </button>
+              ))}
+              {allTags.length > 8 && (
+                <span className="text-xs text-gray-400 dark:text-gray-500">+{allTags.length - 8} more</span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Pages section */}
+        <div className="mb-2 flex items-center justify-between">
           <span className="text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500">
             Pages
           </span>
-          <button
-            onClick={() => {
-              setNewTitle('');
-              setNewParentId(null);
-              setNewTemplate('blank');
-              setIsCreating((v) => !v);
-            }}
-            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
-          >
-            <Plus className="h-3.5 w-3.5" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setShowTemplateModal(true)}
+              className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
+              title="Templates"
+            >
+              <FileText className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={() => {
+                setNewTitle('');
+                setNewParentId(null);
+                setNewTemplate('blank');
+                setIsCreating((v) => !v);
+              }}
+              className={`rounded p-1 transition-colors ${
+                isCreating
+                  ? 'bg-fluid-100 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400'
+                  : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+              }`}
+            >
+              <Plus className="h-3.5 w-3.5" />
+            </button>
+          </div>
         </div>
 
+        {/* Quick create form */}
         {isCreating && (
-          <form onSubmit={createPage} className="mb-3 space-y-2">
+          <form onSubmit={createPage} className="mb-3 rounded-xl border border-fluid-200 bg-white p-3 dark:border-fluid-800 dark:bg-gray-800/50">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400">
+                <Plus className="h-3.5 w-3.5" />
+              </div>
+              <span className="text-xs font-medium text-gray-600 dark:text-gray-400">New page</span>
+              <button
+                type="button"
+                onClick={() => setIsCreating(false)}
+                className="ml-auto rounded p-0.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
             <input
+              ref={titleInputRef}
               type="text"
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              placeholder="New page title..."
+              placeholder="Page title..."
               className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm placeholder:text-gray-400 focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-500"
-              autoFocus
             />
-            <select
-              value={newTemplate}
-              onChange={(e) => setNewTemplate(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-500 focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300"
-            >
-              {templates.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
             {project.pages.length > 0 && (
               <select
                 value={newParentId ?? ''}
                 onChange={(e) => setNewParentId(e.target.value || null)}
-                className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-500 focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                className="mt-2 w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-500 focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300"
               >
-                <option value="">Top level (no parent)</option>
+                <option value="">Top level</option>
                 {project.pages.map((p) => (
                   <option key={p.id} value={p.id}>
                     Under: {p.title}
@@ -384,9 +493,26 @@ export function DocSidebar({ project }: { project: Project }) {
                 ))}
               </select>
             )}
+            <div className="mt-2 flex items-center gap-2">
+              <button
+                type="submit"
+                disabled={!newTitle.trim()}
+                className="flex-1 rounded-lg bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors disabled:opacity-50 dark:bg-fluid-600 dark:hover:bg-fluid-700"
+              >
+                Create
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsCreating(false)}
+                className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800"
+              >
+                Cancel
+              </button>
+            </div>
           </form>
         )}
 
+        {/* Page tree */}
         <nav className="space-y-0.5">
           {tree.map((node) => (
             <PageRow
@@ -399,74 +525,35 @@ export function DocSidebar({ project }: { project: Project }) {
               onDelete={deletePage}
             />
           ))}
-        </nav>
-
-        <div className="mt-4">
-          <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-gray-400 mb-2 dark:text-gray-500">
-            <Hash className="h-3 w-3 dark:text-gray-500" />
-            Tags
-            <span className="group relative ml-auto">
-              <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-gray-200 text-[9px] text-gray-500 cursor-help font-bold dark:bg-gray-700 dark:text-gray-400">?</span>
-              <span className="absolute right-0 top-full mt-1 w-56 rounded-xl border border-gray-200 bg-white p-3 shadow-lg text-[11px] font-normal text-gray-600 normal-case opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
-                Use <code className="text-[10px] bg-gray-100 px-1 rounded dark:bg-gray-700 dark:text-gray-300">#tag</code> anywhere in your page content. Tags appear here and can be used to filter pages. Click a tag to show only pages with that tag.
-              </span>
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {allTags.map(({ tag, count }) => (
+          {tree.length === 0 && !activeTag && (
+            <div className="py-8 text-center">
+              <BookOpen className="mx-auto h-8 w-8 text-gray-300 dark:text-gray-600" />
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">No pages yet</p>
               <button
-                key={tag}
-                onClick={() => setActiveTag(activeTag === tag ? null : tag)}
-                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${
-                  activeTag === tag
-                    ? 'bg-fluid-600 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
-                }`}
+                onClick={() => setIsCreating(true)}
+                className="mt-2 text-sm font-medium text-fluid-600 hover:text-fluid-700 dark:text-fluid-400 dark:hover:text-fluid-300"
               >
-                {tag}
-                <span className="opacity-60">{count}</span>
+                Create your first page
               </button>
-            ))}
-            {allTags.length === 0 && (
-              <span className="text-xs text-gray-400 italic dark:text-gray-500">None yet</span>
-            )}
-          </div>
-        </div>
+            </div>
+          )}
+          {tree.length === 0 && activeTag && (
+            <div className="py-8 text-center">
+              <Hash className="mx-auto h-8 w-8 text-gray-300 dark:text-gray-600" />
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">No pages with #{activeTag}</p>
+              <button
+                onClick={() => setActiveTag(null)}
+                className="mt-2 text-sm font-medium text-fluid-600 hover:text-fluid-700 dark:text-fluid-400 dark:hover:text-fluid-300"
+              >
+                Clear filter
+              </button>
+            </div>
+          )}
+        </nav>
       </div>
 
       <div className="border-t border-gray-100 p-3 space-y-1 dark:border-gray-800">
         <GraphButton projectId={project.id} pages={project.pages} />
-        <button
-          onClick={() => setActiveTag(null)}
-          className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors w-full ${
-            allTags.length > 0
-              ? 'text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300'
-              : 'text-gray-300 dark:text-gray-600'
-          }`}
-        >
-          <Tags className="h-4 w-4 shrink-0 dark:text-gray-500" />
-          <span className="flex-1 text-left">All Tags</span>
-          <span className="text-xs text-gray-400 dark:text-gray-500">{allTags.length}</span>
-        </button>
-        {allTags.length > 0 && (
-          <div className="ml-6 space-y-0.5 max-h-32 overflow-y-auto">
-            {allTags.slice(0, 15).map(({ tag, count }) => (
-              <button
-                key={tag}
-                onClick={() => setActiveTag(activeTag === tag ? null : tag)}
-                className={`flex w-full items-center gap-2 rounded-md px-2 py-1 text-xs transition-colors ${
-                  activeTag === tag
-                    ? 'bg-fluid-50 text-fluid-700 font-medium dark:bg-fluid-900/30 dark:text-fluid-400'
-                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300'
-                }`}
-              >
-                <Hash className="h-3 w-3 shrink-0 opacity-60 dark:text-gray-500" />
-                <span className="truncate flex-1 text-left">{tag.replace(/^#/, '')}</span>
-                <span className="opacity-50 dark:text-gray-500">{count}</span>
-              </button>
-            ))}
-          </div>
-        )}
         <Link
           href={`/dashboard/${project.id}/import`}
           className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
@@ -496,6 +583,17 @@ export function DocSidebar({ project }: { project: Project }) {
           Settings
         </Link>
       </div>
+
+      {/* Template modal */}
+      {showTemplateModal && (
+        <TemplateModal
+          onClose={() => setShowTemplateModal(false)}
+          onSelect={(templateId) => {
+            setNewTemplate(templateId);
+            setIsCreating(true);
+          }}
+        />
+      )}
     </aside>
   );
 }

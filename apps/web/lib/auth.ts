@@ -6,8 +6,7 @@ import { PrismaAdapter } from '@auth/prisma-adapter';
 import { prisma } from '@fluid/database';
 import bcrypt from 'bcryptjs';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const result: any = NextAuth({
+const result: ReturnType<typeof NextAuth> = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: 'jwt' },
   providers: [
