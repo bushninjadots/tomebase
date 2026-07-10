@@ -1,10 +1,7 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { X, Search, Keyboard, BookOpen, FileUp } from 'lucide-react';
-
-interface WelcomeHelpProps {
-  onClose?: () => void;
-}
 
 const tips = [
   { icon: Search, title: 'Global Search', description: 'Press ⌘K to search across all your projects and pages instantly.' },
@@ -13,17 +10,31 @@ const tips = [
   { icon: FileUp, title: 'Import Files', description: 'Import Markdown, TypeScript, or OpenAPI specs from the sidebar or project settings.' },
 ];
 
-export function WelcomeHelp({ onClose = () => {} }: WelcomeHelpProps) {
+export function WelcomeHelp() {
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    const dismissed = localStorage.getItem('fluid-welcome-dismissed');
+    if (!dismissed) setShow(true);
+  }, []);
+
+  function handleClose() {
+    setShow(false);
+    localStorage.setItem('fluid-welcome-dismissed', 'true');
+  }
+
+  if (!show) return null;
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/20"
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
     >
-      <div className="relative w-full max-w-lg rounded-2xl border border-theme-border bg-theme-page shadow-2xl">
+      <div className="relative w-full max-w-lg rounded-2xl border border-theme-border bg-theme-page shadow-2xl mx-4">
         <div className="flex items-center justify-between border-b border-theme-border px-6 py-4">
           <h2 className="text-lg font-semibold text-theme-main">Welcome to TomeBase</h2>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="rounded-lg p-1 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
           >
             <X className="h-5 w-5" />
@@ -46,8 +57,8 @@ export function WelcomeHelp({ onClose = () => {} }: WelcomeHelpProps) {
 
         <div className="flex justify-end border-t border-theme-border px-6 py-4">
           <button
-            onClick={onClose}
-            className="rounded-lg bg-theme-main px-4 py-2 text-sm font-medium text-theme-page hover:bg-gray-800 transition-colors"
+            onClick={handleClose}
+            className="rounded-lg bg-theme-main px-4 py-2 text-sm font-medium text-theme-page hover:opacity-80 transition-opacity"
           >
             Got it
           </button>

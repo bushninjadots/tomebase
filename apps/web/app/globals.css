@@ -107,24 +107,24 @@ body {
 
 :root.dark,
 :root[data-theme="dark"] {
-  --bg-page: #0f172a;
-  --bg-card: #1e293b;
-  --bg-hover: #334155;
-  --text-main: #f1f5f9;
-  --text-subtle: #94a3b8;
-  --text-muted: #64748b;
-  --border-theme: #334155;
+  --bg-page: #161618;
+  --bg-card: #202022;
+  --bg-hover: #2a2a2e;
+  --text-main: #ededed;
+  --text-subtle: #a0a0a8;
+  --text-muted: #6b6b76;
+  --border-theme: #2a2a2e;
   --accent: #3b82f6;
   --accent-hover: #60a5fa;
-  --accent-light: #1e3a5f;
+  --accent-light: #1a2744;
   --accent-ring: rgba(59, 130, 246, 0.2);
-  --graph-bg: #0f172a;
-  --graph-grid: #1e293b;
-  --graph-edge: #475569;
+  --graph-bg: #161618;
+  --graph-grid: #202022;
+  --graph-edge: #3a3a40;
   --graph-edge-highlight: #3b82f6;
-  --graph-node-label-bg: #1e293b;
-  --graph-node-label-border: #334155;
-  --graph-node-label-text: #f1f5f9;
+  --graph-node-label-bg: #202022;
+  --graph-node-label-border: #2a2a2e;
+  --graph-node-label-text: #ededed;
 }
 
 :root[data-theme="gruvbox"] {

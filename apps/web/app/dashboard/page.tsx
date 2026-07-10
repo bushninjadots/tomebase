@@ -100,8 +100,8 @@ export default async function DashboardPage() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{team.name}</h1>
-              <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+              <h1 className="text-2xl font-bold text-theme-main">{team.name}</h1>
+              <span className="rounded-full bg-theme-hover px-2.5 py-0.5 text-xs font-medium text-theme-subtle">
                 {memberCount} {memberCount === 1 ? 'member' : 'members'}
               </span>
               <span className="rounded-full bg-fluid-50 px-2.5 py-0.5 text-xs font-medium text-fluid-700 capitalize dark:bg-fluid-900/30 dark:text-fluid-400">
@@ -121,7 +121,7 @@ export default async function DashboardPage() {
             )}
             <Link
               href="/dashboard/new"
-              className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg bg-theme-main px-4 py-2 text-sm font-medium text-theme-page hover:opacity-80 transition-opacity"
             >
               <Plus className="h-4 w-4" />
               New Project
@@ -140,14 +140,14 @@ export default async function DashboardPage() {
         <div className="mb-8 grid gap-6 lg:grid-cols-4">
           <div className="lg:col-span-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {stats.map((stat) => (
-            <div key={stat.label} className="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
+            <div key={stat.label} className="rounded-xl border border-theme-border bg-theme-page p-5 border-theme-border bg-theme-page">
               <div className="flex items-center gap-3">
                 <div className={`rounded-lg p-2 ${stat.color}`}>
                   <stat.icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{stat.label}</p>
+                  <p className="text-2xl font-bold text-theme-main">{stat.value}</p>
+                  <p className="text-xs text-theme-subtle">{stat.label}</p>
                 </div>
               </div>
             </div>
@@ -164,26 +164,26 @@ export default async function DashboardPage() {
         {recentPages.length > 0 && (
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-4">
-              <Clock className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Recently Updated</h2>
+              <Clock className="h-4 w-4 text-theme-muted" />
+              <h2 className="text-sm font-semibold text-theme-main">Recently Updated</h2>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {recentPages.map((page) => (
                 <Link
                   key={page.id}
                   href={`/docs/${page.projectId}/${page.slug}`}
-                  className="group flex items-center justify-between rounded-xl border border-gray-100 bg-white px-4 py-3 transition-all hover:border-fluid-200 hover:shadow-sm dark:border-gray-800 dark:bg-gray-900 dark:hover:border-fluid-700"
+                  className="group flex items-center justify-between rounded-xl border border-theme-border bg-theme-page px-4 py-3 transition-all hover:border-fluid-200 hover:shadow-sm dark:hover:border-fluid-700"
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-gray-900 group-hover:text-fluid-600 transition-colors dark:text-white dark:group-hover:text-fluid-400">
                       {page.title}
                     </p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">
+                    <p className="text-xs text-theme-muted">
                       {page.project.name}
                       {page.viewCount > 0 && ` · ${page.viewCount} view${page.viewCount !== 1 ? 's' : ''}`}
                     </p>
                   </div>
-                  <ArrowRight className="ml-3 h-4 w-4 shrink-0 text-gray-300 group-hover:text-fluid-500 transition-colors dark:text-gray-600 dark:group-hover:text-fluid-400" />
+                  <ArrowRight className="ml-3 h-4 w-4 shrink-0 text-theme-border group-hover:text-fluid-500 transition-colors dark:group-hover:text-fluid-400" />
                 </Link>
               ))}
             </div>
@@ -194,7 +194,7 @@ export default async function DashboardPage() {
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-4">
               <Bookmark className="h-4 w-4 text-amber-500" />
-              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Bookmarked</h2>
+              <h2 className="text-sm font-semibold text-theme-main">Bookmarked</h2>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {bookmarkedPages.map((page) => (
@@ -207,7 +207,7 @@ export default async function DashboardPage() {
                     <p className="truncate text-sm font-medium text-gray-900 group-hover:text-amber-700 transition-colors dark:text-white dark:group-hover:text-amber-400">
                       {page.title}
                     </p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">
+                    <p className="text-xs text-theme-muted">
                       {page.project.name}
                     </p>
                   </div>
@@ -221,30 +221,30 @@ export default async function DashboardPage() {
         {topPages.length > 0 && totalViewCount > 0 && (
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-4">
-              <Eye className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Most Viewed</h2>
+              <Eye className="h-4 w-4 text-theme-muted" />
+              <h2 className="text-sm font-semibold text-theme-main">Most Viewed</h2>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {topPages.map((page, i) => (
                 <Link
                   key={page.id}
                   href={`/docs/${page.projectId}/${page.slug}`}
-                  className="group flex items-center justify-between rounded-xl border border-gray-100 bg-white px-4 py-3 transition-all hover:border-fluid-200 hover:shadow-sm dark:border-gray-800 dark:bg-gray-900 dark:hover:border-fluid-700"
+                  className="group flex items-center justify-between rounded-xl border border-theme-border bg-theme-page px-4 py-3 transition-all hover:border-fluid-200 hover:shadow-sm dark:hover:border-fluid-700"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <span className="shrink-0 flex items-center justify-center w-6 h-6 rounded-md bg-gray-100 text-[11px] font-bold text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                    <span className="shrink-0 flex items-center justify-center w-6 h-6 rounded-md bg-theme-hover text-[11px] font-bold text-theme-subtle">
                       {i + 1}
                     </span>
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-gray-900 group-hover:text-fluid-600 transition-colors dark:text-white dark:group-hover:text-fluid-400">
                         {page.title}
                       </p>
-                      <p className="text-xs text-gray-400 dark:text-gray-500">
+                      <p className="text-xs text-theme-muted">
                         {page.project.name}
                       </p>
                     </div>
                   </div>
-                  <span className="ml-3 shrink-0 text-xs font-medium text-gray-500 dark:text-gray-400">
+                  <span className="ml-3 shrink-0 text-xs font-medium text-theme-subtle">
                     {page.viewCount} view{page.viewCount !== 1 ? 's' : ''}
                   </span>
                 </Link>
@@ -256,29 +256,29 @@ export default async function DashboardPage() {
         {recentComments.length > 0 && (
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-4">
-              <MessageSquare className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Recent Activity</h2>
+              <MessageSquare className="h-4 w-4 text-theme-muted" />
+              <h2 className="text-sm font-semibold text-theme-main">Recent Activity</h2>
             </div>
             <div className="space-y-2">
               {recentComments.map((comment) => (
                 <Link
                   key={comment.id}
                   href={`/docs/${comment.page.projectId}/${comment.page.slug}`}
-                  className="flex items-start gap-3 rounded-xl border border-gray-100 bg-white px-4 py-3 transition-all hover:border-fluid-200 hover:shadow-sm dark:border-gray-800 dark:bg-gray-900 dark:hover:border-fluid-700"
+                  className="flex items-start gap-3 rounded-xl border border-theme-border bg-theme-page px-4 py-3 transition-all hover:border-fluid-200 hover:shadow-sm dark:hover:border-fluid-700"
                 >
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-theme-hover text-xs font-medium text-theme-subtle">
                     {comment.user.name?.charAt(0)?.toUpperCase() ?? '?'}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-gray-900 dark:text-white">
+                    <p className="text-sm text-theme-main">
                       <span className="font-medium">{comment.user.name ?? 'Someone'}</span>
                       {' '}commented on{' '}
                       <span className="font-medium">{comment.page.title}</span>
                     </p>
-                    <p className="mt-0.5 line-clamp-1 text-xs text-gray-500 dark:text-gray-400">
+                    <p className="mt-0.5 line-clamp-1 text-xs text-theme-subtle">
                       {comment.content}
                     </p>
-                    <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
+                    <p className="mt-0.5 text-xs text-theme-muted">
                       {comment.page.project.name} · {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
                     </p>
                   </div>
@@ -289,34 +289,34 @@ export default async function DashboardPage() {
         )}
 
         {projects.length === 0 ? (
-          <div className="rounded-2xl border-2 border-dashed border-gray-200 bg-white p-12 text-center dark:border-gray-700 dark:bg-gray-900">
+          <div className="rounded-2xl border-2 border-dashed border-theme-border bg-theme-page p-12 text-center border-theme-border bg-theme-page">
             <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-fluid-50">
               <BookOpen className="h-8 w-8 text-fluid-600" />
             </div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Welcome to TomeBase</h2>
-            <p className="mt-2 text-sm text-gray-500 max-w-md mx-auto dark:text-gray-400">
+            <h2 className="text-lg font-semibold text-theme-main">Welcome to TomeBase</h2>
+            <p className="mt-2 text-sm text-theme-subtle max-w-md mx-auto">
               Document your APIs, products, and internal tools. Start by creating your first project.
             </p>
             <div className="mt-8 grid gap-4 sm:grid-cols-4 text-left max-w-2xl mx-auto">
               <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2 dark:bg-fluid-700">1</div>
-                <h3 className="text-sm font-medium text-gray-900 dark:text-white">Create a Project</h3>
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Pick a template or start blank</p>
+                <h3 className="text-sm font-medium text-theme-main">Create a Project</h3>
+                <p className="mt-1 text-xs text-theme-subtle">Pick a template or start blank</p>
               </div>
               <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2 dark:bg-fluid-700">2</div>
-                <h3 className="text-sm font-medium text-gray-900 dark:text-white">Write or Import</h3>
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Use Markdown or import from code</p>
+                <h3 className="text-sm font-medium text-theme-main">Write or Import</h3>
+                <p className="mt-1 text-xs text-theme-subtle">Use Markdown or import from code</p>
               </div>
               <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2 dark:bg-fluid-700">3</div>
-                <h3 className="text-sm font-medium text-gray-900 dark:text-white">Connect Pages</h3>
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Use [[wiki links]] and the graph</p>
+                <h3 className="text-sm font-medium text-theme-main">Connect Pages</h3>
+                <p className="mt-1 text-xs text-theme-subtle">Use [[wiki links]] and the graph</p>
               </div>
               <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2 dark:bg-fluid-700">4</div>
-                <h3 className="text-sm font-medium text-gray-900 dark:text-white">Publish & Share</h3>
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Go live with a public link</p>
+                <h3 className="text-sm font-medium text-theme-main">Publish & Share</h3>
+                <p className="mt-1 text-xs text-theme-subtle">Go live with a public link</p>
               </div>
             </div>
             <Link
