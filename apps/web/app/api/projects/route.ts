@@ -2,6 +2,8 @@ import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
 import { slugify } from '@fluid/utils';
 import { auth } from '@/lib/auth';
+import { projectTemplates } from '@/lib/project-templates';
+import { templates } from '@/lib/templates';
 
 export async function POST(request: Request) {
   try {
@@ -10,7 +12,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { name, description } = await request.json();
+    const { name, description, templateId } = await request.json();
 
     if (!name) {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 });
@@ -39,6 +41,31 @@ export async function POST(request: Request) {
     const project = await prisma.project.create({
       data: { name, slug, description, userId: session.user.id, teamId: team.id },
     });
+
+    if (templateId && templateId !== 'blank') {
+      const projectTemplate = projectTemplates.find((t) => t.id === templateId);
+      if (projectTemplate) {
+        let order = 0;
+        for (const pageDef of projectTemplate.pages) {
+          const pageTemplate = templates.find((t) => t.id === pageDef.templateId);
+          const content = pageTemplate?.content
+            ? pageTemplate.content.replace(/{{title}}/g, pageDef.title).replace(/{{date}}/g, new Date().toLocaleDateString())
+            : '';
+          await prisma.docPage.create({
+            data: {
+              title: pageDef.title,
+              slug: slugify(pageDef.title),
+              content,
+              description: pageDef.description || null,
+              projectId: project.id,
+              order,
+              published: true,
+            },
+          });
+          order++;
+        }
+      }
+    }
 
     return NextResponse.json(project, { status: 201 });
   } catch (error) {
