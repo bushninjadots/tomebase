@@ -138,7 +138,7 @@ export async function GET(
       readmeSections.push('');
     }
 
-    const publishedCount = pages.filter((p) => p.published).length;
+    const publishedCount = pages.filter((p: { published: boolean }) => p.published).length;
     readmeSections.push('---\n');
     readmeSections.push(`| Total Pages | Published | Drafts | Exported |`);
     readmeSections.push(`|------------:|----------:|------:|---------:|`);

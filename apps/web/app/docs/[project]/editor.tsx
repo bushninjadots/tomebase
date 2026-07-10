@@ -43,12 +43,19 @@ export function DocEditor({ project }: { project: Project }) {
   const [showToc, setShowToc] = useState(false);
   const actionsRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const selRef = useRef({ start: 0, end: 0 });
+
+  function saveSelection() {
+    const ta = textareaRef.current;
+    if (ta) selRef.current = { start: ta.selectionStart, end: ta.selectionEnd };
+  }
 
   function insertFormatting(before: string, after: string, fallback: string) {
     const ta = textareaRef.current;
     if (!ta) return;
-    const start = ta.selectionStart;
-    const end = ta.selectionEnd;
+    ta.focus();
+    const { start, end } = selRef.current;
+    ta.setSelectionRange(start, end);
     const selected = content.slice(start, end);
     const insertion = selected ? `${before}${selected}${after}` : `${before}${fallback}${after}`;
     const newContent = content.slice(0, start) + insertion + content.slice(end);
@@ -621,6 +628,9 @@ export function DocEditor({ project }: { project: Project }) {
                 ref={textareaRef}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
+                onSelect={saveSelection}
+                onClick={saveSelection}
+                onKeyUp={saveSelection}
                 className="h-full w-full resize-none bg-transparent p-8 font-mono text-sm leading-relaxed text-gray-800 outline-none placeholder:text-gray-300"
                 placeholder="Write your documentation in Markdown..."
                 spellCheck={false}
@@ -654,6 +664,9 @@ export function DocEditor({ project }: { project: Project }) {
               ref={textareaRef}
               value={content}
               onChange={(e) => setContent(e.target.value)}
+              onSelect={saveSelection}
+              onClick={saveSelection}
+              onKeyUp={saveSelection}
               className="h-full w-full resize-none bg-transparent p-8 font-mono text-sm leading-relaxed text-gray-800 outline-none placeholder:text-gray-300"
               placeholder="Write your documentation in Markdown..."
               spellCheck={false}
