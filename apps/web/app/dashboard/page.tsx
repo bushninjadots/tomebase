@@ -2,7 +2,7 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { prisma } from '@fluid/database';
 import Link from 'next/link';
-import { Plus, BookOpen, Users, FileText, Globe, Clock, ArrowRight, Zap, Eye, Bookmark } from 'lucide-react';
+import { Plus, BookOpen, Users, FileText, Globe, Clock, ArrowRight, Zap, Eye, Bookmark, MessageSquare } from 'lucide-react';
 import { getOrCreatePersonalTeam } from '@/lib/team';
 import { TIERS } from '@/lib/limits';
 import { ProjectCard } from '@/components/project-card';
@@ -10,6 +10,7 @@ import { UsageMeter } from '@/components/usage-meter';
 import { OnboardingChecklist } from '@/components/onboarding-checklist';
 import { GuidedTutorial } from '@/components/guided-tutorial';
 import { GlobalSearch } from '@/components/global-search';
+import { formatDistanceToNow } from 'date-fns';
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -38,6 +39,21 @@ export default async function DashboardPage() {
       take: 6,
     }),
   ]);
+
+  const recentComments = projectIds.length > 0
+    ? await prisma.comment.findMany({
+        where: { page: { projectId: { in: projectIds } } },
+        select: {
+          id: true,
+          content: true,
+          createdAt: true,
+          user: { select: { name: true, image: true } },
+          page: { select: { id: true, title: true, slug: true, projectId: true, project: { select: { name: true } } } },
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 5,
+      })
+    : [];
 
   const totalViewCount = totalViews._sum.viewCount || 0;
 
@@ -271,6 +287,41 @@ export default async function DashboardPage() {
                   <span className="ml-3 shrink-0 text-xs font-medium text-gray-500 dark:text-gray-400">
                     {page.viewCount} view{page.viewCount !== 1 ? 's' : ''}
                   </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {recentComments.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <MessageSquare className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Recent Activity</h2>
+            </div>
+            <div className="space-y-2">
+              {recentComments.map((comment) => (
+                <Link
+                  key={comment.id}
+                  href={`/docs/${comment.page.projectId}/${comment.page.slug}`}
+                  className="flex items-start gap-3 rounded-xl border border-gray-100 bg-white px-4 py-3 transition-all hover:border-fluid-200 hover:shadow-sm dark:border-gray-800 dark:bg-gray-900 dark:hover:border-fluid-700"
+                >
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                    {comment.user.name?.charAt(0)?.toUpperCase() ?? '?'}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm text-gray-900 dark:text-white">
+                      <span className="font-medium">{comment.user.name ?? 'Someone'}</span>
+                      {' '}commented on{' '}
+                      <span className="font-medium">{comment.page.title}</span>
+                    </p>
+                    <p className="mt-0.5 line-clamp-1 text-xs text-gray-500 dark:text-gray-400">
+                      {comment.content}
+                    </p>
+                    <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
+                      {comment.page.project.name} · {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+                    </p>
+                  </div>
                 </Link>
               ))}
             </div>
