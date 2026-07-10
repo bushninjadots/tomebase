@@ -66,12 +66,7 @@ export default async function ProjectSettingsPage({ params }: PageProps) {
             </div>
 
             <div className="rounded-xl border border-gray-100 bg-white p-6">
-              <GitSync
-                projectId={project.id}
-                initialRepo={project.githubRepo}
-                initialBranch={project.githubBranch}
-                initialPath={project.githubDocsPath}
-              />
+              <GitSync projectId={project.id} />
             </div>
 
             <ApiKeyManager projectId={project.id} />

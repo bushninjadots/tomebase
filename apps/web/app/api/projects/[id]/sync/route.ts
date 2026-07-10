@@ -13,24 +13,19 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     const { id } = await params;
 
+    const body = await request.json().catch(() => ({}));
+    const { repo, branch, path } = body;
+    if (!repo) {
+      return NextResponse.json({ error: 'repo required' }, { status: 400 });
+    }
+
     const project = await prisma.project.findUnique({ where: { id } });
     if (!project || project.userId !== session.user.id) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
-    if (!project.githubRepo) {
-      return NextResponse.json({ error: 'No GitHub repo configured' }, { status: 400 });
-    }
-
-    const body = await request.json().catch(() => ({}));
     const token = body.token || undefined;
-
-    const pages = await fetchMarkdownFromRepo(
-      project.githubRepo,
-      project.githubBranch || 'main',
-      project.githubDocsPath || '/',
-      token,
-    );
+    const pages = await fetchMarkdownFromRepo(repo, branch || 'main', path || '/', token);
 
     let created = 0;
     let updated = 0;

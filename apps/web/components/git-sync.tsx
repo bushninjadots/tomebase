@@ -1,53 +1,47 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Github, RefreshCw, Check, AlertCircle, ExternalLink } from 'lucide-react';
 import { Input, Button } from '@fluid/ui';
 
 interface GitSyncProps {
   projectId: string;
-  initialRepo: string | null;
-  initialBranch: string | null;
-  initialPath: string | null;
 }
 
-export function GitSync({ projectId, initialRepo, initialBranch, initialPath }: GitSyncProps) {
-  const [repo, setRepo] = useState(initialRepo || '');
-  const [branch, setBranch] = useState(initialBranch || 'main');
-  const [docsPath, setDocsPath] = useState(initialPath || '/');
+const STORAGE_KEY = (id: string) => `git-sync-${id}`;
+
+export function GitSync({ projectId }: GitSyncProps) {
+  const [repo, setRepo] = useState('');
+  const [branch, setBranch] = useState('main');
+  const [docsPath, setDocsPath] = useState('/');
   const [token, setToken] = useState('');
   const [syncing, setSyncing] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; message: string } | null>(null);
-  const [saved, setSaved] = useState(false);
 
-  async function handleSave() {
-    setSaving(true);
-    setSaved(false);
+  useEffect(() => {
     try {
-      const res = await fetch(`/api/projects/${projectId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ githubRepo: repo, githubBranch: branch, githubDocsPath: docsPath }),
-      });
-      if (res.ok) {
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
-      } else {
-        const data = await res.json();
-        setResult({ ok: false, message: data.error || 'Failed to save' });
+      const saved = localStorage.getItem(STORAGE_KEY(projectId));
+      if (saved) {
+        const cfg = JSON.parse(saved);
+        setRepo(cfg.repo ?? '');
+        setBranch(cfg.branch ?? 'main');
+        setDocsPath(cfg.path ?? '/');
       }
-    } catch {
-      setResult({ ok: false, message: 'Failed to save settings' });
-    }
-    setSaving(false);
+    } catch { /* ignore */ }
+  }, [projectId]);
+
+  function saveToLocal() {
+    try {
+      localStorage.setItem(STORAGE_KEY(projectId), JSON.stringify({ repo, branch, path: docsPath }));
+    } catch { /* ignore */ }
   }
 
   async function handleSync() {
     setSyncing(true);
     setResult(null);
+    saveToLocal();
     try {
-      const body: Record<string, string> = {};
+      const body: Record<string, string> = { repo, branch, path: docsPath };
       if (token) body.token = token;
 
       const res = await fetch(`/api/projects/${projectId}/sync`, {
@@ -71,8 +65,7 @@ export function GitSync({ projectId, initialRepo, initialBranch, initialPath }: 
     setSyncing(false);
   }
 
-  const hasConfig = !!initialRepo;
-  const repoShort = initialRepo?.includes('/') ? initialRepo : null;
+  const hasConfig = !!repo;
 
   return (
     <div className="space-y-4">
@@ -124,24 +117,14 @@ export function GitSync({ projectId, initialRepo, initialBranch, initialPath }: 
       </div>
 
       <div className="flex items-center gap-3">
-        <Button onClick={handleSave} disabled={saving}>
-          {saving ? 'Saving...' : 'Save Config'}
-        </Button>
-        {saved && (
-          <span className="flex items-center gap-1 text-sm text-green-600">
-            <Check className="h-4 w-4" /> Saved
-          </span>
-        )}
-        {hasConfig && (
-          <button
-            onClick={handleSync}
-            disabled={syncing}
-            className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
-          >
-            <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
-            {syncing ? 'Syncing...' : 'Sync Now'}
-          </button>
-        )}
+        <button
+          onClick={handleSync}
+          disabled={syncing || !repo}
+          className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-5 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors disabled:opacity-50"
+        >
+          <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+          {syncing ? 'Syncing...' : 'Sync Now'}
+        </button>
       </div>
 
       {result && (
@@ -153,15 +136,15 @@ export function GitSync({ projectId, initialRepo, initialBranch, initialPath }: 
         </div>
       )}
 
-      {repoShort && (
+      {hasConfig && (
         <a
-          href={`https://github.com/${initialRepo}`}
+          href={`https://github.com/${repo}`}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
         >
           <ExternalLink className="h-3 w-3" />
-          {initialRepo}
+          {repo}
         </a>
       )}
     </div>
