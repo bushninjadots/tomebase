@@ -25,13 +25,13 @@ export default async function ImportPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <Container className="py-8">
-        <Link
-          href={`/docs/${project.id}`}
-          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition-colors mb-6"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to {project.name}
-        </Link>
+        <div className="mb-6 flex items-center gap-2 text-sm text-gray-400">
+          <Link href="/dashboard" className="hover:text-gray-700 transition-colors">Dashboard</Link>
+          <span>/</span>
+          <Link href={`/docs/${project.id}`} className="hover:text-gray-700 transition-colors">{project.name}</Link>
+          <span>/</span>
+          <span className="text-gray-600">Import</span>
+        </div>
 
         <div className="mx-auto max-w-3xl">
           <h1 className="text-2xl font-bold text-gray-900">Import</h1>

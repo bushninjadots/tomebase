@@ -3,10 +3,11 @@ import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@fluid/database';
 import { Container } from '@fluid/ui';
 import Link from 'next/link';
-import { ArrowLeft, Download, Webhook } from 'lucide-react';
+import { Download, Github } from 'lucide-react';
 import { ProjectSettingsForm } from './form';
 import { ApiKeyManager } from './api-keys';
 import { WebhookSettings } from '@/components/webhook-settings';
+import { GitSync } from '@/components/git-sync';
 
 interface PageProps {
   params: Promise<{ project: string }>;
@@ -28,13 +29,13 @@ export default async function ProjectSettingsPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <Container className="py-8">
-        <Link
-          href={`/docs/${project.id}`}
-          className="mb-6 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to {project.name}
-        </Link>
+        <div className="mb-6 flex items-center gap-2 text-sm text-gray-400">
+          <Link href="/dashboard" className="hover:text-gray-700 transition-colors">Dashboard</Link>
+          <span>/</span>
+          <Link href={`/docs/${project.id}`} className="hover:text-gray-700 transition-colors">{project.name}</Link>
+          <span>/</span>
+          <span className="text-gray-600">Settings</span>
+        </div>
 
         <div className="mx-auto max-w-2xl">
           <h1 className="text-2xl font-bold text-gray-900">Project Settings</h1>
@@ -62,6 +63,15 @@ export default async function ProjectSettingsPage({ params }: PageProps) {
                   Export as .zip
                 </a>
               </div>
+            </div>
+
+            <div className="rounded-xl border border-gray-100 bg-white p-6">
+              <GitSync
+                projectId={project.id}
+                initialRepo={project.githubRepo}
+                initialBranch={project.githubBranch}
+                initialPath={project.githubDocsPath}
+              />
             </div>
 
             <ApiKeyManager projectId={project.id} />

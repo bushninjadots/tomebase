@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import {
   Plus, BookOpen, Code2, Settings, ChevronDown, ChevronRight,
-  ArrowUp, ArrowDown, IndentIncrease, IndentDecrease,
+  ArrowUp, ArrowDown, IndentIncrease, IndentDecrease, ArrowLeft,
   Trash2, Hash, Download, HeartPulse, X, FileText, Sparkles,
 } from 'lucide-react';
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
@@ -553,6 +553,13 @@ export function DocSidebar({ project }: { project: Project }) {
       </div>
 
       <div className="border-t border-gray-100 p-3 space-y-1 dark:border-gray-800">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Dashboard
+        </Link>
         <GraphButtonWithHealth projectId={project.id} pages={project.pages} />
         <Link
           href={`/dashboard/${project.id}/import`}
