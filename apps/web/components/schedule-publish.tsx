@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Clock, Calendar, Trash2, X } from 'lucide-react';
+import { Clock, Calendar, Trash2, X, AlertCircle } from 'lucide-react';
 
 interface Schedule {
   id: string;
@@ -15,6 +15,7 @@ export function SchedulePublish({ pageId }: { pageId: string }) {
   const [publishAt, setPublishAt] = useState('');
   const [unpublishAt, setUnpublishAt] = useState('');
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(`/api/pages/${pageId}/schedule`)
@@ -27,6 +28,7 @@ export function SchedulePublish({ pageId }: { pageId: string }) {
 
   async function save() {
     setSaving(true);
+    setError(null);
     try {
       const res = await fetch(`/api/pages/${pageId}/schedule`, {
         method: 'POST',
@@ -36,16 +38,27 @@ export function SchedulePublish({ pageId }: { pageId: string }) {
           unpublishAt: unpublishAt ? new Date(unpublishAt).toISOString() : null,
         }),
       });
+      if (!res.ok) {
+        setError('Failed to save schedule');
+        return;
+      }
       const data = await res.json();
       setSchedule(data);
       setShowForm(false);
-    } catch {}
+    } catch {
+      setError('Network error — could not save schedule');
+    }
     setSaving(false);
   }
 
   async function remove() {
-    await fetch(`/api/pages/${pageId}/schedule`, { method: 'DELETE' });
-    setSchedule(null);
+    try {
+      const res = await fetch(`/api/pages/${pageId}/schedule`, { method: 'DELETE' });
+      if (!res.ok) return;
+      setSchedule(null);
+    } catch {
+      // silently fail on delete
+    }
   }
 
   if (!showForm && !schedule) {
@@ -122,6 +135,12 @@ export function SchedulePublish({ pageId }: { pageId: string }) {
             className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
           />
         </div>
+        {error && (
+          <div className="flex items-center gap-1.5 rounded-lg bg-red-50 p-2 text-xs text-red-600">
+            <AlertCircle className="h-3 w-3 shrink-0" />
+            {error}
+          </div>
+        )}
         <button
           onClick={save}
           disabled={!publishAt || saving}

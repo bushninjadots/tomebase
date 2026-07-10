@@ -18,9 +18,12 @@ export function BookmarkButton({ pageId }: { pageId: string }) {
     setLoading(true);
     try {
       const res = await fetch(`/api/pages/${pageId}/bookmark`, { method: 'POST' });
+      if (!res.ok) return;
       const data = await res.json();
       setBookmarked(data.bookmarked);
-    } catch {}
+    } catch {
+      // silently fail — bookmark state is non-critical
+    }
     setLoading(false);
   }
 

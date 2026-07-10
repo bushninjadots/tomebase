@@ -19,6 +19,7 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
   const [events, setEvents] = useState('page.created,page.updated,page.published');
   const [saving, setSaving] = useState(false);
   const [copiedSecret, setCopiedSecret] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     load();
@@ -36,6 +37,7 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
   async function create() {
     if (!url.trim()) return;
     setSaving(true);
+    setError(null);
     try {
       const res = await fetch(`/api/projects/${projectId}/webhooks`, {
         method: 'POST',
@@ -47,28 +49,42 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
         setWebhooks((prev) => [webhook, ...prev]);
         setUrl('');
         setShowForm(false);
+      } else {
+        setError('Failed to create webhook');
       }
-    } catch {}
+    } catch {
+      setError('Network error — could not create webhook');
+    }
     setSaving(false);
   }
 
   async function toggleActive(id: string, active: boolean) {
-    const res = await fetch(`/api/projects/${projectId}/webhooks/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ active: !active }),
-    });
-    if (res.ok) {
-      setWebhooks((prev) => prev.map((w) => (w.id === id ? { ...w, active: !active } : w)));
+    setError(null);
+    try {
+      const res = await fetch(`/api/projects/${projectId}/webhooks/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ active: !active }),
+      });
+      if (res.ok) {
+        setWebhooks((prev) => prev.map((w) => (w.id === id ? { ...w, active: !active } : w)));
+      }
+    } catch {
+      setError('Failed to toggle webhook');
     }
   }
 
   async function remove(id: string) {
-    const res = await fetch(`/api/projects/${projectId}/webhooks/${id}`, {
-      method: 'DELETE',
-    });
-    if (res.ok) {
-      setWebhooks((prev) => prev.filter((w) => w.id !== id));
+    setError(null);
+    try {
+      const res = await fetch(`/api/projects/${projectId}/webhooks/${id}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        setWebhooks((prev) => prev.filter((w) => w.id !== id));
+      }
+    } catch {
+      setError('Failed to delete webhook');
     }
   }
 
@@ -138,6 +154,12 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
                 ))}
               </div>
             </div>
+            {error && (
+              <div className="flex items-center gap-1.5 rounded-lg bg-red-50 p-2 text-xs text-red-600">
+                <AlertCircle className="h-3 w-3 shrink-0" />
+                {error}
+              </div>
+            )}
             <div className="flex gap-2">
               <button
                 onClick={create}

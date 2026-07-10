@@ -14,13 +14,12 @@
     "@fluid/types": "*",
     "@fluid/ui": "*",
     "@fluid/utils": "*",
-    "@tailwindcss/postcss": "^4.0.0",
+    "next": "^15.5.20",
     "bcryptjs": "^3.0.3",
     "date-fns": "^4.4.0",
     "js-yaml": "^5.2.1",
     "jszip": "^3.10.1",
     "lucide-react": "^0.468.0",
-    "next": "^15.1.0",
     "next-auth": "^5.0.0-beta.25",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -30,7 +29,6 @@
     "tailwindcss": "^4.0.0"
   },
   "devDependencies": {
-    "@fluid/codegen": "*",
     "@fluid/config": "*",
     "@types/js-yaml": "^4.0.9",
     "@types/jszip": "^3.4.0",
@@ -38,6 +36,7 @@
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "eslint": "^9.39.4",
+    "@tailwindcss/postcss": "^4.0.0",
     "eslint-config-next": "^15.5.20",
     "typescript": "^5.7.3"
   }

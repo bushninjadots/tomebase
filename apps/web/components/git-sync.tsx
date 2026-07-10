@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Github, RefreshCw, Check, AlertCircle, ExternalLink } from 'lucide-react';
-import { Input, Button } from '@fluid/ui';
+import { Input } from '@fluid/ui';
 
 interface GitSyncProps {
   projectId: string;

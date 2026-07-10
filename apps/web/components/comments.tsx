@@ -117,7 +117,7 @@ export function Comments({ pageId, teamMembers }: CommentsProps) {
     const textBefore = value.slice(0, cursorPos);
     const lastAt = textBefore.lastIndexOf('@');
 
-    if (lastAt !== -1 && lastAt === cursorPos - 1 || (lastAt !== -1 && !textBefore.slice(lastAt).includes(' '))) {
+    if (lastAt !== -1 && (lastAt === cursorPos - 1 || !textBefore.slice(lastAt).includes(' '))) {
       const query = textBefore.slice(lastAt + 1);
       setMentionQuery(query);
       setShowMentions(true);
