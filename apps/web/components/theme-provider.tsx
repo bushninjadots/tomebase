@@ -40,6 +40,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const setTheme = useCallback((t: Theme) => {
     setThemeState(t);
+    localStorage.setItem('fluid-theme', t);
+    const root = document.documentElement;
+    root.setAttribute('data-theme', t);
+    if (t === 'light') {
+      root.classList.remove('dark');
+    } else {
+      root.classList.add('dark');
+    }
+    setTimeout(() => window.location.reload(), 50);
   }, []);
 
   useEffect(() => {
