@@ -16,6 +16,23 @@
   --color-fluid-950: #072849;
   --font-sans: var(--font-inter), system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), 'Fira Code', monospace;
+  --color-theme-page: var(--bg-page);
+  --color-theme-card: var(--bg-card);
+  --color-theme-hover: var(--bg-hover);
+  --color-theme-main: var(--text-main);
+  --color-theme-subtle: var(--text-subtle);
+  --color-theme-muted: var(--text-muted);
+  --color-theme-border: var(--border-theme);
+  --color-theme-accent: var(--accent);
+  --color-theme-accent-hover: var(--accent-hover);
+  --color-theme-accent-light: var(--accent-light);
+  --color-graph-bg: var(--graph-bg);
+  --color-graph-grid: var(--graph-grid);
+  --color-graph-edge: var(--graph-edge);
+  --color-graph-edge-highlight: var(--graph-edge-highlight);
+  --color-graph-node-label-bg: var(--graph-node-label-bg);
+  --color-graph-node-label-border: var(--graph-node-label-border);
+  --color-graph-node-label-text: var(--graph-node-label-text);
 }
 
 html {
@@ -63,4 +80,112 @@ body {
 
 .dark .hero-glow {
   background: radial-gradient(circle, rgba(12, 142, 231, 0.15) 0%, transparent 70%);
+}
+
+/* ===== Theme System ===== */
+:root {
+  --bg-page: #ffffff;
+  --bg-card: #f9fafb;
+  --bg-hover: #f3f4f6;
+  --text-main: #111827;
+  --text-subtle: #4b5563;
+  --text-muted: #9ca3af;
+  --border-theme: #e5e7eb;
+  --accent: #0c8ee7;
+  --accent-hover: #0070c4;
+  --accent-light: #f0f7ff;
+  --accent-ring: rgba(12, 142, 231, 0.2);
+  --graph-bg: #fafbfc;
+  --graph-grid: #e5e7eb;
+  --graph-edge: #d1d5db;
+  --graph-edge-highlight: #3b82f6;
+  --graph-node-label-bg: #ffffff;
+  --graph-node-label-border: #e5e7eb;
+  --graph-node-label-text: #111827;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+:root.dark,
+:root[data-theme="dark"] {
+  --bg-page: #0f172a;
+  --bg-card: #1e293b;
+  --bg-hover: #334155;
+  --text-main: #f1f5f9;
+  --text-subtle: #94a3b8;
+  --text-muted: #64748b;
+  --border-theme: #334155;
+  --accent: #3b82f6;
+  --accent-hover: #60a5fa;
+  --accent-light: #1e3a5f;
+  --accent-ring: rgba(59, 130, 246, 0.2);
+  --graph-bg: #0f172a;
+  --graph-grid: #1e293b;
+  --graph-edge: #475569;
+  --graph-edge-highlight: #3b82f6;
+  --graph-node-label-bg: #1e293b;
+  --graph-node-label-border: #334155;
+  --graph-node-label-text: #f1f5f9;
+}
+
+:root[data-theme="gruvbox"] {
+  --bg-page: #282828;
+  --bg-card: #3c3836;
+  --bg-hover: #504945;
+  --text-main: #ebdbb2;
+  --text-subtle: #a89984;
+  --text-muted: #7c6f64;
+  --border-theme: #504945;
+  --accent: #fabd2f;
+  --accent-hover: #d8a32e;
+  --accent-light: #3c3836;
+  --accent-ring: rgba(250, 189, 47, 0.2);
+  --graph-bg: #282828;
+  --graph-grid: #3c3836;
+  --graph-edge: #665c54;
+  --graph-edge-highlight: #fabd2f;
+  --graph-node-label-bg: #3c3836;
+  --graph-node-label-border: #504945;
+  --graph-node-label-text: #ebdbb2;
+}
+
+:root[data-theme="dracula"] {
+  --bg-page: #282a36;
+  --bg-card: #44475a;
+  --bg-hover: #6272a4;
+  --text-main: #f8f8f2;
+  --text-subtle: #bd93f9;
+  --text-muted: #6272a4;
+  --border-theme: #44475a;
+  --accent: #bd93f9;
+  --accent-hover: #ff79c6;
+  --accent-light: #44475a;
+  --accent-ring: rgba(189, 147, 249, 0.2);
+  --graph-bg: #282a36;
+  --graph-grid: #44475a;
+  --graph-edge: #6272a4;
+  --graph-edge-highlight: #bd93f9;
+  --graph-node-label-bg: #44475a;
+  --graph-node-label-border: #6272a4;
+  --graph-node-label-text: #f8f8f2;
+}
+
+:root[data-theme="nord"] {
+  --bg-page: #2e3440;
+  --bg-card: #3b4252;
+  --bg-hover: #434c5e;
+  --text-main: #eceff4;
+  --text-subtle: #88c0d0;
+  --text-muted: #4c566a;
+  --border-theme: #4c566a;
+  --accent: #88c0d0;
+  --accent-hover: #81a1c1;
+  --accent-light: #3b4252;
+  --accent-ring: rgba(136, 192, 208, 0.2);
+  --graph-bg: #2e3440;
+  --graph-grid: #3b4252;
+  --graph-edge: #4c566a;
+  --graph-edge-highlight: #88c0d0;
+  --graph-node-label-bg: #3b4252;
+  --graph-node-label-border: #4c566a;
+  --graph-node-label-text: #eceff4;
 }

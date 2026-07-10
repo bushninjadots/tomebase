@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { X, ExternalLink, ZoomIn, ZoomOut, Maximize2, Search, Network, Info, ArrowRight } from 'lucide-react';
+import { X, ExternalLink, ZoomIn, ZoomOut, Maximize2, Search, Network, Info } from 'lucide-react';
 import { extractWikiLinks } from '@/lib/wiki';
 
 interface GraphNode {
@@ -160,6 +160,76 @@ function simulateForceLayout(
   }
 }
 
+function simulateRadialLayout(
+  nodeList: GraphNode[],
+  edgeList: GraphEdge[],
+  dims: { width: number; height: number },
+  centerId?: string,
+) {
+  const cx = dims.width / 2;
+  const cy = dims.height / 2;
+
+  if (nodeList.length === 0) return;
+
+  const center = centerId
+    ? nodeList.find((n) => n.id === centerId)
+    : nodeList.length > 0
+      ? nodeList.reduce((best, n) => (n.degree > best.degree ? n : best))
+      : null;
+
+  if (!center) return;
+
+  // Place center
+  center.x = cx;
+  center.y = cy;
+
+  // Find direct connections
+  const directIds = new Set<string>();
+  for (const e of edgeList) {
+    if (e.source === center.id) directIds.add(e.target);
+    if (e.target === center.id) directIds.add(e.source);
+  }
+
+  const others = nodeList.filter((n) => n.id !== center.id && !directIds.has(n.id));
+  const direct = nodeList.filter((n) => directIds.has(n.id));
+
+  // Place direct connections on inner ring
+  const innerRadius = Math.min(180, 80 + direct.length * 8);
+  direct.forEach((n, i) => {
+    const angle = (2 * Math.PI * i) / Math.max(direct.length, 1) - Math.PI / 2;
+    n.x = cx + innerRadius * Math.cos(angle);
+    n.y = cy + innerRadius * Math.sin(angle);
+  });
+
+  // Place remaining nodes on outer ring
+  const outerRadius = Math.min(320, innerRadius + 60 + others.length * 6);
+  others.forEach((n, i) => {
+    const angle = (2 * Math.PI * i) / Math.max(others.length, 1) - Math.PI / 2;
+    n.x = cx + outerRadius * Math.cos(angle);
+    n.y = cy + outerRadius * Math.sin(angle);
+  });
+}
+
+function simulateCompactLayout(
+  nodeList: GraphNode[],
+  _edgeList: GraphEdge[],
+  dims: { width: number; height: number },
+) {
+  const cols = Math.max(1, Math.ceil(Math.sqrt(nodeList.length)));
+  const spacing = Math.min(70, Math.max(50, (dims.width - 80) / cols));
+  const rows = Math.ceil(nodeList.length / cols);
+  const totalWidth = cols * spacing;
+  const startX = (dims.width - totalWidth) / 2 + spacing / 2;
+  const startY = (dims.height - rows * spacing) / 2 + spacing / 2;
+
+  nodeList.forEach((n, i) => {
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    n.x = startX + col * spacing;
+    n.y = startY + row * spacing;
+  });
+}
+
 export function GraphButton({ projectId, pages, healthData }: GraphViewProps) {
   const [open, setOpen] = useState(false);
 
@@ -194,6 +264,8 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
   } | null>(null);
 
   const [mode, setMode] = useState<'global' | 'local'>(currentPageId ? 'local' : 'global');
+  const [viewMode, setViewMode] = useState<'force' | 'radial' | 'compact'>('force');
+  const [colorBy, setColorBy] = useState<'default' | 'health'>('default');
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -286,9 +358,16 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
   const layoutNodes = useMemo(() => {
     const copies = nodes.map((n) => ({ ...n }));
     const edgeCopies = edges.map((e) => ({ ...e }));
-    simulateForceLayout(copies, edgeCopies, dims);
+    if (viewMode === 'radial') {
+      const centerId = currentPageId || copies.reduce((best, n) => n.degree > best.degree ? n : best, copies[0]!)?.id;
+      simulateRadialLayout(copies, edgeCopies, dims, centerId);
+    } else if (viewMode === 'compact') {
+      simulateCompactLayout(copies, edgeCopies, dims);
+    } else {
+      simulateForceLayout(copies, edgeCopies, dims);
+    }
     return copies;
-  }, [nodes, edges]);
+  }, [nodes, edges, viewMode]);
 
   const [displayNodes, setDisplayNodes] = useState<GraphNode[]>([]);
   useEffect(() => { setDisplayNodes(layoutNodes); }, [layoutNodes]);
@@ -373,24 +452,64 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="flex rounded-lg border border-gray-200 p-0.5 bg-gray-50">
+            {/* View mode */}
+            <div className="flex rounded-lg border border-gray-200 p-0.5 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
+              <button
+                onClick={() => setViewMode('force')}
+                className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                  viewMode === 'force'
+                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600'
+                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                }`}
+                title="Force-directed layout"
+              >
+                Force
+              </button>
+              <button
+                onClick={() => setViewMode('radial')}
+                className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                  viewMode === 'radial'
+                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600'
+                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                }`}
+                title="Concentric radial layout"
+              >
+                Radial
+              </button>
+              <button
+                onClick={() => setViewMode('compact')}
+                className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                  viewMode === 'compact'
+                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600'
+                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                }`}
+                title="Compact grid layout"
+              >
+                Compact
+              </button>
+            </div>
+
+            {/* Filter: global / local */}
+            <div className="flex rounded-lg border border-gray-200 p-0.5 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
               <button
                 onClick={() => setMode('global')}
-                className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                   mode === 'global'
-                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600'
+                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                 }`}
+                title="Show all pages"
               >
-                Global
+                All
               </button>
               <button
                 onClick={() => setMode('local')}
-                className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                   mode === 'local'
-                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600'
+                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                 }`}
+                title="Show connected pages only"
               >
                 Local
               </button>
@@ -409,6 +528,31 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
             )}
           </div>
           <div className="flex items-center gap-1.5">
+            {/* Color scheme */}
+            <div className="flex rounded-lg border border-gray-200 p-0.5 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
+              <button
+                onClick={() => setColorBy('default')}
+                className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${
+                  colorBy === 'default'
+                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600'
+                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                }`}
+                title="Color by node ID"
+              >
+                Default
+              </button>
+              <button
+                onClick={() => setColorBy('health')}
+                className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${
+                  colorBy === 'health'
+                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600'
+                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                }`}
+                title="Color by health score"
+              >
+                Health
+              </button>
+            </div>
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-gray-400" />
               <input
@@ -470,8 +614,8 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
               ref={svgRef}
               width={dims.width}
               height={dims.height}
-              className="bg-[#fafbfc]"
-              style={{ backgroundImage: 'radial-gradient(circle, #e5e7eb 0.5px, transparent 0.5px)', backgroundSize: '24px 24px' }}
+              className="bg-[var(--graph-bg)]"
+              style={{ backgroundImage: 'radial-gradient(circle, var(--graph-grid) 0.5px, transparent 0.5px)', backgroundSize: '24px 24px' }}
               onPointerDown={handleSvgPointerDown}
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
@@ -479,10 +623,10 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
             >
               <defs>
                 <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
-                  <polygon points="0 0, 10 3.5, 0 7" fill="#d1d5db" />
+                  <polygon points="0 0, 10 3.5, 0 7" fill="var(--graph-edge)" />
                 </marker>
                 <marker id="arrowhead-highlight" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
-                  <polygon points="0 0, 10 3.5, 0 7" fill="#3b82f6" />
+                  <polygon points="0 0, 10 3.5, 0 7" fill="var(--graph-edge-highlight)" />
                 </marker>
                 <filter id="glow">
                   <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
@@ -519,7 +663,7 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
                       y1={source.y}
                       x2={endX}
                       y2={endY}
-                      stroke={highlight ? '#3b82f6' : currentConn && mode === 'local' ? '#93c5fd' : '#d1d5db'}
+                      stroke={highlight ? 'var(--graph-edge-highlight)' : 'var(--graph-edge)'}
                       strokeWidth={highlight ? 2.5 : currentConn ? 1.5 : 1}
                       opacity={isDimmed ? 0.08 : highlight ? 1 : 0.6}
                       markerEnd={highlight ? 'url(#arrowhead-highlight)' : 'url(#arrowhead)'}
@@ -537,7 +681,9 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
                   const isCurrent = node.id === currentPageId;
                   const baseRadius = Math.max(20, Math.min(36, 16 + node.degree * 4));
                   const radius = isHovered ? baseRadius + 8 : baseRadius;
-                  const color = node.health ? getHealthColor(node.health) : getNodeColor(node.id);
+                  const color = colorBy === 'health' && node.health
+                    ? getHealthColor(node.health)
+                    : getNodeColor(node.id);
                   const fontSize = node.title.length > 14 ? '9px' : node.title.length > 10 ? '10px' : '11px';
 
                   return (
@@ -672,8 +818,8 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
                             width={160}
                             height={24}
                             rx={6}
-                            fill="white"
-                            stroke="#e5e7eb"
+                            fill="var(--graph-node-label-bg)"
+                            stroke="var(--graph-node-label-border)"
                             strokeWidth={1}
                             opacity={0.98}
                           />
@@ -682,7 +828,7 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
                             y={node.y + radius + 23}
                             textAnchor="middle"
                             className="pointer-events-none select-none"
-                            fill={isHovered ? '#111827' : '#6b7280'}
+                            fill={isHovered ? 'var(--graph-node-label-text)' : 'var(--text-subtle)'}
                             style={{ fontSize: '11px', fontWeight: isHovered ? 600 : 400 }}
                           >
                             {node.title}

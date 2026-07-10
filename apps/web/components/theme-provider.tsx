@@ -2,11 +2,20 @@
 
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 
-type Theme = 'light' | 'dark';
+type Theme = 'light' | 'dark' | 'gruvbox' | 'dracula' | 'nord';
 
-const ThemeContext = createContext<{ theme: Theme; toggle: () => void }>({
+export const THEMES = [
+  { id: 'light' as Theme, label: 'Light' },
+  { id: 'dark' as Theme, label: 'Dark' },
+  { id: 'gruvbox' as Theme, label: 'Gruvbox' },
+  { id: 'dracula' as Theme, label: 'Dracula' },
+  { id: 'nord' as Theme, label: 'Nord' },
+];
+
+const ThemeContext = createContext<{ theme: Theme; setTheme: (t: Theme) => void; themes: { id: Theme; label: string }[] }>({
   theme: 'light',
-  toggle: () => {},
+  setTheme: () => {},
+  themes: THEMES,
 });
 
 export function useTheme() {
@@ -16,36 +25,41 @@ export function useTheme() {
 function getInitialTheme(): Theme {
   if (typeof window === 'undefined') return 'light';
   const stored = localStorage.getItem('fluid-theme');
-  if (stored === 'dark' || stored === 'light') return stored;
+  if (stored && ['light', 'dark', 'gruvbox', 'dracula', 'nord'].includes(stored)) return stored as Theme;
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light');
+  const [theme, setThemeState] = useState<Theme>('light');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setTheme(getInitialTheme());
+    setThemeState(getInitialTheme());
     setMounted(true);
+  }, []);
+
+  const setTheme = useCallback((t: Theme) => {
+    setThemeState(t);
   }, []);
 
   useEffect(() => {
     if (!mounted) return;
     const root = document.documentElement;
-    root.classList.toggle('dark', theme === 'dark');
+    root.setAttribute('data-theme', theme);
+    if (theme === 'light') {
+      root.classList.remove('dark');
+    } else {
+      root.classList.add('dark');
+    }
     localStorage.setItem('fluid-theme', theme);
   }, [theme, mounted]);
-
-  const toggle = useCallback(() => {
-    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
-  }, []);
 
   if (!mounted) {
     return <>{children}</>;
   }
 
   return (
-    <ThemeContext.Provider value={{ theme, toggle }}>
+    <ThemeContext.Provider value={{ theme, setTheme, themes: THEMES }}>
       {children}
     </ThemeContext.Provider>
   );

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { GlobalSearch } from '@/components/global-search';
 import { NotificationBell } from '@/components/notification-bell';
+import { ThemeSelector } from '@/components/theme-selector';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -22,6 +23,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
 
           <div className="flex items-center gap-1">
+            <ThemeSelector />
             <NotificationBell />
             <Link
               href="/dashboard/settings"
