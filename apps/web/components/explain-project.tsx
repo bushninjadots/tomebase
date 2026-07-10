@@ -241,7 +241,7 @@ export function ExplainProject({ projectId, pages, currentPageId }: ExplainProje
     : -1;
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white overflow-hidden">
+    <div className="rounded-lg border border-gray-200 bg-white">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className="flex items-center justify-between w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors"
@@ -258,7 +258,7 @@ export function ExplainProject({ projectId, pages, currentPageId }: ExplainProje
       </button>
 
       {isExpanded && (
-        <div className="border-t border-gray-100">
+        <div className="border-t border-gray-100 max-h-96 overflow-y-auto">
           <div className="p-4">
             <div className="mb-4">
               <div className="flex items-center justify-between text-sm text-gray-500 mb-2">

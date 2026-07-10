@@ -281,19 +281,24 @@ export default async function DashboardPage() {
             <p className="mt-2 text-sm text-gray-500 max-w-md mx-auto dark:text-gray-400">
               Document your APIs, products, and internal tools. Start by creating your first project.
             </p>
-            <div className="mt-8 grid gap-4 sm:grid-cols-3 text-left max-w-lg mx-auto">
+            <div className="mt-8 grid gap-4 sm:grid-cols-4 text-left max-w-2xl mx-auto">
               <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2 dark:bg-fluid-700">1</div>
                 <h3 className="text-sm font-medium text-gray-900 dark:text-white">Create a Project</h3>
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Name your documentation project</p>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Pick a template or start blank</p>
               </div>
               <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2 dark:bg-fluid-700">2</div>
-                <h3 className="text-sm font-medium text-gray-900 dark:text-white">Write Pages</h3>
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Add docs with Markdown or templates</p>
+                <h3 className="text-sm font-medium text-gray-900 dark:text-white">Write or Import</h3>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Use Markdown or import from code</p>
               </div>
               <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2 dark:bg-fluid-700">3</div>
+                <h3 className="text-sm font-medium text-gray-900 dark:text-white">Connect Pages</h3>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Use [[wiki links]] and the graph</p>
+              </div>
+              <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2 dark:bg-fluid-700">4</div>
                 <h3 className="text-sm font-medium text-gray-900 dark:text-white">Publish & Share</h3>
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Go live with a public link</p>
               </div>
