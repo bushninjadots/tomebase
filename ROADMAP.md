@@ -34,7 +34,7 @@
 
 ### High Priority
 
-- [ ] **Revision diff** — side-by-side comparison of snapshot versions
+- [x] **Revision diff** — side-by-side comparison of snapshot versions
 - [ ] **Page comments / discussions** — inline feedback on pages with @mentions
 - [ ] **Stripe billing** — real payment integration for Pro/Enterprise upgrades
 - [ ] **AI writing assistant** — smart suggestions, auto-summarize, rewrite
@@ -60,6 +60,19 @@
 - [ ] **SOC 2 compliance** — enterprise security certifications
 
 ## Changelog
+
+### 2026-07-10
+- Revision diff: compare any two snapshots side-by-side with line-by-line diff view
+- History modal: toggle compare mode to select two versions and see changes
+- Diff viewer shows added/removed/unchanged lines with color coding
+- Added diff summary (+/- lines) between snapshots in history list
+- Wiki links: support aliases ([[Page|display text]])
+- Wiki autocomplete: fuzzy matching, page descriptions, sorted results
+- Graph view: improved physics, arrow markers, shadows, glow effects
+- Markdown editor: added table, divider, task list toolbar buttons
+- Markdown editor: Tab/Shift+Tab for indent/outdent
+- Markdown editor: Cmd+K for link insertion
+- Landing page: removed fake stats, replaced with accurate tier info
 
 ### 2026-07-09
 - Page version history with snapshot browse/restore

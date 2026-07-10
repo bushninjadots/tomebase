@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { History, Clock, RotateCcw, X, FileText, Check, AlertCircle } from 'lucide-react';
+import { History, Clock, RotateCcw, X, FileText, GitCompare, Check, ArrowLeft } from 'lucide-react';
+import { DiffViewer } from '@/components/diff-viewer';
 
 interface Snapshot {
   id: string;
@@ -35,6 +36,8 @@ function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void
   const [error, setError] = useState<string | null>(null);
   const [restoring, setRestoring] = useState<string | null>(null);
   const [preview, setPreview] = useState<Snapshot | null>(null);
+  const [mode, setMode] = useState<'preview' | 'compare'>('preview');
+  const [compareSelection, setCompareSelection] = useState<Snapshot[]>([]);
 
   useEffect(() => {
     fetch(`/api/pages/${pageId}/snapshots`)
@@ -69,6 +72,46 @@ function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void
     setRestoring(null);
   }
 
+  function handleCompareSelect(snapshot: Snapshot) {
+    if (mode !== 'compare') return;
+    
+    setCompareSelection((prev) => {
+      if (prev.length === 0) {
+        return [snapshot];
+      }
+      if (prev.length === 1) {
+        // If clicking same snapshot, deselect
+        if (prev[0]!.id === snapshot.id) {
+          return [];
+        }
+        // If clicking older snapshot, make it the "old" one
+        if (new Date(snapshot.createdAt) < new Date(prev[0]!.createdAt)) {
+          return [snapshot, prev[0]!];
+        }
+        return [prev[0]!, snapshot];
+      }
+      // Reset selection
+      return [snapshot];
+    });
+  }
+
+  function exitCompareMode() {
+    setMode('preview');
+    setCompareSelection([]);
+  }
+
+  function toggleMode() {
+    if (mode === 'compare') {
+      exitCompareMode();
+    } else {
+      setMode('compare');
+      setPreview(null);
+      setCompareSelection([]);
+    }
+  }
+
+  const isSelected = (snap: Snapshot) => compareSelection.some((s) => s.id === snap.id);
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/20"
@@ -76,21 +119,47 @@ function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="flex w-full max-w-2xl max-h-[80vh] rounded-2xl border border-gray-200 bg-white shadow-2xl overflow-hidden">
+      <div className="flex w-full max-w-4xl max-h-[85vh] rounded-2xl border border-gray-200 bg-white shadow-2xl overflow-hidden">
         {/* Sidebar - version list */}
-        <div className="w-64 shrink-0 border-r border-gray-100 flex flex-col">
+        <div className="w-72 shrink-0 border-r border-gray-100 flex flex-col">
           <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
             <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
               <History className="h-4 w-4 text-gray-400" />
               History
             </h3>
-            <button
-              onClick={onClose}
-              className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={toggleMode}
+                className={`rounded-lg p-1.5 transition-colors ${
+                  mode === 'compare'
+                    ? 'bg-fluid-50 text-fluid-600'
+                    : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'
+                }`}
+                title={mode === 'compare' ? 'Exit compare mode' : 'Compare versions'}
+              >
+                <GitCompare className="h-4 w-4" />
+              </button>
+              <button
+                onClick={onClose}
+                className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
           </div>
+
+          {mode === 'compare' && (
+            <div className="border-b border-gray-100 bg-fluid-50/50 px-4 py-2">
+              <p className="text-xs text-fluid-700">
+                {compareSelection.length === 0
+                  ? 'Select two versions to compare'
+                  : compareSelection.length === 1
+                  ? 'Select one more version'
+                  : 'Comparing selected versions'}
+              </p>
+            </div>
+          )}
+
           <div className="flex-1 overflow-y-auto">
             {loading && (
               <div className="p-4 text-center text-sm text-gray-400">Loading...</div>
@@ -104,38 +173,101 @@ function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void
                 No history yet
               </div>
             )}
-            {snapshots.map((snap) => (
-              <button
-                key={snap.id}
-                onClick={() => setPreview(snap)}
-                className={`w-full px-4 py-3 text-left border-b border-gray-50 transition-colors ${
-                  preview?.id === snap.id
-                    ? 'bg-fluid-50 border-l-2 border-l-fluid-500'
-                    : 'hover:bg-gray-50'
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <Clock className="h-3 w-3 shrink-0 text-gray-400" />
-                  <span className="text-xs text-gray-500">
-                    {new Date(snap.createdAt).toLocaleDateString(undefined, {
-                      month: 'short',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </span>
-                </div>
-                <p className="mt-0.5 text-sm font-medium text-gray-700 truncate">
-                  {snap.title}
-                </p>
-              </button>
-            ))}
+            {snapshots.map((snap, i) => {
+              const selected = isSelected(snap);
+              const isPreviewing = mode === 'preview' && preview?.id === snap.id;
+              const compareIndex = compareSelection.findIndex((s) => s.id === snap.id);
+              
+              return (
+                <button
+                  key={snap.id}
+                  onClick={() => mode === 'compare' ? handleCompareSelect(snap) : setPreview(snap)}
+                  className={`w-full px-4 py-3 text-left border-b border-gray-50 transition-colors ${
+                    isPreviewing
+                      ? 'bg-fluid-50 border-l-2 border-l-fluid-500'
+                      : selected
+                      ? 'bg-fluid-50 border-l-2 border-l-fluid-400'
+                      : 'hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    {mode === 'compare' && (
+                      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                        selected
+                          ? 'border-fluid-500 bg-fluid-500'
+                          : 'border-gray-300'
+                      }`}>
+                        {selected && (
+                          <span className="text-[8px] text-white font-bold">
+                            {compareIndex === 0 ? '1' : '2'}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    <Clock className="h-3 w-3 shrink-0 text-gray-400" />
+                    <span className="text-xs text-gray-500">
+                      {new Date(snap.createdAt).toLocaleDateString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </span>
+                  </div>
+                  <p className="mt-0.5 text-sm font-medium text-gray-700 truncate">
+                    {snap.title}
+                  </p>
+                  {i < snapshots.length - 1 && (
+                    <p className="text-[10px] text-gray-400 mt-0.5">
+                      {getDiffSummary(snapshots[i + 1]!, snap)}
+                    </p>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Preview pane */}
+        {/* Preview/Diff pane */}
         <div className="flex-1 flex flex-col min-w-0">
-          {preview ? (
+          {mode === 'compare' ? (
+            compareSelection.length === 2 ? (
+              <div className="flex-1 overflow-y-auto p-5">
+                <div className="flex items-center gap-3 mb-4">
+                  <button
+                    onClick={exitCompareMode}
+                    className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                  </button>
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-900">Comparing versions</h4>
+                    <p className="text-xs text-gray-400">
+                      {new Date(compareSelection[0]!.createdAt).toLocaleString()} → {new Date(compareSelection[1]!.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+                <DiffViewer
+                  oldText={compareSelection[0]!.content || ''}
+                  newText={compareSelection[1]!.content || ''}
+                  oldLabel={compareSelection[0]!.title}
+                  newLabel={compareSelection[1]!.title}
+                />
+              </div>
+            ) : (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="text-center p-8">
+                  <GitCompare className="h-10 w-10 mx-auto text-gray-200" />
+                  <p className="mt-3 text-sm text-gray-400">
+                    Select two versions to compare
+                  </p>
+                  <p className="mt-1 text-xs text-gray-300">
+                    {compareSelection.length === 0 ? 'Click two versions in the list' : 'Click one more version'}
+                  </p>
+                </div>
+              </div>
+            )
+          ) : preview ? (
             <>
               <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3">
                 <div>
@@ -175,4 +307,13 @@ function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void
       </div>
     </div>
   );
+}
+
+function getDiffSummary(oldSnap: Snapshot, newSnap: Snapshot): string {
+  const oldLines = (oldSnap.content || '').split('\n').length;
+  const newLines = (newSnap.content || '').split('\n').length;
+  const diff = newLines - oldLines;
+  if (diff === 0) return 'No line changes';
+  if (diff > 0) return `+${diff} lines`;
+  return `${diff} lines`;
 }
