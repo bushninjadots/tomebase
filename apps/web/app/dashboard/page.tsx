@@ -9,6 +9,7 @@ import { ProjectCard } from '@/components/project-card';
 import { UsageMeter } from '@/components/usage-meter';
 import { OnboardingChecklist } from '@/components/onboarding-checklist';
 import { GuidedTutorial } from '@/components/guided-tutorial';
+import { GlobalSearch } from '@/components/global-search';
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -146,6 +147,10 @@ export default async function DashboardPage() {
               New Project
             </Link>
           </div>
+        </div>
+
+        <div className="mb-8">
+          <GlobalSearch />
         </div>
 
         <OnboardingChecklist
