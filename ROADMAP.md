@@ -35,7 +35,7 @@
 ### High Priority
 
 - [x] **Revision diff** — side-by-side comparison of snapshot versions
-- [ ] **Page comments / discussions** — inline feedback on pages with @mentions
+- [x] **Page comments / discussions** — inline feedback on pages with @mentions
 - [ ] **Stripe billing** — real payment integration for Pro/Enterprise upgrades
 - [ ] **AI writing assistant** — smart suggestions, auto-summarize, rewrite
 
@@ -60,6 +60,13 @@
 - [ ] **SOC 2 compliance** — enterprise security certifications
 
 ## Changelog
+
+### 2026-07-10
+- Page comments/discussions with threaded replies
+- @mention support with autocomplete dropdown
+- Comment highlighting when mentioned
+- Delete own comments
+- Comments section toggle in editor
 
 ### 2026-07-10
 - Revision diff: compare any two snapshots side-by-side with line-by-line diff view

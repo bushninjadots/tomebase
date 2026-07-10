@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Save, Eye, Edit3, FileText, ChevronRight, ArrowRight, Hash, Cloud, CloudOff, Bold, Italic, Heading1, Heading2, Link as LinkIcon, Code, List, ListOrdered, Quote, MoreHorizontal, Copy, Trash2, Layers, BookOpen, Clock, Type, AlertTriangle, ListOrdered as ListOrderedIcon, Minus, Image, Table, CheckSquare } from 'lucide-react';
+import { Save, Eye, Edit3, FileText, ChevronRight, ArrowRight, Hash, Cloud, CloudOff, Bold, Italic, Heading1, Heading2, Link as LinkIcon, Code, List, ListOrdered, Quote, MoreHorizontal, Copy, Trash2, Layers, BookOpen, Clock, Type, AlertTriangle, ListOrdered as ListOrderedIcon, Minus, Image, Table, CheckSquare, MessageSquare } from 'lucide-react';
 import { Markdown } from '@/components/markdown';
 import { ShortcutsModal } from '@/components/shortcuts';
 import { GraphModalOpener } from '@/components/graph';
@@ -10,6 +10,7 @@ import { HistoryButton } from '@/components/history';
 import { findBacklinks, extractTags } from '@/lib/wiki';
 import { extractDescription, extractHeadings } from '@/lib/content';
 import { WikiAutocomplete } from '@/components/wiki-autocomplete';
+import { Comments } from '@/components/comments';
 import Link from 'next/link';
 
 interface Page {
@@ -41,6 +42,8 @@ export function DocEditor({ project }: { project: Project }) {
   const [deleting, setDeleting] = useState(false);
   const [showCopiedTip, setShowCopiedTip] = useState(false);
   const [showToc, setShowToc] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [teamMembers, setTeamMembers] = useState<{ id: string; name: string | null; email: string | null; image: string | null }[]>([]);
   const actionsRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const selRef = useRef({ start: 0, end: 0 });
@@ -85,6 +88,18 @@ export function DocEditor({ project }: { project: Project }) {
   useEffect(() => {
     setPageList(project.pages);
   }, [project.pages]);
+
+  // Fetch team members for @mentions
+  useEffect(() => {
+    fetch('/api/team/members')
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setTeamMembers(data);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const breadcrumbs = useMemo(() => {
     if (!selectedPage) return [];
@@ -824,6 +839,26 @@ export function DocEditor({ project }: { project: Project }) {
           )}
         </div>
       </div>
+
+      {/* Comments toggle */}
+      {selectedPage && (
+        <div className="border-t border-gray-100 px-6 py-2">
+          <button
+            onClick={() => setShowComments(!showComments)}
+            className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+              showComments ? 'text-fluid-600' : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <MessageSquare className="h-4 w-4" />
+            Discussion
+          </button>
+        </div>
+      )}
+
+      {/* Comments section */}
+      {selectedPage && showComments && (
+        <Comments pageId={selectedPage.id} teamMembers={teamMembers} />
+      )}
     </div>
   );
 }

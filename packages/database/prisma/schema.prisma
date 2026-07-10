@@ -20,6 +20,7 @@ model User {
   teams     TeamMember[]
   sessions  Session[]
   accounts  Account[]
+  comments  Comment[]
 }
 
 model Account {
@@ -95,6 +96,7 @@ model DocPage {
   parent    DocPage?        @relation("DocPageHierarchy", fields: [parentId], references: [id])
   children  DocPage[]       @relation("DocPageHierarchy")
   snapshots PageSnapshot[]
+  comments  Comment[]
 }
 
 model PageSnapshot {
@@ -168,4 +170,21 @@ model Invitation {
   createdAt DateTime @default(now())
 
   team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  pageId    String
+  userId    String
+  parentId  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  page    DocPage    @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  user    User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent  Comment?   @relation("CommentReplies", fields: [parentId], references: [id])
+  replies Comment[]  @relation("CommentReplies")
+
+  @@index([pageId, createdAt])
 }
