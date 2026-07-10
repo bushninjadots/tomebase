@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { extractWikiLinks } from '@/lib/wiki';
 import { formatDistanceToNow } from 'date-fns';
-import { LivingDocsSection } from '@/components/living-docs-section';
+import { LivingDocumentation } from '@/components/living-documentation';
 
 interface PageProps {
   params: Promise<{ project: string }>;
@@ -386,7 +386,9 @@ export default async function ProjectHealthPage({ params }: PageProps) {
             </div>
           </div>
 
-          <LivingDocsSection projectId={project.id} />
+          <div className="mt-8">
+            <LivingDocumentation projectId={project.id} />
+          </div>
         </div>
       </Container>
     </div>

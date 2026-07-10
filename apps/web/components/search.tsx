@@ -72,7 +72,6 @@ export function SearchOverlay({ projectId, pages }: SearchOverlayProps) {
     (slug: string) => {
       setOpen(false);
       router.push(`/docs/${projectId}/${slug}`);
-      router.refresh();
     },
     [projectId, router]
   );
