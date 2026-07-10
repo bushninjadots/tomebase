@@ -9,7 +9,6 @@ import { ProjectCard } from '@/components/project-card';
 import { UsageMeter } from '@/components/usage-meter';
 import { OnboardingChecklist } from '@/components/onboarding-checklist';
 import { GuidedTutorial } from '@/components/guided-tutorial';
-import { GlobalSearch } from '@/components/global-search';
 import { WelcomeHelp } from '@/components/welcome-help';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -94,46 +93,9 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <>
       <GuidedTutorial projectId={projects[0]?.id} />
       <WelcomeHelp />
-      <nav className="border-b border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="flex h-16 items-center justify-between">
-            <Link href="/dashboard" className="flex items-center gap-2">
-              <svg viewBox="0 0 32 32" fill="none" className="h-7 w-7" aria-hidden="true">
-                <rect width="32" height="32" rx="8" fill="#0c8ee7" />
-                <circle cx="16" cy="16" r="4" fill="white" />
-              </svg>
-              <span className="text-base font-bold tracking-tight dark:text-white">TomeBase</span>
-            </Link>
-            <div className="flex items-center gap-4">
-              <Link
-                href="/dashboard/settings"
-                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300"
-              >
-                <Users className="h-4 w-4" />
-                Team
-              </Link>
-              <form
-                action={async () => {
-                  'use server';
-                  const { signOut } = await import('@/lib/auth');
-                  await signOut();
-                }}
-              >
-                <button
-                  type="submit"
-                  className="text-sm text-gray-500 hover:text-gray-700 transition-colors dark:text-gray-400 dark:hover:text-gray-300"
-                >
-                  Sign out
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </nav>
-
       <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -165,10 +127,6 @@ export default async function DashboardPage() {
               New Project
             </Link>
           </div>
-        </div>
-
-        <div className="mb-8">
-          <GlobalSearch />
         </div>
 
         <OnboardingChecklist
@@ -388,6 +346,6 @@ export default async function DashboardPage() {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }
