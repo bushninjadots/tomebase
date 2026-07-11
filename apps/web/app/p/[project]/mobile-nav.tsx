@@ -73,8 +73,8 @@ export function PublicMobileNav({ pages, projectId }: { pages: PageNode[]; proje
             className="fixed inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => setOpen(false)}
           />
-          <div className="fixed inset-y-0 left-0 w-72 bg-[#0B1020] border-r border-white/[0.06] shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3">
+          <div className="fixed inset-y-0 left-0 w-72 bg-theme-card border-r border-theme-border shadow-2xl">
+            <div className="flex items-center justify-between border-b border-theme-border px-4 py-3">
               <span className="text-[13px] font-semibold text-theme-main">Navigation</span>
               <button
                 onClick={() => setOpen(false)}

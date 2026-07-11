@@ -31,10 +31,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 function SyntaxCodeBlock({ code, language }: { code: string; language: string }) {
   const lines = code.split('\n');
   return (
-    <div className="my-8 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#13131a]">
+    <div className="my-8 overflow-hidden rounded-2xl border border-theme-border bg-theme-card">
       {/* Language label */}
       <div className="flex items-center justify-end px-5 pt-3">
-        <span className="text-[11px] font-medium text-[#6b7280] uppercase tracking-wider">
+        <span className="text-[11px] font-medium text-theme-muted uppercase tracking-wider">
           {language}
         </span>
       </div>
@@ -45,7 +45,7 @@ function SyntaxCodeBlock({ code, language }: { code: string; language: string })
           <code className="font-mono text-[13px] leading-[1.7]">
             {lines.map((line, i) => (
               <div key={i} className="flex">
-                <span className="select-none text-[#4b5563] text-right pr-5 w-8 inline-block shrink-0">
+                <span className="select-none text-theme-muted text-right pr-5 w-8 inline-block shrink-0">
                   {i + 1}
                 </span>
                 <span className="flex-1 whitespace-pre">
@@ -65,17 +65,17 @@ function HighlightedLine({ line }: { line: string }) {
   let remaining = line;
 
   const patterns: [RegExp, string][] = [
-    [/^(\/\/.*)/, 'text-[#6b7280] italic'],
-    [/^(\/\*[^]*?\*\/)/, 'text-[#6b7280] italic'],
-    [/^(export|from|const|let|var|return|import|default|async|await|if|else|new|class|extends|implements|typeof|instanceof)\b/, 'text-[#f472b6]'],
-    [/^(interface|type)\b/, 'text-[#6366f1]'],
-    [/^(string|number|boolean|void|null|undefined|any|never|unknown|object)\b/, 'text-[#6366f1]'],
-    [/^('[^']*'|"[^"]*"|`[^`]*`)/, 'text-[#22c55e]'],
-    [/^(\d+(\.\d+)?)/, 'text-[#f59e0b]'],
-    [/^([A-Z]\w*)/, 'text-[#f0f0f5]'],
-    [/^(\w+)(?=\s*:)/, 'text-[#22c55e]'],
-    [/^(\w+)/, 'text-[#d1d5db]'],
-    [/^([{}()\[\];,.:])/, 'text-[#6b7280]'],
+    [/^(\/\/.*)/, 'text-theme-muted italic'],
+    [/^(\/\*[^]*?\*\/)/, 'text-theme-muted italic'],
+    [/^(export|from|const|let|var|return|import|default|async|await|if|else|new|class|extends|implements|typeof|instanceof)\b/, 'text-pink-400'],
+    [/^(interface|type)\b/, 'text-theme-accent'],
+    [/^(string|number|boolean|void|null|undefined|any|never|unknown|object)\b/, 'text-theme-accent'],
+    [/^('[^']*'|"[^"]*"|`[^`]*`)/, 'text-emerald-400'],
+    [/^(\d+(\.\d+)?)/, 'text-amber-400'],
+    [/^([A-Z]\w*)/, 'text-theme-main'],
+    [/^(\w+)(?=\s*:)/, 'text-emerald-400'],
+    [/^(\w+)/, 'text-theme-subtle'],
+    [/^([{}()\[\];,.:])/, 'text-theme-muted'],
     [/^(\s+)/, ''],
   ];
 
@@ -157,14 +157,14 @@ export default async function PublicDocPage({ params }: PageProps) {
       {/* Centered hero header */}
       <header className="mb-10 text-center">
         {/* Page title — monospace, large, bold */}
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-mono text-[#f0f0f5] leading-tight">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-mono text-theme-main leading-tight">
           {page.title}
         </h1>
 
         {/* Subtitle with score */}
-        <p className="mt-3 text-sm text-[#9ca3af]">
+        <p className="mt-3 text-sm text-theme-subtle">
           Product overview{' '}
-          <span className="text-[#6b7280]">·</span>{' '}
+          <span className="text-theme-muted">·</span>{' '}
           Score:{' '}
           <span className="font-semibold text-amber-400">
             {page.viewCount > 0 ? Math.min(99, Math.floor(page.viewCount / 10) + 1) : '—'}
@@ -177,7 +177,7 @@ export default async function PublicDocPage({ params }: PageProps) {
             {tags.map((tag) => (
               <span
                 key={tag}
-                className="inline-flex items-center gap-0.5 rounded-md border border-white/[0.06] bg-white/[0.03] px-2 py-0.5 text-[11px] font-medium text-[#6b7280]"
+                className="inline-flex items-center gap-0.5 rounded-md border border-theme-border bg-theme-hover px-2 py-0.5 text-[11px] font-medium text-theme-muted"
               >
                 <Hash className="h-2.5 w-2.5" />
                 {tag}
@@ -191,9 +191,9 @@ export default async function PublicDocPage({ params }: PageProps) {
       <SyntaxCodeBlock code={heroCode} language="TypeScript" />
 
       {/* Metadata row */}
-      <div className="flex items-center justify-center gap-4 text-xs text-[#6b7280] mb-10">
+      <div className="flex items-center justify-center gap-4 text-xs text-theme-muted mb-10">
         {page.description && (
-          <span className="max-w-md text-center leading-relaxed text-[#9ca3af]">
+          <span className="max-w-md text-center leading-relaxed text-theme-subtle">
             {page.description}
           </span>
         )}
@@ -210,7 +210,7 @@ export default async function PublicDocPage({ params }: PageProps) {
       </div>
 
       {/* Markdown content */}
-      <div className="border-t border-white/[0.06] pt-8">
+      <div className="border-t border-theme-border pt-8">
         <Markdown
           content={page.content}
           projectId={projectId}
@@ -221,16 +221,16 @@ export default async function PublicDocPage({ params }: PageProps) {
 
       {/* Prev / Next navigation */}
       {(prevPage || nextPage) && (
-        <div className="mt-16 grid grid-cols-2 gap-4 border-t border-white/[0.06] pt-8">
+        <div className="mt-16 grid grid-cols-2 gap-4 border-t border-theme-border pt-8">
           {prevPage ? (
             <Link
               href={`/p/${projectId}/${prevPage.slug}`}
-              className="group rounded-xl border border-white/[0.06] p-4 transition-all hover:border-white/[0.12] hover:bg-white/[0.02]"
+              className="group rounded-xl border border-theme-border p-4 transition-all hover:border-theme-accent/30 hover:bg-theme-hover"
             >
-              <span className="text-[11px] font-medium uppercase tracking-wider text-[#4b5563]">
+              <span className="text-[11px] font-medium uppercase tracking-wider text-theme-muted">
                 Previous
               </span>
-              <p className="mt-1.5 text-sm font-medium text-[#9ca3af] group-hover:text-[#e5e7eb] transition-colors truncate">
+              <p className="mt-1.5 text-sm font-medium text-theme-subtle group-hover:text-theme-main transition-colors truncate">
                 {prevPage.title}
               </p>
             </Link>
@@ -240,12 +240,12 @@ export default async function PublicDocPage({ params }: PageProps) {
           {nextPage && (
             <Link
               href={`/p/${projectId}/${nextPage.slug}`}
-              className="group rounded-xl border border-white/[0.06] p-4 text-right transition-all hover:border-white/[0.12] hover:bg-white/[0.02]"
+              className="group rounded-xl border border-theme-border p-4 text-right transition-all hover:border-theme-accent/30 hover:bg-theme-hover"
             >
-              <span className="text-[11px] font-medium uppercase tracking-wider text-[#4b5563]">
+              <span className="text-[11px] font-medium uppercase tracking-wider text-theme-muted">
                 Next
               </span>
-              <p className="mt-1.5 text-sm font-medium text-[#9ca3af] group-hover:text-[#e5e7eb] transition-colors truncate">
+              <p className="mt-1.5 text-sm font-medium text-theme-subtle group-hover:text-theme-main transition-colors truncate">
                 {nextPage.title}
               </p>
             </Link>
@@ -255,8 +255,8 @@ export default async function PublicDocPage({ params }: PageProps) {
 
       {/* Backlinks */}
       {backlinks.length > 0 && (
-        <div className="mt-12 border-t border-white/[0.06] pt-8">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-[#4b5563] mb-4">
+        <div className="mt-12 border-t border-theme-border pt-8">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-theme-muted mb-4">
             Referenced by
           </h2>
           <div className="space-y-2">
@@ -264,9 +264,9 @@ export default async function PublicDocPage({ params }: PageProps) {
               <Link
                 key={bl.slug}
                 href={`/p/${projectId}/${bl.slug}`}
-                className="group flex items-center gap-2 rounded-lg border border-white/[0.06] px-3.5 py-2.5 text-sm text-[#9ca3af] hover:border-white/[0.12] hover:bg-white/[0.02] hover:text-[#e5e7eb] transition-all"
+                className="group flex items-center gap-2 rounded-lg border border-theme-border px-3.5 py-2.5 text-sm text-theme-subtle hover:border-theme-accent/30 hover:bg-theme-hover hover:text-theme-main transition-all"
               >
-                <ExternalLink className="h-3 w-3 text-[#4b5563] group-hover:text-[#818cf8] transition-colors shrink-0" />
+                <ExternalLink className="h-3 w-3 text-theme-muted group-hover:text-theme-accent transition-colors shrink-0" />
                 {bl.title}
               </Link>
             ))}
@@ -276,8 +276,8 @@ export default async function PublicDocPage({ params }: PageProps) {
 
       {/* Table of contents */}
       {headings.length > 1 && (
-        <div className="mt-12 border-t border-white/[0.06] pt-8">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#4b5563] mb-3">
+        <div className="mt-12 border-t border-theme-border pt-8">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-theme-muted mb-3">
             On this page
           </p>
           <nav className="space-y-0.5">
@@ -285,7 +285,7 @@ export default async function PublicDocPage({ params }: PageProps) {
               <a
                 key={h.id}
                 href={`#${h.id}`}
-                className="block rounded-md px-2.5 py-1 text-[12px] text-[#6b7280] hover:text-[#d1d5db] hover:bg-white/[0.04] transition-colors"
+                className="block rounded-md px-2.5 py-1 text-[12px] text-theme-muted hover:text-theme-main hover:bg-theme-hover transition-colors"
                 style={{ paddingLeft: `${10 + (h.level - 1) * 12}px` }}
               >
                 {h.text}

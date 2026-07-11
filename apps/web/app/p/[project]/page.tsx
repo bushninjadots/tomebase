@@ -41,7 +41,7 @@ export default async function PublicProjectPage({ params }: PageProps) {
   return (
     <div className="min-h-[calc(100vh-48px)]">
       {/* Hero */}
-      <div className="relative overflow-hidden border-b border-white/[0.06]">
+      <div className="relative overflow-hidden border-b border-theme-border">
         <div className="absolute inset-0 bg-gradient-to-br from-theme-accent/[0.04] via-transparent to-transparent pointer-events-none" />
         <div className="relative mx-auto max-w-3xl px-6 py-16 sm:py-20">
           <div className="flex items-start justify-between gap-4">
@@ -56,7 +56,7 @@ export default async function PublicProjectPage({ params }: PageProps) {
               )}
             </div>
             {project.customDomain && (
-              <span className="shrink-0 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-xs font-medium text-theme-muted">
+              <span className="shrink-0 rounded-full border border-theme-border bg-theme-hover px-3 py-1 text-xs font-medium text-theme-muted">
                 {project.customDomain}
               </span>
             )}
@@ -82,7 +82,7 @@ export default async function PublicProjectPage({ params }: PageProps) {
       {/* Content */}
       <div className="mx-auto max-w-3xl px-6 py-10">
         {totalPages === 0 ? (
-          <div className="rounded-2xl border border-dashed border-white/[0.08] p-16 text-center">
+          <div className="rounded-2xl border border-dashed border-theme-border p-16 text-center">
             <BookOpen className="mx-auto h-10 w-10 text-theme-muted/30" />
             <h2 className="mt-4 text-base font-semibold text-theme-main">No published pages yet</h2>
             <p className="mt-1.5 text-sm text-theme-muted/60">
@@ -98,7 +98,7 @@ export default async function PublicProjectPage({ params }: PageProps) {
               <Link
                 key={page.id}
                 href={`/p/${projectId}/${page.slug}`}
-                className="group flex items-start gap-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 transition-all hover:border-white/[0.12] hover:bg-white/[0.04]"
+                className="group flex items-start gap-4 rounded-xl border border-theme-border bg-theme-card p-5 transition-all hover:border-theme-accent/30 hover:bg-theme-hover"
               >
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-theme-accent/10 text-theme-accent mt-0.5">
                   <FileText className="h-4 w-4" />

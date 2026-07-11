@@ -127,29 +127,6 @@ const features = [
 export default function FeaturesPage() {
   return (
     <div className="min-h-screen bg-theme-page">
-      <nav className="sticky top-0 z-50 border-b border-theme-border bg-theme-page/70 backdrop-blur-xl">
-        <Container>
-          <div className="flex h-16 items-center justify-between">
-            <Link href="/" className="flex items-center gap-2">
-              <svg viewBox="0 0 32 32" fill="none" className="h-7 w-7">
-                <rect width="32" height="32" rx="8" fill="#3B3BFF" />
-                <circle cx="16" cy="16" r="4" fill="white" />
-              </svg>
-              <span className="font-bold tracking-tight text-theme-main">TomeBase</span>
-            </Link>
-            <div className="flex items-center gap-4">
-              <Link href="/pricing" className="text-sm text-theme-subtle hover:text-theme-main transition-colors">Pricing</Link>
-              <Link
-                href="/login"
-                className="btn-primary text-sm"
-              >
-                Get Started
-              </Link>
-            </div>
-          </div>
-        </Container>
-      </nav>
-
       <Container className="py-24">
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="text-4xl font-bold tracking-tight text-theme-main sm:text-5xl">

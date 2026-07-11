@@ -58,67 +58,6 @@ const stats = [
 export default function Home() {
   return (
     <div className="bg-theme-page">
-      {/* ─── Nav ─── */}
-      <nav className="sticky top-0 z-50 border-b border-theme-border bg-theme-page/80 backdrop-blur-xl">
-        <Container>
-          <div className="flex h-16 items-center justify-between">
-            <Link href="/" className="flex items-center gap-2">
-              <svg
-                viewBox="0 0 32 32"
-                fill="none"
-                className="h-8 w-8"
-                aria-hidden="true"
-              >
-                <defs>
-                  <linearGradient id="logo-nav" x1="0" y1="0" x2="32" y2="32">
-                    <stop offset="0%" stopColor="#3B3BFF" />
-                    <stop offset="100%" stopColor="#818cf8" />
-                  </linearGradient>
-                </defs>
-                <rect
-                  width="32"
-                  height="32"
-                  rx="8"
-                  fill="url(#logo-nav)"
-                />
-                <circle cx="16" cy="16" r="4" fill="white" />
-              </svg>
-              <span className="text-lg font-bold tracking-tight text-theme-main">
-                TomeBase
-              </span>
-            </Link>
-
-            <div className="flex items-center gap-6">
-              <Link
-                href="/pricing"
-                className="text-sm font-medium text-theme-subtle hover:text-theme-main transition-colors"
-              >
-                Pricing
-              </Link>
-              <Link
-                href="/docs"
-                className="text-sm font-medium text-theme-subtle hover:text-theme-main transition-colors"
-              >
-                Docs
-              </Link>
-              <Link
-                href="/login"
-                className="btn-secondary !py-2 !px-4 !text-sm"
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/login"
-                className="btn-primary !py-2 !px-4 !text-sm"
-              >
-                Get Started
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-          </div>
-        </Container>
-      </nav>
-
       {/* ─── Hero ─── */}
       <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
         <div className="hero-glow -left-40 -top-40" />
