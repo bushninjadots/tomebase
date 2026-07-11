@@ -121,11 +121,9 @@ export default function Home() {
 
       {/* ─── Hero ─── */}
       <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
-        {/* Glow */}
         <div className="hero-glow -left-40 -top-40" />
         <div className="hero-glow -right-40 -bottom-40" />
 
-        {/* Dot grid */}
         <div
           className="absolute inset-0 opacity-[0.04]"
           style={{
@@ -137,14 +135,12 @@ export default function Home() {
 
         <Container>
           <div className="relative mx-auto max-w-4xl text-center py-32">
-            <div className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-theme-border bg-theme-card px-4 py-1.5 text-xs font-medium text-theme-subtle">
-              Open source · Free tier available
-            </div>
+            <p className="eyebrow mb-6">Developer Docs Platform</p>
 
             <h1 className="text-5xl font-extrabold tracking-tight text-theme-main sm:text-6xl lg:text-7xl">
               Developer documentation{' '}
               <br className="hidden sm:block" />
-              <span className="gradient-text">without the setup</span>
+              without the setup
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-theme-subtle">
@@ -158,31 +154,131 @@ export default function Home() {
                 <ArrowRight className="h-5 w-5" />
               </Link>
               <Link href="/docs" className="btn-secondary !px-8 !py-3 !text-base">
-                View Demo
+                View Docs
               </Link>
             </div>
-
-            <p className="mt-4 text-sm text-theme-muted">
-              No credit card required · 5 team members free forever
-            </p>
           </div>
         </Container>
       </section>
 
-      {/* ─── Stats ─── */}
-      <section className="border-y border-theme-border bg-theme-card/40 py-16">
+      {/* ─── How It Works ─── */}
+      <section className="py-24 sm:py-32">
         <Container>
-          <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto">
-            {stats.map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="text-4xl font-extrabold text-theme-main sm:text-5xl">
-                  {stat.value}
+          <div className="mx-auto max-w-[800px]">
+            <div className="text-center mb-16">
+              <p className="eyebrow mb-4">How It Works</p>
+              <h2 className="text-3xl font-bold tracking-tight text-theme-main sm:text-4xl lg:text-5xl">
+                From code to docs in 3 steps
+              </h2>
+            </div>
+
+            <div className="space-y-12">
+              {/* Step 1 */}
+              <div className="flex gap-5">
+                <div className="flex-shrink-0 flex items-start">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-theme-accent text-sm font-bold text-white">
+                    1
+                  </div>
                 </div>
-                <div className="mt-2 text-sm font-medium text-theme-muted uppercase tracking-wider">
-                  {stat.label}
+                <div className="flex-1 pt-1">
+                  <h3 className="text-lg font-semibold text-theme-main">
+                    Import your source code
+                  </h3>
+                  <p className="mt-2 text-sm text-theme-subtle">
+                    Connect your repository and we&apos;ll extract structure from your
+                    codebase automatically.
+                  </p>
+
+                  {/* Code card */}
+                  <div className="mt-4 overflow-hidden rounded-xl border border-theme-border bg-[#0d0d14] p-5">
+                    <pre className="text-sm leading-relaxed font-mono overflow-x-auto">
+                      <code>
+                        <span style={{ color: '#6b7280' }}>{'// Configure your docs source'}</span>
+                        {'\n'}
+                        <span style={{ color: '#f472b6' }}>import</span>
+                        <span style={{ color: '#f0f0f5' }}>{' { '}</span>
+                        <span style={{ color: '#67e8f9' }}>defineConfig</span>
+                        <span style={{ color: '#f0f0f5' }}>{' } '}</span>
+                        <span style={{ color: '#f472b6' }}>from</span>
+                        <span style={{ color: '#a5b4fc' }}>{" 'tomebase'"}</span>
+                        <span style={{ color: '#f0f0f5' }}>{';'}</span>
+                        {'\n\n'}
+                        <span style={{ color: '#f472b6' }}>export default</span>
+                        <span style={{ color: '#67e8f9' }}>{' defineConfig'}</span>
+                        <span style={{ color: '#f0f0f5' }}>{'({'}</span>
+                        {'\n'}
+                        <span style={{ color: '#f0f0f5' }}>{'  source: '}</span>
+                        <span style={{ color: '#a5b4fc' }}>{'./docs'}</span>
+                        <span style={{ color: '#f0f0f5' }}>{','}</span>
+                        {'\n'}
+                        <span style={{ color: '#f0f0f5' }}>{'  output: '}</span>
+                        <span style={{ color: '#a5b4fc' }}>{"'public'"}</span>
+                        <span style={{ color: '#f0f0f5' }}>{','}</span>
+                        {'\n'}
+                        <span style={{ color: '#f0f0f5' }}>{'  theme: '}</span>
+                        <span style={{ color: '#a5b4fc' }}>{"'dark'"}</span>
+                        <span style={{ color: '#f0f0f5' }}>{','}</span>
+                        {'\n'}
+                        <span style={{ color: '#f0f0f5' }}>{'  wikiLinks: '}</span>
+                        <span style={{ color: '#f472b6' }}>true</span>
+                        <span style={{ color: '#f0f0f5' }}>{','}</span>
+                        {'\n'}
+                        <span style={{ color: '#f0f0f5' }}>{'})'}</span>
+                        <span style={{ color: '#f0f0f5' }}>{';'}</span>
+                      </code>
+                    </pre>
+                  </div>
                 </div>
               </div>
-            ))}
+
+              {/* Step 2 */}
+              <div className="flex gap-5">
+                <div className="flex-shrink-0 flex items-start">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-theme-accent text-sm font-bold text-white">
+                    2
+                  </div>
+                </div>
+                <div className="flex-1 pt-1">
+                  <h3 className="text-lg font-semibold text-theme-main">
+                    Review &amp; enrich
+                  </h3>
+                  <p className="mt-2 text-sm text-theme-subtle">
+                    Use the built-in Markdown editor to refine content, add wiki
+                    links between pages, and organize your page tree.
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 3 */}
+              <div className="flex gap-5">
+                <div className="flex-shrink-0 flex items-start">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-theme-accent text-sm font-bold text-white">
+                    3
+                  </div>
+                </div>
+                <div className="flex-1 pt-1">
+                  <h3 className="text-lg font-semibold text-theme-main">
+                    Publish instantly
+                  </h3>
+                  <p className="mt-2 text-sm text-theme-subtle">
+                    Hit publish and your docs go live with SEO metadata, custom
+                    domains, and a polished reading experience — zero config
+                    required.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* CTA row */}
+            <div className="mt-14 flex items-center justify-center gap-4">
+              <Link href="/login" className="btn-primary !px-6 !py-2.5 !text-sm">
+                Try import now
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link href="/docs" className="btn-secondary !px-6 !py-2.5 !text-sm">
+                See health dashboard
+              </Link>
+            </div>
           </div>
         </Container>
       </section>
@@ -215,6 +311,24 @@ export default function Home() {
                 <p className="mt-2 text-sm leading-relaxed text-theme-muted">
                   {feature.description}
                 </p>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* ─── Stats ─── */}
+      <section className="border-y border-theme-border bg-theme-card/40 py-16">
+        <Container>
+          <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto">
+            {stats.map((stat) => (
+              <div key={stat.label} className="text-center">
+                <div className="text-4xl font-extrabold text-theme-main sm:text-5xl">
+                  {stat.value}
+                </div>
+                <div className="mt-2 text-sm font-medium text-theme-muted uppercase tracking-wider">
+                  {stat.label}
+                </div>
               </div>
             ))}
           </div>

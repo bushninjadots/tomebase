@@ -8,7 +8,7 @@
   --color-fluid-200: #c7d2fe;
   --color-fluid-300: #a5b4fc;
   --color-fluid-400: #818cf8;
-  --color-fluid-500: #3B3BFF;
+  --color-fluid-500: #6366f1;
   --color-fluid-600: #4F46E5;
   --color-fluid-700: #4338ca;
   --color-fluid-800: #3730a3;
@@ -45,36 +45,39 @@ body {
 }
 
 ::selection {
-  background-color: rgba(59, 59, 255, 0.3);
-  color: #F5F5F5;
+  background-color: rgba(99, 102, 241, 0.3);
+  color: #f0f0f5;
 }
 
 /* ===== Design System — Dark-first ===== */
 
 :root {
-  --bg-page: #0B1020;
-  --bg-card: #161A21;
-  --bg-hover: #1C2030;
-  --text-main: #F5F5F5;
-  --text-subtle: #B0B5BF;
-  --text-muted: #8A8F98;
+  --bg-page: #0a0a0f;
+  --bg-card: #13131a;
+  --bg-hover: #1a1a24;
+  --bg-elevated: #1c1c28;
+  --text-main: #f0f0f5;
+  --text-subtle: #9ca3af;
+  --text-muted: #6b7280;
   --border-theme: rgba(255, 255, 255, 0.08);
-  --accent: #3B3BFF;
-  --accent-hover: #4F46E5;
-  --accent-light: rgba(59, 59, 255, 0.12);
-  --accent-ring: rgba(59, 59, 255, 0.3);
-  --success: #22C55E;
-  --danger: #EF4444;
-  --warning: #F59E0B;
-  --graph-bg: #0B1020;
-  --graph-grid: #161A21;
-  --graph-edge: rgba(255, 255, 255, 0.08);
-  --graph-edge-highlight: #3B3BFF;
-  --graph-node-label-bg: #161A21;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --accent-light: rgba(99, 102, 241, 0.12);
+  --accent-ring: rgba(99, 102, 241, 0.3);
+  --success: #22c55e;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --purple: #a855f7;
+  --purple-light: rgba(168, 85, 247, 0.12);
+  --graph-bg: #0a0a0f;
+  --graph-grid: #13131a;
+  --graph-edge: rgba(255, 255, 255, 0.06);
+  --graph-edge-highlight: #6366f1;
+  --graph-node-label-bg: #13131a;
   --graph-node-label-border: rgba(255, 255, 255, 0.08);
-  --graph-node-label-text: #F5F5F5;
-  --card-radius: 16px;
-  --button-radius: 12px;
+  --graph-node-label-text: #f0f0f5;
+  --card-radius: 14px;
+  --button-radius: 8px;
   --transition-fast: 150ms ease-out;
   --transition-base: 200ms ease-out;
 }
@@ -166,14 +169,14 @@ body {
 /* ===== Utility Classes ===== */
 
 .gradient-text {
-  background: linear-gradient(135deg, #3B3BFF, #818cf8);
+  background: linear-gradient(135deg, #6366f1, #a78bfa);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .gradient-bg {
-  background: linear-gradient(135deg, #0B1020 0%, #111827 50%, #0B1020 100%);
+  background: linear-gradient(135deg, #0a0a0f 0%, #0d0d14 50%, #0a0a0f 100%);
 }
 
 .hero-glow {
@@ -181,7 +184,7 @@ body {
   width: 800px;
   height: 800px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(59, 59, 255, 0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
   pointer-events: none;
   filter: blur(80px);
 }
@@ -191,7 +194,7 @@ body {
   width: 600px;
   height: 600px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.06) 0%, transparent 70%);
   pointer-events: none;
   filter: blur(60px);
 }
@@ -202,8 +205,8 @@ body {
 }
 .card-hover:hover {
   border-color: rgba(255, 255, 255, 0.14);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
-  transform: translateY(-2px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  transform: translateY(-1px);
 }
 
 /* Button base */
@@ -211,17 +214,17 @@ body {
   background: var(--accent);
   color: white;
   border-radius: var(--button-radius);
-  padding: 10px 20px;
+  padding: 8px 16px;
+  font-size: 13px;
   font-weight: 500;
   transition: all var(--transition-fast);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
 }
 .btn-primary:hover {
   background: var(--accent-hover);
-  transform: scale(1.02);
 }
 .btn-primary:active {
   transform: scale(0.98);
@@ -232,17 +235,27 @@ body {
   color: var(--text-main);
   border: 1px solid var(--border-theme);
   border-radius: var(--button-radius);
-  padding: 10px 20px;
+  padding: 8px 16px;
+  font-size: 13px;
   font-weight: 500;
   transition: all var(--transition-fast);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
 }
 .btn-secondary:hover {
-  border-color: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.16);
   background: var(--bg-hover);
+}
+
+/* Eyebrow label */
+.eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
 }
 
 /* Scrollbar styling */
