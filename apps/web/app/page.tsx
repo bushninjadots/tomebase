@@ -50,54 +50,108 @@ const features = [
 ];
 
 const stats = [
-  { value: '17', label: 'Templates' },
-  { value: '5', label: 'Export Formats' },
-  { value: '12', label: 'Health Checks' },
+  { value: 'Free', label: 'Forever for solo devs' },
+  { value: 'Open Source', label: 'MIT licensed on GitHub' },
+  { value: '5', label: 'Languages supported' },
+  { value: '5 min', label: 'To your first docs page' },
 ];
 
 export default function Home() {
   return (
     <div className="bg-theme-page">
       {/* ─── Hero ─── */}
-      <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
+        {/* Dark gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0E1020] via-[#12142a] to-[#0d0d14]" />
+
+        {/* Glow effects */}
         <div className="hero-glow -left-40 -top-40" />
         <div className="hero-glow -right-40 -bottom-40" />
 
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              'radial-gradient(circle, #F5F5F5 1px, transparent 1px)',
-            backgroundSize: '32px 32px',
-          }}
-        />
+        <div className="relative z-10 w-full">
+          <Container>
+            <div className="mx-auto max-w-4xl text-center pt-16 pb-8">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-1.5 mb-8">
+                <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+                <span className="text-xs font-medium text-theme-subtle">Now in open beta — free forever for solo devs</span>
+              </div>
 
-        <Container>
-          <div className="relative mx-auto max-w-4xl text-center py-20">
-            <p className="eyebrow mb-6">Developer Docs Platform</p>
+              <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-6xl lg:text-7xl">
+                Documentation that{' '}
+                <span className="gradient-text">writes itself</span>
+              </h1>
 
-            <h1 className="text-5xl font-extrabold tracking-tight text-theme-main sm:text-6xl lg:text-7xl">
-              Developer documentation{' '}
-              <br className="hidden sm:block" />
-              without the setup
-            </h1>
+              <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-white/60">
+                Generate beautiful docs from your code, keep your team in sync,
+                and publish to the web — no build steps, no separate hosting.
+              </p>
 
-            <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-theme-subtle">
-              Write once, publish anywhere. Markdown-powered docs with wiki
-              links, version history, and public hosting.
-            </p>
+              <div className="mt-10 flex items-center justify-center gap-4">
+                <Link href="/login" className="btn-primary !px-8 !py-3.5 !text-base !font-semibold !shadow-[0_4px_20px_rgba(99,102,241,0.45)]">
+                  Start for free
+                  <ArrowRight className="h-5 w-5" />
+                </Link>
+                <Link href="/docs" className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-8 py-3.5 text-base font-semibold text-white transition-all hover:bg-white/15">
+                  View Docs
+                </Link>
+              </div>
 
-            <div className="mt-10 flex items-center justify-center gap-4">
-              <Link href="/login" className="btn-primary !px-8 !py-3 !text-base">
-                Get Started
-                <ArrowRight className="h-5 w-5" />
-              </Link>
-              <Link href="/docs" className="btn-secondary !px-8 !py-3 !text-base">
-                View Docs
-              </Link>
+              <p className="mt-5 text-xs text-white/35">
+                No credit card required · Open source · TypeScript, Python, Go & Rust
+              </p>
             </div>
-          </div>
-        </Container>
+
+            {/* App preview card */}
+            <div className="mx-auto max-w-3xl mb-12">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-1 shadow-[0_32px_80px_rgba(0,0,0,0.5)]">
+                <div className="rounded-xl bg-[#16181D] p-5 flex gap-4">
+                  {/* Mini sidebar */}
+                  <div className="w-40 shrink-0 hidden sm:block">
+                    {['Overview', 'Getting Started', 'Troubleshooting', 'calculateTotal', 'User', 'SubscriptionTier'].map((p, i) => (
+                      <div
+                        key={p}
+                        className={`flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[11.5px] mb-0.5 ${
+                          i === 0
+                            ? 'bg-accent/20 text-accent font-semibold'
+                            : 'text-[#5A6070] font-normal'
+                        }`}
+                      >
+                        <span className="opacity-50 text-[10px]">▣</span>
+                        {p}
+                      </div>
+                    ))}
+                  </div>
+                  {/* Mini doc */}
+                  <div className="flex-1 border-l border-white/[0.08] pl-5 hidden sm:block">
+                    <div className="font-mono text-base font-bold text-[#E2E8F0] mb-2">Overview</div>
+                    <div className="text-[11.5px] text-[#5A6070] mb-3">
+                      Product overview · Score: <span className="text-amber-400 font-semibold">81</span>
+                    </div>
+                    <div className="rounded-lg bg-[#0D1117] p-3 font-mono text-[11px] leading-relaxed">
+                      <div className="text-[#8b949e]">{`/**`}</div>
+                      <div className="text-[#8b949e]">{` * TomeBase API Reference`}</div>
+                      <div className="text-[#8b949e]">{` */`}</div>
+                      <div className="mt-1.5">
+                        <span className="text-[#ff7b72]">export</span>
+                        <span className="text-[#c9d1d9]"> interface </span>
+                        <span className="text-[#7ee787]">User</span>
+                        <span className="text-[#c9d1d9]">{` {`}</span>
+                      </div>
+                      <div className="pl-3.5 text-[#79c0ff]">
+                        id<span className="text-[#c9d1d9]">: string</span>
+                      </div>
+                      <div className="pl-3.5 text-[#79c0ff]">
+                        email<span className="text-[#c9d1d9]">: string</span>
+                      </div>
+                      <div className="text-[#c9d1d9]">{`}`}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Container>
+        </div>
       </section>
 
       {/* ─── How It Works ─── */}
@@ -257,15 +311,15 @@ export default function Home() {
       </section>
 
       {/* ─── Stats ─── */}
-      <section className="border-y border-theme-border bg-theme-card/40 py-16">
+      <section className="border-y border-theme-border bg-theme-page py-0">
         <Container>
-          <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto">
-            {stats.map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="text-4xl font-extrabold text-theme-main sm:text-5xl">
+          <div className="grid grid-cols-2 sm:grid-cols-4">
+            {stats.map((stat, i) => (
+              <div key={stat.label} className={`text-center py-8 px-6 ${i < stats.length - 1 ? 'sm:border-r border-theme-border' : ''}`}>
+                <div className="text-xl font-extrabold text-theme-accent mb-1">
                   {stat.value}
                 </div>
-                <div className="mt-2 text-sm font-medium text-theme-muted uppercase tracking-wider">
+                <div className="text-xs text-theme-subtle">
                   {stat.label}
                 </div>
               </div>

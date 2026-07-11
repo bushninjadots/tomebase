@@ -3,21 +3,29 @@ import type { HTMLAttributes } from 'react';
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   variant?: 'default' | 'success' | 'warning' | 'danger';
+  size?: 'sm' | 'md';
 }
 
 const variants = {
-  default: 'bg-gray-100 text-gray-700',
-  success: 'bg-green-50 text-green-700',
-  warning: 'bg-amber-50 text-amber-700',
-  danger: 'bg-red-50 text-red-700',
+  default: 'bg-theme-surface border border-theme-border text-theme-subtle',
+  success: 'bg-theme-surface border border-green-500/20 text-green-700',
+  warning: 'bg-theme-surface border border-amber-500/20 text-amber-700',
+  danger: 'bg-theme-surface border border-red-500/20 text-red-700',
 };
 
-export function Badge({ className, variant = 'default', ...props }: BadgeProps) {
+const sizes = {
+  sm: 'px-2 py-0.5 text-xs',
+  md: 'px-2.5 py-0.5 text-xs',
+};
+
+export function Badge({ className, variant = 'default', size = 'md', ...props }: BadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
+        'inline-flex items-center rounded-full font-medium',
+        'transition-all duration-150',
         variants[variant],
+        sizes[size],
         className,
       )}
       {...props}
