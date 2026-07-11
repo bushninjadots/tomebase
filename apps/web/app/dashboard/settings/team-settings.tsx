@@ -106,7 +106,7 @@ export function TeamSettings({
 
   return (
     <div className="space-y-8">
-      <div className="rounded-xl border border-theme-border bg-white p-6">
+      <div className="rounded-2xl border border-theme-border bg-theme-card p-6">
         <h2 className="text-lg font-semibold text-theme-main flex items-center gap-2">
           <CreditCard className="h-4 w-4 text-theme-muted" />
           Billing
@@ -126,7 +126,7 @@ export function TeamSettings({
             {team.tier === 'free' ? (
               <Link
                 href="/pricing"
-                className="inline-flex items-center gap-2 rounded-lg bg-theme-main px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-colors"
+                className="btn-primary text-sm"
               >
                 Upgrade
                 <ExternalLink className="h-3 w-3" />
@@ -146,7 +146,7 @@ export function TeamSettings({
       </div>
 
       {!team.personal && (
-        <div className="rounded-xl border border-theme-border bg-white p-6">
+        <div className="rounded-2xl border border-theme-border bg-theme-card p-6">
           <h2 className="text-lg font-semibold text-theme-main">Team Name</h2>
           <form onSubmit={handleSave} className="mt-4 space-y-4">
             <Input
@@ -157,11 +157,11 @@ export function TeamSettings({
             />
             {isAdmin && (
               <div className="flex items-center gap-3">
-                <Button type="submit" disabled={saving}>
+                <button type="submit" disabled={saving} className="btn-primary text-sm disabled:opacity-50">
                   {saving ? 'Saving...' : 'Save'}
-                </Button>
+                </button>
                 {saved && (
-                  <span className="flex items-center gap-1 text-sm text-green-600">
+                  <span className="flex items-center gap-1 text-sm text-green-400">
                     <Check className="h-4 w-4" /> Saved
                   </span>
                 )}
@@ -171,18 +171,18 @@ export function TeamSettings({
         </div>
       )}
 
-      <div className="rounded-xl border border-theme-border bg-white p-6">
+      <div className="rounded-2xl border border-theme-border bg-theme-card p-6">
         <h2 className="text-lg font-semibold text-theme-main">Members</h2>
-        <p className="mt-1 text-sm text-theme-muted">
+        <p className="mt-1 text-sm text-theme-subtle">
           {team.members.length} member{team.members.length !== 1 ? 's' : ''}
         </p>
         <div className="mt-4 space-y-2">
           {team.members.map((member) => (
             <div
               key={member.user.id}
-              className="flex items-center gap-3 rounded-lg border border-theme-border bg-theme-card/50 px-4 py-3"
+              className="flex items-center gap-3 rounded-xl border border-theme-border bg-theme-page px-4 py-3"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-fluid-100 text-sm font-medium text-fluid-700">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-theme-accent-light text-sm font-medium text-theme-accent">
                 {member.user.name?.charAt(0)?.toUpperCase() ?? '?'}
               </div>
               <div className="flex-1">
@@ -205,9 +205,9 @@ export function TeamSettings({
       </div>
 
       {isAdmin && (
-        <div className="rounded-xl border border-theme-border bg-white p-6">
+        <div className="rounded-2xl border border-theme-border bg-theme-card p-6">
           <h2 className="text-lg font-semibold text-theme-main">Invite Members</h2>
-          <p className="mt-1 text-sm text-theme-muted">
+          <p className="mt-1 text-sm text-theme-subtle">
             Create an invite link to share with your team. Links expire after 7 days. Your current plan supports up to {team._count.projects > 0 ? 'a certain number of' : '3'} members — the invite will be rejected if the limit is reached.
           </p>
           <div className="mt-4">
@@ -232,7 +232,7 @@ export function TeamSettings({
               </Button>
             ) : (
               <div className="space-y-3">
-                <div className="flex items-center gap-2 rounded-lg bg-theme-card px-4 py-3 font-mono text-sm text-theme-subtle break-all">
+                <div className="flex items-center gap-2 rounded-xl border border-theme-border bg-theme-page px-4 py-3 font-mono text-sm text-theme-subtle break-all">
                   {inviteUrl}
                 </div>
                 <div className="flex items-center gap-2">
@@ -261,9 +261,9 @@ export function TeamSettings({
         </div>
       )}
 
-      <div className="rounded-xl border border-theme-border bg-white p-6">
+      <div className="rounded-2xl border border-theme-border bg-theme-card p-6">
         <h2 className="text-lg font-semibold text-theme-main">Projects</h2>
-        <p className="mt-1 text-sm text-theme-muted">
+        <p className="mt-1 text-sm text-theme-subtle">
           {team._count.projects} project{team._count.projects !== 1 ? 's' : ''} in this team.
           All team members can view and edit team projects.
         </p>

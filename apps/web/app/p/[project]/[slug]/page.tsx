@@ -1,10 +1,11 @@
 import { prisma } from '@fluid/database';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Hash } from 'lucide-react';
+import { ArrowLeft, Hash, ChevronRight, Clock, Eye, ExternalLink } from 'lucide-react';
 import { Markdown } from '@/components/markdown';
 import { ViewTracker } from '@/components/view-tracker';
 import { extractTags } from '@/lib/wiki';
+import { extractHeadings } from '@/lib/content';
 import type { Metadata } from 'next';
 
 interface PageProps {
@@ -45,65 +46,167 @@ export default async function PublicDocPage({ params }: PageProps) {
 
   const allPages = await prisma.docPage.findMany({
     where: { projectId, published: true },
-    select: { title: true, slug: true },
+    select: { title: true, slug: true, content: true },
   });
 
   const tags = extractTags(page.content);
+  const headings = extractHeadings(page.content);
+
+  const backlinks = allPages
+    .filter((p) => {
+      if (p.title === page.title) return false;
+      const pattern = page.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return new RegExp(`\\[\\[${pattern}(?:\\|[^\\]]+)?\\]\\]`, 'i').test(p.content);
+    })
+    .map((p) => ({ title: p.title, slug: p.slug }));
+
+  const currentPageIdx = allPages.findIndex((p) => p.slug === slug);
+  const prevPage = currentPageIdx > 0 ? allPages[currentPageIdx - 1] : null;
+  const nextPage = currentPageIdx < allPages.length - 1 ? allPages[currentPageIdx + 1] : null;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12">
-      <Link
-        href={`/p/${projectId}`}
-        className="mb-8 inline-flex items-center gap-1 text-sm text-theme-muted hover:text-theme-subtle transition-colors"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to {project.name}
-      </Link>
+    <div className="mx-auto max-w-[760px] px-6 py-10 sm:py-14">
+      {/* Breadcrumbs */}
+      <nav className="mb-8 flex items-center gap-1.5 text-xs text-theme-muted/50">
+        <Link
+          href={`/p/${projectId}`}
+          className="hover:text-theme-subtle transition-colors"
+        >
+          {project.name}
+        </Link>
+        <ChevronRight className="h-3 w-3" />
+        <span className="text-theme-subtle">{page.title}</span>
+      </nav>
 
-      <article>
-        <h1 className="mb-2 text-4xl font-bold tracking-tight text-theme-main">{page.title}</h1>
-        {page.description && (
-          <p className="mb-4 text-lg text-theme-subtle">{page.description}</p>
-        )}
-        {tags.length > 0 && (
-          <div className="mb-6 flex flex-wrap gap-1.5">
-            {tags.map((tag) => (
-              <span
-                key={tag}
-                className="inline-flex items-center rounded-full bg-fluid-50 px-2.5 py-0.5 text-xs font-medium text-fluid-700"
-              >
-                <Hash className="mr-0.5 h-3 w-3" />
-                {tag}
+      <div className="flex gap-10">
+        {/* Main content */}
+        <article className="min-w-0 flex-1">
+          <header className="mb-10">
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-theme-main leading-tight">
+              {page.title}
+            </h1>
+            {page.description && (
+              <p className="mt-3 text-base text-theme-subtle/70 leading-relaxed">
+                {page.description}
+              </p>
+            )}
+            <div className="mt-5 flex items-center gap-4 text-xs text-theme-muted/40">
+              {tags.length > 0 && (
+                <div className="flex items-center gap-1.5">
+                  {tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center gap-0.5 rounded-md border border-white/[0.06] bg-white/[0.03] px-2 py-0.5 text-[11px] font-medium text-theme-muted/60"
+                    >
+                      <Hash className="h-2.5 w-2.5" />
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <span className="flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                {new Date(page.updatedAt).toLocaleDateString()}
               </span>
-            ))}
+              {page.viewCount > 0 && (
+                <span className="flex items-center gap-1">
+                  <Eye className="h-3 w-3" />
+                  {page.viewCount}
+                </span>
+              )}
+            </div>
+          </header>
+
+          <div className="border-t border-white/[0.06] pt-8">
+            <Markdown
+              content={page.content}
+              projectId={projectId}
+              pages={allPages.map((p) => ({ title: p.title, slug: p.slug }))}
+              basePath={`/p/${projectId}`}
+            />
           </div>
+
+          {/* Prev / Next navigation */}
+          {(prevPage || nextPage) && (
+            <div className="mt-16 grid grid-cols-2 gap-4 border-t border-white/[0.06] pt-8">
+              {prevPage ? (
+                <Link
+                  href={`/p/${projectId}/${prevPage.slug}`}
+                  className="group rounded-xl border border-white/[0.06] p-4 transition-all hover:border-white/[0.12] hover:bg-white/[0.02]"
+                >
+                  <span className="text-[11px] font-medium uppercase tracking-wider text-theme-muted/40">
+                    Previous
+                  </span>
+                  <p className="mt-1.5 text-sm font-medium text-theme-subtle group-hover:text-theme-main transition-colors truncate">
+                    {prevPage.title}
+                  </p>
+                </Link>
+              ) : (
+                <div />
+              )}
+              {nextPage && (
+                <Link
+                  href={`/p/${projectId}/${nextPage.slug}`}
+                  className="group rounded-xl border border-white/[0.06] p-4 text-right transition-all hover:border-white/[0.12] hover:bg-white/[0.02]"
+                >
+                  <span className="text-[11px] font-medium uppercase tracking-wider text-theme-muted/40">
+                    Next
+                  </span>
+                  <p className="mt-1.5 text-sm font-medium text-theme-subtle group-hover:text-theme-main transition-colors truncate">
+                    {nextPage.title}
+                  </p>
+                </Link>
+              )}
+            </div>
+          )}
+
+          {/* Backlinks */}
+          {backlinks.length > 0 && (
+            <div className="mt-12 border-t border-white/[0.06] pt-8">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-theme-muted/40 mb-4">
+                Referenced by
+              </h2>
+              <div className="space-y-2">
+                {backlinks.map((bl) => (
+                  <Link
+                    key={bl.slug}
+                    href={`/p/${projectId}/${bl.slug}`}
+                    className="group flex items-center gap-2 rounded-lg border border-white/[0.06] px-3.5 py-2.5 text-sm text-theme-subtle hover:border-white/[0.12] hover:bg-white/[0.02] hover:text-theme-main transition-all"
+                  >
+                    <ExternalLink className="h-3 w-3 text-theme-muted/30 group-hover:text-theme-accent transition-colors shrink-0" />
+                    {bl.title}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </article>
+
+        {/* Table of contents */}
+        {headings.length > 1 && (
+          <aside className="hidden xl:block w-52 shrink-0">
+            <div className="sticky top-20">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-theme-muted/40 mb-3">
+                On this page
+              </p>
+              <nav className="space-y-0.5">
+                {headings.map((h) => (
+                  <a
+                    key={h.id}
+                    href={`#${h.id}`}
+                    className="block rounded-md px-2.5 py-1 text-[12px] text-theme-muted/50 hover:text-theme-subtle hover:bg-theme-hover transition-colors"
+                    style={{ paddingLeft: `${10 + (h.level - 1) * 12}px` }}
+                  >
+                    {h.text}
+                  </a>
+                ))}
+              </nav>
+            </div>
+          </aside>
         )}
-        <div className="border-t border-theme-border pt-8">
-          <Markdown
-            content={page.content}
-            projectId={projectId}
-            pages={allPages}
-            basePath={`/p/${projectId}`}
-          />
-        </div>
-      </article>
+      </div>
 
       <ViewTracker pageId={page.id} />
-
-      <div className="mt-16 border-t border-theme-border pt-6 text-xs text-theme-muted">
-        <div className="flex items-center justify-between">
-          <span>Last updated: {new Date(page.updatedAt).toLocaleDateString()}</span>
-          {page.viewCount > 0 && (
-            <span className="flex items-center gap-1">
-              <svg viewBox="0 0 24 24" fill="none" className="h-3 w-3" stroke="currentColor" strokeWidth="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                <circle cx="12" cy="12" r="3" />
-              </svg>
-              {page.viewCount} view{page.viewCount !== 1 ? 's' : ''}
-            </span>
-          )}
-        </div>
-      </div>
     </div>
   );
 }

@@ -48,7 +48,7 @@ const categories = [
   {
     title: 'Now',
     icon: Zap,
-    color: 'text-amber-600 bg-amber-50 border-amber-100 dark:text-amber-400 dark:bg-amber-950/30 dark:border-amber-900/50',
+    color: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
     items: [
       'Documentation Health Platform — SonarQube for docs',
       'Enhanced health engine — 10+ check categories',
@@ -62,7 +62,7 @@ const categories = [
   {
     title: 'Next',
     icon: Clock,
-    color: 'text-blue-600 bg-blue-50 border-blue-100 dark:text-blue-400 dark:bg-blue-950/30 dark:border-blue-900/50',
+    color: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
     items: [
       'Documentation Linter — ESLint for docs, CI/CD integration',
       'Documentation Observatory — cross-platform dashboard',
@@ -77,7 +77,7 @@ const categories = [
   {
     title: 'Later',
     icon: Circle,
-    color: 'text-theme-subtle bg-theme-hover border-theme-border dark:text-theme-muted dark:bg-theme-card/50 dark:border-theme-border',
+    color: 'text-theme-muted bg-theme-hover border-theme-border',
     items: [
       'SSO/SAML (single sign-on)',
       'Audit log for compliance',
@@ -91,16 +91,16 @@ const categories = [
 
 export default function RoadmapPage() {
   return (
-    <div className="gradient-bg">
-      <nav className="sticky top-0 z-50 border-b border-theme-border/80 bg-theme-page/70 backdrop-blur-xl">
+    <div className="min-h-screen bg-theme-page">
+      <nav className="sticky top-0 z-50 border-b border-theme-border bg-theme-page/70 backdrop-blur-xl">
         <Container>
           <div className="flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
               <svg viewBox="0 0 32 32" fill="none" className="h-8 w-8" aria-hidden="true">
                 <defs>
                   <linearGradient id="logo-nav-r" x1="0" y1="0" x2="32" y2="32">
-                    <stop offset="0%" stopColor="#0c8ee7" />
-                    <stop offset="100%" stopColor="#7cc8fb" />
+                    <stop offset="0%" stopColor="#3B3BFF" />
+                    <stop offset="100%" stopColor="#818cf8" />
                   </linearGradient>
                 </defs>
                 <rect width="32" height="32" rx="8" fill="url(#logo-nav-r)" />
@@ -113,7 +113,7 @@ export default function RoadmapPage() {
               <Link href="/login" className="text-sm font-medium text-theme-subtle hover:text-theme-main transition-colors">Sign in</Link>
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 rounded-lg bg-theme-main px-4 py-2 text-sm font-medium text-theme-page hover:opacity-90 transition-colors"
+                className="btn-primary text-sm"
               >
                 Get Started
                 <ArrowRight className="h-4 w-4" />
@@ -126,7 +126,7 @@ export default function RoadmapPage() {
       <section className="py-24">
         <Container>
           <div className="mx-auto max-w-2xl text-center">
-            <div className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-fluid-200 bg-fluid-50/50 px-4 py-1.5 text-xs font-medium text-fluid-700">
+            <div className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-theme-accent/20 bg-theme-accent-light px-4 py-1.5 text-xs font-medium text-theme-accent">
               <Github className="h-3.5 w-3.5" />
               Open source · Active development
             </div>
@@ -141,15 +141,15 @@ export default function RoadmapPage() {
 
           {/* Stats */}
           <div className="mx-auto mt-12 grid max-w-2xl grid-cols-3 gap-6 text-center">
-            <div className="rounded-xl border border-theme-border bg-theme-card p-5">
+            <div className="rounded-2xl border border-theme-border bg-theme-card p-5">
               <div className="text-2xl font-bold text-theme-main">30</div>
               <div className="mt-0.5 text-xs text-theme-muted">API routes</div>
             </div>
-            <div className="rounded-xl border border-theme-border bg-theme-card p-5">
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400">44</div>
+            <div className="rounded-2xl border border-theme-border bg-theme-card p-5">
+              <div className="text-2xl font-bold text-green-400">44</div>
               <div className="mt-0.5 text-xs text-theme-muted">Features shipped</div>
             </div>
-            <div className="rounded-xl border border-theme-border bg-theme-card p-5">
+            <div className="rounded-2xl border border-theme-border bg-theme-card p-5">
               <div className="text-2xl font-bold text-theme-main">17</div>
               <div className="mt-0.5 text-xs text-theme-muted">In progress / planned</div>
             </div>
@@ -161,11 +161,11 @@ export default function RoadmapPage() {
               <CheckCircle className="h-5 w-5 text-green-500" />
               Shipped
             </h2>
-            <p className="text-sm text-theme-muted mb-6">Everything available in TomeBase today.</p>
+            <p className="text-sm text-theme-subtle mb-6">Everything available in TomeBase today.</p>
             <div className="grid gap-2">
               {shipped.map((item) => (
-                <div key={item.label} className="flex items-center gap-3 rounded-lg border border-green-100 bg-green-50/30 px-4 py-2.5 dark:border-green-900/50 dark:bg-green-950/30">
-                  <CheckCircle className="h-4 w-4 shrink-0 text-green-500" />
+                <div key={item.label} className="flex items-center gap-3 rounded-xl border border-green-500/20 bg-green-500/5 px-4 py-2.5">
+                  <CheckCircle className="h-4 w-4 shrink-0 text-green-400" />
                   <span className="text-sm text-theme-subtle">{item.label}</span>
                 </div>
               ))}
@@ -175,10 +175,10 @@ export default function RoadmapPage() {
           {/* Planned */}
           <div className="mx-auto mt-20 max-w-2xl">
             <h2 className="flex items-center gap-2 text-xl font-bold text-theme-main mb-1">
-              <Clock className="h-5 w-5 text-fluid-600" />
+              <Clock className="h-5 w-5 text-theme-accent" />
               Planned
             </h2>
-            <p className="text-sm text-theme-muted mb-6">What we&apos;re building next. Priorities may shift based on feedback.</p>
+            <p className="text-sm text-theme-subtle mb-6">What we&apos;re building next. Priorities may shift based on feedback.</p>
             <div className="space-y-8">
               {categories.map((cat) => (
                 <div key={cat.title}>
@@ -188,7 +188,7 @@ export default function RoadmapPage() {
                   </div>
                   <div className="grid gap-2">
                     {cat.items.map((item) => (
-                      <div key={item} className="flex items-center gap-3 rounded-lg border border-theme-border bg-theme-card px-4 py-2.5">
+                      <div key={item} className="flex items-center gap-3 rounded-xl border border-theme-border bg-theme-card px-4 py-2.5">
                         <Circle className="h-4 w-4 shrink-0 text-theme-muted" />
                         <span className="text-sm text-theme-subtle">{item}</span>
                       </div>
@@ -202,12 +202,12 @@ export default function RoadmapPage() {
           {/* CTA */}
           <div className="mx-auto mt-20 max-w-lg text-center rounded-2xl border border-theme-border bg-theme-card p-8">
             <h2 className="text-lg font-semibold text-theme-main">Have feedback?</h2>
-            <p className="mt-2 text-sm text-theme-muted">
+            <p className="mt-2 text-sm text-theme-subtle">
               Open an issue on GitHub to report bugs, request features, or vote on what we build next.
             </p>
             <Link
               href="https://github.com/bushninjadots/tomebase/issues"
-              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-theme-main px-5 py-2.5 text-sm font-medium text-theme-page hover:opacity-90 transition-colors"
+              className="mt-6 inline-flex items-center gap-2 btn-primary text-sm"
             >
               <Github className="h-4 w-4" />
               Open a GitHub Issue
@@ -221,18 +221,18 @@ export default function RoadmapPage() {
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div className="flex items-center gap-2 text-sm text-theme-muted">
               <svg viewBox="0 0 32 32" fill="none" className="h-5 w-5" aria-hidden="true">
-                <rect width="32" height="32" rx="8" fill="#0c8ee7" />
+                <rect width="32" height="32" rx="8" fill="#3B3BFF" />
                 <circle cx="16" cy="16" r="4" fill="white" />
               </svg>
               TomeBase — Your knowledge base.
             </div>
             <div className="flex items-center gap-6 text-sm text-theme-muted">
               <Link href="/pricing" className="hover:text-theme-main transition-colors">Pricing</Link>
-              <span className="text-theme-border">·</span>
+              <span className="text-theme-border">&middot;</span>
               <Link href="/roadmap" className="hover:text-theme-main transition-colors">Roadmap</Link>
-              <span className="text-theme-border">·</span>
+              <span className="text-theme-border">&middot;</span>
               <Link href="https://github.com/bushninjadots/tomebase" className="hover:text-theme-main transition-colors">GitHub</Link>
-              <span className="text-theme-border">·</span>
+              <span className="text-theme-border">&middot;</span>
               <Link href="/terms" className="hover:text-theme-main transition-colors">Terms</Link>
               <Link href="/privacy" className="hover:text-theme-main transition-colors">Privacy</Link>
             </div>

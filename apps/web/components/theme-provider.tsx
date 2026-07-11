@@ -13,7 +13,7 @@ export const THEMES = [
 ];
 
 const ThemeContext = createContext<{ theme: Theme; setTheme: (t: Theme) => void; themes: { id: Theme; label: string }[] }>({
-  theme: 'light',
+  theme: 'dark',
   setTheme: () => {},
   themes: THEMES,
 });
@@ -23,14 +23,14 @@ export function useTheme() {
 }
 
 function getInitialTheme(): Theme {
-  if (typeof window === 'undefined') return 'light';
+  if (typeof window === 'undefined') return 'dark';
   const stored = localStorage.getItem('fluid-theme');
   if (stored && ['light', 'dark', 'gruvbox', 'dracula', 'nord'].includes(stored)) return stored as Theme;
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return 'dark';
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('light');
+  const [theme, setThemeState] = useState<Theme>('dark');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

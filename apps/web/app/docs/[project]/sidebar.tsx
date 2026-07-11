@@ -6,6 +6,7 @@ import {
   Plus, BookOpen, Code2, Settings, ChevronDown, ChevronRight,
   ArrowUp, ArrowDown, IndentIncrease, IndentDecrease, ArrowLeft,
   Trash2, Hash, Download, HeartPulse, X, FileText, Sparkles, HelpCircle,
+  LayoutGrid, Search, GripVertical,
 } from 'lucide-react';
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { extractTags } from '@/lib/wiki';
@@ -84,50 +85,55 @@ function PageRow({
   return (
     <div>
       <div
-        className={`group flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm transition-all duration-150 ${
+        className={`group relative flex items-center gap-1 rounded-md px-2 py-1 text-[13px] transition-colors duration-100 ${
           isActive
-            ? 'bg-fluid-50 text-fluid-700 font-medium shadow-sm dark:bg-fluid-900/30 dark:text-fluid-400'
-            : 'text-theme-subtle hover:bg-theme-hover hover:text-theme-main'
+            ? 'bg-theme-hover text-theme-main font-medium'
+            : 'text-theme-subtle hover:bg-theme-hover/60 hover:text-theme-main'
         }`}
-        style={{ paddingLeft: `${8 + node.depth * 16}px` }}
+        style={{ paddingLeft: `${8 + node.depth * 14}px` }}
       >
+        {isActive && (
+          <div className="absolute left-0 top-1 bottom-1 w-[2px] rounded-full bg-theme-accent" />
+        )}
+
         <button
           onClick={() => setExpanded(!expanded)}
           className={`shrink-0 rounded p-0.5 transition-colors ${
             !hasChildren && 'invisible'
           } ${
             isActive
-              ? 'text-fluid-600 hover:text-fluid-700 dark:text-fluid-400 dark:hover:text-fluid-300'
+              ? 'text-theme-accent hover:text-theme-accent-hover'
               : 'text-theme-muted hover:text-theme-subtle'
           }`}
         >
-          {expanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+          {expanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
         </button>
 
         <Link
           href={`/docs/${projectId}/${node.slug}`}
           className="flex flex-1 items-center gap-1.5 overflow-hidden"
         >
-          <BookOpen className={`h-3.5 w-3.5 shrink-0 ${isActive ? 'text-fluid-500' : 'text-theme-muted'}`} />
+          <GripVertical className="h-3 w-3 shrink-0 text-theme-muted/0 group-hover:text-theme-muted/50 transition-colors" />
+          <BookOpen className={`h-3.5 w-3.5 shrink-0 ${isActive ? 'text-theme-accent' : 'text-theme-muted'}`} />
           <span className="truncate">{node.title}</span>
           {nodeTags.length > 0 && (
             <span className="flex items-center gap-0.5 shrink-0">
               {nodeTags.slice(0, 2).map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center rounded-full bg-theme-hover px-1.5 py-0.5 text-[10px] font-medium text-theme-subtle"
+                  className="inline-flex items-center rounded bg-theme-hover px-1 py-px text-[10px] font-medium text-theme-muted"
                 >
                   {tag}
                 </span>
               ))}
               {nodeTags.length > 2 && (
-                <span className="text-[10px] text-theme-muted">+{nodeTags.length - 2}</span>
+                <span className="text-[10px] text-theme-muted/60">+{nodeTags.length - 2}</span>
               )}
             </span>
           )}
         </Link>
 
-        <div className="hidden items-center gap-0.5 group-hover:flex">
+        <div className="hidden items-center gap-px group-hover:flex">
           <button
             onClick={() => onMove(node.id, 'up')}
             className="rounded p-0.5 text-theme-muted hover:text-theme-subtle hover:bg-theme-hover transition-colors"
@@ -145,20 +151,20 @@ function PageRow({
           <button
             onClick={() => onIndent(node.id, 'in', node.parentId, [])}
             className="rounded p-0.5 text-theme-muted hover:text-theme-subtle hover:bg-theme-hover transition-colors"
-            title="Indent (make child of previous)"
+            title="Indent"
           >
             <IndentIncrease className="h-3 w-3" />
           </button>
           <button
             onClick={() => onIndent(node.id, 'out', node.parentId, [])}
             className="rounded p-0.5 text-theme-muted hover:text-theme-subtle hover:bg-theme-hover transition-colors"
-            title="Outdent (move up a level)"
+            title="Outdent"
           >
             <IndentDecrease className="h-3 w-3" />
           </button>
           <button
             onClick={() => onDelete(node.id)}
-            className="rounded p-0.5 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-900/30 transition-colors"
+            className="rounded p-0.5 text-theme-muted hover:text-red-400 hover:bg-red-500/10 transition-colors"
             title="Delete"
           >
             <Trash2 className="h-3 w-3" />
@@ -194,25 +200,25 @@ function TemplateModal({
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="w-full max-w-lg rounded-2xl border border-theme-border bg-theme-page p-6 shadow-2xl">
+      <div className="w-full max-w-lg rounded-xl border border-theme-border bg-theme-card p-5 shadow-2xl">
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400">
-              <Sparkles className="h-4 w-4" />
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-theme-accent/10 text-theme-accent">
+              <Sparkles className="h-3.5 w-3.5" />
             </div>
-            <h2 className="text-lg font-semibold text-theme-main">Choose a template</h2>
+            <h2 className="text-sm font-semibold text-theme-main">Choose a template</h2>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
+            className="rounded-md p-1 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
-        <p className="text-sm text-theme-muted mb-4">
+        <p className="text-xs text-theme-muted mb-4">
           Start with a pre-built structure or begin from scratch.
         </p>
         <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto">
@@ -223,15 +229,57 @@ function TemplateModal({
                 onSelect(t.id);
                 onClose();
               }}
-              className="flex flex-col items-start rounded-xl border border-theme-border bg-theme-page p-4 text-left transition-all hover:border-fluid-200 hover:shadow-md"
+              className="flex flex-col items-start rounded-lg border border-theme-border bg-theme-page p-3.5 text-left transition-all hover:border-theme-accent/30 hover:bg-theme-hover"
             >
-              <span className="text-sm font-medium text-theme-main">{t.name}</span>
-              <span className="mt-1 text-xs text-theme-muted line-clamp-2">{t.description}</span>
+              <span className="text-[13px] font-medium text-theme-main">{t.name}</span>
+              <span className="mt-1 text-[11px] text-theme-muted line-clamp-2 leading-relaxed">{t.description}</span>
             </button>
           ))}
         </div>
       </div>
     </div>
+  );
+}
+
+interface SidebarNavLinkProps {
+  href: string;
+  icon: React.ReactNode;
+  label: string;
+  isActive?: boolean;
+  isExternal?: boolean;
+}
+
+function SidebarNavLink({ href, icon, label, isActive, isExternal }: SidebarNavLinkProps) {
+  const className = `flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px] font-medium transition-colors duration-100 ${
+    isActive
+      ? 'bg-theme-hover text-theme-main'
+      : 'text-theme-muted hover:bg-theme-hover/60 hover:text-theme-subtle'
+  }`;
+
+  const content = (
+    <>
+      {isActive && (
+        <div className="absolute left-0 top-1 bottom-1 w-[2px] rounded-full bg-theme-accent" />
+      )}
+      <span className="relative flex items-center gap-2.5">
+        {icon}
+        {label}
+      </span>
+    </>
+  );
+
+  if (isExternal) {
+    return (
+      <a href={href} className={`relative ${className}`}>
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={href} className={`relative ${className}`}>
+      {content}
+    </Link>
   );
 }
 
@@ -376,63 +424,118 @@ export function DocSidebar({ project }: { project: Project }) {
   }
 
   return (
-    <aside className="flex w-72 flex-col border-r border-theme-border bg-theme-card/50">
-      <div className="flex items-center justify-between border-b border-theme-border px-4 py-3">
+    <aside className="flex w-64 flex-col border-r border-theme-border/60 bg-[#0B1020]">
+      {/* Header */}
+      <div className="flex items-center gap-2.5 border-b border-theme-border/40 px-4 py-3">
         <Link
           href="/dashboard"
-          className="flex items-center gap-2 text-sm font-semibold text-theme-main"
+          className="flex items-center gap-2 group"
         >
           <svg viewBox="0 0 32 32" fill="none" className="h-5 w-5">
-            <rect width="32" height="32" rx="8" fill="#0c8ee7" />
+            <defs>
+              <linearGradient id="sidebar-logo" x1="0" y1="0" x2="32" y2="32">
+                <stop offset="0%" stopColor="#3B3BFF" />
+                <stop offset="100%" stopColor="#818cf8" />
+              </linearGradient>
+            </defs>
+            <rect width="32" height="32" rx="8" fill="url(#sidebar-logo)" />
+            <path
+              d="M8 16h16M16 8v16M10 10l12 12M22 10L10 22"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              opacity="0.5"
+            />
             <circle cx="16" cy="16" r="4" fill="white" />
           </svg>
-          {project.name}
+          <span className="text-[13px] font-bold text-theme-main group-hover:text-theme-accent transition-colors">
+            {project.name}
+          </span>
         </Link>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-3">
-        <div className="mb-3">
+      {/* Scrollable content */}
+      <div className="flex-1 overflow-y-auto px-2 py-2.5">
+        {/* Search */}
+        <div className="mb-2.5">
           <SearchOverlay projectId={project.id} pages={project.pages} />
         </div>
 
-        {/* Tags section at top */}
+        {/* Nav links */}
+        <nav className="mb-4 space-y-0.5">
+          <SidebarNavLink
+            href="/dashboard"
+            icon={<LayoutGrid className="h-3.5 w-3.5" />}
+            label="Dashboard"
+          />
+          <SidebarNavLink
+            href={`/dashboard/${project.id}/import`}
+            icon={<Code2 className="h-3.5 w-3.5" />}
+            label="Import"
+          />
+          <SidebarNavLink
+            href={`/api/projects/${project.id}/export`}
+            icon={<Download className="h-3.5 w-3.5" />}
+            label="Export"
+            isExternal
+          />
+          <SidebarNavLink
+            href={`/dashboard/${project.id}/health`}
+            icon={<HeartPulse className="h-3.5 w-3.5" />}
+            label="Health"
+          />
+          <SidebarNavLink
+            href={`/dashboard/${project.id}/settings`}
+            icon={<Settings className="h-3.5 w-3.5" />}
+            label="Settings"
+          />
+          <SidebarNavLink
+            href="/help"
+            icon={<HelpCircle className="h-3.5 w-3.5" />}
+            label="Help"
+          />
+        </nav>
+
+        {/* Tags */}
         {allTags.length > 0 && (
           <div className="mb-4">
-            <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-theme-muted mb-2">
-              <Hash className="h-3 w-3" />
-              Tags
+            <div className="flex items-center gap-1.5 px-2.5 mb-1.5">
+              <Hash className="h-3 w-3 text-theme-muted/60" />
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-theme-muted/60">
+                Tags
+              </span>
             </div>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-1 px-1">
               {allTags.slice(0, 8).map(({ tag, count }) => (
                 <button
                   key={tag}
                   onClick={() => setActiveTag(activeTag === tag ? null : tag)}
-                  className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${
+                  className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] font-medium transition-colors ${
                     activeTag === tag
-                      ? 'bg-fluid-600 text-white'
-                      : 'bg-theme-hover text-theme-subtle hover:bg-theme-border'
+                      ? 'bg-theme-accent/15 text-theme-accent'
+                      : 'bg-theme-hover text-theme-muted hover:text-theme-subtle'
                   }`}
                 >
                   {tag}
-                  <span className="opacity-60">{count}</span>
+                  <span className="opacity-50">{count}</span>
                 </button>
               ))}
               {allTags.length > 8 && (
-                <span className="text-xs text-theme-muted">+{allTags.length - 8} more</span>
+                <span className="text-[11px] text-theme-muted/50 self-center">+{allTags.length - 8}</span>
               )}
             </div>
           </div>
         )}
 
-        {/* Pages section */}
-        <div className="mb-2 flex items-center justify-between">
-          <span className="text-xs font-medium uppercase tracking-wider text-theme-muted">
+        {/* Pages header */}
+        <div className="mb-1.5 flex items-center justify-between px-2.5">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-theme-muted/60">
             Pages
           </span>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5">
             <button
               onClick={() => setShowTemplateModal(true)}
-              className="rounded p-1 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
+              className="rounded p-1 text-theme-muted/60 hover:bg-theme-hover hover:text-theme-subtle transition-colors"
               title="Templates"
             >
               <FileText className="h-3.5 w-3.5" />
@@ -446,8 +549,8 @@ export function DocSidebar({ project }: { project: Project }) {
               }}
               className={`rounded p-1 transition-colors ${
                 isCreating
-                  ? 'bg-fluid-100 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400'
-                  : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
+                  ? 'bg-theme-accent/10 text-theme-accent'
+                  : 'text-theme-muted/60 hover:bg-theme-hover hover:text-theme-subtle'
               }`}
             >
               <Plus className="h-3.5 w-3.5" />
@@ -457,18 +560,18 @@ export function DocSidebar({ project }: { project: Project }) {
 
         {/* Quick create form */}
         {isCreating && (
-          <form onSubmit={createPage} className="mb-3 rounded-xl border border-fluid-200 bg-theme-page p-3 dark:border-fluid-800">
+          <form onSubmit={createPage} className="mb-2.5 rounded-lg border border-theme-border/60 bg-theme-card/50 p-2.5">
             <div className="flex items-center gap-2 mb-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400">
-                <Plus className="h-3.5 w-3.5" />
+              <div className="flex h-5 w-5 items-center justify-center rounded bg-theme-accent/10 text-theme-accent">
+                <Plus className="h-3 w-3" />
               </div>
-              <span className="text-xs font-medium text-theme-subtle">New page</span>
+              <span className="text-[11px] font-medium text-theme-subtle">New page</span>
               <button
                 type="button"
                 onClick={() => setIsCreating(false)}
                 className="ml-auto rounded p-0.5 text-theme-muted hover:text-theme-subtle"
               >
-                <X className="h-3.5 w-3.5" />
+                <X className="h-3 w-3" />
               </button>
             </div>
             <input
@@ -477,13 +580,13 @@ export function DocSidebar({ project }: { project: Project }) {
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               placeholder="Page title..."
-              className="w-full rounded-lg border border-theme-border px-3 py-1.5 text-sm placeholder:text-theme-muted focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500 bg-theme-page text-theme-main"
+              className="w-full rounded-md border border-theme-border/60 bg-theme-page px-2.5 py-1.5 text-[13px] text-theme-main placeholder:text-theme-muted/50 focus:border-theme-accent focus:outline-none focus:ring-1 focus:ring-theme-accent/30"
             />
             {project.pages.length > 0 && (
               <select
                 value={newParentId ?? ''}
                 onChange={(e) => setNewParentId(e.target.value || null)}
-                className="mt-2 w-full rounded-lg border border-theme-border px-3 py-1.5 text-sm text-theme-muted focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500 bg-theme-page"
+                className="mt-1.5 w-full rounded-md border border-theme-border/60 bg-theme-page px-2.5 py-1.5 text-[13px] text-theme-muted focus:border-theme-accent focus:outline-none focus:ring-1 focus:ring-theme-accent/30"
               >
                 <option value="">Top level</option>
                 {project.pages.map((p) => (
@@ -493,18 +596,18 @@ export function DocSidebar({ project }: { project: Project }) {
                 ))}
               </select>
             )}
-            <div className="mt-2 flex items-center gap-2">
+            <div className="mt-2 flex items-center gap-1.5">
               <button
                 type="submit"
                 disabled={!newTitle.trim()}
-                className="flex-1 rounded-lg bg-theme-main px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 transition-colors disabled:opacity-50"
+                className="flex-1 rounded-md bg-theme-accent px-2.5 py-1.5 text-[13px] font-medium text-white hover:bg-theme-accent-hover transition-colors disabled:opacity-40"
               >
                 Create
               </button>
               <button
                 type="button"
                 onClick={() => setIsCreating(false)}
-                className="rounded-lg border border-theme-border px-3 py-1.5 text-sm font-medium text-theme-subtle hover:bg-theme-hover transition-colors"
+                className="rounded-md border border-theme-border/60 px-2.5 py-1.5 text-[13px] font-medium text-theme-subtle hover:bg-theme-hover transition-colors"
               >
                 Cancel
               </button>
@@ -513,7 +616,7 @@ export function DocSidebar({ project }: { project: Project }) {
         )}
 
         {/* Page tree */}
-        <nav className="space-y-0.5">
+        <nav className="space-y-px">
           {tree.map((node) => (
             <PageRow
               key={node.id}
@@ -526,24 +629,24 @@ export function DocSidebar({ project }: { project: Project }) {
             />
           ))}
           {tree.length === 0 && !activeTag && (
-            <div className="py-8 text-center">
-              <BookOpen className="mx-auto h-8 w-8 text-theme-muted" />
-              <p className="mt-2 text-sm text-theme-muted">No pages yet</p>
+            <div className="py-10 text-center">
+              <BookOpen className="mx-auto h-7 w-7 text-theme-muted/40" />
+              <p className="mt-2 text-[13px] text-theme-muted">No pages yet</p>
               <button
                 onClick={() => setIsCreating(true)}
-                className="mt-2 text-sm font-medium text-fluid-600 hover:text-fluid-700 dark:text-fluid-400 dark:hover:text-fluid-300"
+                className="mt-2 text-[13px] font-medium text-theme-accent hover:text-theme-accent-hover transition-colors"
               >
                 Create your first page
               </button>
             </div>
           )}
           {tree.length === 0 && activeTag && (
-            <div className="py-8 text-center">
-              <Hash className="mx-auto h-8 w-8 text-theme-muted" />
-              <p className="mt-2 text-sm text-theme-muted">No pages with #{activeTag}</p>
+            <div className="py-10 text-center">
+              <Hash className="mx-auto h-7 w-7 text-theme-muted/40" />
+              <p className="mt-2 text-[13px] text-theme-muted">No pages with #{activeTag}</p>
               <button
                 onClick={() => setActiveTag(null)}
-                className="mt-2 text-sm font-medium text-fluid-600 hover:text-fluid-700 dark:text-fluid-400 dark:hover:text-fluid-300"
+                className="mt-2 text-[13px] font-medium text-theme-accent hover:text-theme-accent-hover transition-colors"
               >
                 Clear filter
               </button>
@@ -552,50 +655,9 @@ export function DocSidebar({ project }: { project: Project }) {
         </nav>
       </div>
 
-      <div className="border-t border-theme-border p-3 space-y-1">
-        <Link
-          href="/dashboard"
-          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Dashboard
-        </Link>
+      {/* Footer nav */}
+      <div className="border-t border-theme-border/40 p-2 space-y-px">
         <GraphButtonWithHealth projectId={project.id} pages={project.pages} />
-        <Link
-          href={`/dashboard/${project.id}/import`}
-          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
-        >
-          <Code2 className="h-4 w-4" />
-          Import from Code
-        </Link>
-        <a
-          href={`/api/projects/${project.id}/export`}
-          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
-        >
-          <Download className="h-4 w-4" />
-          Export
-        </a>
-        <Link
-          href={`/dashboard/${project.id}/health`}
-          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
-        >
-          <HeartPulse className="h-4 w-4" />
-          Health
-        </Link>
-        <Link
-          href={`/dashboard/${project.id}/settings`}
-          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
-        >
-          <Settings className="h-4 w-4" />
-          Settings
-        </Link>
-        <Link
-          href="/help"
-          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
-        >
-          <HelpCircle className="h-4 w-4" />
-          Help
-        </Link>
       </div>
 
       {/* Template modal */}

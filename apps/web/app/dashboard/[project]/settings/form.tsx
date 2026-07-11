@@ -57,7 +57,7 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
 
   return (
     <form onSubmit={handleSave} className="space-y-6">
-      <div className="rounded-xl border border-theme-border bg-white p-6">
+      <div className="rounded-2xl border border-theme-border bg-theme-card p-6">
         <h2 className="text-lg font-semibold text-theme-main">General</h2>
         <div className="mt-4 space-y-4">
           <Input
@@ -75,7 +75,7 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
-              className="block w-full rounded-lg border border-theme-border px-3 py-2 text-sm shadow-sm placeholder:text-theme-muted focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
+              className="block w-full rounded-xl border border-theme-border bg-theme-page px-3 py-2 text-sm text-theme-main shadow-sm placeholder:text-theme-muted focus:border-theme-accent focus:outline-none focus:ring-1 focus:ring-theme-accent"
             />
           </div>
           <Input
@@ -91,11 +91,11 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
         </div>
       </div>
 
-      <div className="rounded-xl border border-theme-border bg-white p-6">
+      <div className="rounded-2xl border border-theme-border bg-theme-card p-6">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold text-theme-main">Publish</h2>
-            <p className="mt-1 text-sm text-theme-muted">
+            <p className="mt-1 text-sm text-theme-subtle">
               Make your documentation accessible to anyone with the link.
             </p>
           </div>
@@ -106,19 +106,19 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
               onChange={(e) => setPublished(e.target.checked)}
               className="peer sr-only"
             />
-            <div className="h-6 w-11 rounded-full bg-theme-hover after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-all peer-checked:bg-fluid-600 peer-checked:after:translate-x-full" />
+            <div className="h-6 w-11 rounded-full bg-theme-hover after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-all peer-checked:bg-theme-accent peer-checked:after:translate-x-full" />
           </label>
         </div>
 
         {published && (
           <div className="mt-4 space-y-4">
-            <div className="flex items-center gap-2 rounded-lg bg-green-50 p-3 text-sm text-green-700">
+            <div className="flex items-center gap-2 rounded-xl bg-green-500/10 border border-green-500/20 p-3 text-sm text-green-400">
               <Globe className="h-4 w-4 shrink-0" />
               <span>Your docs are live at:</span>
               <button
                 type="button"
                 onClick={copyUrl}
-                className="ml-auto flex items-center gap-1 text-xs font-medium text-green-800 hover:text-green-900"
+                className="ml-auto flex items-center gap-1 text-xs font-medium text-green-400 hover:text-green-300"
               >
                 {copied ? (
                   <>
@@ -131,7 +131,7 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
                 )}
               </button>
             </div>
-            <div className="rounded-lg bg-theme-card px-3 py-2 font-mono text-sm text-theme-subtle break-all">
+            <div className="rounded-xl border border-theme-border bg-theme-page px-3 py-2 font-mono text-sm text-theme-subtle break-all">
               {publicUrl}
             </div>
 
@@ -145,11 +145,11 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
       </div>
 
       <div className="flex items-center gap-3">
-        <Button type="submit" disabled={saving}>
+        <button type="submit" disabled={saving} className="btn-primary text-sm disabled:opacity-50">
           {saving ? 'Saving...' : 'Save Settings'}
-        </Button>
+        </button>
         {saved && (
-          <span className="flex items-center gap-1 text-sm text-green-600">
+          <span className="flex items-center gap-1 text-sm text-green-400">
             <Check className="h-4 w-4" /> Saved
           </span>
         )}

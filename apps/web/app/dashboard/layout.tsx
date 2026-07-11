@@ -5,7 +5,7 @@ import { ThemeSelector } from '@/components/theme-selector';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-theme-card">
+    <div className="min-h-screen bg-theme-page">
       <nav className="sticky top-0 z-40 border-b border-theme-border bg-theme-page/90 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
           <div className="flex items-center gap-3">

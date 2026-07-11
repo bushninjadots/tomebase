@@ -435,7 +435,7 @@ function SectionNav() {
           <a
             key={f.id}
             href={`#${f.id}`}
-            className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm text-theme-muted hover:bg-theme-hover hover:text-theme-main transition-colors"
+            className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm text-theme-muted hover:bg-theme-hover hover:text-theme-main transition-colors"
           >
             <f.icon className="h-3.5 w-3.5 shrink-0" />
             {f.title}
@@ -452,7 +452,7 @@ function FeatureBlock({ feature }: { feature: FeatureSection }) {
     <section id={feature.id} className="scroll-mt-24">
       <div className="rounded-2xl border border-theme-border bg-theme-card p-6 md:p-8">
         <div className="flex items-start gap-4 mb-6">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-fluid-50 text-fluid-600 dark:bg-fluid-950/30 dark:text-fluid-400">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-theme-accent-light text-theme-accent">
             <Icon className="h-6 w-6" />
           </div>
           <div>
@@ -477,7 +477,7 @@ function FeatureBlock({ feature }: { feature: FeatureSection }) {
             <ol className="space-y-2">
               {feature.howTo.map((step, i) => (
                 <li key={i} className="flex items-start gap-3 text-sm text-theme-subtle">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-fluid-100 text-fluid-700 text-[10px] font-bold dark:bg-fluid-900/50 dark:text-fluid-400">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-theme-accent-light text-theme-accent text-[10px] font-bold">
                     {i + 1}
                   </span>
                   <span className="leading-relaxed">{step}</span>
@@ -503,9 +503,9 @@ function FeatureBlock({ feature }: { feature: FeatureSection }) {
               <h3 className="text-sm font-semibold text-theme-main mb-3">Keyboard shortcuts</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {feature.shortcuts.map((s) => (
-                  <div key={s.keys} className="flex items-center justify-between rounded-lg border border-theme-border bg-theme-page px-3 py-2">
+                  <div key={s.keys} className="flex items-center justify-between rounded-xl border border-theme-border bg-theme-page px-3 py-2">
                     <span className="text-sm text-theme-subtle">{s.action}</span>
-                    <kbd className="rounded bg-theme-hover px-2 py-0.5 text-xs font-mono text-theme-muted">{s.keys}</kbd>
+                    <kbd className="rounded-lg bg-theme-hover px-2 py-0.5 text-xs font-mono text-theme-muted">{s.keys}</kbd>
                   </div>
                 ))}
               </div>
@@ -517,7 +517,7 @@ function FeatureBlock({ feature }: { feature: FeatureSection }) {
               <h3 className="text-sm font-semibold text-theme-main mb-3">Related templates</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {feature.templates.map((t) => (
-                  <div key={t.name} className="rounded-lg border border-theme-border bg-theme-page px-3 py-2">
+                  <div key={t.name} className="rounded-xl border border-theme-border bg-theme-page px-3 py-2">
                     <div className="text-sm font-medium text-theme-main">{t.name}</div>
                     <div className="text-xs text-theme-muted mt-0.5">{t.description}</div>
                   </div>
@@ -531,12 +531,12 @@ function FeatureBlock({ feature }: { feature: FeatureSection }) {
               <h3 className="text-sm font-semibold text-theme-main mb-3">API Reference</h3>
               <div className="space-y-2">
                 {feature.apiRef.map((api) => (
-                  <div key={api.endpoint} className="flex items-center gap-3 rounded-lg border border-theme-border bg-theme-page px-3 py-2">
-                    <span className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-bold uppercase ${
-                      api.method === 'GET' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
-                      api.method === 'POST' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
-                      api.method === 'PATCH' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
-                      'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                  <div key={api.endpoint} className="flex items-center gap-3 rounded-xl border border-theme-border bg-theme-page px-3 py-2">
+                    <span className={`shrink-0 rounded-lg px-1.5 py-0.5 text-[10px] font-bold uppercase ${
+                      api.method === 'GET' ? 'bg-green-500/10 text-green-400' :
+                      api.method === 'POST' ? 'bg-blue-500/10 text-blue-400' :
+                      api.method === 'PATCH' ? 'bg-amber-500/10 text-amber-400' :
+                      'bg-red-500/10 text-red-400'
                     }`}>
                       {api.method}
                     </span>
@@ -556,15 +556,15 @@ function FeatureBlock({ feature }: { feature: FeatureSection }) {
 export default function HelpPage() {
   return (
     <div className="min-h-screen bg-theme-page">
-      <nav className="sticky top-0 z-50 border-b border-theme-border/80 bg-theme-page/70 backdrop-blur-xl">
+      <nav className="sticky top-0 z-50 border-b border-theme-border bg-theme-page/70 backdrop-blur-xl">
         <Container>
           <div className="flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
               <svg viewBox="0 0 32 32" fill="none" className="h-8 w-8" aria-hidden="true">
                 <defs>
                   <linearGradient id="logo-help" x1="0" y1="0" x2="32" y2="32">
-                    <stop offset="0%" stopColor="#0c8ee7" />
-                    <stop offset="100%" stopColor="#7cc8fb" />
+                    <stop offset="0%" stopColor="#3B3BFF" />
+                    <stop offset="100%" stopColor="#818cf8" />
                   </linearGradient>
                 </defs>
                 <rect width="32" height="32" rx="8" fill="url(#logo-help)" />
@@ -576,7 +576,7 @@ export default function HelpPage() {
               <Link href="/features" className="text-sm font-medium text-theme-subtle hover:text-theme-main transition-colors hidden sm:block">Features</Link>
               <Link href="/pricing" className="text-sm font-medium text-theme-subtle hover:text-theme-main transition-colors hidden sm:block">Pricing</Link>
               <Link href="/docs" className="text-sm font-medium text-theme-subtle hover:text-theme-main transition-colors hidden sm:block">Docs</Link>
-              <Link href="/login" className="inline-flex items-center gap-2 rounded-lg bg-theme-main px-4 py-2 text-sm font-medium text-theme-page hover:opacity-90 transition-colors">
+              <Link href="/login" className="btn-primary text-sm">
                 Get Started
                 <ArrowRight className="h-4 w-4" />
               </Link>
@@ -587,7 +587,7 @@ export default function HelpPage() {
 
       <Container className="py-12">
         <div className="mx-auto max-w-2xl text-center mb-12">
-          <div className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-fluid-200 bg-fluid-50/50 px-4 py-1.5 text-xs font-medium text-fluid-700 dark:border-fluid-800 dark:bg-fluid-950/30 dark:text-fluid-400">
+          <div className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-theme-accent/20 bg-theme-accent-light px-4 py-1.5 text-xs font-medium text-theme-accent">
             <BookOpen className="h-3.5 w-3.5" />
             Complete Guide
           </div>
@@ -614,18 +614,18 @@ export default function HelpPage() {
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div className="flex items-center gap-2 text-sm text-theme-muted">
               <svg viewBox="0 0 32 32" fill="none" className="h-5 w-5" aria-hidden="true">
-                <rect width="32" height="32" rx="8" fill="#0c8ee7" />
+                <rect width="32" height="32" rx="8" fill="#3B3BFF" />
                 <circle cx="16" cy="16" r="4" fill="white" />
               </svg>
               TomeBase — Your knowledge base.
             </div>
             <div className="flex items-center gap-6 text-sm text-theme-muted">
               <Link href="/features" className="hover:text-theme-main transition-colors">Features</Link>
-              <span className="text-theme-border">·</span>
+              <span className="text-theme-border">&middot;</span>
               <Link href="/pricing" className="hover:text-theme-main transition-colors">Pricing</Link>
-              <span className="text-theme-border">·</span>
+              <span className="text-theme-border">&middot;</span>
               <Link href="/roadmap" className="hover:text-theme-main transition-colors">Roadmap</Link>
-              <span className="text-theme-border">·</span>
+              <span className="text-theme-border">&middot;</span>
               <Link href="https://github.com/bushninjadots/tomebase" className="hover:text-theme-main transition-colors">GitHub</Link>
             </div>
           </div>

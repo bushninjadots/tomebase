@@ -2,7 +2,20 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { prisma } from '@fluid/database';
 import Link from 'next/link';
-import { Plus, BookOpen, Users, FileText, Globe, Clock, ArrowRight, Zap, Eye, Bookmark, MessageSquare } from 'lucide-react';
+import {
+  Plus,
+  BookOpen,
+  Users,
+  FileText,
+  Globe,
+  Clock,
+  ArrowRight,
+  Zap,
+  Eye,
+  Bookmark,
+  MessageSquare,
+  LayoutGrid,
+} from 'lucide-react';
 import { getOrCreatePersonalTeam } from '@/lib/team';
 import { TIERS } from '@/lib/limits';
 import { ProjectCard } from '@/components/project-card';
@@ -34,32 +47,56 @@ export default async function DashboardPage() {
     prisma.docPage.aggregate({ where: { projectId: { in: projectIds } }, _sum: { viewCount: true } }),
     prisma.docPage.findMany({
       where: { projectId: { in: projectIds } },
-      select: { id: true, title: true, slug: true, updatedAt: true, viewCount: true, projectId: true, project: { select: { name: true } } },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        updatedAt: true,
+        viewCount: true,
+        projectId: true,
+        project: { select: { name: true } },
+      },
       orderBy: { updatedAt: 'desc' },
       take: 6,
     }),
   ]);
 
-  const recentComments = projectIds.length > 0
-    ? await prisma.comment.findMany({
-        where: { page: { projectId: { in: projectIds } } },
-        select: {
-          id: true,
-          content: true,
-          createdAt: true,
-          user: { select: { name: true, image: true } },
-          page: { select: { id: true, title: true, slug: true, projectId: true, project: { select: { name: true } } } },
-        },
-        orderBy: { createdAt: 'desc' },
-        take: 5,
-      })
-    : [];
+  const recentComments =
+    projectIds.length > 0
+      ? await prisma.comment.findMany({
+          where: { page: { projectId: { in: projectIds } } },
+          select: {
+            id: true,
+            content: true,
+            createdAt: true,
+            user: { select: { name: true, image: true } },
+            page: {
+              select: {
+                id: true,
+                title: true,
+                slug: true,
+                projectId: true,
+                project: { select: { name: true } },
+              },
+            },
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 5,
+        })
+      : [];
 
   const totalViewCount = totalViews._sum.viewCount || 0;
 
   const topPages = await prisma.docPage.findMany({
     where: { projectId: { in: projectIds } },
-    select: { id: true, title: true, slug: true, viewCount: true, projectId: true, project: { select: { name: true } } },
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      viewCount: true,
+      projectId: true,
+      project: { select: { name: true } },
+    },
     orderBy: { viewCount: 'desc' },
     take: 5,
   });
@@ -84,12 +121,38 @@ export default async function DashboardPage() {
   });
   const bookmarkedPages = bookmarks.map((b) => b.page);
 
+  // Latest health report per project
+  const latestHealthReports = await prisma.healthReport.groupBy({
+    by: ['projectId'],
+    where: { projectId: { in: projectIds } },
+    _max: { createdAt: true },
+  });
+
+  const healthReportIds = latestHealthReports.map((r) => ({
+    projectId: r.projectId,
+    createdAt: r._max.createdAt!,
+  }));
+
+  const latestReports = await Promise.all(
+    healthReportIds.map((r) =>
+      prisma.healthReport.findFirst({
+        where: { projectId: r.projectId, createdAt: r.createdAt },
+        select: { projectId: true, score: true },
+      })
+    )
+  );
+
+  const healthScoreMap = new Map<string, number>();
+  for (const report of latestReports) {
+    if (report) healthScoreMap.set(report.projectId, report.score);
+  }
+
   const stats = [
-    { label: 'Total Pages', value: totalPages, icon: FileText, color: 'text-blue-600 bg-blue-50' },
-    { label: 'Published', value: publishedCount, icon: Globe, color: 'text-green-600 bg-green-50' },
-    { label: 'Page Views', value: totalViewCount, icon: Eye, color: 'text-violet-600 bg-violet-50' },
-    { label: 'Projects', value: projects.length, icon: BookOpen, color: 'text-purple-600 bg-purple-50' },
-    { label: 'Team Members', value: memberCount, icon: Users, color: 'text-amber-600 bg-amber-50' },
+    { label: 'Total Pages', value: totalPages, icon: FileText, color: 'text-blue-400 bg-blue-500/15' },
+    { label: 'Published', value: publishedCount, icon: Globe, color: 'text-emerald-400 bg-emerald-500/15' },
+    { label: 'Page Views', value: totalViewCount, icon: Eye, color: 'text-violet-400 bg-violet-500/15' },
+    { label: 'Projects', value: projects.length, icon: LayoutGrid, color: 'text-theme-accent bg-theme-accent-light' },
+    { label: 'Team Members', value: memberCount, icon: Users, color: 'text-amber-400 bg-amber-500/15' },
   ];
 
   return (
@@ -97,32 +160,48 @@ export default async function DashboardPage() {
       <GuidedTutorial projectId={projects[0]?.id} />
       <WelcomeHelp />
       <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8">
+        {/* Welcome Header */}
         <div className="flex items-center justify-between mb-8">
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold text-theme-main">{team.name}</h1>
-              <span className="rounded-full bg-theme-hover px-2.5 py-0.5 text-xs font-medium text-theme-subtle">
-                {memberCount} {memberCount === 1 ? 'member' : 'members'}
-              </span>
-              <span className="rounded-full bg-theme-hover px-2.5 py-0.5 text-xs font-medium text-theme-subtle capitalize">
-                {tier}
-              </span>
+          <div className="flex items-center gap-4">
+            {session.user.image ? (
+              <img
+                src={session.user.image}
+                alt={session.user.name ?? ''}
+                className="h-10 w-10 rounded-full ring-2 ring-theme-border"
+              />
+            ) : (
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-theme-accent-light text-sm font-bold text-theme-accent">
+                {session.user.name?.charAt(0)?.toUpperCase() ?? '?'}
+              </div>
+            )}
+            <div>
+              <h1 className="text-2xl font-bold text-theme-main">
+                Welcome back{session.user.name ? `, ${session.user.name}` : ''}
+              </h1>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-sm text-theme-muted">{team.name}</span>
+                <span className="text-theme-muted">·</span>
+                <span className="text-sm text-theme-muted">
+                  {memberCount} {memberCount === 1 ? 'member' : 'members'}
+                </span>
+                <span className="text-theme-muted">·</span>
+                <span className="inline-flex items-center rounded-full bg-theme-hover px-2 py-0.5 text-xs font-medium text-theme-subtle capitalize">
+                  {tier}
+                </span>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-3">
             {tier === 'free' && (
               <Link
                 href="/pricing"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-theme-border px-3 py-1.5 text-sm font-medium text-theme-subtle hover:bg-theme-hover transition-colors"
+                className="btn-secondary !py-2 !px-3.5 !text-sm !gap-1.5"
               >
                 <Zap className="h-3.5 w-3.5" />
                 Upgrade
               </Link>
             )}
-            <Link
-              href="/dashboard/new"
-              className="inline-flex items-center gap-2 rounded-lg bg-theme-main px-4 py-2 text-sm font-medium text-theme-page hover:opacity-80 transition-opacity"
-            >
+            <Link href="/dashboard/new" className="btn-primary !py-2 !px-4 !text-sm">
               <Plus className="h-4 w-4" />
               New Project
             </Link>
@@ -137,42 +216,45 @@ export default async function DashboardPage() {
           projectId={projects[0]?.id}
         />
 
+        {/* Stats + Usage */}
         <div className="mb-8 grid gap-6 lg:grid-cols-4">
-          <div className="lg:col-span-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {stats.map((stat) => (
-            <div key={stat.label} className="rounded-xl border border-theme-border bg-theme-page p-5">
-              <div className="flex items-center gap-3">
-                <div className={`rounded-lg p-2 ${stat.color}`}>
+          <div className="lg:col-span-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {stats.map((stat) => (
+              <div
+                key={stat.label}
+                className="rounded-2xl border border-theme-border bg-theme-card p-4 flex items-center gap-3"
+              >
+                <div className={`rounded-xl p-2.5 ${stat.color}`}>
                   <stat.icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-theme-main">{stat.value}</p>
-                  <p className="text-xs text-theme-subtle">{stat.label}</p>
+                  <p className="text-xl font-bold text-theme-main">{stat.value}</p>
+                  <p className="text-xs text-theme-muted">{stat.label}</p>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          <UsageMeter
+            tier={tier}
+            projects={{ current: projects.length, limit: TIERS[tier].maxProjects }}
+            pages={{ current: totalPages, limit: TIERS[tier].maxPages }}
+            members={{ current: memberCount, limit: TIERS[tier].maxMembers }}
+          />
         </div>
-        <UsageMeter
-          tier={tier}
-          projects={{ current: projects.length, limit: TIERS[tier].maxProjects }}
-          pages={{ current: totalPages, limit: TIERS[tier].maxPages }}
-          members={{ current: memberCount, limit: TIERS[tier].maxMembers }}
-        />
-      </div>
 
+        {/* Recently Updated Pages */}
         {recentPages.length > 0 && (
           <div className="mb-8">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-3">
               <Clock className="h-4 w-4 text-theme-muted" />
               <h2 className="text-sm font-semibold text-theme-main">Recently Updated</h2>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {recentPages.map((page) => (
                 <Link
                   key={page.id}
                   href={`/docs/${page.projectId}/${page.slug}`}
-                  className="group flex items-center justify-between rounded-xl border border-theme-border bg-theme-page px-4 py-3 transition-all hover:border-theme-accent hover:shadow-sm"
+                  className="group flex items-center justify-between rounded-xl border border-theme-border bg-theme-card px-4 py-3 transition-all hover:border-theme-accent/40 hover:bg-theme-hover"
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-theme-main group-hover:text-theme-accent transition-colors">
@@ -180,7 +262,8 @@ export default async function DashboardPage() {
                     </p>
                     <p className="text-xs text-theme-muted">
                       {page.project.name}
-                      {page.viewCount > 0 && ` · ${page.viewCount} view${page.viewCount !== 1 ? 's' : ''}`}
+                      {page.viewCount > 0 &&
+                        ` · ${page.viewCount} view${page.viewCount !== 1 ? 's' : ''}`}
                     </p>
                   </div>
                   <ArrowRight className="ml-3 h-4 w-4 shrink-0 text-theme-border group-hover:text-theme-accent transition-colors" />
@@ -190,58 +273,56 @@ export default async function DashboardPage() {
           </div>
         )}
 
+        {/* Bookmarked Pages */}
         {bookmarkedPages.length > 0 && (
           <div className="mb-8">
-            <div className="flex items-center gap-2 mb-4">
-              <Bookmark className="h-4 w-4 text-amber-500" />
+            <div className="flex items-center gap-2 mb-3">
+              <Bookmark className="h-4 w-4 text-amber-400" />
               <h2 className="text-sm font-semibold text-theme-main">Bookmarked</h2>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {bookmarkedPages.map((page) => (
                 <Link
                   key={page.id}
                   href={`/docs/${page.projectId}/${page.slug}`}
-                  className="group flex items-center justify-between rounded-xl border border-amber-100 bg-amber-50/50 px-4 py-3 transition-all hover:border-amber-200 hover:shadow-sm dark:border-amber-900/30 dark:bg-amber-900/10 dark:hover:border-amber-800/50"
+                  className="group flex items-center justify-between rounded-xl border border-theme-border bg-theme-card px-4 py-3 transition-all hover:border-amber-500/30 hover:bg-theme-hover"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-theme-main group-hover:text-amber-700 transition-colors dark:group-hover:text-amber-400">
+                    <p className="truncate text-sm font-medium text-theme-main group-hover:text-amber-400 transition-colors">
                       {page.title}
                     </p>
-                    <p className="text-xs text-theme-muted">
-                      {page.project.name}
-                    </p>
+                    <p className="text-xs text-theme-muted">{page.project.name}</p>
                   </div>
-                  <ArrowRight className="ml-3 h-4 w-4 shrink-0 text-amber-300 group-hover:text-amber-500 transition-colors dark:text-amber-700 dark:group-hover:text-amber-500" />
+                  <ArrowRight className="ml-3 h-4 w-4 shrink-0 text-theme-border group-hover:text-amber-400 transition-colors" />
                 </Link>
               ))}
             </div>
           </div>
         )}
 
+        {/* Most Viewed Pages */}
         {topPages.length > 0 && totalViewCount > 0 && (
           <div className="mb-8">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-3">
               <Eye className="h-4 w-4 text-theme-muted" />
               <h2 className="text-sm font-semibold text-theme-main">Most Viewed</h2>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {topPages.map((page, i) => (
                 <Link
                   key={page.id}
                   href={`/docs/${page.projectId}/${page.slug}`}
-                  className="group flex items-center justify-between rounded-xl border border-theme-border bg-theme-page px-4 py-3 transition-all hover:border-theme-accent hover:shadow-sm"
+                  className="group flex items-center justify-between rounded-xl border border-theme-border bg-theme-card px-4 py-3 transition-all hover:border-theme-accent/40 hover:bg-theme-hover"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <span className="shrink-0 flex items-center justify-center w-6 h-6 rounded-md bg-theme-hover text-[11px] font-bold text-theme-subtle">
+                    <span className="shrink-0 flex items-center justify-center w-6 h-6 rounded-lg bg-theme-hover text-[11px] font-bold text-theme-subtle">
                       {i + 1}
                     </span>
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-theme-main group-hover:text-theme-accent transition-colors">
                         {page.title}
                       </p>
-                      <p className="text-xs text-theme-muted">
-                        {page.project.name}
-                      </p>
+                      <p className="text-xs text-theme-muted">{page.project.name}</p>
                     </div>
                   </div>
                   <span className="ml-3 shrink-0 text-xs font-medium text-theme-subtle">
@@ -253,9 +334,10 @@ export default async function DashboardPage() {
           </div>
         )}
 
+        {/* Recent Activity */}
         {recentComments.length > 0 && (
           <div className="mb-8">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-3">
               <MessageSquare className="h-4 w-4 text-theme-muted" />
               <h2 className="text-sm font-semibold text-theme-main">Recent Activity</h2>
             </div>
@@ -264,22 +346,31 @@ export default async function DashboardPage() {
                 <Link
                   key={comment.id}
                   href={`/docs/${comment.page.projectId}/${comment.page.slug}`}
-                  className="flex items-start gap-3 rounded-xl border border-theme-border bg-theme-page px-4 py-3 transition-all hover:border-theme-accent hover:shadow-sm"
+                  className="flex items-start gap-3 rounded-xl border border-theme-border bg-theme-card px-4 py-3 transition-all hover:border-theme-accent/40 hover:bg-theme-hover"
                 >
                   <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-theme-hover text-xs font-medium text-theme-subtle">
-                    {comment.user.name?.charAt(0)?.toUpperCase() ?? '?'}
+                    {comment.user.image ? (
+                      <img
+                        src={comment.user.image}
+                        alt=""
+                        className="h-7 w-7 rounded-full"
+                      />
+                    ) : (
+                      comment.user.name?.charAt(0)?.toUpperCase() ?? '?'
+                    )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm text-theme-main">
-                      <span className="font-medium">{comment.user.name ?? 'Someone'}</span>
-                      {' '}commented on{' '}
+                      <span className="font-medium">{comment.user.name ?? 'Someone'}</span>{' '}
+                      commented on{' '}
                       <span className="font-medium">{comment.page.title}</span>
                     </p>
                     <p className="mt-0.5 line-clamp-1 text-xs text-theme-subtle">
                       {comment.content}
                     </p>
                     <p className="mt-0.5 text-xs text-theme-muted">
-                      {comment.page.project.name} · {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+                      {comment.page.project.name} ·{' '}
+                      {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
                     </p>
                   </div>
                 </Link>
@@ -288,40 +379,39 @@ export default async function DashboardPage() {
           </div>
         )}
 
+        {/* Projects */}
         {projects.length === 0 ? (
-          <div className="rounded-2xl border-2 border-dashed border-theme-border bg-theme-page p-12 text-center">
-            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-fluid-50">
-              <BookOpen className="h-8 w-8 text-fluid-600" />
+          <div className="rounded-2xl border-2 border-dashed border-theme-border bg-theme-card p-16 text-center">
+            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-theme-accent-light">
+              <BookOpen className="h-8 w-8 text-theme-accent" />
             </div>
-            <h2 className="text-lg font-semibold text-theme-main">Welcome to TomeBase</h2>
-            <p className="mt-2 text-sm text-theme-subtle max-w-md mx-auto">
-              Document your APIs, products, and internal tools. Start by creating your first project.
+            <h2 className="text-xl font-bold text-theme-main">Welcome to TomeBase</h2>
+            <p className="mt-2 text-sm text-theme-subtle max-w-md mx-auto leading-relaxed">
+              Document your APIs, products, and internal tools. Start by creating your first
+              project.
             </p>
-            <div className="mt-8 grid gap-4 sm:grid-cols-4 text-left max-w-2xl mx-auto">
-              <div className="rounded-xl border border-theme-border bg-theme-card p-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2 dark:bg-fluid-700">1</div>
-                <h3 className="text-sm font-medium text-theme-main">Create a Project</h3>
-                <p className="mt-1 text-xs text-theme-subtle">Pick a template or start blank</p>
-              </div>
-              <div className="rounded-xl border border-theme-border bg-theme-card p-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2 dark:bg-fluid-700">2</div>
-                <h3 className="text-sm font-medium text-theme-main">Write or Import</h3>
-                <p className="mt-1 text-xs text-theme-subtle">Use Markdown or import from code</p>
-              </div>
-              <div className="rounded-xl border border-theme-border bg-theme-card p-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2 dark:bg-fluid-700">3</div>
-                <h3 className="text-sm font-medium text-theme-main">Connect Pages</h3>
-                <p className="mt-1 text-xs text-theme-subtle">Use [[wiki links]] and the graph</p>
-              </div>
-              <div className="rounded-xl border border-theme-border bg-theme-card p-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-600 text-white text-xs font-bold mb-2 dark:bg-fluid-700">4</div>
-                <h3 className="text-sm font-medium text-theme-main">Publish & Share</h3>
-                <p className="mt-1 text-xs text-theme-subtle">Go live with a public link</p>
-              </div>
+            <div className="mt-8 grid gap-3 sm:grid-cols-4 text-left max-w-2xl mx-auto">
+              {[
+                { step: '1', title: 'Create a Project', desc: 'Pick a template or start blank' },
+                { step: '2', title: 'Write or Import', desc: 'Use Markdown or import from code' },
+                { step: '3', title: 'Connect Pages', desc: 'Use [[wiki links]] and the graph' },
+                { step: '4', title: 'Publish & Share', desc: 'Go live with a public link' },
+              ].map((item) => (
+                <div
+                  key={item.step}
+                  className="rounded-xl border border-theme-border bg-theme-page p-4"
+                >
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-theme-accent text-[11px] font-bold text-white mb-2">
+                    {item.step}
+                  </div>
+                  <h3 className="text-sm font-medium text-theme-main">{item.title}</h3>
+                  <p className="mt-0.5 text-xs text-theme-muted">{item.desc}</p>
+                </div>
+              ))}
             </div>
             <Link
               href="/dashboard/new"
-              className="mt-8 inline-flex items-center gap-2 rounded-lg bg-theme-main px-6 py-2.5 text-sm font-medium text-theme-page hover:opacity-80 transition-opacity"
+              className="mt-8 btn-primary"
             >
               <Plus className="h-4 w-4" />
               Create Your First Project
@@ -329,8 +419,11 @@ export default async function DashboardPage() {
           </div>
         ) : (
           <div>
-            <h2 className="text-sm font-semibold text-theme-main mb-4">All Projects</h2>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-semibold text-theme-main">All Projects</h2>
+              <span className="text-xs text-theme-muted">{projects.length} project{projects.length !== 1 ? 's' : ''}</span>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {projects.map((project) => (
                 <ProjectCard
                   key={project.id}
@@ -340,6 +433,8 @@ export default async function DashboardPage() {
                   description={project.description}
                   published={project.published}
                   pageCount={project._count.pages}
+                  memberCount={memberCount}
+                  healthScore={healthScoreMap.get(project.id) ?? null}
                 />
               ))}
             </div>

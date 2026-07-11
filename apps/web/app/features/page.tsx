@@ -116,9 +116,9 @@ const features = [
     title: 'Pricing Tiers',
     description: 'Start free and scale as you grow. Upgrade when you need private docs, custom domains, or team collaboration.',
     capabilities: [
-      'Free: 1 project, unlimited pages, 5 team members \u2014 everything you need to start',
-      'Pro: unlimited projects, pages, and team members \u2014 for growing teams',
-      'Stripe-powered billing \u2014 upgrade or cancel anytime',
+      'Free: 1 project, unlimited pages, 5 team members — everything you need to start',
+      'Pro: unlimited projects, pages, and team members — for growing teams',
+      'Stripe-powered billing — upgrade or cancel anytime',
       'All tiers include the full editor, wiki links, graph view, and public docs',
     ],
   },
@@ -126,22 +126,22 @@ const features = [
 
 export default function FeaturesPage() {
   return (
-    <div className="gradient-bg min-h-screen">
-      <nav className="sticky top-0 z-50 border-b border-theme-border/80 bg-white/70 backdrop-blur-xl">
+    <div className="min-h-screen bg-theme-page">
+      <nav className="sticky top-0 z-50 border-b border-theme-border bg-theme-page/70 backdrop-blur-xl">
         <Container>
           <div className="flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
               <svg viewBox="0 0 32 32" fill="none" className="h-7 w-7">
-                <rect width="32" height="32" rx="8" fill="#0c8ee7" />
+                <rect width="32" height="32" rx="8" fill="#3B3BFF" />
                 <circle cx="16" cy="16" r="4" fill="white" />
               </svg>
-              <span className="font-bold tracking-tight">TomeBase</span>
+              <span className="font-bold tracking-tight text-theme-main">TomeBase</span>
             </Link>
             <div className="flex items-center gap-4">
-              <Link href="/pricing" className="text-sm text-theme-muted hover:text-theme-main transition-colors">Pricing</Link>
+              <Link href="/pricing" className="text-sm text-theme-subtle hover:text-theme-main transition-colors">Pricing</Link>
               <Link
                 href="/login"
-                className="rounded-lg bg-theme-main px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-colors"
+                className="btn-primary text-sm"
               >
                 Get Started
               </Link>
@@ -162,9 +162,9 @@ export default function FeaturesPage() {
 
         <div className="mt-20 space-y-6">
           {features.map((feature) => (
-            <div key={feature.title} className="group rounded-2xl border border-theme-border bg-white p-6 transition-all hover:border-fluid-200 hover:shadow-md">
+            <div key={feature.title} className="group rounded-2xl border border-theme-border bg-theme-card p-6 transition-all card-hover">
               <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-fluid-50 text-fluid-600 group-hover:bg-fluid-100 transition-colors">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-theme-accent-light text-theme-accent group-hover:bg-theme-accent group-hover:text-white transition-colors">
                   <feature.icon className="h-6 w-6" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -173,7 +173,7 @@ export default function FeaturesPage() {
                   <ul className="mt-3 space-y-1">
                     {feature.capabilities.map((cap) => (
                       <li key={cap} className="flex items-start gap-2 text-sm text-theme-muted">
-                        <span className="mt-1.5 block h-1 w-1 shrink-0 rounded-full bg-theme-border" />
+                        <span className="mt-1.5 block h-1 w-1 shrink-0 rounded-full bg-theme-accent" />
                         {cap}
                       </li>
                     ))}
@@ -185,17 +185,17 @@ export default function FeaturesPage() {
         </div>
       </Container>
 
-      <footer className="border-t border-theme-border bg-white py-12">
+      <footer className="border-t border-theme-border py-12">
         <Container>
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div className="flex items-center gap-2 text-sm text-theme-muted">
               <svg viewBox="0 0 32 32" fill="none" className="h-5 w-5">
-                <rect width="32" height="32" rx="8" fill="#0c8ee7" />
+                <rect width="32" height="32" rx="8" fill="#3B3BFF" />
                 <circle cx="16" cy="16" r="4" fill="white" />
               </svg>
               TomeBase — Your knowledge base.
             </div>
-            <Link href="/login" className="inline-flex items-center gap-2 text-sm font-medium text-fluid-600 hover:text-fluid-700 transition-colors">
+            <Link href="/login" className="inline-flex items-center gap-2 text-sm font-medium text-theme-accent hover:text-theme-accent-hover transition-colors">
               Get Started <ArrowRight className="h-4 w-4" />
             </Link>
           </div>

@@ -62,22 +62,22 @@ const faq = [
 
 export default function PricingPage() {
   return (
-    <div className="gradient-bg min-h-screen">
-      <nav className="sticky top-0 z-50 border-b border-theme-border/80 bg-white/70 backdrop-blur-xl">
+    <div className="min-h-screen bg-theme-page">
+      <nav className="sticky top-0 z-50 border-b border-theme-border bg-theme-page/70 backdrop-blur-xl">
         <Container>
           <div className="flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
               <svg viewBox="0 0 32 32" fill="none" className="h-7 w-7">
-                <rect width="32" height="32" rx="8" fill="#0c8ee7" />
+                <rect width="32" height="32" rx="8" fill="#3B3BFF" />
                 <circle cx="16" cy="16" r="4" fill="white" />
               </svg>
-              <span className="font-bold tracking-tight dark:text-white">TomeBase</span>
+              <span className="font-bold tracking-tight text-theme-main">TomeBase</span>
             </Link>
             <div className="flex items-center gap-4">
-              <Link href="/features" className="text-sm text-theme-muted hover:text-theme-main transition-colors">Features</Link>
+              <Link href="/features" className="text-sm text-theme-subtle hover:text-theme-main transition-colors">Features</Link>
               <Link
                 href="/login"
-                className="rounded-lg bg-theme-main px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-colors"
+                className="btn-primary text-sm"
               >
                 Get Started
               </Link>
@@ -100,14 +100,14 @@ export default function PricingPage() {
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`relative rounded-2xl border bg-white p-8 transition-all hover:shadow-lg ${
+              className={`relative rounded-2xl border bg-theme-card p-8 transition-all hover:shadow-lg card-hover ${
                 plan.popular
-                  ? 'border-fluid-200 shadow-md ring-1 ring-fluid-100 dark:border-fluid-700 dark:ring-fluid-800'
-                  : 'border-theme-border shadow-sm'
+                  ? 'border-theme-accent ring-1 ring-theme-accent/20'
+                  : 'border-theme-border'
               }`}
             >
               {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-fluid-600 px-4 py-1 text-xs font-semibold text-white">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-theme-accent px-4 py-1 text-xs font-semibold text-white">
                   Most Popular
                 </div>
               )}
@@ -117,12 +117,12 @@ export default function PricingPage() {
                   <span className="text-4xl font-bold text-theme-main">{plan.price}</span>
                   {plan.period && <span className="text-sm text-theme-muted">{plan.period}</span>}
                 </div>
-                <p className="mt-2 text-sm text-theme-muted">{plan.description}</p>
+                <p className="mt-2 text-sm text-theme-subtle">{plan.description}</p>
               </div>
               <ul className="mb-6 space-y-3">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-3 text-sm text-theme-subtle">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-fluid-600 dark:text-fluid-400" />
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-theme-accent" />
                     {feature}
                   </li>
                 ))}
@@ -144,20 +144,33 @@ export default function PricingPage() {
           </h2>
           <div className="mt-10 space-y-6">
             {faq.map((item) => (
-              <div key={item.q}>
+              <div key={item.q} className="rounded-2xl border border-theme-border bg-theme-card p-6">
                 <h3 className="text-sm font-semibold text-theme-main">{item.q}</h3>
-                <p className="mt-1 text-sm text-theme-muted">{item.a}</p>
+                <p className="mt-2 text-sm text-theme-subtle leading-relaxed">{item.a}</p>
               </div>
             ))}
           </div>
         </div>
       </Container>
 
-      <footer className="border-t border-theme-border bg-white py-12">
+      <footer className="border-t border-theme-border py-12">
         <Container>
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-            <div className="text-sm text-theme-muted">
+            <div className="flex items-center gap-2 text-sm text-theme-muted">
+              <svg viewBox="0 0 32 32" fill="none" className="h-5 w-5">
+                <rect width="32" height="32" rx="8" fill="#3B3BFF" />
+                <circle cx="16" cy="16" r="4" fill="white" />
+              </svg>
               TomeBase — Your knowledge base.
+            </div>
+            <div className="flex items-center gap-6 text-sm text-theme-muted">
+              <Link href="/features" className="hover:text-theme-main transition-colors">Features</Link>
+              <span className="text-theme-border">&middot;</span>
+              <Link href="/pricing" className="hover:text-theme-main transition-colors">Pricing</Link>
+              <span className="text-theme-border">&middot;</span>
+              <Link href="/roadmap" className="hover:text-theme-main transition-colors">Roadmap</Link>
+              <span className="text-theme-border">&middot;</span>
+              <Link href="https://github.com/bushninjadots/tomebase" className="hover:text-theme-main transition-colors">GitHub</Link>
             </div>
           </div>
         </Container>

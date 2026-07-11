@@ -43,10 +43,10 @@ export function PricingButtons({ plan }: { plan: Plan }) {
     <button
       onClick={handleCheckout}
       disabled={loading}
-      className={`inline-flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors disabled:opacity-50 ${
+      className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all disabled:opacity-50 ${
         plan.popular
-          ? 'bg-theme-main text-white hover:opacity-90'
-          : 'border border-theme-border text-theme-subtle hover:border-theme-border hover:bg-theme-hover'
+          ? 'btn-primary'
+          : 'btn-secondary'
       }`}
     >
       {loading ? 'Redirecting...' : plan.cta}

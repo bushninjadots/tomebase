@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 
@@ -26,16 +26,26 @@ export function PublicMobileNav({ pages, projectId }: { pages: PageNode[]; proje
     }
   }
 
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [open]);
+
   function renderBranch(page: PageNode, depth: number) {
     const children = map.get(page.id) || [];
     return (
       <li key={page.id}>
         <Link
-          href={`/p/${page.slug}`}
+          href={`/p/${projectId}/${page.slug}`}
           onClick={() => setOpen(false)}
-          className="block rounded-lg px-3 py-2 text-sm text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
+          className="group flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
           style={{ paddingLeft: `${12 + depth * 16}px` }}
         >
+          <span className="h-1 w-1 rounded-full bg-theme-muted/30 group-hover:bg-theme-accent transition-colors shrink-0" />
           {page.title}
         </Link>
         {children.length > 0 && (
@@ -51,23 +61,29 @@ export function PublicMobileNav({ pages, projectId }: { pages: PageNode[]; proje
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm text-theme-muted hover:bg-theme-hover lg:hidden"
+        className="flex items-center gap-1 rounded-lg p-1.5 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors lg:hidden"
         aria-label="Open navigation"
       >
-        <Menu className="h-5 w-5" />
+        <Menu className="h-4 w-4" />
       </button>
 
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="fixed inset-0 bg-black/30" onClick={() => setOpen(false)} />
-          <div className="fixed inset-y-0 left-0 w-72 bg-theme-card shadow-xl">
-            <div className="flex items-center justify-between border-b border-theme-border px-4 py-3">
-              <span className="text-sm font-semibold text-theme-main">Pages</span>
-              <button onClick={() => setOpen(false)} className="rounded-lg p-1 text-theme-muted hover:bg-theme-hover">
-                <X className="h-5 w-5" />
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setOpen(false)}
+          />
+          <div className="fixed inset-y-0 left-0 w-72 bg-[#0B1020] border-r border-white/[0.06] shadow-2xl">
+            <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3">
+              <span className="text-[13px] font-semibold text-theme-main">Navigation</span>
+              <button
+                onClick={() => setOpen(false)}
+                className="rounded-lg p-1.5 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
+              >
+                <X className="h-4 w-4" />
               </button>
             </div>
-            <nav className="overflow-y-auto p-4" style={{ maxHeight: 'calc(100vh - 56px)' }}>
+            <nav className="overflow-y-auto p-3" style={{ maxHeight: 'calc(100vh - 52px)' }}>
               <ul className="space-y-0.5">
                 {roots.map((page) => renderBranch(page, 0))}
               </ul>

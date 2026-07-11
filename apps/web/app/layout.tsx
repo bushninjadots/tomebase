@@ -1,46 +1,46 @@
 import type { Metadata } from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/components/providers';
 
-const inter = Inter({
+const geist = Geist({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-geist',
   display: 'swap',
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const geistMono = Geist_Mono({
   subsets: ['latin'],
-  variable: '--font-jetbrains-mono',
+  variable: '--font-geist-mono',
   display: 'swap',
 });
 
 export const metadata: Metadata = {
   title: {
-    default: 'TomeBase — Your knowledge base',
+    default: 'TomeBase — Developer documentation platform',
     template: '%s — TomeBase',
   },
   description:
-    'Documentation platform for modern engineering teams. Auto-generate API docs, collaborate with your team, and publish beautiful documentation.',
+    'Write once, publish anywhere. The fastest way to publish beautiful developer documentation.',
   openGraph: {
-    title: 'TomeBase — Your knowledge base',
+    title: 'TomeBase — Developer documentation platform',
     description:
-      'Documentation platform for modern engineering teams. Auto-generate API docs, collaborate, and publish.',
+      'Write once, publish anywhere. Markdown-powered docs with wiki links, version history, and public hosting.',
     type: 'website',
     siteName: 'TomeBase',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'TomeBase — Your knowledge base',
+    title: 'TomeBase — Developer documentation platform',
     description:
-      'Documentation platform for modern engineering teams.',
+      'Write once, publish anywhere. Markdown-powered docs with wiki links, version history, and public hosting.',
   },
   robots: { index: true, follow: true },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${geist.variable} ${geistMono.variable} dark`}>
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>

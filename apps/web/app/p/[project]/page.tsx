@@ -1,7 +1,7 @@
 import { prisma } from '@fluid/database';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { BookOpen, FileText, Eye, Clock, ArrowRight } from 'lucide-react';
+import { BookOpen, FileText, Eye, Clock, ArrowUpRight } from 'lucide-react';
 import type { Metadata } from 'next';
 
 interface PageProps {
@@ -39,34 +39,39 @@ export default async function PublicProjectPage({ params }: PageProps) {
   const totalPages = project.pages.length;
 
   return (
-    <div className="min-h-screen bg-theme-page">
-      {/* Header */}
-      <div className="border-b border-theme-border">
-        <div className="mx-auto max-w-5xl px-4 py-12">
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-4xl font-bold tracking-tight text-theme-main">{project.name}</h1>
+    <div className="min-h-[calc(100vh-48px)]">
+      {/* Hero */}
+      <div className="relative overflow-hidden border-b border-white/[0.06]">
+        <div className="absolute inset-0 bg-gradient-to-br from-theme-accent/[0.04] via-transparent to-transparent pointer-events-none" />
+        <div className="relative mx-auto max-w-3xl px-6 py-16 sm:py-20">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-theme-main">
+                {project.name}
+              </h1>
               {project.description && (
-                <p className="mt-3 text-lg text-theme-subtle max-w-2xl">{project.description}</p>
+                <p className="mt-3 text-base sm:text-lg text-theme-subtle/80 max-w-xl leading-relaxed">
+                  {project.description}
+                </p>
               )}
             </div>
             {project.customDomain && (
-              <span className="shrink-0 rounded-full bg-fluid-50 px-3 py-1 text-xs font-medium text-fluid-700">
+              <span className="shrink-0 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-xs font-medium text-theme-muted">
                 {project.customDomain}
               </span>
             )}
           </div>
 
           {totalPages > 0 && (
-            <div className="mt-8 flex items-center gap-6 text-sm text-theme-muted">
+            <div className="mt-8 flex items-center gap-5 text-xs text-theme-muted/60">
               <span className="flex items-center gap-1.5">
-                <FileText className="h-4 w-4" />
+                <FileText className="h-3.5 w-3.5" />
                 {totalPages} page{totalPages !== 1 ? 's' : ''}
               </span>
               {totalViews > 0 && (
                 <span className="flex items-center gap-1.5">
-                  <Eye className="h-4 w-4" />
-                  {totalViews} view{totalViews !== 1 ? 's' : ''}
+                  <Eye className="h-3.5 w-3.5" />
+                  {totalViews.toLocaleString()} view{totalViews !== 1 ? 's' : ''}
                 </span>
               )}
             </div>
@@ -75,42 +80,52 @@ export default async function PublicProjectPage({ params }: PageProps) {
       </div>
 
       {/* Content */}
-      <div className="mx-auto max-w-5xl px-4 py-8">
+      <div className="mx-auto max-w-3xl px-6 py-10">
         {totalPages === 0 ? (
-          <div className="rounded-2xl border-2 border-dashed border-theme-border p-16 text-center">
-            <BookOpen className="mx-auto h-12 w-12 text-theme-muted" />
-            <h2 className="mt-4 text-lg font-semibold text-theme-main">No published pages yet</h2>
-            <p className="mt-1 text-sm text-theme-subtle">
+          <div className="rounded-2xl border border-dashed border-white/[0.08] p-16 text-center">
+            <BookOpen className="mx-auto h-10 w-10 text-theme-muted/30" />
+            <h2 className="mt-4 text-base font-semibold text-theme-main">No published pages yet</h2>
+            <p className="mt-1.5 text-sm text-theme-muted/60">
               Check back later for documentation.
             </p>
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="space-y-3">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-theme-muted/40 mb-4">
+              All pages
+            </p>
             {project.pages.map((page) => (
               <Link
                 key={page.id}
                 href={`/p/${projectId}/${page.slug}`}
-                className="group relative rounded-xl border border-theme-border p-5 transition-all hover:border-fluid-200 hover:shadow-sm hover:-translate-y-0.5"
+                className="group flex items-start gap-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 transition-all hover:border-white/[0.12] hover:bg-white/[0.04]"
               >
-                <h2 className="font-semibold text-theme-main group-hover:text-fluid-600 transition-colors">
-                  {page.title}
-                </h2>
-                {page.description && (
-                  <p className="mt-1.5 text-sm text-theme-subtle line-clamp-2">{page.description}</p>
-                )}
-                <div className="mt-3 flex items-center gap-3 text-xs text-theme-muted">
-                  <span className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    {new Date(page.updatedAt).toLocaleDateString()}
-                  </span>
-                  {page.viewCount > 0 && (
-                    <span className="flex items-center gap-1">
-                      <Eye className="h-3 w-3" />
-                      {page.viewCount}
-                    </span>
-                  )}
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-theme-accent/10 text-theme-accent mt-0.5">
+                  <FileText className="h-4 w-4" />
                 </div>
-                <ArrowRight className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-theme-muted opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-[15px] font-semibold text-theme-main group-hover:text-theme-accent transition-colors">
+                    {page.title}
+                  </h2>
+                  {page.description && (
+                    <p className="mt-1 text-sm text-theme-muted/60 line-clamp-2 leading-relaxed">
+                      {page.description}
+                    </p>
+                  )}
+                  <div className="mt-2.5 flex items-center gap-4 text-xs text-theme-muted/40">
+                    <span className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {new Date(page.updatedAt).toLocaleDateString()}
+                    </span>
+                    {page.viewCount > 0 && (
+                      <span className="flex items-center gap-1">
+                        <Eye className="h-3 w-3" />
+                        {page.viewCount}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <ArrowUpRight className="mt-1 h-4 w-4 text-theme-muted/0 group-hover:text-theme-muted/40 transition-all shrink-0" />
               </Link>
             ))}
           </div>

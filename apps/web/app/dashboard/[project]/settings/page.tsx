@@ -27,7 +27,7 @@ export default async function ProjectSettingsPage({ params }: PageProps) {
   if (!project || project.userId !== session.user.id) notFound();
 
   return (
-    <div className="min-h-screen bg-theme-card">
+    <div className="min-h-screen bg-theme-page">
       <Container className="py-8">
         <div className="mb-6 flex items-center gap-2 text-sm text-theme-muted">
           <Link href="/dashboard" className="hover:text-theme-main transition-colors">Dashboard</Link>
@@ -38,26 +38,26 @@ export default async function ProjectSettingsPage({ params }: PageProps) {
         </div>
 
         <div className="mx-auto max-w-2xl">
-          <h1 className="text-2xl font-bold text-theme-main">Project Settings</h1>
-          <p className="mt-1 text-sm text-theme-muted">
+          <h1 className="text-3xl font-bold text-theme-main">Project Settings</h1>
+          <p className="mt-2 text-sm text-theme-subtle">
             Manage your project visibility, domain, and details.
           </p>
 
           <div className="mt-8 space-y-8">
             <ProjectSettingsForm project={project} />
 
-            <div className="rounded-xl border border-theme-border bg-white p-6">
+            <div className="rounded-2xl border border-theme-border bg-theme-card p-6">
               <h2 className="text-lg font-semibold text-theme-main flex items-center gap-2">
                 <Download className="h-4 w-4 text-theme-muted" />
                 Export
               </h2>
-              <p className="mt-1 text-sm text-theme-muted">
+              <p className="mt-1 text-sm text-theme-subtle">
                 Download all pages as Markdown files with frontmatter metadata.
               </p>
               <div className="mt-4">
                 <a
                   href={`/api/projects/${project.id}/export`}
-                  className="inline-flex items-center gap-2 rounded-lg border border-theme-border px-4 py-2 text-sm font-medium text-theme-subtle hover:bg-theme-hover transition-colors"
+                  className="btn-secondary text-sm"
                 >
                   <Download className="h-4 w-4" />
                   Export as .zip
@@ -65,19 +65,19 @@ export default async function ProjectSettingsPage({ params }: PageProps) {
               </div>
             </div>
 
-            <div className="rounded-xl border border-theme-border bg-white p-6">
+            <div className="rounded-2xl border border-theme-border bg-theme-card p-6">
               <GitSync projectId={project.id} />
             </div>
 
             <ApiKeyManager projectId={project.id} />
 
-            <div className="rounded-xl border border-theme-border bg-white p-6">
+            <div className="rounded-2xl border border-theme-border bg-theme-card p-6">
               <WebhookSettings projectId={project.id} />
             </div>
 
-            <div className="rounded-xl border border-theme-border bg-white p-6">
-              <h2 className="text-lg font-semibold text-theme-main">Danger Zone</h2>
-              <p className="mt-1 text-sm text-theme-muted">
+            <div className="rounded-2xl border border-red-500/20 bg-theme-card p-6">
+              <h2 className="text-lg font-semibold text-red-400">Danger Zone</h2>
+              <p className="mt-1 text-sm text-theme-subtle">
                 Irreversible actions for this project.
               </p>
               <div className="mt-4">
@@ -104,7 +104,7 @@ export default async function ProjectSettingsPage({ params }: PageProps) {
                 >
                   <button
                     type="submit"
-                    className="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                    className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-400 hover:bg-red-500/20 transition-colors"
                   >
                     Delete Project
                   </button>

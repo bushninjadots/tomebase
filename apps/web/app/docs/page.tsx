@@ -30,20 +30,20 @@ export default async function DocsPage() {
   }
 
   return (
-    <div className="gradient-bg min-h-screen">
-      <nav className="sticky top-0 z-50 border-b border-theme-border/80 bg-theme-page/70 backdrop-blur-xl">
+    <div className="min-h-screen bg-theme-page">
+      <nav className="sticky top-0 z-50 border-b border-theme-border bg-theme-page/70 backdrop-blur-xl">
         <Container>
           <div className="flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
               <svg viewBox="0 0 32 32" fill="none" className="h-7 w-7">
-                <rect width="32" height="32" rx="8" fill="#0c8ee7" />
+                <rect width="32" height="32" rx="8" fill="#3B3BFF" />
                 <circle cx="16" cy="16" r="4" fill="white" />
               </svg>
-              <span className="font-bold tracking-tight">TomeBase</span>
+              <span className="font-bold tracking-tight text-theme-main">TomeBase</span>
             </Link>
             <Link
               href="/login"
-              className="rounded-lg bg-theme-main px-4 py-2 text-sm font-medium text-theme-page hover:opacity-90 transition-colors"
+              className="btn-primary text-sm"
             >
               Get Started
             </Link>
@@ -53,7 +53,9 @@ export default async function DocsPage() {
 
       <Container className="py-24">
         <div className="mx-auto max-w-2xl text-center">
-          <BookOpen className="mx-auto h-12 w-12 text-fluid-600" />
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-theme-accent-light">
+            <BookOpen className="h-8 w-8 text-theme-accent" />
+          </div>
           <h1 className="mt-6 text-4xl font-bold tracking-tight text-theme-main">
             TomeBase Documentation
           </h1>
@@ -73,18 +75,18 @@ export default async function DocsPage() {
               <Link
                 key={section.title}
                 href={href}
-                className="group rounded-2xl border border-theme-border bg-theme-card p-6 transition-all hover:border-fluid-200 hover:shadow-md"
+                className="group rounded-2xl border border-theme-border bg-theme-card p-6 transition-all card-hover"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-fluid-50 text-fluid-600 group-hover:bg-fluid-100 transition-colors">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-theme-accent-light text-theme-accent group-hover:bg-theme-accent group-hover:text-white transition-colors">
                   <section.icon className="h-5 w-5" />
                 </div>
-                <h3 className="mt-4 font-semibold text-theme-main group-hover:text-fluid-600 transition-colors">
+                <h3 className="mt-4 font-semibold text-theme-main group-hover:text-theme-accent transition-colors">
                   {section.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-theme-muted">
+                <p className="mt-2 text-sm leading-relaxed text-theme-subtle">
                   {section.description}
                 </p>
-                <div className="mt-4 flex items-center gap-1 text-sm font-medium text-fluid-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="mt-4 flex items-center gap-1 text-sm font-medium text-theme-accent opacity-0 group-hover:opacity-100 transition-opacity">
                   Read more <ArrowRight className="h-4 w-4" />
                 </div>
               </Link>
@@ -94,12 +96,12 @@ export default async function DocsPage() {
 
         <div className="mx-auto mt-20 max-w-lg text-center rounded-2xl border border-theme-border bg-theme-card p-8">
           <h2 className="text-lg font-semibold text-theme-main">Edit on GitHub</h2>
-          <p className="mt-2 text-sm text-theme-muted">
+          <p className="mt-2 text-sm text-theme-subtle">
             All documentation is available as Markdown in the repository. Submit improvements via pull request.
           </p>
           <Link
             href="https://github.com/bushninjadots/tomebase/tree/main/docs/usage"
-            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-theme-main px-5 py-2.5 text-sm font-medium text-theme-page hover:opacity-90 transition-colors"
+            className="mt-6 inline-flex items-center gap-2 btn-primary text-sm"
           >
             View on GitHub
           </Link>

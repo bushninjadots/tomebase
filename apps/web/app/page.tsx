@@ -1,100 +1,115 @@
 import Link from 'next/link';
 import { Container } from '@fluid/ui';
 import {
-  ArrowRight, BookOpen, Code2, GitBranch, Search,
-  FileText, Users, Zap, Shield,
-  Globe, Layers, Github,
+  ArrowRight,
+  BookOpen,
+  GitBranch,
+  History,
+  Globe,
+  Users,
+  KeyRound,
 } from 'lucide-react';
-
-const stats = [
-  { value: 'Free', label: 'No credit card' },
-  { value: 'Open Source', label: 'MIT licensed' },
-  { value: '50', label: 'Pages free tier' },
-  { value: '5', label: 'Team members free' },
-];
 
 const features = [
   {
     icon: BookOpen,
-    title: 'Documentation Editor',
-    description: 'Full-featured Markdown editor with live preview, wiki links, auto-save, and version history. Organize pages in a hierarchical tree.',
+    title: 'Markdown Editor',
+    description:
+      'Full-featured Markdown with live preview, syntax highlighting, auto-save, and a hierarchical page tree.',
   },
   {
     icon: GitBranch,
     title: 'Wiki Links & Graph',
-    description: 'Connect docs with [[wiki links]]. Visualize your knowledge graph with a force-directed graph view. Find orphans and broken links instantly.',
+    description:
+      'Connect pages with [[wiki links]] and visualize your knowledge graph with an interactive force-directed view.',
   },
   {
-    icon: Code2,
-    title: 'Auto-Generate from Code',
-    description: 'Import TypeScript/JavaScript files or OpenAPI specs. TomeBase parses your source and generates clean Markdown documentation automatically.',
-  },
-  {
-    icon: Search,
-    title: 'Full-Text Search',
-    description: 'Cmd+K search across all pages. Searches titles and content with contextual snippets. Tag-based filtering keeps results focused.',
+    icon: History,
+    title: 'Version History',
+    description:
+      'Every edit is tracked. Browse, compare, and restore any previous version of a page in a single click.',
   },
   {
     icon: Globe,
     title: 'Public Hosting',
-    description: 'Publish docs with one toggle. Custom domains, SEO metadata, sitemaps, and a polished reading experience — no separate hosting needed.',
+    description:
+      'Publish docs with one toggle. Custom domains, SEO metadata, and a polished reading experience built in.',
   },
   {
     icon: Users,
     title: 'Team Collaboration',
-    description: 'Invite team members, assign admin or member roles, and collaborate in real-time. Free tier supports up to 5 members.',
+    description:
+      'Invite teammates, assign roles, and collaborate in real-time. Free tier includes up to 5 members.',
   },
   {
-    icon: Shield,
-    title: 'API Keys & Automation',
-    description: 'Generate scoped API keys for CI/CD pipelines. Import, export, and manage documentation programmatically.',
+    icon: KeyRound,
+    title: 'API Key Access',
+    description:
+      'Generate scoped API keys for CI/CD pipelines. Import, export, and manage docs programmatically.',
   },
 ];
 
-const plans = [
-  {
-    name: 'Free',
-    price: '\u20AC0',
-    period: '/month',
-    features: ['1 project', 'Unlimited pages', 'Up to 5 team members', 'Public docs hosting', 'Full-text search'],
-    cta: 'Start Free',
-    highlighted: false,
-  },
-  {
-    name: 'Pro',
-    price: '\u20AC15',
-    period: '/month',
-    features: ['Unlimited projects', 'Unlimited pages', 'Unlimited team members', 'Custom domains', 'Priority support'],
-    cta: 'Upgrade to Pro',
-    highlighted: true,
-  },
+const stats = [
+  { value: '17', label: 'Templates' },
+  { value: '5', label: 'Export Formats' },
+  { value: '12', label: 'Health Checks' },
 ];
 
 export default function Home() {
   return (
-    <div className="gradient-bg">
-      <nav className="sticky top-0 z-50 border-b border-theme-border/80 bg-white/70 backdrop-blur-xl">
+    <div className="bg-theme-page">
+      {/* ─── Nav ─── */}
+      <nav className="sticky top-0 z-50 border-b border-theme-border bg-theme-page/80 backdrop-blur-xl">
         <Container>
           <div className="flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
-              <svg viewBox="0 0 32 32" fill="none" className="h-8 w-8" aria-hidden="true">
+              <svg
+                viewBox="0 0 32 32"
+                fill="none"
+                className="h-8 w-8"
+                aria-hidden="true"
+              >
                 <defs>
-                  <linearGradient id="logo-nav-l" x1="0" y1="0" x2="32" y2="32">
-                    <stop offset="0%" stopColor="#0c8ee7" />
-                    <stop offset="100%" stopColor="#7cc8fb" />
+                  <linearGradient id="logo-nav" x1="0" y1="0" x2="32" y2="32">
+                    <stop offset="0%" stopColor="#3B3BFF" />
+                    <stop offset="100%" stopColor="#818cf8" />
                   </linearGradient>
                 </defs>
-                <rect width="32" height="32" rx="8" fill="url(#logo-nav-l)" />
+                <rect
+                  width="32"
+                  height="32"
+                  rx="8"
+                  fill="url(#logo-nav)"
+                />
                 <circle cx="16" cy="16" r="4" fill="white" />
               </svg>
-              <span className="text-lg font-bold tracking-tight">TomeBase</span>
+              <span className="text-lg font-bold tracking-tight text-theme-main">
+                TomeBase
+              </span>
             </Link>
+
             <div className="flex items-center gap-6">
-              <Link href="/pricing" className="text-sm font-medium text-theme-muted hover:text-theme-main transition-colors">Pricing</Link>
-              <Link href="/login" className="text-sm font-medium text-theme-subtle hover:text-theme-main transition-colors">Sign in</Link>
+              <Link
+                href="/pricing"
+                className="text-sm font-medium text-theme-subtle hover:text-theme-main transition-colors"
+              >
+                Pricing
+              </Link>
+              <Link
+                href="/docs"
+                className="text-sm font-medium text-theme-subtle hover:text-theme-main transition-colors"
+              >
+                Docs
+              </Link>
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 rounded-lg bg-theme-main px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-colors dark:bg-fluid-600 dark:hover:bg-fluid-700"
+                className="btn-secondary !py-2 !px-4 !text-sm"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/login"
+                className="btn-primary !py-2 !px-4 !text-sm"
               >
                 Get Started
                 <ArrowRight className="h-4 w-4" />
@@ -104,225 +119,199 @@ export default function Home() {
         </Container>
       </nav>
 
-      <section className="relative overflow-hidden pb-24 pt-20 sm:pb-32 sm:pt-28">
+      {/* ─── Hero ─── */}
+      <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
+        {/* Glow */}
         <div className="hero-glow -left-40 -top-40" />
         <div className="hero-glow -right-40 -bottom-40" />
+
+        {/* Dot grid */}
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage:
+              'radial-gradient(circle, #F5F5F5 1px, transparent 1px)',
+            backgroundSize: '32px 32px',
+          }}
+        />
+
         <Container>
-          <div className="relative mx-auto max-w-4xl text-center">
-            <div className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-fluid-200 bg-fluid-50/50 px-4 py-1.5 text-xs font-medium text-fluid-700">
-              <Zap className="h-3.5 w-3.5" />
+          <div className="relative mx-auto max-w-4xl text-center py-32">
+            <div className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-theme-border bg-theme-card px-4 py-1.5 text-xs font-medium text-theme-subtle">
               Open source · Free tier available
             </div>
-            <h1 className="text-5xl font-bold tracking-tight text-theme-main sm:text-6xl lg:text-7xl">
-              Documentation that{' '}
-              <span className="gradient-text">writes itself</span>
+
+            <h1 className="text-5xl font-extrabold tracking-tight text-theme-main sm:text-6xl lg:text-7xl">
+              Developer documentation{' '}
+              <br className="hidden sm:block" />
+              <span className="gradient-text">without the setup</span>
             </h1>
+
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-theme-subtle">
-              TomeBase generates beautiful docs from your code, keeps your team in sync,
-              and publishes everything to the web — no build steps, no separate hosting.
+              Write once, publish anywhere. Markdown-powered docs with wiki
+              links, version history, and public hosting.
             </p>
+
             <div className="mt-10 flex items-center justify-center gap-4">
-              <Link
-                href="/login"
-                className="inline-flex items-center gap-2 rounded-lg bg-theme-main px-6 py-3 text-base font-medium text-white hover:opacity-90 transition-colors shadow-lg"
-              >
-                Start Free
+              <Link href="/login" className="btn-primary !px-8 !py-3 !text-base">
+                Get Started
                 <ArrowRight className="h-5 w-5" />
               </Link>
-              <Link
-                href="https://github.com/bushninjadots/tomebase"
-                className="inline-flex items-center gap-2 rounded-lg border border-theme-border bg-white px-6 py-3 text-base font-medium text-theme-subtle hover:border-theme-border hover:bg-theme-hover transition-colors"
-              >
-                <Github className="h-5 w-5" />
-                Star on GitHub
+              <Link href="/docs" className="btn-secondary !px-8 !py-3 !text-base">
+                View Demo
               </Link>
             </div>
-            <p className="mt-4 text-sm text-theme-muted">No credit card required · 5 team members free forever</p>
+
+            <p className="mt-4 text-sm text-theme-muted">
+              No credit card required · 5 team members free forever
+            </p>
           </div>
         </Container>
       </section>
 
-      <section className="border-y border-theme-border bg-white/50 py-12">
+      {/* ─── Stats ─── */}
+      <section className="border-y border-theme-border bg-theme-card/40 py-16">
         <Container>
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
+          <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto">
             {stats.map((stat) => (
               <div key={stat.label} className="text-center">
-                <div className="text-2xl font-bold text-theme-main sm:text-3xl">{stat.value}</div>
-                <div className="mt-1 text-sm text-theme-muted">{stat.label}</div>
+                <div className="text-4xl font-extrabold text-theme-main sm:text-5xl">
+                  {stat.value}
+                </div>
+                <div className="mt-2 text-sm font-medium text-theme-muted uppercase tracking-wider">
+                  {stat.label}
+                </div>
               </div>
             ))}
           </div>
         </Container>
       </section>
 
-      <section className="py-24">
+      {/* ─── Features ─── */}
+      <section className="py-24 sm:py-32">
         <Container>
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-theme-main sm:text-4xl">
-              How it works
+            <h2 className="text-3xl font-bold tracking-tight text-theme-main sm:text-4xl lg:text-5xl">
+              Everything you need
             </h2>
             <p className="mt-4 text-lg text-theme-subtle">
-              From zero to published docs in three steps.
+              Six features that make TomeBase the last docs platform your
+              team needs.
             </p>
           </div>
-          <div className="mt-16 grid gap-8 sm:grid-cols-3">
-            <div className="text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400">
-                <FileText className="h-7 w-7" />
-              </div>
-              <h3 className="mt-5 text-lg font-semibold text-theme-main">1. Write or import</h3>
-              <p className="mt-2 text-sm leading-relaxed text-theme-muted">
-                Write Markdown with live preview, wiki links, and auto-save. Or import from TypeScript, JavaScript, or OpenAPI specs.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400">
-                <Layers className="h-7 w-7" />
-              </div>
-              <h3 className="mt-5 text-lg font-semibold text-theme-main">2. Organize & connect</h3>
-              <p className="mt-2 text-sm leading-relaxed text-theme-muted">
-                Structure pages in a hierarchy, link them with [[Wiki Links]], and see the full picture in the graph view.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400">
-                <Globe className="h-7 w-7" />
-              </div>
-              <h3 className="mt-5 text-lg font-semibold text-theme-main">3. Publish & share</h3>
-              <p className="mt-2 text-sm leading-relaxed text-theme-muted">
-                Toggle public publishing, invite your team, or use the API. Host on your own domain with Pro.
-              </p>
-            </div>
-          </div>
-        </Container>
-      </section>
 
-      <section className="py-24">
-        <Container>
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-theme-main sm:text-4xl">
-              Everything you need, nothing you don&apos;t
-            </h2>
-            <p className="mt-4 text-lg text-theme-subtle">
-              Eight features that make TomeBase the easiest docs platform your team will ever use.
-            </p>
-          </div>
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((feature) => (
               <div
                 key={feature.title}
-                className="group rounded-2xl border border-theme-border bg-white p-6 transition-all hover:border-fluid-200 hover:shadow-md"
+                className="card-hover group rounded-2xl border border-theme-border bg-theme-card p-6"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-fluid-50 text-fluid-600 group-hover:bg-fluid-100 transition-colors dark:bg-fluid-900/30 dark:text-fluid-400 dark:group-hover:bg-fluid-900/50">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-theme-accent-light text-theme-accent">
                   <feature.icon className="h-5 w-5" />
                 </div>
-                <h3 className="mt-4 text-base font-semibold text-theme-main">{feature.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-theme-muted">{feature.description}</p>
+                <h3 className="mt-4 text-base font-semibold text-theme-main">
+                  {feature.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-theme-muted">
+                  {feature.description}
+                </p>
               </div>
             ))}
           </div>
         </Container>
       </section>
 
-      <section className="py-24">
+      {/* ─── CTA ─── */}
+      <section className="py-24 sm:py-32">
         <Container>
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-theme-main sm:text-4xl">
-              Simple pricing, no surprises
-            </h2>
-            <p className="mt-4 text-lg text-theme-subtle">
-              Start free. Upgrade when you need more.
-            </p>
-          </div>
-          <div className="mt-16 grid gap-8 sm:grid-cols-2 mx-auto max-w-2xl">
-            {plans.map((plan) => (
-              <div
-                key={plan.name}
-                className={`rounded-2xl border p-6 transition-all ${
-                  plan.highlighted
-                    ? 'border-fluid-200 bg-white shadow-lg ring-1 ring-fluid-100 scale-105 dark:border-fluid-700 dark:ring-fluid-800'
-                    : 'border-theme-border bg-white'
-                }`}
-              >
-                <h3 className="text-lg font-semibold text-theme-main">{plan.name}</h3>
-                <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-4xl font-bold text-theme-main">{plan.price}</span>
-                  <span className="text-sm text-theme-muted">{plan.period}</span>
-                </div>
-                <ul className="mt-6 space-y-3">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-center gap-2 text-sm text-theme-subtle">
-                      <svg viewBox="0 0 16 16" fill="currentColor" className="h-4 w-4 shrink-0 text-fluid-500 dark:text-fluid-400">
-                        <path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z" />
-                      </svg>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
+          <div className="relative mx-auto max-w-2xl text-center overflow-hidden rounded-2xl border border-theme-border bg-theme-card px-8 py-20">
+            <div className="hero-glow-secondary -left-20 -top-20" />
+            <div className="hero-glow-secondary -right-20 -bottom-20" />
+            <div className="relative">
+              <h2 className="text-3xl font-bold tracking-tight text-theme-main sm:text-4xl">
+                Start building your docs today
+              </h2>
+              <div className="mt-8">
                 <Link
                   href="/login"
-                  className={`mt-8 flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
-                    plan.highlighted
-                      ? 'bg-theme-main text-white hover:opacity-90 dark:bg-fluid-600 dark:hover:bg-fluid-700'
-                      : 'border border-theme-border text-theme-subtle hover:border-theme-border hover:bg-theme-hover'
-                  }`}
+                  className="btn-primary !px-8 !py-3 !text-base"
                 >
-                  {plan.cta}
-                  <ArrowRight className="h-4 w-4" />
+                  Get Started Free
+                  <ArrowRight className="h-5 w-5" />
                 </Link>
               </div>
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      <section className="bg-theme-main py-24">
-        <Container>
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              Start shipping better docs today
-            </h2>
-            <p className="mt-4 text-lg text-theme-muted">
-              No credit card. No setup. Just better documentation in minutes.
-            </p>
-            <div className="mt-10">
-              <Link
-                href="/login"
-                className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-base font-medium text-theme-main hover:bg-theme-hover transition-colors"
-              >
-                Get Started Free
-                <ArrowRight className="h-5 w-5" />
-              </Link>
             </div>
           </div>
         </Container>
       </section>
 
+      {/* ─── Footer ─── */}
       <footer className="border-t border-theme-border py-12">
         <Container>
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div className="flex items-center gap-2 text-sm text-theme-muted">
-              <svg viewBox="0 0 32 32" fill="none" className="h-5 w-5" aria-hidden="true">
+              <svg
+                viewBox="0 0 32 32"
+                fill="none"
+                className="h-5 w-5"
+                aria-hidden="true"
+              >
                 <defs>
-                  <linearGradient id="logo-footer" x1="0" y1="0" x2="32" y2="32">
-                    <stop offset="0%" stopColor="#0c8ee7" />
-                    <stop offset="100%" stopColor="#7cc8fb" />
+                  <linearGradient
+                    id="logo-footer"
+                    x1="0"
+                    y1="0"
+                    x2="32"
+                    y2="32"
+                  >
+                    <stop offset="0%" stopColor="#3B3BFF" />
+                    <stop offset="100%" stopColor="#818cf8" />
                   </linearGradient>
                 </defs>
-                <rect width="32" height="32" rx="8" fill="url(#logo-footer)" />
+                <rect
+                  width="32"
+                  height="32"
+                  rx="8"
+                  fill="url(#logo-footer)"
+                />
                 <circle cx="16" cy="16" r="4" fill="white" />
               </svg>
               TomeBase — Your knowledge base.
             </div>
             <div className="flex items-center gap-6 text-sm text-theme-muted">
-              <Link href="/pricing" className="hover:text-theme-main transition-colors">Pricing</Link>
+              <Link
+                href="/pricing"
+                className="hover:text-theme-main transition-colors"
+              >
+                Pricing
+              </Link>
               <span className="text-theme-border">·</span>
-              <Link href="/roadmap" className="hover:text-theme-main transition-colors">Roadmap</Link>
+              <Link
+                href="/roadmap"
+                className="hover:text-theme-main transition-colors"
+              >
+                Roadmap
+              </Link>
               <span className="text-theme-border">·</span>
-              <Link href="https://github.com/bushninjadots/tomebase" className="hover:text-theme-main transition-colors">GitHub</Link>
+              <Link
+                href="https://github.com/bushninjadots/tomebase"
+                className="hover:text-theme-main transition-colors"
+              >
+                GitHub
+              </Link>
               <span className="text-theme-border">·</span>
-              <Link href="/terms" className="hover:text-theme-main transition-colors">Terms</Link>
-              <Link href="/privacy" className="hover:text-theme-main transition-colors">Privacy</Link>
+              <Link
+                href="/terms"
+                className="hover:text-theme-main transition-colors"
+              >
+                Terms
+              </Link>
+              <Link
+                href="/privacy"
+                className="hover:text-theme-main transition-colors"
+              >
+                Privacy
+              </Link>
             </div>
           </div>
         </Container>

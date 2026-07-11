@@ -3,7 +3,6 @@ import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@fluid/database';
 import { DocSidebar } from './sidebar';
 import { DocEditor } from './editor';
-import { SearchOverlay } from '@/components/search';
 
 interface PageProps {
   params: Promise<{ project: string }>;
@@ -25,9 +24,9 @@ export default async function ProjectDocsPage({ params }: PageProps) {
   if (!project || project.userId !== session.user.id) notFound();
 
   return (
-    <div className="flex h-screen bg-theme-page">
+    <div className="flex h-screen overflow-hidden bg-[#0B1020]">
       <DocSidebar project={project} />
-      <main className="flex flex-1 flex-col overflow-hidden">
+      <main className="flex flex-1 flex-col min-w-0 overflow-hidden">
         <DocEditor project={project} />
       </main>
     </div>

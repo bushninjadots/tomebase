@@ -35,7 +35,7 @@ export default async function TeamSettingsPage() {
   if (!membership) redirect('/dashboard');
 
   return (
-    <div className="min-h-screen bg-theme-card">
+    <div className="min-h-screen bg-theme-page">
       <Container className="py-8">
         <Link
           href="/dashboard"
@@ -46,8 +46,8 @@ export default async function TeamSettingsPage() {
         </Link>
 
         <div className="mx-auto max-w-2xl">
-          <h1 className="text-2xl font-bold text-theme-main">Team Settings</h1>
-          <p className="mt-1 text-sm text-theme-muted">
+          <h1 className="text-3xl font-bold text-theme-main">Team Settings</h1>
+          <p className="mt-2 text-sm text-theme-subtle">
             Manage your team, invite members, and control access.
           </p>
 
