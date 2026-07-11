@@ -31,7 +31,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
     }
 
-    const supportedLanguages: SupportedLanguage[] = ['typescript', 'javascript'];
+    const supportedLanguages: SupportedLanguage[] = ['typescript', 'javascript', 'python', 'go', 'rust'];
     if (!supportedLanguages.includes(language as SupportedLanguage)) {
       return NextResponse.json(
         { error: `Unsupported language. Must be one of: ${supportedLanguages.join(', ')}` },

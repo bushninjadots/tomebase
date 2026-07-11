@@ -43,9 +43,9 @@ const features = [
   },
   {
     icon: KeyRound,
-    title: 'API Key Access',
+    title: 'Code Import',
     description:
-      'Generate scoped API keys for CI/CD pipelines. Import, export, and manage docs programmatically.',
+      'Import TypeScript, JavaScript, Python, Go, and Rust code. Auto-generate docs from JSDoc, docstrings, and doc comments.',
   },
 ];
 
@@ -344,6 +344,13 @@ export default function Home() {
                 className="hover:text-theme-main transition-colors"
               >
                 Roadmap
+              </Link>
+              <span className="text-theme-border">·</span>
+              <Link
+                href="/contact"
+                className="hover:text-theme-main transition-colors"
+              >
+                Contact
               </Link>
               <span className="text-theme-border">·</span>
               <Link

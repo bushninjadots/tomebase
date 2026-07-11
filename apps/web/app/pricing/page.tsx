@@ -19,7 +19,6 @@ const plans = [
       'Search (Cmd+K)',
       'Documentation publishing',
       'TomeBase subdomain (project.tomebase.app)',
-      'Basic themes',
       'Community support',
     ],
     note: 'No credit card required.',
@@ -146,6 +145,8 @@ export default function PricingPage() {
               <Link href="/pricing" className="hover:text-theme-main transition-colors">Pricing</Link>
               <span className="text-theme-border">&middot;</span>
               <Link href="/roadmap" className="hover:text-theme-main transition-colors">Roadmap</Link>
+              <span className="text-theme-border">&middot;</span>
+              <Link href="/contact" className="hover:text-theme-main transition-colors">Contact</Link>
               <span className="text-theme-border">&middot;</span>
               <Link href="https://github.com/bushninjadots/tomebase" className="hover:text-theme-main transition-colors">GitHub</Link>
             </div>

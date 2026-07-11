@@ -1,4 +1,7 @@
 import { parseTypeScript } from './parsers/typescript';
+import { parsePython } from './parsers/python';
+import { parseGo } from './parsers/go';
+import { parseRust } from './parsers/rust';
 import type { SupportedLanguage } from './languages';
 import type { ParseResult, ParsedExport, ParsedFunction, ParsedInterface, ParsedType, ParsedClass, ParsedEnum, Param, Prop } from './types';
 export type { ParseResult, ParsedExport, ParsedFunction, ParsedInterface, ParsedType, ParsedClass, ParsedEnum, Param, Prop, SupportedLanguage };
@@ -10,9 +13,13 @@ export function parseCode(code: string, language: SupportedLanguage): ParseResul
     case 'typescript':
     case 'javascript':
       return parseTypeScript(code);
+    case 'python':
+      return parsePython(code);
+    case 'go':
+      return parseGo(code);
+    case 'rust':
+      return parseRust(code);
     default:
-      // Fallback to TypeScript parser for any language
-      // Language-specific parsers will be added as needed
       return parseTypeScript(code);
   }
 }

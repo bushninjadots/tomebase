@@ -1,6 +1,6 @@
 import { Container } from '@fluid/ui';
 import Link from 'next/link';
-import { CheckCircle, Circle, Clock, Zap, ArrowRight, Github } from 'lucide-react';
+import { CheckCircle, Circle, Clock, Zap, ArrowRight, Github, Mail } from 'lucide-react';
 
 const shipped = [
   { label: 'Auth (email/password, GitHub, Google OAuth)' },
@@ -21,7 +21,7 @@ const shipped = [
   { label: 'Team invites with admin/member roles' },
   { label: 'API key management (tb_ prefix, expiry)' },
   { label: 'OpenAPI spec import (JSON/YAML, endpoint pages)' },
-  { label: 'Code import (TypeScript/JavaScript JSDoc)' },
+  { label: 'Code import — TypeScript, JavaScript, Python, Go, Rust' },
   { label: 'Export to Markdown (.zip with frontmatter)' },
   { label: 'Doc health scans (broken links, orphans, empty pages)' },
   { label: 'SEO — sitemap, canonical URLs, Open Graph' },
@@ -42,6 +42,16 @@ const shipped = [
   { label: '2-tier pricing (Free €0 / Pro €15)' },
   { label: 'Security hardening (rate limiting, SSRF, auth guards)' },
   { label: 'CI/CD via GitHub Actions' },
+  { label: 'Documentation Health Platform — SonarQube for docs' },
+  { label: 'Health engine — 12 check categories, per-page scoring' },
+  { label: 'Health dashboard — score breakdown, recommendations' },
+  { label: 'Health report persistence — historical trend tracking' },
+  { label: 'Theme system — 5 themes (dark/light/gruvbox/dracula/nord)' },
+  { label: 'Full theme migration — all UI uses CSS variables' },
+  { label: 'Test suite — 84 Vitest unit/integration tests' },
+  { label: 'Global navigation — consistent top nav on all pages' },
+  { label: 'Custom domain management — Vercel API integration' },
+  { label: 'Multi-language code import — Python, Go, Rust parsers' },
 ];
 
 const categories = [
@@ -50,12 +60,10 @@ const categories = [
     icon: Zap,
     color: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
     items: [
-      'Documentation Health Platform — SonarQube for docs',
-      'Enhanced health engine — 10+ check categories',
-      'Health dashboard redesign — score breakdown, recommendations',
-      'Health report persistence — historical trend tracking',
-      'Theme migration — all hardcoded colors to CSS variables',
-      'Test suite — Vitest unit/integration tests',
+      'Documentation Linter — ESLint for docs, CI/CD integration',
+      'Documentation Testing — validate commands, code, examples',
+      'Migration tool — import from GitBook, Mintlify, Docusaurus, Notion',
+      'Email notifications for comments, @mentions, and invites',
     ],
   },
   {
@@ -63,14 +71,12 @@ const categories = [
     icon: Clock,
     color: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
     items: [
-      'Documentation Linter — ESLint for docs, CI/CD integration',
       'Documentation Observatory — cross-platform dashboard',
-      'Documentation Testing — validate commands, code, examples',
-      'Migration tool — import from GitBook, Mintlify, Docusaurus, Notion',
       'Global search across all projects',
       'GitHub/GitLab sync — connect repo, auto-import .md files',
-      'Email notifications for comments, @mentions, and invites',
       'Self-hosted deployment guide (Docker Compose)',
+      'Collaborative editing — real-time multi-user',
+      'Page-level permissions — granular access control',
     ],
   },
   {
@@ -111,15 +117,15 @@ export default function RoadmapPage() {
           {/* Stats */}
           <div className="mx-auto mt-12 grid max-w-2xl grid-cols-3 gap-6 text-center">
             <div className="rounded-2xl border border-theme-border bg-theme-card p-5">
-              <div className="text-2xl font-bold text-theme-main">30</div>
+              <div className="text-2xl font-bold text-theme-main">30+</div>
               <div className="mt-0.5 text-xs text-theme-muted">API routes</div>
             </div>
             <div className="rounded-2xl border border-theme-border bg-theme-card p-5">
-              <div className="text-2xl font-bold text-green-400">44</div>
+              <div className="text-2xl font-bold text-green-400">{shipped.length}</div>
               <div className="mt-0.5 text-xs text-theme-muted">Features shipped</div>
             </div>
             <div className="rounded-2xl border border-theme-border bg-theme-card p-5">
-              <div className="text-2xl font-bold text-theme-main">17</div>
+              <div className="text-2xl font-bold text-theme-main">{categories.reduce((acc, c) => acc + c.items.length, 0)}</div>
               <div className="mt-0.5 text-xs text-theme-muted">In progress / planned</div>
             </div>
           </div>
@@ -172,15 +178,24 @@ export default function RoadmapPage() {
           <div className="mx-auto mt-20 max-w-lg text-center rounded-2xl border border-theme-border bg-theme-card p-8">
             <h2 className="text-lg font-semibold text-theme-main">Have feedback?</h2>
             <p className="mt-2 text-sm text-theme-subtle">
-              Open an issue on GitHub to report bugs, request features, or vote on what we build next.
+              Open an issue on GitHub or email us directly.
             </p>
-            <Link
-              href="https://github.com/bushninjadots/tomebase/issues"
-              className="mt-6 inline-flex items-center gap-2 btn-primary text-sm"
-            >
-              <Github className="h-4 w-4" />
-              Open a GitHub Issue
-            </Link>
+            <div className="mt-6 flex items-center justify-center gap-3">
+              <Link
+                href="https://github.com/bushninjadots/tomebase/issues"
+                className="inline-flex items-center gap-2 btn-primary text-sm"
+              >
+                <Github className="h-4 w-4" />
+                GitHub Issue
+              </Link>
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 btn-secondary text-sm"
+              >
+                <Mail className="h-4 w-4" />
+                Contact Us
+              </Link>
+            </div>
           </div>
         </Container>
       </section>
@@ -190,7 +205,13 @@ export default function RoadmapPage() {
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div className="flex items-center gap-2 text-sm text-theme-muted">
               <svg viewBox="0 0 32 32" fill="none" className="h-5 w-5" aria-hidden="true">
-                <rect width="32" height="32" rx="8" fill="#3B3BFF" />
+                <defs>
+                  <linearGradient id="logo-footer-rm" x1="0" y1="0" x2="32" y2="32">
+                    <stop offset="0%" stopColor="#6366f1" />
+                    <stop offset="100%" stopColor="#a855f7" />
+                  </linearGradient>
+                </defs>
+                <rect width="32" height="32" rx="8" fill="url(#logo-footer-rm)" />
                 <circle cx="16" cy="16" r="4" fill="white" />
               </svg>
               TomeBase — Your knowledge base.
@@ -200,10 +221,9 @@ export default function RoadmapPage() {
               <span className="text-theme-border">&middot;</span>
               <Link href="/roadmap" className="hover:text-theme-main transition-colors">Roadmap</Link>
               <span className="text-theme-border">&middot;</span>
-              <Link href="https://github.com/bushninjadots/tomebase" className="hover:text-theme-main transition-colors">GitHub</Link>
+              <Link href="/contact" className="hover:text-theme-main transition-colors">Contact</Link>
               <span className="text-theme-border">&middot;</span>
-              <Link href="/terms" className="hover:text-theme-main transition-colors">Terms</Link>
-              <Link href="/privacy" className="hover:text-theme-main transition-colors">Privacy</Link>
+              <Link href="https://github.com/bushninjadots/tomebase" className="hover:text-theme-main transition-colors">GitHub</Link>
             </div>
           </div>
         </Container>
