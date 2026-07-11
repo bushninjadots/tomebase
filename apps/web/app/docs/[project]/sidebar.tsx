@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import {
   Plus, BookOpen, Code2, Settings, ChevronDown, ChevronRight,
   ArrowUp, ArrowDown, IndentIncrease, IndentDecrease, ArrowLeft,
-  Trash2, Hash, Download, HeartPulse, X, FileText, Sparkles,
+  Trash2, Hash, Download, HeartPulse, X, FileText, Sparkles, HelpCircle,
 } from 'lucide-react';
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { extractTags } from '@/lib/wiki';
@@ -588,6 +588,13 @@ export function DocSidebar({ project }: { project: Project }) {
         >
           <Settings className="h-4 w-4" />
           Settings
+        </Link>
+        <Link
+          href="/help"
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
+        >
+          <HelpCircle className="h-4 w-4" />
+          Help
         </Link>
       </div>
 

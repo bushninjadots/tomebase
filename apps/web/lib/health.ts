@@ -21,6 +21,7 @@ export interface HealthIssue {
   severity: IssueSeverity;
   pageTitle: string;
   pageId: string;
+  pageSlug: string;
   message: string;
 }
 
@@ -74,6 +75,7 @@ function makeIssue(
   category: IssueCategory,
   pageTitle: string,
   pageId: string,
+  pageSlug: string,
   message: string,
 ): HealthIssue {
   issueCounter++;
@@ -84,6 +86,7 @@ function makeIssue(
     severity: meta.severity,
     pageTitle,
     pageId,
+    pageSlug,
     message,
   };
 }
@@ -115,7 +118,7 @@ export function analyzePages(pages: {
         inboundLinkCounts.set(normalized, existing + 1);
       }
       if (!pageTitles.has(normalized)) {
-        issues.push(makeIssue('broken_link', page.title, page.id, `Link to "${link}" points to a page that doesn't exist`));
+        issues.push(makeIssue('broken_link', page.title, page.id, page.slug, `Link to "${link}" points to a page that doesn't exist`));
       }
     }
   }
@@ -127,38 +130,38 @@ export function analyzePages(pages: {
     const readingTimeMin = Math.max(1, Math.ceil(wordCount / 200));
 
     if (!content || content.trim().length === 0) {
-      pageIssues.push(makeIssue('empty', page.title, page.id, 'Page has no content'));
+      pageIssues.push(makeIssue('empty', page.title, page.id, page.slug, 'Page has no content'));
     }
 
     if (content.trim().length > 0 && content.trim().length < 200) {
-      pageIssues.push(makeIssue('thin_content', page.title, page.id, `Page has only ${content.trim().length} characters (minimum recommended: 200)`));
+      pageIssues.push(makeIssue('thin_content', page.title, page.id, page.slug, `Page has only ${content.trim().length} characters (minimum recommended: 200)`));
     }
 
     const inboundLinks = inboundLinkCounts.get(page.title.toLowerCase()) ?? 0;
     if (inboundLinks === 0 && pages.length > 1) {
-      pageIssues.push(makeIssue('orphan', page.title, page.id, 'No other pages link to this page'));
+      pageIssues.push(makeIssue('orphan', page.title, page.id, page.slug, 'No other pages link to this page'));
     }
 
     const daysSinceUpdate = Math.floor((Date.now() - new Date(page.updatedAt).getTime()) / (1000 * 60 * 60 * 24));
     if (daysSinceUpdate > 90) {
-      pageIssues.push(makeIssue('stale', page.title, page.id, `Not updated in ${daysSinceUpdate} days (critical: >90)`));
+      pageIssues.push(makeIssue('stale', page.title, page.id, page.slug, `Not updated in ${daysSinceUpdate} days (critical: >90)`));
     } else if (daysSinceUpdate > 30) {
-      pageIssues.push(makeIssue('stale', page.title, page.id, `Not updated in ${daysSinceUpdate} days`));
+      pageIssues.push(makeIssue('stale', page.title, page.id, page.slug, `Not updated in ${daysSinceUpdate} days`));
     }
 
     if (page.viewCount < 5 && page.published) {
-      pageIssues.push(makeIssue('low_engagement', page.title, page.id, `Only ${page.viewCount} view${page.viewCount === 1 ? '' : 's'}`));
+      pageIssues.push(makeIssue('low_engagement', page.title, page.id, page.slug, `Only ${page.viewCount} view${page.viewCount === 1 ? '' : 's'}`));
     }
 
     const headings = content.match(/^#{1,6}\s+.+$/gm) || [];
     if (headings.length === 0 && content.length > 100) {
-      pageIssues.push(makeIssue('no_headings', page.title, page.id, 'Page has no headings for navigation'));
+      pageIssues.push(makeIssue('no_headings', page.title, page.id, page.slug, 'Page has no headings for navigation'));
     }
 
     const codeBlocks = content.match(/```/g) || [];
     const codeBlockCount = Math.floor(codeBlocks.length / 2);
     if (codeBlockCount === 0 && content.length > 500) {
-      pageIssues.push(makeIssue('no_code_blocks', page.title, page.id, 'Page has no code examples or snippets'));
+      pageIssues.push(makeIssue('no_code_blocks', page.title, page.id, page.slug, 'Page has no code examples or snippets'));
     }
 
     const fenceLines = content.match(/^```\w*\s*$/gm) || [];
@@ -170,19 +173,19 @@ export function analyzePages(pages: {
       }
     }
     if (untaggedCount > 0) {
-      pageIssues.push(makeIssue('missing_language_tag', page.title, page.id, `${untaggedCount} code block${untaggedCount === 1 ? '' : 's'} missing language tag`));
+      pageIssues.push(makeIssue('missing_language_tag', page.title, page.id, page.slug, `${untaggedCount} code block${untaggedCount === 1 ? '' : 's'} missing language tag`));
     }
 
     const paragraphs = content.split(/\n\n+/).filter((p) => p.trim().length > 0);
     const longParagraphs = paragraphs.filter((p) => p.split(/\s+/).length > 300);
     if (longParagraphs.length > 0) {
-      pageIssues.push(makeIssue('long_paragraph', page.title, page.id, `${longParagraphs.length} paragraph${longParagraphs.length === 1 ? '' : 's'} exceed 300 words`));
+      pageIssues.push(makeIssue('long_paragraph', page.title, page.id, page.slug, `${longParagraphs.length} paragraph${longParagraphs.length === 1 ? '' : 's'} exceed 300 words`));
     }
 
     const listItems = content.match(/^[\s]*[-*+]\s+/gm) || [];
     const numberedItems = content.match(/^[\s]*\d+\.\s+/gm) || [];
     if (listItems.length === 0 && numberedItems.length === 0 && content.length > 1000) {
-      pageIssues.push(makeIssue('no_lists', page.title, page.id, 'Long page with no lists for readability'));
+      pageIssues.push(makeIssue('no_lists', page.title, page.id, page.slug, 'Long page with no lists for readability'));
     }
 
     issues.push(...pageIssues);

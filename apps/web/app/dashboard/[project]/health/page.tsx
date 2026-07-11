@@ -4,13 +4,14 @@ import { prisma } from '@fluid/database';
 import { Container } from '@fluid/ui';
 import Link from 'next/link';
 import {
-  ArrowLeft, AlertTriangle, Unlink, FileText, Search, CheckCircle,
-  Clock, Eye, TrendingDown, AlertCircle, Calendar, Scan, Code,
+  AlertTriangle, Unlink, FileText, CheckCircle,
+  Clock, Eye, TrendingDown, AlertCircle, Scan, Code,
   AlignLeft, List, BookOpen, Heading, GitBranch, FileX, Activity,
   ArrowUpRight, ArrowDownRight, Minus,
 } from 'lucide-react';
-import { analyzePages, getHealthColor, getHealthLabel, getScoreRingColor, type HealthReport as HealthReportType, type CategorySummary } from '@/lib/health';
+import { analyzePages, getHealthColor, getHealthLabel, getScoreRingColor, type CategorySummary } from '@/lib/health';
 import { formatDistanceToNow } from 'date-fns';
+import { HealthScanButton } from '@/components/health-scan-button';
 
 interface PageProps {
   params: Promise<{ project: string }>;
@@ -29,27 +30,8 @@ function ScoreRing({ score, size = 160 }: { score: number; size?: number }) {
   return (
     <div className="relative" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="8"
-          className="text-theme-border"
-        />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke={color}
-          strokeWidth="8"
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          className="transition-all duration-1000 ease-out"
-        />
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="currentColor" strokeWidth="8" className="text-theme-border" />
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke={color} strokeWidth="8" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} className="transition-all duration-1000 ease-out" />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-4xl font-bold text-theme-main">{score}</span>
@@ -69,7 +51,7 @@ function ScoreTrend({ current, previous }: { current: number; previous: number |
   );
   const positive = diff > 0;
   return (
-    <span className={`flex items-center gap-1 text-xs font-medium ${positive ? 'text-green-600' : 'text-red-600'}`}>
+    <span className={`flex items-center gap-1 text-xs font-medium ${positive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
       {positive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
       {positive ? '+' : ''}{diff} from last scan
     </span>
@@ -78,26 +60,34 @@ function ScoreTrend({ current, previous }: { current: number; previous: number |
 
 function CategoryCard({ item }: { item: CategorySummary }) {
   const Icon = ICON_MAP[item.icon] || AlertCircle;
-  const severityColors = {
+  const severityStyles = {
     error: 'border-red-200 bg-red-50/50 dark:border-red-900/50 dark:bg-red-950/20',
     warning: 'border-amber-200 bg-amber-50/50 dark:border-amber-900/50 dark:bg-amber-950/20',
     info: 'border-blue-200 bg-blue-50/50 dark:border-blue-900/50 dark:bg-blue-950/20',
   };
-  const iconColors = {
-    error: 'text-red-500',
-    warning: 'text-amber-500',
-    info: 'text-blue-500',
+  const iconStyles = {
+    error: 'text-red-500 dark:text-red-400',
+    warning: 'text-amber-500 dark:text-amber-400',
+    info: 'text-blue-500 dark:text-blue-400',
   };
   return (
-    <div className={`rounded-xl border p-4 ${severityColors[item.severity]}`}>
+    <div className={`rounded-xl border p-4 ${severityStyles[item.severity]}`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Icon className={`h-4 w-4 ${iconColors[item.severity]}`} />
+          <Icon className={`h-4 w-4 ${iconStyles[item.severity]}`} />
           <span className="text-sm font-medium text-theme-main">{item.label}</span>
         </div>
         <span className="text-lg font-bold text-theme-main">{item.count}</span>
       </div>
     </div>
+  );
+}
+
+function PageLink({ projectId, slug, children, className }: { projectId: string; slug: string; children: React.ReactNode; className?: string }) {
+  return (
+    <Link href={`/docs/${projectId}/${slug}`} className={className}>
+      {children}
+    </Link>
   );
 }
 
@@ -117,15 +107,8 @@ export default async function ProjectHealthPage({ params }: PageProps) {
   const pages = await prisma.docPage.findMany({
     where: { projectId },
     select: {
-      id: true,
-      title: true,
-      slug: true,
-      content: true,
-      published: true,
-      createdAt: true,
-      updatedAt: true,
-      viewCount: true,
-      lastViewedAt: true,
+      id: true, title: true, slug: true, content: true, published: true,
+      createdAt: true, updatedAt: true, viewCount: true, lastViewedAt: true,
     },
     orderBy: { title: 'asc' },
   });
@@ -145,7 +128,6 @@ export default async function ProjectHealthPage({ params }: PageProps) {
   const pagesByScore = [...report.pageScores].sort((a, b) => a.score - b.score);
   const worstPages = pagesByScore.slice(0, 10);
   const bestPages = pagesByScore.filter((p) => p.score === 100).length;
-  const publishedPages = report.pageScores.filter((p) => p.published).length;
   const totalWordCount = report.pageScores.reduce((sum, p) => sum + p.wordCount, 0);
   const avgReadingTime = report.pageScores.length > 0
     ? Math.round(report.pageScores.reduce((sum, p) => sum + p.readingTimeMin, 0) / report.pageScores.length)
@@ -171,15 +153,7 @@ export default async function ProjectHealthPage({ params }: PageProps) {
                 {getHealthLabel(report.score)}
               </span>
             </div>
-            <form action={`/api/projects/${projectId}/health`} method="POST">
-              <button
-                type="submit"
-                className="inline-flex items-center gap-2 rounded-lg border border-theme-border bg-theme-card px-4 py-2 text-sm font-medium text-theme-main hover:bg-theme-hover transition-colors"
-              >
-                <Scan className="h-4 w-4" />
-                Run Health Scan
-              </button>
-            </form>
+            <HealthScanButton projectId={projectId} />
           </div>
           <p className="text-sm text-theme-muted">
             Scanned {report.totalPages} page{report.totalPages === 1 ? '' : 's'} for quality, freshness, and engagement.
@@ -230,31 +204,19 @@ export default async function ProjectHealthPage({ params }: PageProps) {
           {/* Stats Row */}
           <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="rounded-xl border border-theme-border bg-theme-card p-4">
-              <div className="flex items-center gap-2 text-xs text-theme-muted">
-                <FileText className="h-3.5 w-3.5" />
-                Total Pages
-              </div>
+              <div className="flex items-center gap-2 text-xs text-theme-muted"><FileText className="h-3.5 w-3.5" />Total Pages</div>
               <div className="mt-1 text-xl font-bold text-theme-main">{report.totalPages}</div>
             </div>
             <div className="rounded-xl border border-theme-border bg-theme-card p-4">
-              <div className="flex items-center gap-2 text-xs text-theme-muted">
-                <CheckCircle className="h-3.5 w-3.5" />
-                Perfect Pages
-              </div>
+              <div className="flex items-center gap-2 text-xs text-theme-muted"><CheckCircle className="h-3.5 w-3.5" />Perfect Pages</div>
               <div className="mt-1 text-xl font-bold text-green-600 dark:text-green-400">{bestPages}</div>
             </div>
             <div className="rounded-xl border border-theme-border bg-theme-card p-4">
-              <div className="flex items-center gap-2 text-xs text-theme-muted">
-                <BookOpen className="h-3.5 w-3.5" />
-                Total Words
-              </div>
+              <div className="flex items-center gap-2 text-xs text-theme-muted"><BookOpen className="h-3.5 w-3.5" />Total Words</div>
               <div className="mt-1 text-xl font-bold text-theme-main">{totalWordCount.toLocaleString()}</div>
             </div>
             <div className="rounded-xl border border-theme-border bg-theme-card p-4">
-              <div className="flex items-center gap-2 text-xs text-theme-muted">
-                <Clock className="h-3.5 w-3.5" />
-                Avg. Reading Time
-              </div>
+              <div className="flex items-center gap-2 text-xs text-theme-muted"><Clock className="h-3.5 w-3.5" />Avg. Reading Time</div>
               <div className="mt-1 text-xl font-bold text-theme-main">{avgReadingTime} min</div>
             </div>
           </div>
@@ -265,21 +227,17 @@ export default async function ProjectHealthPage({ params }: PageProps) {
               <h2 className="flex items-center gap-2 text-lg font-semibold text-theme-main">
                 <Unlink className="h-4 w-4 text-red-500" />
                 Broken Wiki Links
-                <span className="ml-auto text-sm font-normal text-theme-muted">
-                  {errorIssues.filter((i) => i.category === 'broken_link').length}
-                </span>
+                <span className="ml-auto text-sm font-normal text-theme-muted">{errorIssues.filter((i) => i.category === 'broken_link').length}</span>
               </h2>
-              <p className="mt-1 text-sm text-theme-muted mb-3">
-                These links reference pages that don&apos;t exist yet.
-              </p>
+              <p className="mt-1 text-sm text-theme-muted mb-3">These links reference pages that don&apos;t exist yet.</p>
               <div className="space-y-2">
                 {errorIssues.filter((i) => i.category === 'broken_link').slice(0, 15).map((issue) => (
                   <div key={issue.id} className="rounded-lg border border-red-100 bg-red-50/50 px-4 py-3 text-sm dark:border-red-900/50 dark:bg-red-950/20">
                     <span className="font-medium text-theme-main">{issue.message}</span>
                     <span className="text-theme-muted mx-1.5">in</span>
-                    <Link href={`/docs/${project.id}/${issue.pageId}`} className="text-fluid-600 hover:text-fluid-700 underline underline-offset-2">
+                    <PageLink projectId={project.id} slug={issue.pageSlug} className="text-theme-accent hover:underline underline-offset-2">
                       {issue.pageTitle}
-                    </Link>
+                    </PageLink>
                   </div>
                 ))}
               </div>
@@ -294,33 +252,25 @@ export default async function ProjectHealthPage({ params }: PageProps) {
                 Pages Needing Attention
                 <span className="ml-auto text-sm font-normal text-theme-muted">{worstPages.length}</span>
               </h2>
-              <p className="mt-1 text-sm text-theme-muted mb-3">
-                Pages with the lowest health scores — prioritize these first.
-              </p>
+              <p className="mt-1 text-sm text-theme-muted mb-3">Pages with the lowest health scores — prioritize these first.</p>
               <div className="rounded-xl border border-theme-border bg-theme-card overflow-hidden">
                 <div className="grid grid-cols-[1fr_80px_80px_80px_60px] gap-4 px-4 py-2 text-xs font-medium text-theme-muted border-b border-theme-border bg-theme-card/50">
-                  <span>Page</span>
-                  <span className="text-center">Score</span>
-                  <span className="text-center">Words</span>
-                  <span className="text-center">Views</span>
-                  <span className="text-center">Issues</span>
+                  <span>Page</span><span className="text-center">Score</span><span className="text-center">Words</span><span className="text-center">Views</span><span className="text-center">Issues</span>
                 </div>
                 {worstPages.map((page) => (
                   <div key={page.id} className="grid grid-cols-[1fr_80px_80px_80px_60px] gap-4 px-4 py-3 text-sm border-b border-theme-border last:border-0 hover:bg-theme-hover transition-colors">
                     <div className="flex items-center gap-2 min-w-0">
-                      <span className="font-medium text-theme-main truncate">{page.title}</span>
-                      {!page.published && (
-                        <span className="shrink-0 rounded bg-theme-hover px-1.5 py-0.5 text-[10px] text-theme-muted">draft</span>
-                      )}
+                      <PageLink projectId={project.id} slug={page.slug} className="font-medium text-theme-main truncate hover:text-theme-accent">
+                        {page.title}
+                      </PageLink>
+                      {!page.published && <span className="shrink-0 rounded bg-theme-hover px-1.5 py-0.5 text-[10px] text-theme-muted">draft</span>}
                     </div>
                     <div className="flex items-center justify-center">
                       <span className={`inline-flex items-center justify-center w-10 h-6 rounded text-xs font-bold ${
                         page.score >= 80 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
                         page.score >= 60 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
                         'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                      }`}>
-                        {page.score}
-                      </span>
+                      }`}>{page.score}</span>
                     </div>
                     <div className="flex items-center justify-center text-theme-muted text-xs">{page.wordCount.toLocaleString()}</div>
                     <div className="flex items-center justify-center text-theme-muted text-xs">{page.viewCount}</div>
@@ -338,19 +288,14 @@ export default async function ProjectHealthPage({ params }: PageProps) {
                 {warningIssues.filter((i) => i.category === 'empty').length > 0 && (
                   <div>
                     <h2 className="flex items-center gap-2 text-lg font-semibold text-theme-main mb-3">
-                      <FileX className="h-4 w-4 text-amber-500" />
-                      Empty Pages
-                      <span className="ml-auto text-sm font-normal text-theme-muted">
-                        {warningIssues.filter((i) => i.category === 'empty').length}
-                      </span>
+                      <FileX className="h-4 w-4 text-amber-500" />Empty Pages
+                      <span className="ml-auto text-sm font-normal text-theme-muted">{warningIssues.filter((i) => i.category === 'empty').length}</span>
                     </h2>
                     <div className="space-y-2">
                       {warningIssues.filter((i) => i.category === 'empty').slice(0, 8).map((issue) => (
                         <div key={issue.id} className="flex items-center justify-between rounded-lg border border-theme-border bg-theme-card px-4 py-3 text-sm">
                           <span className="font-medium text-theme-main">{issue.pageTitle}</span>
-                          <Link href={`/docs/${project.id}/${issue.pageId}`} className="text-fluid-600 hover:text-fluid-700 text-xs font-medium">
-                            Edit
-                          </Link>
+                          <PageLink projectId={project.id} slug={issue.pageSlug} className="text-theme-accent text-xs font-medium hover:underline">Edit</PageLink>
                         </div>
                       ))}
                     </div>
@@ -359,19 +304,14 @@ export default async function ProjectHealthPage({ params }: PageProps) {
                 {warningIssues.filter((i) => i.category === 'orphan').length > 0 && (
                   <div>
                     <h2 className="flex items-center gap-2 text-lg font-semibold text-theme-main mb-3">
-                      <GitBranch className="h-4 w-4 text-blue-500" />
-                      Orphan Pages
-                      <span className="ml-auto text-sm font-normal text-theme-muted">
-                        {warningIssues.filter((i) => i.category === 'orphan').length}
-                      </span>
+                      <GitBranch className="h-4 w-4 text-blue-500" />Orphan Pages
+                      <span className="ml-auto text-sm font-normal text-theme-muted">{warningIssues.filter((i) => i.category === 'orphan').length}</span>
                     </h2>
                     <div className="space-y-2">
                       {warningIssues.filter((i) => i.category === 'orphan').slice(0, 8).map((issue) => (
                         <div key={issue.id} className="flex items-center justify-between rounded-lg border border-theme-border bg-theme-card px-4 py-3 text-sm">
                           <span className="font-medium text-theme-main">{issue.pageTitle}</span>
-                          <Link href={`/docs/${project.id}/${issue.pageId}`} className="text-fluid-600 hover:text-fluid-700 text-xs font-medium">
-                            Link
-                          </Link>
+                          <PageLink projectId={project.id} slug={issue.pageSlug} className="text-theme-accent text-xs font-medium hover:underline">Link</PageLink>
                         </div>
                       ))}
                     </div>
@@ -389,21 +329,15 @@ export default async function ProjectHealthPage({ params }: PageProps) {
               </div>
               <h2 className="mt-4 text-xl font-semibold text-theme-main">Documentation is healthy!</h2>
               <p className="mt-2 text-sm text-theme-muted max-w-md mx-auto">
-                All {report.totalPages} page{report.totalPages === 1 ? '' : 's'} have content, all links resolve,
-                and engagement is good. Keep it up!
+                All {report.totalPages} page{report.totalPages === 1 ? '' : 's'} have content, all links resolve, and engagement is good. Keep it up!
               </p>
             </div>
           )}
 
-          {/* Footer info */}
           <div className="mt-8 rounded-xl border border-theme-border bg-theme-card px-4 py-3 flex items-center gap-2 text-xs text-theme-muted">
             <Activity className="h-3.5 w-3.5 shrink-0" />
             Health score considers link quality, content structure, freshness, engagement, and code examples.
-            {previousReport && (
-              <span className="ml-auto">
-                Last scan: {formatDistanceToNow(previousReport.createdAt, { addSuffix: true })}
-              </span>
-            )}
+            {previousReport && <span className="ml-auto">Last scan: {formatDistanceToNow(previousReport.createdAt, { addSuffix: true })}</span>}
           </div>
         </div>
       </Container>

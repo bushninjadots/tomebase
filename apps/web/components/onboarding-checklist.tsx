@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { X, CheckCircle, Circle, ArrowRight, BookOpen, FileText, Globe, Users, PartyPopper } from 'lucide-react';
 
@@ -20,6 +20,8 @@ interface OnboardingChecklistProps {
   projectId?: string;
 }
 
+const STORAGE_KEY = 'tomebase_onboarding_dismissed';
+
 export function OnboardingChecklist({
   hasProject,
   hasContent,
@@ -27,7 +29,12 @@ export function OnboardingChecklist({
   hasTeamMember,
   projectId,
 }: OnboardingChecklistProps) {
-  const [dismissed, setDismissed] = useState(false);
+  const [dismissed, setDismissed] = useState(true);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) setDismissed(false);
+  }, []);
 
   const steps: Step[] = [
     { id: 'project', label: 'Create your first project', done: hasProject, href: '/dashboard/new', cta: 'Create Project' },
@@ -41,10 +48,15 @@ export function OnboardingChecklist({
 
   const doneCount = steps.filter((s) => s.done).length;
 
+  function handleDismiss() {
+    setDismissed(true);
+    localStorage.setItem(STORAGE_KEY, 'true');
+  }
+
   return (
     <div className="relative rounded-2xl border border-fluid-100 bg-gradient-to-br from-fluid-50/80 to-white p-6 mb-8">
       <button
-        onClick={() => setDismissed(true)}
+        onClick={handleDismiss}
         className="absolute right-4 top-4 rounded-lg p-1 text-theme-muted hover:bg-white/50 hover:text-theme-subtle transition-colors"
       >
         <X className="h-4 w-4" />
