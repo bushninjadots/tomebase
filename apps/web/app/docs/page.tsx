@@ -1,11 +1,12 @@
 import { prisma } from '@fluid/database';
 import { Container } from '@fluid/ui';
 import Link from 'next/link';
-import { ArrowRight, BookOpen, FileText, Code2, Users, Globe, Key, Layers, HeartPulse } from 'lucide-react';
+import { ArrowRight, BookOpen, FileText, Code2, Users, Globe, Key, Layers, HeartPulse, HelpCircle } from 'lucide-react';
 
 const DOCS_SLUG = 'tomebase-docs';
 
 const sections = [
+  { icon: HelpCircle, title: 'Help Center', description: 'Complete feature guide with step-by-step instructions, tips, and API references.', slug: '__help__' },
   { icon: FileText, title: 'Getting Started', description: 'Create your first project, write a page, and publish it.', slug: 'getting-started' },
   { icon: BookOpen, title: 'Writing Docs', description: 'Markdown editor, wiki links, templates, callouts, and version history.', slug: 'writing-docs' },
   { icon: Code2, title: 'Importing Code', description: 'Auto-generate docs from TypeScript, JavaScript, or OpenAPI specs.', slug: 'importing-code' },
@@ -63,9 +64,11 @@ export default async function DocsPage() {
 
         <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {sections.map((section) => {
-            const href = docsProjectId
-              ? `/p/${docsProjectId}/${section.slug}`
-              : `https://github.com/bushninjadots/tomebase/blob/main/docs/usage/${section.slug}.md`;
+            const href = section.slug === '__help__'
+              ? '/help'
+              : docsProjectId
+                ? `/p/${docsProjectId}/${section.slug}`
+                : `https://github.com/bushninjadots/tomebase/blob/main/docs/usage/${section.slug}.md`;
             return (
               <Link
                 key={section.title}

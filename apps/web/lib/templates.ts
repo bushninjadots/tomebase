@@ -242,4 +242,404 @@ Sessions are managed via JWT tokens stored in HTTP-only cookies. The session is 
 - [[Architecture Overview]] — security architecture
 `,
   },
+  {
+    id: 'changelog',
+    name: 'Changelog',
+    description: 'Track changes across versions',
+    content: `# {{title}}
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/).
+
+## [Unreleased]
+
+### Added
+- New feature or capability
+
+### Changed
+- Changes to existing functionality
+
+### Deprecated
+- Features that will be removed
+
+### Removed
+- Features that have been removed
+
+### Fixed
+- Bug fixes
+
+### Security
+- Vulnerability fixes
+
+---
+
+## [1.0.0] — {{date}}
+
+### Added
+- Initial release
+`,
+  },
+  {
+    id: 'runbook',
+    name: 'Runbook',
+    description: 'Operational procedures and incident response',
+    content: `# {{title}}
+
+## Overview
+
+This runbook covers operational procedures for {{title}}.
+
+## Prerequisites
+
+- Access to the production environment
+- Required tools: \`kubectl\`, \`helm\`, \`aws-cli\`
+- On-call rotation access
+
+## Common Operations
+
+### Restart the service
+
+\`\`\`bash
+kubectl rollout restart deployment/{{title}} -n production
+\`\`\`
+
+### Check health
+
+\`\`\`bash
+curl -f https://api.example.com/health
+\`\`\`
+
+### View logs
+
+\`\`\`bash
+kubectl logs -f deployment/{{title}} -n production --tail=100
+\`\`\`
+
+## Incident Response
+
+### Severity 1: Service Down
+
+1. Check the health endpoint
+2. Review recent deployments
+3. Check resource utilization
+4. Escalate if not resolved in 15 minutes
+
+### Severity 2: Degraded Performance
+
+1. Check error rates in monitoring
+2. Review database query performance
+3. Check for resource bottlenecks
+
+## Contacts
+
+- **On-call**: Check PagerDuty rotation
+- **Slack**: #ops channel
+`,
+  },
+  {
+    id: 'rfc',
+    name: 'RFC / Design Doc',
+    description: 'Request for Comments or design proposal',
+    content: `# {{title}}
+
+**Status**: Draft
+**Author**: <!-- your name -->
+**Date**: {{date}}
+
+## Summary
+
+One paragraph explanation of the proposal.
+
+## Motivation
+
+Why are we doing this? What problem does it solve?
+
+## Detailed Design
+
+How does this work? Include:
+- API changes
+- Data model changes
+- UI/UX changes
+- Security considerations
+
+## Alternatives Considered
+
+What other approaches did we consider? Why were they rejected?
+
+## Migration Plan
+
+How do we transition from the current state to the new state?
+
+## Rollout Plan
+
+1. Feature flag: \`ENABLE_{{title}}\`
+2. Gradual rollout: 10% → 50% → 100%
+3. Rollback: disable feature flag
+
+## References
+
+- [[Architecture Overview]]
+- [[API Reference]]
+`,
+  },
+  {
+    id: 'meeting-notes',
+    name: 'Meeting Notes',
+    description: 'Structured meeting notes template',
+    content: `# {{title}}
+
+**Date**: {{date}}
+**Attendees**: <!-- list names -->
+**Duration**: <!-- minutes -->
+
+## Agenda
+
+1. Topic 1
+2. Topic 2
+3. Topic 3
+
+## Discussion Notes
+
+### Topic 1
+
+Notes here...
+
+### Topic 2
+
+Notes here...
+
+## Decisions Made
+
+- [ ] Decision 1 — @owner
+- [ ] Decision 2 — @owner
+
+## Action Items
+
+- [ ] Action item 1 — @owner — due {{date}}
+- [ ] Action item 2 — @owner — due {{date}}
+
+## Next Meeting
+
+- Date: <!-- next meeting date -->
+- Agenda items: <!-- topics to discuss -->
+`,
+  },
+  {
+    id: 'tutorial',
+    name: 'Tutorial',
+    description: 'Step-by-step learning guide',
+    content: `# {{title}}
+
+> **Difficulty**: Beginner | **Time**: 30 minutes
+
+## What You'll Learn
+
+- Learning objective 1
+- Learning objective 2
+- Learning objective 3
+
+## Prerequisites
+
+Before starting, make sure you have:
+- Node.js 18+ installed
+- A text editor (VS Code recommended)
+- Basic knowledge of JavaScript
+
+## Step 1: Setup
+
+First, create a new project:
+
+\`\`\`bash
+npx create-app my-tutorial
+cd my-tutorial
+\`\`\`
+
+## Step 2: Create Your First Page
+
+Open \`src/index.ts\` and add:
+
+\`\`\`typescript
+import { createPage } from 'your-package';
+
+const page = createPage({
+  title: 'Hello World',
+  content: 'Welcome to the tutorial!',
+});
+\`\`\`
+
+## Step 3: Run It
+
+\`\`\`bash
+npm start
+\`\`\`
+
+Visit \`http://localhost:3000\` to see your page.
+
+## Congratulations!
+
+You've completed the tutorial. Next steps:
+
+- [[Getting Started]] — dive deeper
+- [[API Reference]] — explore the full API
+`,
+  },
+  {
+    id: 'postmortem',
+    name: 'Postmortem',
+    description: 'Incident postmortem template',
+    content: `# {{title}}
+
+**Incident Date**: {{date}}
+**Duration**: <!-- hours/minutes -->
+**Severity**: <!-- P1/P2/P3 -->
+**Author**: <!-- your name -->
+
+## Summary
+
+One paragraph describing the incident and its impact.
+
+## Timeline (UTC)
+
+| Time | Event |
+|------|-------|
+| HH:MM | Alert fired |
+| HH:MM | Investigation started |
+| HH:MM | Root cause identified |
+| HH:MM | Fix deployed |
+| HH:MM | Service fully recovered |
+
+## Root Cause
+
+What caused the incident?
+
+## Impact
+
+- **Users affected**: <!-- number -->
+- **Duration**: <!-- time -->
+- **Revenue impact**: <!-- if applicable -->
+
+## What Went Well
+
+- Things that helped during the incident
+
+## What Went Wrong
+
+- Things that made the incident worse or harder to resolve
+
+## Action Items
+
+- [ ] Action 1 — @owner — priority: high
+- [ ] Action 2 — @owner — priority: medium
+- [ ] Action 3 — @owner — priority: low
+
+## Lessons Learned
+
+Key takeaways for the team.
+`,
+  },
+  {
+    id: 'sdk-reference',
+    name: 'SDK Reference',
+    description: 'Library/SDK documentation',
+    content: `# {{title}}
+
+## Installation
+
+\`\`\`bash
+npm install {{title}}
+\`\`\`
+
+## Quick Start
+
+\`\`\`typescript
+import { Client } from '{{title}}';
+
+const client = new Client({
+  apiKey: process.env.API_KEY,
+});
+
+const result = await client.doSomething({
+  option: 'value',
+});
+\`\`\`
+
+## Configuration
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| \`apiKey\` | \`string\` | required | Your API key |
+| \`baseUrl\` | \`string\` | \`'https://api.example.com'\` | API base URL |
+| \`timeout\` | \`number\` | \`30000\` | Request timeout in ms |
+
+## Methods
+
+### \`client.doSomething(params)\`
+
+Performs an action.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| \`option\` | \`string\` | Yes | The option to use |
+
+**Returns:** \`Promise<Result>\`
+
+**Example:**
+
+\`\`\`typescript
+const result = await client.doSomething({ option: 'value' });
+console.log(result.id);
+\`\`\`
+
+## Error Handling
+
+\`\`\`typescript
+import { Client, APIError } from '{{title}}';
+
+try {
+  await client.doSomething({ option: 'value' });
+} catch (error) {
+  if (error instanceof APIError) {
+    console.error(error.status, error.message);
+  }
+}
+\`\`\`
+
+## Related Pages
+
+- [[API Reference]] — REST API docs
+- [[Configuration]] — environment setup
+`,
+  },
+  {
+    id: 'glossary',
+    name: 'Glossary',
+    description: 'Term definitions and terminology',
+    content: `# {{title}}
+
+| Term | Definition |
+|------|------------|
+| **Term 1** | Definition of term 1 |
+| **Term 2** | Definition of term 2 |
+| **Term 3** | Definition of term 3 |
+| **Term 4** | Definition of term 4 |
+| **Term 5** | Definition of term 5 |
+
+## Abbreviations
+
+| Abbreviation | Full Form |
+|--------------|-----------|
+| **API** | Application Programming Interface |
+| **REST** | Representational State Transfer |
+| **SDK** | Software Development Kit |
+| **URL** | Uniform Resource Locator |
+
+## See Also
+
+- [[Getting Started]] — common terms in context
+- [[Configuration]] — configuration-specific terms
+`,
+  },
 ];
