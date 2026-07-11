@@ -39,7 +39,20 @@ export async function PATCH(
           { status: 403 },
         );
       }
-      updateData.customDomain = body.customDomain;
+
+      const domain = body.customDomain.trim().toLowerCase();
+      if (!/^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*\.[a-z]{2,}$/.test(domain)) {
+        return NextResponse.json({ error: 'Invalid domain format' }, { status: 400 });
+      }
+
+      const existingDomain = await prisma.project.findFirst({
+        where: { customDomain: domain, id: { not: id } },
+      });
+      if (existingDomain) {
+        return NextResponse.json({ error: 'This domain is already in use' }, { status: 409 });
+      }
+
+      updateData.customDomain = domain;
     }
     if (body.customDomain === '') updateData.customDomain = null;
     if (typeof body.logoUrl === 'string') updateData.logoUrl = body.logoUrl;

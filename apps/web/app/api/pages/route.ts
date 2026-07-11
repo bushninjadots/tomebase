@@ -13,8 +13,16 @@ export async function POST(request: Request) {
 
     const { title, content, projectId, parentId } = await request.json();
 
-    if (!title || !projectId) {
-      return NextResponse.json({ error: 'Title and projectId are required' }, { status: 400 });
+    if (!title || typeof title !== 'string') {
+      return NextResponse.json({ error: 'Title is required' }, { status: 400 });
+    }
+
+    if (title.length > 200) {
+      return NextResponse.json({ error: 'Title must be 200 characters or less' }, { status: 400 });
+    }
+
+    if (content && typeof content === 'string' && content.length > 1_000_000) {
+      return NextResponse.json({ error: 'Content is too large (max 1MB)' }, { status: 400 });
     }
 
     const project = await prisma.project.findFirst({

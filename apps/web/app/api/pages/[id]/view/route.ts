@@ -8,8 +8,11 @@ export async function POST(
   try {
     const { id } = await params;
 
-    const page = await prisma.docPage.findUnique({ where: { id } });
-    if (!page) {
+    const page = await prisma.docPage.findUnique({
+      where: { id },
+      select: { id: true, published: true, project: { select: { published: true } } },
+    });
+    if (!page || !page.published || !page.project.published) {
       return NextResponse.json({ error: 'Page not found' }, { status: 404 });
     }
 

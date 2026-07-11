@@ -1,5 +1,6 @@
 import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
+import { requireAuth, requireTeamMember } from '@/lib/authorization';
 
 interface CodeChange {
   file: string;
@@ -21,7 +22,17 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const session = await requireAuth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { id: projectId } = await params;
+
+    const project = await requireTeamMember(projectId, session.user.id);
+    if (!project) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    }
 
     const pages = await prisma.docPage.findMany({
       where: { projectId },

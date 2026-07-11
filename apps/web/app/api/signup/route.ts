@@ -1,8 +1,16 @@
 import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
+import { checkRateLimit, rateLimitResponse, cleanupRateLimits } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
+  cleanupRateLimits();
+
+  const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+  const rateLimit = checkRateLimit(`signup:${ip}`, 5, 60_000);
+  const rateLimited = rateLimitResponse(rateLimit);
+  if (rateLimited) return rateLimited;
+
   try {
     let body;
     try {
@@ -17,12 +25,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
     }
 
-    if (typeof email !== 'string' || !email.includes('@')) {
+    if (typeof email !== 'string' || !email.includes('@') || email.length > 254) {
       return NextResponse.json({ error: 'Invalid email format' }, { status: 400 });
     }
 
     if (password.length < 8) {
       return NextResponse.json({ error: 'Password must be at least 8 characters' }, { status: 400 });
+    }
+
+    if (password.length > 128) {
+      return NextResponse.json({ error: 'Password is too long' }, { status: 400 });
     }
 
     const existing = await prisma.user.findUnique({ where: { email } });

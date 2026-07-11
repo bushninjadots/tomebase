@@ -30,8 +30,30 @@ export async function POST(request: Request) {
     let specContent = spec;
 
     if (url && !spec) {
+      let parsedUrl: URL;
       try {
-        const resp = await fetch(url, { signal: AbortSignal.timeout(10000) });
+        parsedUrl = new URL(url);
+      } catch {
+        return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 });
+      }
+
+      if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+        return NextResponse.json({ error: 'Only HTTP/HTTPS URLs are allowed' }, { status: 400 });
+      }
+
+      const hostname = parsedUrl.hostname;
+      if (
+        hostname === 'localhost' ||
+        hostname === '127.0.0.1' ||
+        hostname === '::1' ||
+        hostname.endsWith('.local') ||
+        /^(10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|169\.254\.)/.test(hostname)
+      ) {
+        return NextResponse.json({ error: 'Internal URLs are not allowed' }, { status: 400 });
+      }
+
+      try {
+        const resp = await fetch(parsedUrl.toString(), { signal: AbortSignal.timeout(10000) });
         if (!resp.ok) {
           return NextResponse.json(
             { error: `Failed to fetch spec from URL: ${resp.status} ${resp.statusText}` },

@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { slugify } from '@fluid/utils';
 import { fetchMarkdownFromRepo } from '@/lib/github';
+import { requireTeamMember } from '@/lib/authorization';
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -13,15 +14,19 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     const { id } = await params;
 
+    const project = await requireTeamMember(id, session.user.id);
+    if (!project) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    }
+
     const body = await request.json().catch(() => ({}));
     const { repo, branch, path } = body;
-    if (!repo) {
+    if (!repo || typeof repo !== 'string') {
       return NextResponse.json({ error: 'repo required' }, { status: 400 });
     }
 
-    const project = await prisma.project.findUnique({ where: { id } });
-    if (!project || project.userId !== session.user.id) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    if (!/^[a-zA-Z0-9._-]+\/[a-zA-Z0-9._-]+(\/[a-zA-Z0-9._/-]*)?$/.test(repo)) {
+      return NextResponse.json({ error: 'Invalid repository format' }, { status: 400 });
     }
 
     const token = body.token || undefined;

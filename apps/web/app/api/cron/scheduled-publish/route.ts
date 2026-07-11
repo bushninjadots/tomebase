@@ -2,9 +2,15 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@fluid/database';
 import { triggerWebhooks } from '@/lib/webhooks';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const authHeader = request.headers.get('authorization');
+  const cronSecret = process.env.CRON_SECRET;
+
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
-    // Find pages that should be published now
     const toPublish = await prisma.scheduledPublish.findMany({
       where: {
         publishAt: { lte: new Date() },
@@ -27,7 +33,6 @@ export async function GET() {
       await prisma.scheduledPublish.delete({ where: { id: schedule.id } });
     }
 
-    // Find pages that should be unpublished now
     const toUnpublish = await prisma.scheduledPublish.findMany({
       where: {
         unpublishAt: { not: null, lte: new Date() },

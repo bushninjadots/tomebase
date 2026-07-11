@@ -87,7 +87,17 @@ export default async function ProjectSettingsPage({ params }: PageProps) {
                     const { auth: getAuth } = await import('@/lib/auth');
                     const session = await getAuth();
                     if (!session?.user?.id) return;
+
+                    const project = await prisma.project.findFirst({
+                      where: {
+                        id: projectId,
+                        team: { members: { some: { userId: session.user.id, role: 'admin' } } },
+                      },
+                    });
+                    if (!project) return;
+
                     await prisma.docPage.deleteMany({ where: { projectId } });
+                    await prisma.apiKey.deleteMany({ where: { projectId } });
                     await prisma.project.delete({ where: { id: projectId } });
                     redirect('/dashboard');
                   }}

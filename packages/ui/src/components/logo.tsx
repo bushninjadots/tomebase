@@ -36,7 +36,7 @@ export function Logo({ className, size = 'md' }: LogoProps) {
         />
         <circle cx="16" cy="16" r="4" fill="white" />
       </svg>
-      <span className="font-semibold tracking-tight text-gray-900">Fluid</span>
+      <span className="font-semibold tracking-tight text-gray-900">TomeBase</span>
     </div>
   );
 }

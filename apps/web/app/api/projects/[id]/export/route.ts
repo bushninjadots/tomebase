@@ -163,7 +163,7 @@ export async function GET(
     return new NextResponse(new Uint8Array(buffer), {
       headers: {
         'Content-Type': 'application/zip',
-        'Content-Disposition': `attachment; filename="${projectSlug}-docs.zip`,
+        'Content-Disposition': `attachment; filename="${projectSlug}-docs.zip"`,
       },
     });
   } catch (error) {

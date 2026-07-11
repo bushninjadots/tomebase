@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 const schemaPath = path.join(__dirname, '..', 'prisma', 'schema.prisma');
+const generatedSchemaPath = path.join(__dirname, '..', 'prisma', 'schema.generated.prisma');
 const dbDir = path.join(__dirname, '..');
 
 // Load .env from the database package
@@ -38,15 +39,14 @@ const updatedSchema = baseSchema.replace(
   `$1"${provider}"`
 );
 
-// Write the updated schema
-fs.writeFileSync(schemaPath, updatedSchema);
+// Write to a generated copy instead of mutating the original schema
+fs.writeFileSync(generatedSchemaPath, updatedSchema);
 
 console.log(`Prisma provider set to: ${provider}`);
-console.log(`Database URL: ${databaseUrl.substring(0, 50)}...`);
 
-// Generate the client
+// Generate the client using the generated schema
 try {
-  execSync('npx prisma generate', { stdio: 'inherit', cwd: dbDir });
+  execSync(`npx prisma generate --schema=${generatedSchemaPath}`, { stdio: 'inherit', cwd: dbDir });
   console.log('Prisma client generated successfully');
 } catch (error) {
   console.error('Failed to generate Prisma client:', error);
