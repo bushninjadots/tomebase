@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
-import { stripe, STRIPE_PRO_PRICE_ID } from '@/lib/stripe';
+import { getStripe, STRIPE_PRO_PRICE_ID } from '@/lib/stripe';
 import { prisma } from '@fluid/database';
 import { getOrCreatePersonalTeam } from '@/lib/team';
 
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     let customerId = team.stripeCustomerId;
 
     if (!customerId) {
-      const customer = await stripe.customers.create({
+      const customer = await getStripe().customers.create({
         email: session.user.email || undefined,
         name: session.user.name || undefined,
         metadata: { userId: session.user.id, teamId: team.id },
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
 
     const appUrl = process.env.APP_URL || 'http://localhost:3000';
 
-    const checkoutSession = await stripe.checkout.sessions.create({
+    const checkoutSession = await getStripe().checkout.sessions.create({
       customer: customerId,
       mode: 'subscription',
       payment_method_types: ['card'],

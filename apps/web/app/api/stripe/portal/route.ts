@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
-import { stripe } from '@/lib/stripe';
+import { getStripe } from '@/lib/stripe';
 import { prisma } from '@fluid/database';
 
 export async function POST() {
@@ -21,7 +21,7 @@ export async function POST() {
 
     const appUrl = process.env.APP_URL || 'http://localhost:3000';
 
-    const portalSession = await stripe.billingPortal.sessions.create({
+    const portalSession = await getStripe().billingPortal.sessions.create({
       customer: teamMember.team.stripeCustomerId,
       return_url: `${appUrl}/dashboard/settings`,
     });
