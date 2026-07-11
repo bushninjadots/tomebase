@@ -1,8 +1,64 @@
 import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
 import { requireAuth, requireTeamMember } from '@/lib/authorization';
+import { analyzePages } from '@/lib/health';
 
 export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const session = await requireAuth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { id: projectId } = await params;
+
+    const project = await requireTeamMember(projectId, session.user.id);
+    if (!project) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    }
+
+    const url = new URL(request.url);
+    const limit = Math.min(parseInt(url.searchParams.get('limit') || '10', 10), 50);
+
+    const pages = await prisma.docPage.findMany({
+      where: { projectId },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        published: true,
+        viewCount: true,
+        lastViewedAt: true,
+        updatedAt: true,
+        createdAt: true,
+        content: true,
+      },
+      orderBy: { title: 'asc' },
+    });
+
+    const report = analyzePages(pages);
+
+    const latestReport = await prisma.healthReport.findFirst({
+      where: { projectId },
+      orderBy: { createdAt: 'desc' },
+      select: { score: true, createdAt: true },
+    });
+
+    return NextResponse.json({
+      ...report,
+      previousScore: latestReport?.score ?? null,
+      previousScanAt: latestReport?.createdAt?.toISOString() ?? null,
+    });
+  } catch (error) {
+    console.error('Failed to fetch health data:', error);
+    return NextResponse.json({ error: 'Failed to fetch health data' }, { status: 500 });
+  }
+}
+
+export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -30,70 +86,30 @@ export async function GET(
         lastViewedAt: true,
         updatedAt: true,
         createdAt: true,
-        content: true
-      }
+        content: true,
+      },
+      orderBy: { title: 'asc' },
     });
 
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const report = analyzePages(pages);
 
-    const pageHealth = pages.map(page => {
-      const daysSinceUpdate = Math.floor(
-        (Date.now() - new Date(page.updatedAt).getTime()) / (1000 * 60 * 60 * 24)
-      );
-      const daysSinceCreation = Math.floor(
-        (Date.now() - new Date(page.createdAt).getTime()) / (1000 * 60 * 60 * 24)
-      );
-      
-      let freshness: 'fresh' | 'aging' | 'stale' | 'critical' = 'fresh';
-      if (daysSinceUpdate > 90) freshness = 'critical';
-      else if (daysSinceUpdate > 30) freshness = 'stale';
-      else if (daysSinceUpdate > 14) freshness = 'aging';
-
-      const engagement: 'high' | 'medium' | 'low' | 'none' = 
-        page.viewCount >= 10 ? 'high' :
-        page.viewCount >= 5 ? 'medium' :
-        page.viewCount >= 1 ? 'low' : 'none';
-
-      const contentLength = page.content?.length || 0;
-      const quality: 'rich' | 'adequate' | 'thin' | 'empty' =
-        contentLength >= 1000 ? 'rich' :
-        contentLength >= 200 ? 'adequate' :
-        contentLength > 0 ? 'thin' : 'empty';
-
-      let healthScore = 100;
-      if (freshness === 'critical') healthScore -= 40;
-      else if (freshness === 'stale') healthScore -= 25;
-      else if (freshness === 'aging') healthScore -= 10;
-
-      if (engagement === 'none') healthScore -= 30;
-      else if (engagement === 'low') healthScore -= 15;
-
-      if (quality === 'empty') healthScore -= 30;
-      else if (quality === 'thin') healthScore -= 15;
-
-      healthScore = Math.max(0, healthScore);
-
-      return {
-        id: page.id,
-        title: page.title,
-        slug: page.slug,
-        published: page.published,
-        viewCount: page.viewCount,
-        lastViewedAt: page.lastViewedAt,
-        updatedAt: page.updatedAt,
-        daysSinceUpdate,
-        daysSinceCreation,
-        freshness,
-        engagement,
-        quality,
-        healthScore
-      };
+    const saved = await prisma.healthReport.create({
+      data: {
+        projectId,
+        score: report.score,
+        totalPages: report.totalPages,
+        issues: report.issues as unknown as object[],
+        summary: report.summary as unknown as object[],
+      },
     });
 
-    return NextResponse.json({ pages: pageHealth });
+    return NextResponse.json({
+      reportId: saved.id,
+      score: report.score,
+      scannedAt: saved.createdAt.toISOString(),
+    });
   } catch (error) {
-    console.error('Failed to fetch health data:', error);
-    return NextResponse.json({ error: 'Failed to fetch health data' }, { status: 500 });
+    console.error('Failed to run health scan:', error);
+    return NextResponse.json({ error: 'Failed to run health scan' }, { status: 500 });
   }
 }

@@ -78,6 +78,7 @@ model Project {
   chatMessages ChatMessage[]
   apiKeys   ApiKey[]
   webhooks  Webhook[]
+  healthReports HealthReport[]
   teamId    String?
   team      Team?      @relation(fields: [teamId], references: [id])
 }
@@ -259,4 +260,18 @@ model ViewEvent {
 
   @@index([pageId, createdAt])
   @@index([createdAt])
+}
+
+model HealthReport {
+  id         String   @id @default(cuid())
+  projectId  String
+  score      Int      // Overall health score 0-100
+  totalPages Int
+  issues     Json     // HealthIssue[] — individual issues found
+  summary    Json     // Category breakdown (brokenLinks, orphans, stale, etc.)
+  createdAt  DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt])
 }

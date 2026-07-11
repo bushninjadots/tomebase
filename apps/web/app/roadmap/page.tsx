@@ -50,8 +50,12 @@ const categories = [
     icon: Zap,
     color: 'text-amber-600 bg-amber-50 border-amber-100 dark:text-amber-400 dark:bg-amber-950/30 dark:border-amber-900/50',
     items: [
+      'Documentation Health Platform — SonarQube for docs',
+      'Enhanced health engine — 10+ check categories',
+      'Health dashboard redesign — score breakdown, recommendations',
+      'Health report persistence — historical trend tracking',
       'Theme migration — all hardcoded colors to CSS variables',
-      'Test suite — Vitest unit/integration tests for core utilities',
+      'Test suite — Vitest unit/integration tests',
       'AI writing assistant — smart suggestions, auto-summarize, rewrite',
     ],
   },
@@ -60,6 +64,10 @@ const categories = [
     icon: Clock,
     color: 'text-blue-600 bg-blue-50 border-blue-100 dark:text-blue-400 dark:bg-blue-950/30 dark:border-blue-900/50',
     items: [
+      'Documentation Linter — ESLint for docs, CI/CD integration',
+      'Documentation Observatory — cross-platform dashboard',
+      'Documentation Testing — validate commands, code, examples',
+      'Migration tool — import from GitBook, Mintlify, Docusaurus, Notion',
       'Global search across all projects',
       'GitHub/GitLab sync — connect repo, auto-import .md files',
       'Email notifications for comments, @mentions, and invites',
@@ -138,11 +146,11 @@ export default function RoadmapPage() {
               <div className="mt-0.5 text-xs text-theme-muted">API routes</div>
             </div>
             <div className="rounded-xl border border-theme-border bg-theme-card p-5">
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400">39</div>
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">44</div>
               <div className="mt-0.5 text-xs text-theme-muted">Features shipped</div>
             </div>
             <div className="rounded-xl border border-theme-border bg-theme-card p-5">
-              <div className="text-2xl font-bold text-theme-main">10</div>
+              <div className="text-2xl font-bold text-theme-main">17</div>
               <div className="mt-0.5 text-xs text-theme-muted">In progress / planned</div>
             </div>
           </div>

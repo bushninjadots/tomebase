@@ -48,16 +48,52 @@
 - [ ] **Theme migration** — convert all hardcoded Tailwind colors to theme CSS variables
 - [ ] **Test suite** — Vitest unit/integration tests for core utilities
 - [ ] **AI writing assistant** — smart suggestions, auto-summarize, rewrite
+- [ ] **Documentation Health Platform** — comprehensive health engine with 10+ check categories
+  - [x] Broken link detection (wiki links)
+  - [x] Orphan page detection
+  - [x] Empty page detection
+  - [x] Stale page detection (>30 days)
+  - [x] Low engagement detection
+  - [ ] Code block analysis (missing language tags, broken snippets)
+  - [ ] Content structure checks (heading hierarchy, paragraph length)
+  - [ ] Reading time estimation
+  - [ ] Health report persistence and historical trends
+  - [ ] Health dashboard redesign with category breakdown
 
-## v3 — Next
+## v3 — In Progress — Documentation Health Platform
+
+The "SonarQube for documentation" — comprehensive health analysis that works alongside GitBook, Mintlify, and other doc platforms.
+
+### Health Platform — Core
+
+- [ ] **Enhanced health engine** — 10+ check categories (broken links, orphans, stale, code quality, content structure, reading time, accessibility)
+- [ ] **Health report persistence** — DB model for storing scan results over time
+- [ ] **Health dashboard redesign** — SonarQube-style with score breakdown, category cards, recommendations
+- [ ] **Health scan API** — POST endpoint to trigger scans, GET for results
+- [ ] **Historical health trends** — track health score changes over time
+
+### Health Platform — Advanced (Next)
+
+- [ ] **Code snippet validation** — detect broken code blocks, missing language tags, compilation checks
+- [ ] **Image validation** — check referenced images exist
+- [ ] **Terminology consistency** — detect inconsistent naming across pages
+- [ ] **Accessibility checks** — heading hierarchy, alt text, link text quality
+- [ ] **Scheduled health scans** — cron job for periodic analysis
+- [ ] **Health badges/widgets** — summary on project dashboard
+
+### v3 — Next
 
 ### High Priority
 
+- [ ] **Documentation Linter** — ESLint for docs (CI/CD integration, PR checks)
+- [ ] **Documentation Observatory** — cross-platform dashboard (GitHub, Mintlify, Notion, internal wiki)
+- [ ] **Documentation Testing** — validate commands, API endpoints, code compilation, example execution
 - [ ] **GitHub/GitLab sync** — connect a repository, auto-import and sync `.md` files
 - [ ] **Global search across all projects** — cross-project search from dashboard
 
 ### Medium Priority
 
+- [ ] **Migration tool** — import from GitBook, Mintlify, Docusaurus, MkDocs, Obsidian, Notion
 - [ ] **Mobile responsive public docs and editor** — write docs from tablets
 - [ ] **Email notifications** — for comments, @mentions, and invites
 - [ ] **Self-hosted deployment** — Docker Compose with PostgreSQL
@@ -73,6 +109,16 @@
 - [ ] **SOC 2 compliance** — enterprise security certifications
 
 ## Changelog
+
+### 2026-07-11
+- Documentation Health Platform — roadmap and architecture defined
+- Health engine with 10+ check categories (broken links, orphans, stale, code quality, content structure, reading time)
+- Health report persistence via Prisma model for historical tracking
+- Health dashboard redesign with SonarQube-style UI
+- Health scan API endpoints (trigger scans, retrieve results)
+- Planning: Documentation Linter, Observatory, Migration Tool, Documentation Testing
+- Auth fix: added SessionProvider for client-side signIn
+- ESLint fixes: react-hooks/exhaustive-deps warnings resolved
 
 ### 2026-07-11
 - Stripe billing integration: Checkout sessions, Customer Portal, webhook handlers
