@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
-import { ThemeProvider } from '@/components/theme-provider';
+import { Providers } from '@/components/providers';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -45,7 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
       <body className="min-h-screen bg-white font-sans text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100">
-          <ThemeProvider>{children}</ThemeProvider>
+          <Providers>{children}</Providers>
         </body>
     </html>
   );
