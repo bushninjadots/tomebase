@@ -43,76 +43,60 @@
 - [x] **CI/CD** — GitHub Actions workflow (typecheck + lint + build)
 - [x] **2-tier pricing** — Free (€0) + Pro (€15/mo), removed Enterprise tier
 
-## v3 — In Progress
+## v3 — Documentation Health Platform (In Progress)
 
-- [ ] **Theme migration** — convert all hardcoded Tailwind colors to theme CSS variables
-- [ ] **Test suite** — Vitest unit/integration tests for core utilities
-- [ ] **AI writing assistant** — smart suggestions, auto-summarize, rewrite
-- [ ] **Documentation Health Platform** — comprehensive health engine with 10+ check categories
-  - [x] Broken link detection (wiki links)
-  - [x] Orphan page detection
-  - [x] Empty page detection
-  - [x] Stale page detection (>30 days)
-  - [x] Low engagement detection
-  - [ ] Code block analysis (missing language tags, broken snippets)
-  - [ ] Content structure checks (heading hierarchy, paragraph length)
-  - [ ] Reading time estimation
-  - [ ] Health report persistence and historical trends
-  - [ ] Health dashboard redesign with category breakdown
-
-## v3 — In Progress — Documentation Health Platform
-
-The "SonarQube for documentation" — comprehensive health analysis that works alongside GitBook, Mintlify, and other doc platforms.
+The "SonarQube for documentation" — comprehensive health analysis platform that complements existing documentation platforms.
 
 ### Health Platform — Core
 
-- [ ] **Enhanced health engine** — 10+ check categories (broken links, orphans, stale, code quality, content structure, reading time, accessibility)
-- [ ] **Health report persistence** — DB model for storing scan results over time
-- [ ] **Health dashboard redesign** — SonarQube-style with score breakdown, category cards, recommendations
+- [ ] **Enhanced health engine** — 10+ check categories (broken links, orphans, stale pages, code quality, content structure, reading time)
+- [ ] **Health report persistence** — Database model for storing scan results over time
+- [ ] **Health dashboard redesign** — SonarQube-style with score breakdown and category cards
 - [ ] **Health scan API** — POST endpoint to trigger scans, GET for results
 - [ ] **Historical health trends** — track health score changes over time
 
-### Health Platform — Advanced (Next)
+### Health Platform — Advanced Features (Next)
 
-- [ ] **Code snippet validation** — detect broken code blocks, missing language tags, compilation checks
+- [ ] **Code snippet validation** — detect broken code blocks, missing language tags, compilation issues
 - [ ] **Image validation** — check referenced images exist
 - [ ] **Terminology consistency** — detect inconsistent naming across pages
 - [ ] **Accessibility checks** — heading hierarchy, alt text, link text quality
 - [ ] **Scheduled health scans** — cron job for periodic analysis
-- [ ] **Health badges/widgets** — summary on project dashboard
+- [ ] **Health badges/widgets** — summary displays on project dashboards
 
-### v3 — Next
+## v3 — Next
 
 ### High Priority
 
-- [ ] **Documentation Linter** — ESLint for docs (CI/CD integration, PR checks)
-- [ ] **Documentation Observatory** — cross-platform dashboard (GitHub, Mintlify, Notion, internal wiki)
-- [ ] **Documentation Testing** — validate commands, API endpoints, code compilation, example execution
-- [ ] **GitHub/GitLab sync** — connect a repository, auto-import and sync `.md` files
-- [ ] **Global search across all projects** — cross-project search from dashboard
+- [ ] **Documentation Linter** — ESLint for docs with CI/CD integration and PR checks
+- [ ] **Documentation Observatory** — Cross-platform dashboard monitoring GitHub, Mintlify, Notion, internal wikis
+- [ ] **Documentation Testing** — Validate commands, API endpoints, code compilation, example execution
+- [ ] **GitHub/GitLab sync** — Connect repositories and auto-import/sync `.md` files
+- [ ] **Global search across all projects** — Cross-project search functionality from dashboard
 
 ### Medium Priority
 
-- [ ] **Migration tool** — import from GitBook, Mintlify, Docusaurus, MkDocs, Obsidian, Notion
-- [ ] **Mobile responsive public docs and editor** — write docs from tablets
-- [ ] **Email notifications** — for comments, @mentions, and invites
-- [ ] **Self-hosted deployment** — Docker Compose with PostgreSQL
+- [ ] **Migration tool** — Import documentation from GitBook, Mintlify, Docusaurus, MkDocs, Obsidian, Notion
+- [ ] **Mobile responsive public docs and editor** — Full documentation editing experience on tablets
+- [ ] **Email notifications** — Alerts for comments, @mentions, and invite responses
+- [ ] **Self-hosted deployment** — Docker Compose setup with PostgreSQL
 
 ### Low Priority
 
-- [ ] **SSO/SAML** — single sign-on
-- [ ] **Audit log** — track all changes and access for compliance
-- [ ] **Read-only sharing links** — share a page with non-members
-- [ ] **Multi-region edge delivery** — fast global docs hosting
-- [ ] **Plugin system** — custom blocks, themes, integrations
-- [ ] **Marketplace** — community templates and themes
-- [ ] **SOC 2 compliance** — enterprise security certifications
+- [ ] **SSO/SAML** — Single sign-on capabilities
+- [ ] **Audit log** — Track all changes and access for compliance
+- [ ] **Read-only sharing links** — Share pages with non-members
+- [ ] **Multi-region edge delivery** — Fast global docs hosting infrastructure
+- [ ] **Plugin system** — Custom blocks, themes, and integrations
+- [ ] **Marketplace** — Community templates and themes
+- [ ] **SOC 2 compliance** — Enterprise security certifications
 
 ## Changelog
 
-### 2026-07-11
+### 2026-07-11 — Documentation Health Platform Launch
+
 - Documentation Health Platform — roadmap and architecture defined
-- Health engine with 10+ check categories (broken links, orphans, stale, code quality, content structure, reading time)
+- Health engine with 10+ check categories (broken links, orphans, stale pages, code quality, content structure, reading time)
 - Health report persistence via Prisma model for historical tracking
 - Health dashboard redesign with SonarQube-style UI
 - Health scan API endpoints (trigger scans, retrieve results)
@@ -120,51 +104,59 @@ The "SonarQube for documentation" — comprehensive health analysis that works a
 - Auth fix: added SessionProvider for client-side signIn
 - ESLint fixes: react-hooks/exhaustive-deps warnings resolved
 
-### 2026-07-11
+### 2026-07-11 — Stripe Billing Integration
+
 - Stripe billing integration: Checkout sessions, Customer Portal, webhook handlers
 - 2-tier pricing model: Free (€0) + Pro (€15/mo), removed Enterprise tier
 - Security hardening: rate limiting, SSRF protection, authorization guards, input validation
 - CI/CD: GitHub Actions workflow (typecheck + lint + build)
 - Theme migration: dashboard, settings, import, project cards, onboarding, guided tutorial, public pages
 - Test infrastructure: Vitest setup with core utility tests
-- AI chat panel: placeholder UI for future writing assistant
+- AI chat panel: placeholder UI for future writing assistant functionality
 
-### 2026-07-10
+### 2026-07-10 — New Features & Improvements
+
 - Bookmarks: save pages for quick access from dashboard
 - Scheduled publishing: set future publish/unpublish dates on pages
 - Webhook notifications: configure webhooks for page create/update/publish/delete events
 - Guided tutorial: interactive walkthrough for first-time users
 - Sidebar/editor UI redesign: collapsible creation, template modal, side panel comments
 
-### 2026-07-10
+### 2026-07-10 — Comments & Diff Features
+
 - Page comments/discussions with threaded replies
 - @mention support with autocomplete dropdown
 - Comment highlighting when mentioned
 - Delete own comments
 - Comments section toggle in editor
 
-### 2026-07-10
+### 2026-07-10 — Revision Diff & Wiki Enhancements
+
 - Revision diff: compare any two snapshots side-by-side with line-by-line diff view
 - History modal: toggle compare mode to select two versions and see changes
 - Diff viewer shows added/removed/unchanged lines with color coding
 - Added diff summary (+/- lines) between snapshots in history list
 - Wiki links: support aliases ([[Page|display text]])
 - Wiki autocomplete: fuzzy matching, page descriptions, sorted results
+
+### 2026-07-10 — Enhanced Editor & Landing Page
+
 - Graph view: improved physics, arrow markers, shadows, glow effects
 - Markdown editor: added table, divider, task list toolbar buttons
 - Markdown editor: Tab/Shift+Tab for indent/outdent
 - Markdown editor: Cmd+K for link insertion
-- Landing page: removed fake stats, replaced with accurate tier info
+- Landing page: removed fake stats, replaced with accurate tier information
 
-### 2026-07-09
-- Page version history with snapshot browse/restore
-- Landing page redesign with hero, stats, pricing
+### 2026-07-09 — Initial Launch Features
+
+- Page version history with snapshot browse/restore functionality
+- Landing page redesign with hero section, statistics, pricing
 - Onboarding checklist for new dashboard users
-- Public search on published docs
-- SEO: dynamic sitemap, canonical URLs
+- Public search on published documentation
+- SEO: dynamic sitemap, canonical URLs, Open Graph, Twitter cards
 - Doc health checks (broken links, orphans, empty pages)
-- Export to Markdown ZIP
+- Export to Markdown ZIP archive
 - View analytics and Most Viewed dashboard section
-- Custom domain UI and middleware
+- Custom domain UI and middleware functionality
 - History button in editor toolbar
-- All 43 routes building clean
+- All 43 routes building successfully
