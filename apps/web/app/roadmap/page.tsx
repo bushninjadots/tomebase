@@ -56,7 +56,6 @@ const categories = [
       'Health report persistence — historical trend tracking',
       'Theme migration — all hardcoded colors to CSS variables',
       'Test suite — Vitest unit/integration tests',
-      'AI writing assistant — smart suggestions, auto-summarize, rewrite',
     ],
   },
   {
@@ -85,6 +84,7 @@ const categories = [
       'Plugin system (custom blocks, themes)',
       'Community marketplace for templates',
       'Multi-region edge delivery',
+      'AI writing assistant — smart suggestions, auto-summarize, rewrite',
     ],
   },
 ];

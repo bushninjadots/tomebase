@@ -120,7 +120,7 @@ export default function Home() {
       </nav>
 
       {/* ─── Hero ─── */}
-      <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
         <div className="hero-glow -left-40 -top-40" />
         <div className="hero-glow -right-40 -bottom-40" />
 
@@ -134,7 +134,7 @@ export default function Home() {
         />
 
         <Container>
-          <div className="relative mx-auto max-w-4xl text-center py-32">
+          <div className="relative mx-auto max-w-4xl text-center py-20">
             <p className="eyebrow mb-6">Developer Docs Platform</p>
 
             <h1 className="text-5xl font-extrabold tracking-tight text-theme-main sm:text-6xl lg:text-7xl">
@@ -162,17 +162,17 @@ export default function Home() {
       </section>
 
       {/* ─── How It Works ─── */}
-      <section className="py-24 sm:py-32">
+      <section className="py-16 sm:py-20">
         <Container>
           <div className="mx-auto max-w-[800px]">
-            <div className="text-center mb-16">
+            <div className="text-center mb-10">
               <p className="eyebrow mb-4">How It Works</p>
               <h2 className="text-3xl font-bold tracking-tight text-theme-main sm:text-4xl lg:text-5xl">
                 From code to docs in 3 steps
               </h2>
             </div>
 
-            <div className="space-y-12">
+            <div className="space-y-8">
               {/* Step 1 */}
               <div className="flex gap-5">
                 <div className="flex-shrink-0 flex items-start">
@@ -270,7 +270,7 @@ export default function Home() {
             </div>
 
             {/* CTA row */}
-            <div className="mt-14 flex items-center justify-center gap-4">
+            <div className="mt-10 flex items-center justify-center gap-4">
               <Link href="/login" className="btn-primary !px-6 !py-2.5 !text-sm">
                 Try import now
                 <ArrowRight className="h-4 w-4" />
@@ -284,7 +284,7 @@ export default function Home() {
       </section>
 
       {/* ─── Features ─── */}
-      <section className="py-24 sm:py-32">
+      <section className="py-16 sm:py-20">
         <Container>
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold tracking-tight text-theme-main sm:text-4xl lg:text-5xl">
@@ -296,7 +296,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((feature) => (
               <div
                 key={feature.title}
@@ -336,7 +336,7 @@ export default function Home() {
       </section>
 
       {/* ─── CTA ─── */}
-      <section className="py-24 sm:py-32">
+      <section className="py-16 sm:py-20">
         <Container>
           <div className="relative mx-auto max-w-2xl text-center overflow-hidden rounded-2xl border border-theme-border bg-theme-card px-8 py-20">
             <div className="hero-glow-secondary -left-20 -top-20" />

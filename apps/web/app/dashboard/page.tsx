@@ -59,6 +59,8 @@ export default async function DashboardPage() {
 
   const totalViewCount = totalViews._sum.viewCount || 0;
 
+  const firstProjectId = projects[0]?.id;
+
   // Latest health report per project
   const latestHealthReports = await prisma.healthReport.groupBy({
     by: ['projectId'],
@@ -112,7 +114,7 @@ export default async function DashboardPage() {
           <p className="text-2xl font-bold text-theme-main mb-0.5">{totalPages}</p>
           <p className="text-xs text-theme-muted mb-4">Total Pages</p>
           <Link
-            href="/dashboard/pages"
+            href={firstProjectId ? `/docs/${firstProjectId}` : '/dashboard/new'}
             className="mt-auto text-xs font-medium text-blue-400 hover:text-blue-300 transition-colors"
           >
             View pages
@@ -129,7 +131,7 @@ export default async function DashboardPage() {
           <p className="text-2xl font-bold text-theme-main mb-0.5">{publishedCount}</p>
           <p className="text-xs text-theme-muted mb-4">Published</p>
           <Link
-            href="/dashboard/pages?filter=published"
+            href={firstProjectId ? `/p/${firstProjectId}` : '/dashboard/new'}
             className="mt-auto text-xs font-medium text-emerald-400 hover:text-emerald-300 transition-colors"
           >
             See docs
@@ -145,12 +147,9 @@ export default async function DashboardPage() {
           </div>
           <p className="text-2xl font-bold text-theme-main mb-0.5">{totalViewCount.toLocaleString()}</p>
           <p className="text-xs text-theme-muted mb-4">Page Views</p>
-          <Link
-            href="/dashboard/analytics"
-            className="mt-auto text-xs font-medium text-violet-400 hover:text-violet-300 transition-colors"
-          >
-            Health scan
-          </Link>
+          <span className="mt-auto text-xs font-medium text-violet-400">
+            Across {projects.length} project{projects.length === 1 ? '' : 's'}
+          </span>
         </div>
 
         {/* Health Score */}
@@ -163,7 +162,7 @@ export default async function DashboardPage() {
           <p className="text-2xl font-bold text-theme-main mb-0.5">{avgHealthScore}/100</p>
           <p className="text-xs text-theme-muted mb-4">Health Score</p>
           <Link
-            href="/dashboard/health"
+            href={firstProjectId ? `/dashboard/${firstProjectId}/health` : '/dashboard/new'}
             className="mt-auto text-xs font-medium text-orange-400 hover:text-orange-300 transition-colors"
           >
             Improve →
@@ -174,7 +173,7 @@ export default async function DashboardPage() {
       {/* Section B — Action Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <Link
-          href="/dashboard/import"
+          href={firstProjectId ? `/dashboard/${firstProjectId}/import` : '/dashboard/new'}
           className="bg-theme-card border border-theme-border rounded-[14px] p-5 flex items-center gap-4 hover:border-theme-accent/30 transition-all group"
         >
           <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
@@ -184,12 +183,12 @@ export default async function DashboardPage() {
             <p className="text-sm font-semibold text-theme-main group-hover:text-theme-accent transition-colors">
               Import from Code
             </p>
-            <p className="text-xs text-theme-muted mt-0.5">Sync docs from your repository</p>
+            <p className="text-xs text-theme-muted mt-0.5">Paste TypeScript/JS, get structured docs</p>
           </div>
         </Link>
 
         <Link
-          href="/dashboard/health"
+          href={firstProjectId ? `/dashboard/${firstProjectId}/health` : '/dashboard/new'}
           className="bg-theme-card border border-theme-border rounded-[14px] p-5 flex items-center gap-4 hover:border-theme-accent/30 transition-all group"
         >
           <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center shrink-0">
@@ -204,7 +203,7 @@ export default async function DashboardPage() {
         </Link>
 
         <Link
-          href="/dashboard/graph"
+          href={firstProjectId ? `/docs/${firstProjectId}` : '/dashboard/new'}
           className="bg-theme-card border border-theme-border rounded-[14px] p-5 flex items-center gap-4 hover:border-theme-accent/30 transition-all group"
         >
           <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
@@ -225,7 +224,7 @@ export default async function DashboardPage() {
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-semibold text-theme-main">Recently Updated</h2>
             <Link
-              href="/dashboard/pages"
+              href={firstProjectId ? `/docs/${firstProjectId}` : '/dashboard/new'}
               className="text-xs font-medium text-theme-muted hover:text-theme-accent transition-colors flex items-center gap-1"
             >
               View all pages <ArrowRight className="h-3 w-3" />
