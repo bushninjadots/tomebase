@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Webhook, Plus, Trash2, RefreshCw, ExternalLink, X, Check, AlertCircle } from 'lucide-react';
 
 interface WebhookItem {
@@ -21,18 +21,18 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
   const [copiedSecret, setCopiedSecret] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    load();
-  }, [projectId]);
-
-  function load() {
+  const load = useCallback(() => {
     fetch(`/api/projects/${projectId}/webhooks`)
       .then((r) => r.json())
       .then((data) => {
         if (Array.isArray(data)) setWebhooks(data);
       })
       .catch(() => {});
-  }
+  }, [projectId]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   async function create() {
     if (!url.trim()) return;

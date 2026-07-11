@@ -97,7 +97,7 @@ export function WikiAutocomplete({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [open, filtered, activeIndex, insertLink]);
 
-  function checkAutocomplete() {
+  const checkAutocomplete = useCallback(() => {
     const ta = textareaRef.current;
     if (!ta) { setOpen(false); return; }
     const cursorPos = ta.selectionStart;
@@ -115,11 +115,11 @@ export function WikiAutocomplete({
     setQuery(afterOpen);
     setActiveIndex(0);
     setOpen(true);
-  }
+  }, [content, textareaRef]);
 
   useEffect(() => {
     if (content) checkAutocomplete();
-  }, [content]);
+  }, [content, checkAutocomplete]);
 
   useEffect(() => {
     function onSelectionChange() {
@@ -127,7 +127,7 @@ export function WikiAutocomplete({
     }
     document.addEventListener('selectionchange', onSelectionChange);
     return () => document.removeEventListener('selectionchange', onSelectionChange);
-  }, [content]);
+  }, [checkAutocomplete]);
 
   useEffect(() => {
     if (open && listRef.current) {
