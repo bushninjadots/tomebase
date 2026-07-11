@@ -27,39 +27,61 @@
 - [x] Public search (Cmd+K on published docs)
 - [x] Landing page with stats and pricing section
 - [x] Onboarding checklist for new users
-- [x] Tier limits (Free/Pro/Enterprise) with usage metering
+- [x] Tier limits (Free/Pro) with usage metering
 - [x] Pricing page with comparison table
 
-## v2 — Next
-
-### High Priority
+## v2 — Shipped
 
 - [x] **Revision diff** — side-by-side comparison of snapshot versions
 - [x] **Page comments / discussions** — inline feedback on pages with @mentions
-- [ ] **Stripe billing** — real payment integration for Pro/Enterprise upgrades
-- [ ] **AI writing assistant** — smart suggestions, auto-summarize, rewrite
-
-### Medium Priority
-
+- [x] **Stripe billing** — real payment integration for Pro tier (Checkout + Customer Portal + webhooks)
 - [x] **Bookmarks** — save pages for quick access from the dashboard
 - [x] **Scheduled publishing** — set future publish/unpublish dates
 - [x] **Webhook notifications** — trigger webhooks on page create/update/publish
-- [ ] **GitHub/GitLab sync** — connect a repository, auto-import and sync `.md` files
 - [x] **Guided tutorial** — interactive walkthrough for first-time users
+- [x] **Security hardening** — rate limiting, SSRF protection, authorization on all API routes, input validation
+- [x] **CI/CD** — GitHub Actions workflow (typecheck + lint + build)
+- [x] **2-tier pricing** — Free (€0) + Pro (€15/mo), removed Enterprise tier
+
+## v3 — In Progress
+
+- [ ] **Theme migration** — convert all hardcoded Tailwind colors to theme CSS variables
+- [ ] **Test suite** — Vitest unit/integration tests for core utilities
+- [ ] **AI writing assistant** — smart suggestions, auto-summarize, rewrite
+
+## v3 — Next
+
+### High Priority
+
+- [ ] **GitHub/GitLab sync** — connect a repository, auto-import and sync `.md` files
+- [ ] **Global search across all projects** — cross-project search from dashboard
+
+### Medium Priority
+
+- [ ] **Mobile responsive public docs and editor** — write docs from tablets
+- [ ] **Email notifications** — for comments, @mentions, and invites
+- [ ] **Self-hosted deployment** — Docker Compose with PostgreSQL
 
 ### Low Priority
 
-- [ ] **SSO/SAML** — enterprise single sign-on
+- [ ] **SSO/SAML** — single sign-on
 - [ ] **Audit log** — track all changes and access for compliance
 - [ ] **Read-only sharing links** — share a page with non-members
-- [ ] **Mobile responsive editor** — write docs from tablets
-- [ ] **Self-hosted deployment** — Docker Compose with PostgreSQL
 - [ ] **Multi-region edge delivery** — fast global docs hosting
 - [ ] **Plugin system** — custom blocks, themes, integrations
 - [ ] **Marketplace** — community templates and themes
 - [ ] **SOC 2 compliance** — enterprise security certifications
 
 ## Changelog
+
+### 2026-07-11
+- Stripe billing integration: Checkout sessions, Customer Portal, webhook handlers
+- 2-tier pricing model: Free (€0) + Pro (€15/mo), removed Enterprise tier
+- Security hardening: rate limiting, SSRF protection, authorization guards, input validation
+- CI/CD: GitHub Actions workflow (typecheck + lint + build)
+- Theme migration: dashboard, settings, import, project cards, onboarding, guided tutorial, public pages
+- Test infrastructure: Vitest setup with core utility tests
+- AI chat panel: placeholder UI for future writing assistant
 
 ### 2026-07-10
 - Bookmarks: save pages for quick access from dashboard

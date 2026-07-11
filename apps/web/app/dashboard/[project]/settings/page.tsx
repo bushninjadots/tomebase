@@ -27,37 +27,37 @@ export default async function ProjectSettingsPage({ params }: PageProps) {
   if (!project || project.userId !== session.user.id) notFound();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-theme-card">
       <Container className="py-8">
-        <div className="mb-6 flex items-center gap-2 text-sm text-gray-400">
-          <Link href="/dashboard" className="hover:text-gray-700 transition-colors">Dashboard</Link>
+        <div className="mb-6 flex items-center gap-2 text-sm text-theme-muted">
+          <Link href="/dashboard" className="hover:text-theme-main transition-colors">Dashboard</Link>
           <span>/</span>
-          <Link href={`/docs/${project.id}`} className="hover:text-gray-700 transition-colors">{project.name}</Link>
+          <Link href={`/docs/${project.id}`} className="hover:text-theme-main transition-colors">{project.name}</Link>
           <span>/</span>
-          <span className="text-gray-600">Settings</span>
+          <span className="text-theme-subtle">Settings</span>
         </div>
 
         <div className="mx-auto max-w-2xl">
           <h1 className="text-2xl font-bold text-theme-main">Project Settings</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-theme-muted">
             Manage your project visibility, domain, and details.
           </p>
 
           <div className="mt-8 space-y-8">
             <ProjectSettingsForm project={project} />
 
-            <div className="rounded-xl border border-gray-100 bg-white p-6">
+            <div className="rounded-xl border border-theme-border bg-white p-6">
               <h2 className="text-lg font-semibold text-theme-main flex items-center gap-2">
-                <Download className="h-4 w-4 text-gray-400" />
+                <Download className="h-4 w-4 text-theme-muted" />
                 Export
               </h2>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-theme-muted">
                 Download all pages as Markdown files with frontmatter metadata.
               </p>
               <div className="mt-4">
                 <a
                   href={`/api/projects/${project.id}/export`}
-                  className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-lg border border-theme-border px-4 py-2 text-sm font-medium text-theme-subtle hover:bg-theme-hover transition-colors"
                 >
                   <Download className="h-4 w-4" />
                   Export as .zip
@@ -65,19 +65,19 @@ export default async function ProjectSettingsPage({ params }: PageProps) {
               </div>
             </div>
 
-            <div className="rounded-xl border border-gray-100 bg-white p-6">
+            <div className="rounded-xl border border-theme-border bg-white p-6">
               <GitSync projectId={project.id} />
             </div>
 
             <ApiKeyManager projectId={project.id} />
 
-            <div className="rounded-xl border border-gray-100 bg-white p-6">
+            <div className="rounded-xl border border-theme-border bg-white p-6">
               <WebhookSettings projectId={project.id} />
             </div>
 
-            <div className="rounded-xl border border-gray-100 bg-white p-6">
+            <div className="rounded-xl border border-theme-border bg-white p-6">
               <h2 className="text-lg font-semibold text-theme-main">Danger Zone</h2>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-theme-muted">
                 Irreversible actions for this project.
               </p>
               <div className="mt-4">

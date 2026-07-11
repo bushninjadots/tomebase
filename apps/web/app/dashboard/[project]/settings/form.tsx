@@ -57,7 +57,7 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
 
   return (
     <form onSubmit={handleSave} className="space-y-6">
-      <div className="rounded-xl border border-gray-100 bg-white p-6">
+      <div className="rounded-xl border border-theme-border bg-white p-6">
         <h2 className="text-lg font-semibold text-theme-main">General</h2>
         <div className="mt-4 space-y-4">
           <Input
@@ -67,7 +67,7 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
             onChange={(e) => setName(e.target.value)}
           />
           <div className="space-y-1.5">
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="description" className="block text-sm font-medium text-theme-subtle">
               Description
             </label>
             <textarea
@@ -75,7 +75,7 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
-              className="block w-full rounded-lg border border-gray-200 px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
+              className="block w-full rounded-lg border border-theme-border px-3 py-2 text-sm shadow-sm placeholder:text-theme-muted focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
             />
           </div>
           <Input
@@ -85,17 +85,17 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
             onChange={(e) => setLogoUrl(e.target.value)}
             placeholder="https://yourdomain.com/logo.png"
           />
-          <p className="text-xs text-gray-400 -mt-3">
+          <p className="text-xs text-theme-muted -mt-3">
             Used as branding in exported Markdown files.
           </p>
         </div>
       </div>
 
-      <div className="rounded-xl border border-gray-100 bg-white p-6">
+      <div className="rounded-xl border border-theme-border bg-white p-6">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold text-theme-main">Publish</h2>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-theme-muted">
               Make your documentation accessible to anyone with the link.
             </p>
           </div>
@@ -106,7 +106,7 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
               onChange={(e) => setPublished(e.target.checked)}
               className="peer sr-only"
             />
-            <div className="h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-all peer-checked:bg-fluid-600 peer-checked:after:translate-x-full" />
+            <div className="h-6 w-11 rounded-full bg-theme-hover after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-all peer-checked:bg-fluid-600 peer-checked:after:translate-x-full" />
           </label>
         </div>
 
@@ -131,14 +131,14 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
                 )}
               </button>
             </div>
-            <div className="rounded-lg bg-gray-50 px-3 py-2 font-mono text-sm text-gray-600 break-all">
+            <div className="rounded-lg bg-theme-card px-3 py-2 font-mono text-sm text-theme-subtle break-all">
               {publicUrl}
             </div>
 
-            <div className="rounded-xl border border-gray-100 p-4">
+            <div className="rounded-xl border border-theme-border p-4">
               <div className="flex items-center gap-2 mb-3">
-                <Globe className="h-4 w-4 text-gray-400" />
-                <span className="text-sm font-medium text-gray-700">Custom Domain</span>
+                <Globe className="h-4 w-4 text-theme-muted" />
+                <span className="text-sm font-medium text-theme-subtle">Custom Domain</span>
                 <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700">Pro</span>
               </div>
               <Input
@@ -149,16 +149,16 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
                 placeholder="docs.yourcompany.com"
               />
               {customDomain && (
-                <div className="mt-3 rounded-lg bg-gray-50 p-3 text-xs text-gray-600 space-y-2">
-                  <p className="font-medium text-gray-700">DNS Setup Instructions</p>
+                <div className="mt-3 rounded-lg bg-theme-card p-3 text-xs text-theme-subtle space-y-2">
+                  <p className="font-medium text-theme-subtle">DNS Setup Instructions</p>
                   <p>Add a CNAME record pointing your domain to:</p>
-                  <code className="block rounded bg-white px-2 py-1 font-mono text-[11px] text-fluid-600 border border-gray-200">
+                  <code className="block rounded bg-white px-2 py-1 font-mono text-[11px] text-fluid-600 border border-theme-border">
                     {window.location.host}
                   </code>
-                  <p className="text-gray-400">SSL certificates are provisioned automatically. Propagation may take up to 24 hours.</p>
+                  <p className="text-theme-muted">SSL certificates are provisioned automatically. Propagation may take up to 24 hours.</p>
                 </div>
               )}
-              <p className="mt-1.5 text-xs text-gray-400">
+              <p className="mt-1.5 text-xs text-theme-muted">
                 Point your own domain to your published documentation site.
               </p>
             </div>

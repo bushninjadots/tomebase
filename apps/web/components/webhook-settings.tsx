@@ -100,12 +100,12 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Webhook className="h-4 w-4 text-gray-400" />
-          <h3 className="text-sm font-medium text-gray-900 dark:text-white">Webhooks</h3>
+          <Webhook className="h-4 w-4 text-theme-muted" />
+          <h3 className="text-sm font-medium text-theme-main">Webhooks</h3>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors dark:bg-fluid-600 dark:hover:bg-fluid-700"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-theme-main px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 transition-colors dark:bg-fluid-600 dark:hover:bg-fluid-700"
         >
           <Plus className="h-3.5 w-3.5" />
           Add webhook
@@ -113,10 +113,10 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
       </div>
 
       {showForm && (
-        <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+        <div className="rounded-xl border border-theme-border bg-white p-4">
           <div className="space-y-3">
             <div>
-              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+              <label className="block text-xs font-medium text-theme-muted mb-1">
                 URL
               </label>
               <input
@@ -124,18 +124,18 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://example.com/webhook"
-                className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-500"
+                className="w-full rounded-lg border border-theme-border px-3 py-1.5 text-sm"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+              <label className="block text-xs font-medium text-theme-muted mb-1">
                 Events
               </label>
               <div className="flex flex-wrap gap-2">
                 {allEvents.map((event) => (
                   <label
                     key={event}
-                    className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400"
+                    className="flex items-center gap-1.5 text-xs text-theme-subtle"
                   >
                     <input
                       type="checkbox"
@@ -147,7 +147,7 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
                           setEvents((prev) => prev.split(',').filter((ev) => ev !== event).join(','));
                         }
                       }}
-                      className="rounded border-gray-300 text-fluid-600 focus:ring-fluid-500"
+                      className="rounded border-theme-border text-fluid-600 focus:ring-fluid-500"
                     />
                     {event}
                   </label>
@@ -164,13 +164,13 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
               <button
                 onClick={create}
                 disabled={!url.trim() || saving}
-                className="rounded-lg bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors disabled:opacity-50 dark:bg-fluid-600 dark:hover:bg-fluid-700"
+                className="rounded-lg bg-theme-main px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 transition-colors disabled:opacity-50 dark:bg-fluid-600 dark:hover:bg-fluid-700"
               >
                 {saving ? 'Creating...' : 'Create'}
               </button>
               <button
                 onClick={() => setShowForm(false)}
-                className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800"
+                className="rounded-lg border border-theme-border px-3 py-1.5 text-sm font-medium text-theme-subtle hover:bg-theme-hover transition-colors"
               >
                 Cancel
               </button>
@@ -180,7 +180,7 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
       )}
 
       {webhooks.length === 0 && !showForm && (
-        <p className="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">
+        <p className="text-sm text-theme-muted py-4 text-center">
           No webhooks configured. Add one to get notified of page events.
         </p>
       )}
@@ -189,26 +189,26 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
         {webhooks.map((webhook) => (
           <div
             key={webhook.id}
-            className="flex items-center justify-between rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900"
+            className="flex items-center justify-between rounded-xl border border-theme-border bg-white p-4"
           >
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <span
                   className={`h-2 w-2 rounded-full ${
-                    webhook.active ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
+                    webhook.active ? 'bg-green-500' : 'bg-theme-muted'
                   }`}
                 />
-                <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
+                <p className="truncate text-sm font-medium text-theme-main">
                   {webhook.url}
                 </p>
               </div>
               <div className="mt-1 flex items-center gap-2">
-                <span className="text-xs text-gray-400 dark:text-gray-500">
+                <span className="text-xs text-theme-muted">
                   {webhook.events}
                 </span>
                 <button
                   onClick={() => copySecret(webhook.secret)}
-                  className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  className="text-xs text-theme-muted hover:text-theme-subtle"
                   title="Copy signing secret"
                 >
                   {copiedSecret === webhook.secret ? (
@@ -225,7 +225,7 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
                 className={`rounded p-1.5 transition-colors ${
                   webhook.active
                     ? 'text-green-600 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-900/30'
-                    : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    : 'text-theme-muted hover:bg-theme-hover'
                 }`}
                 title={webhook.active ? 'Disable' : 'Enable'}
               >

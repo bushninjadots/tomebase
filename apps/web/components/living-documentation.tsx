@@ -90,11 +90,11 @@ export function LivingDocumentation({ projectId }: LivingDocumentationProps) {
   };
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+    <div className="rounded-lg border border-theme-border bg-theme-page overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-theme-border">
         <div className="flex items-center gap-2">
           <GitBranch className="h-5 w-5 text-fluid-600" />
-          <span className="font-medium text-gray-900">Living Documentation</span>
+          <span className="font-medium text-theme-main">Living Documentation</span>
         </div>
         <button
           onClick={checkForStaleDocs}
@@ -109,9 +109,9 @@ export function LivingDocumentation({ projectId }: LivingDocumentationProps) {
       <div className="p-4">
         {!status.isConnected && status.lastChecked === null ? (
           <div className="text-center py-6">
-            <GitBranch className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-            <h3 className="text-sm font-medium text-gray-900 mb-1">Connect your codebase</h3>
-            <p className="text-xs text-gray-500 mb-4">
+            <GitBranch className="h-12 w-12 text-theme-muted mx-auto mb-3" />
+            <h3 className="text-sm font-medium text-theme-main mb-1">Connect your codebase</h3>
+            <p className="text-xs text-theme-muted mb-4">
               Automatically detect when documentation becomes outdated after code changes.
             </p>
             <button
@@ -124,12 +124,12 @@ export function LivingDocumentation({ projectId }: LivingDocumentationProps) {
         ) : (
           <>
             <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2 text-sm text-gray-500">
+              <div className="flex items-center gap-2 text-sm text-theme-muted">
                 <CheckCircle className="h-4 w-4 text-green-500" />
                 Connected to codebase
               </div>
               {status.lastChecked && (
-                <div className="flex items-center gap-1 text-xs text-gray-400">
+                <div className="flex items-center gap-1 text-xs text-theme-muted">
                   <Clock className="h-3 w-3" />
                   Last checked {formatDate(status.lastChecked)}
                 </div>
@@ -140,7 +140,7 @@ export function LivingDocumentation({ projectId }: LivingDocumentationProps) {
               <div className="mb-4">
                 <div className="flex items-center gap-2 mb-2">
                   <AlertTriangle className="h-4 w-4 text-amber-500" />
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium text-theme-subtle">
                     {status.staleDocs.length} potentially stale document{status.staleDocs.length !== 1 ? 's' : ''}
                   </span>
                 </div>
@@ -153,12 +153,12 @@ export function LivingDocumentation({ projectId }: LivingDocumentationProps) {
                     >
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-gray-900 truncate">{doc.pageName}</span>
+                          <span className="font-medium text-theme-main truncate">{doc.pageName}</span>
                           <span className="text-xs text-amber-600 bg-amber-100 px-2 py-0.5 rounded">
                             {doc.stalenessReason}
                           </span>
                         </div>
-                        <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                        <div className="flex items-center gap-3 mt-1 text-xs text-theme-muted">
                           <span>Updated {formatDate(doc.lastUpdated)}</span>
                           <span>{doc.relatedFiles.length} related file{doc.relatedFiles.length !== 1 ? 's' : ''} changed</span>
                         </div>
@@ -177,7 +177,7 @@ export function LivingDocumentation({ projectId }: LivingDocumentationProps) {
                 {status.staleDocs.length > 3 && (
                   <button
                     onClick={() => setShowDetails(!showDetails)}
-                    className="w-full mt-2 text-center text-sm text-gray-500 hover:text-gray-700 py-2"
+                    className="w-full mt-2 text-center text-sm text-theme-muted hover:text-theme-subtle py-2"
                   >
                     {showDetails ? 'Show less' : `Show all ${status.staleDocs.length} stale docs`}
                   </button>
@@ -187,15 +187,15 @@ export function LivingDocumentation({ projectId }: LivingDocumentationProps) {
 
             {status.recentChanges.length > 0 && (
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Recent Code Changes</h4>
+                <h4 className="text-sm font-medium text-theme-subtle mb-2">Recent Code Changes</h4>
                 <div className="space-y-1 max-h-32 overflow-y-auto">
                   {status.recentChanges.slice(0, 10).map((change, index) => (
                     <div
                       key={index}
                       className="flex items-center gap-2 text-xs py-1"
                     >
-                      <FileCode className="h-3 w-3 text-gray-400" />
-                      <span className="font-mono text-gray-600 truncate flex-1">{change.file}</span>
+                      <FileCode className="h-3 w-3 text-theme-muted" />
+                      <span className="font-mono text-theme-subtle truncate flex-1">{change.file}</span>
                       <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
                         change.type === 'added' ? 'bg-green-100 text-green-700' :
                         change.type === 'modified' ? 'bg-blue-100 text-blue-700' :
@@ -203,7 +203,7 @@ export function LivingDocumentation({ projectId }: LivingDocumentationProps) {
                       }`}>
                         {change.type}
                       </span>
-                      <span className="text-gray-400">{formatDate(change.lastModified)}</span>
+                      <span className="text-theme-muted">{formatDate(change.lastModified)}</span>
                     </div>
                   ))}
                 </div>
@@ -213,7 +213,7 @@ export function LivingDocumentation({ projectId }: LivingDocumentationProps) {
             {status.staleDocs.length === 0 && status.recentChanges.length === 0 && (
               <div className="text-center py-4">
                 <CheckCircle className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                <p className="text-sm text-gray-600">All documentation is up to date!</p>
+                <p className="text-sm text-theme-subtle">All documentation is up to date!</p>
               </div>
             )}
           </>

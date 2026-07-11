@@ -405,9 +405,9 @@ export function DocEditor({ project }: { project: Project }) {
             <FileText className="h-8 w-8" />
           </div>
           <h2 className="mt-6 text-xl font-semibold text-theme-main">Create your first page</h2>
-          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-2 text-sm text-theme-muted">
             Start documenting by creating a page from the sidebar. Use{' '}
-            <kbd className="rounded-md border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-xs font-medium text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
+            <kbd className="rounded-md border border-theme-border bg-theme-card px-1.5 py-0.5 text-xs font-medium text-theme-subtle">
               ⌘K
             </kbd>{' '}
             to search anytime.
@@ -418,21 +418,21 @@ export function DocEditor({ project }: { project: Project }) {
                 <Code2 className="h-4 w-4" />
               </div>
               <p className="mt-2 text-xs font-medium text-theme-main">Import from Code</p>
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Auto-generate from TS/JS or OpenAPI</p>
+              <p className="mt-1 text-xs text-theme-muted">Auto-generate from TS/JS or OpenAPI</p>
             </Link>
             <div className="rounded-xl border border-theme-border bg-theme-page p-4">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400">
                 <Bold className="h-4 w-4" />
               </div>
               <p className="mt-2 text-xs font-medium text-theme-main">Rich Markdown</p>
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Bold, italic, code, tables, and more</p>
+              <p className="mt-1 text-xs text-theme-muted">Bold, italic, code, tables, and more</p>
             </div>
             <div className="rounded-xl border border-theme-border bg-theme-page p-4">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400">
                 <LinkIcon className="h-4 w-4" />
               </div>
               <p className="mt-2 text-xs font-medium text-theme-main">Wiki Links</p>
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Connect pages with [[double brackets]]</p>
+              <p className="mt-1 text-xs text-theme-muted">Connect pages with [[double brackets]]</p>
             </div>
           </div>
         </div>
@@ -450,39 +450,39 @@ export function DocEditor({ project }: { project: Project }) {
               <BookOpen className="h-6 w-6" />
             </div>
             <h2 className="mt-4 text-lg font-semibold text-theme-main">Welcome back</h2>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            <p className="mt-1 text-sm text-theme-muted">
               Select a page from the sidebar or create a new one.
             </p>
-            <div className="mt-4 flex flex-wrap justify-center gap-2 text-xs text-gray-400">
+            <div className="mt-4 flex flex-wrap justify-center gap-2 text-xs text-theme-muted">
               <span className="rounded-lg bg-theme-page px-3 py-1.5 shadow-sm border border-theme-border">
-                <kbd className="font-medium text-gray-600 dark:text-gray-300">⌘K</kbd> Search
+                <kbd className="font-medium text-theme-subtle">⌘K</kbd> Search
               </span>
               <span className="rounded-lg bg-theme-page px-3 py-1.5 shadow-sm border border-theme-border">
-                <kbd className="font-medium text-gray-600 dark:text-gray-300">⌘S</kbd> Save
+                <kbd className="font-medium text-theme-subtle">⌘S</kbd> Save
               </span>
               <span className="rounded-lg bg-theme-page px-3 py-1.5 shadow-sm border border-theme-border">
-                <kbd className="font-medium text-gray-600 dark:text-gray-300">⌘⇧P</kbd> Preview
+                <kbd className="font-medium text-theme-subtle">⌘⇧P</kbd> Preview
               </span>
             </div>
           </div>
 
           {pageList.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500">Recent pages</p>
+              <p className="text-xs font-medium uppercase tracking-wider text-theme-muted">Recent pages</p>
               <div className="grid gap-2 sm:grid-cols-2">
                 {pageList.slice(0, 6).map((page) => (
                   <button
                     key={page.id}
                     onClick={() => selectPage(page)}
-                    className="flex items-start gap-3 rounded-xl border border-theme-border bg-theme-page p-4 text-left transition-all hover:border-fluid-200 hover:shadow-sm dark:hover:border-fluid-800"
+                    className="flex items-start gap-3 rounded-xl border border-theme-border bg-theme-page p-4 text-left transition-all hover:border-fluid-200 hover:shadow-sm"
                   >
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-50 text-gray-400 dark:bg-gray-800 dark:text-gray-500">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-theme-card text-theme-muted">
                       <FileText className="h-4 w-4" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-medium text-gray-900 truncate dark:text-white">{page.title}</h3>
+                      <h3 className="font-medium text-theme-main truncate">{page.title}</h3>
                       {page.description && (
-                        <p className="mt-0.5 text-xs text-gray-500 line-clamp-1 dark:text-gray-400">{page.description}</p>
+                        <p className="mt-0.5 text-xs text-theme-muted line-clamp-1">{page.description}</p>
                       )}
                     </div>
                   </button>
@@ -505,14 +505,14 @@ export function DocEditor({ project }: { project: Project }) {
       {/* Main editor area */}
       <div className="flex flex-1 flex-col min-w-0">
         {/* Header */}
-          <div className="border-b border-gray-100 px-4 sm:px-6 py-2 border-theme-border">
+          <div className="border-b border-theme-border px-4 sm:px-6 py-2">
             {breadcrumbs.length > 0 && (
-              <div className="flex items-center gap-1 text-xs text-gray-400 mb-1 overflow-x-auto">
+              <div className="flex items-center gap-1 text-xs text-theme-muted mb-1 overflow-x-auto">
                 {breadcrumbs.map((crumb) => (
                   <span key={crumb.id} className="flex items-center gap-1 shrink-0">
                     <Link
                       href={`/docs/${project.id}/${crumb.slug}`}
-                      className="hover:text-gray-600 transition-colors dark:hover:text-gray-300"
+                      className="hover:text-theme-subtle transition-colors"
                     >
                       {crumb.title}
                     </Link>
@@ -526,7 +526,7 @@ export function DocEditor({ project }: { project: Project }) {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-transparent text-lg font-semibold text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-gray-500"
+                className="w-full bg-transparent text-lg font-semibold text-theme-main outline-none placeholder:text-theme-muted"
                 placeholder="Page title"
               />
               <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0">
@@ -535,7 +535,7 @@ export function DocEditor({ project }: { project: Project }) {
                   className={`rounded-lg p-1.5 shrink-0 transition-colors ${
                     viewMode === 'preview'
                       ? 'bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400'
-                      : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+                      : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
                   }`}
                   title={`${viewMode === 'edit' ? 'Preview' : viewMode === 'preview' ? 'Split view' : 'Edit'} (⌘⇧P)`}
                 >
@@ -559,33 +559,33 @@ export function DocEditor({ project }: { project: Project }) {
                 <div className="relative shrink-0" ref={actionsRef}>
                   <button
                     onClick={() => setShowActions((v) => !v)}
-                    className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                    className="rounded-lg p-1.5 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
                     title="Page actions"
                   >
                     <MoreHorizontal className="h-4 w-4" />
                   </button>
                   {showActions && (
-                    <div className="absolute right-0 top-full mt-1 z-50 w-56 rounded-xl border border-gray-200 bg-white shadow-xl py-1 dark:border-gray-700 dark:bg-gray-900">
+                    <div className="absolute right-0 top-full mt-1 z-50 w-56 rounded-xl border border-theme-border bg-theme-page shadow-xl py-1">
                       <button
                         onClick={handleCopyLink}
-                        className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors dark:text-gray-300 dark:hover:bg-gray-800"
+                        className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-theme-subtle hover:bg-theme-hover transition-colors"
                       >
-                        <Copy className="h-4 w-4 text-gray-400" />
+                        <Copy className="h-4 w-4 text-theme-muted" />
                         Copy Link
                         {showCopiedTip && <span className="ml-auto text-xs text-green-600">Copied!</span>}
                       </button>
                       <button
                         onClick={handleDuplicatePage}
-                        className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors dark:text-gray-300 dark:hover:bg-gray-800"
+                        className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-theme-subtle hover:bg-theme-hover transition-colors"
                       >
-                        <Layers className="h-4 w-4 text-gray-400" />
+                        <Layers className="h-4 w-4 text-theme-muted" />
                         Duplicate Page
                       </button>
-                      <div className="border-t border-gray-100 my-1 border-theme-border" />
+                      <div className="border-t border-theme-border my-1" />
                       <div className="px-4 py-2">
                         <SchedulePublish pageId={selectedPage!.id} />
                       </div>
-                      <div className="border-t border-gray-100 my-1 border-theme-border" />
+                      <div className="border-t border-theme-border my-1" />
                       <button
                         onClick={() => { setShowDeleteConfirm(true); setShowActions(false); }}
                         className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors dark:text-red-400 dark:hover:bg-red-900/30"
@@ -603,7 +603,7 @@ export function DocEditor({ project }: { project: Project }) {
                   className={`rounded-lg p-1.5 shrink-0 transition-colors ${
                     showComments
                       ? 'bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400'
-                      : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+                      : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
                   }`}
                   title="Toggle discussion"
                 >
@@ -613,13 +613,13 @@ export function DocEditor({ project }: { project: Project }) {
                 {selectedPage && <BookmarkButton pageId={selectedPage.id} />}
 
                 {autoSaveStatus === 'saving' && (
-                  <span className="flex items-center gap-1 text-xs text-gray-400 shrink-0">
+                  <span className="flex items-center gap-1 text-xs text-theme-muted shrink-0">
                     <Cloud className="h-3 w-3 animate-pulse" />
                     <span className="hidden sm:inline">Saving...</span>
                   </span>
                 )}
                 {autoSaveStatus === 'saved' && !dirty && (
-                  <span className="flex items-center gap-1 text-xs text-gray-400 shrink-0">
+                  <span className="flex items-center gap-1 text-xs text-theme-muted shrink-0">
                     <Cloud className="h-3 w-3" />
                     <span className="hidden sm:inline">Saved</span>
                   </span>
@@ -634,7 +634,7 @@ export function DocEditor({ project }: { project: Project }) {
                   <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="inline-flex items-center gap-1 rounded-lg bg-gray-900 px-2.5 py-1.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors disabled:opacity-50 shrink-0 dark:bg-fluid-600 dark:hover:bg-fluid-700"
+                    className="inline-flex items-center gap-1 rounded-lg bg-theme-main px-2.5 py-1.5 text-sm font-medium text-white hover:opacity-90 transition-colors disabled:opacity-50 shrink-0"
                     title="Save (⌘S)"
                   >
                     <Save className="h-4 w-4" />
@@ -670,16 +670,16 @@ export function DocEditor({ project }: { project: Project }) {
 
         {/* Formatting toolbar */}
         {viewMode !== 'preview' && (
-          <div className="flex items-center gap-0.5 overflow-x-auto border-b border-gray-100 px-3 py-1.5 border-theme-border sm:px-4">
+          <div className="flex items-center gap-0.5 overflow-x-auto border-b border-theme-border px-3 py-1.5 sm:px-4">
             {formattingActions.map((btn) => (
               <button
                 key={btn.label}
                 onClick={btn.action}
-                className="group relative shrink-0 rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                className="group relative shrink-0 rounded-md p-1.5 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
                 title={btn.shortcut ? `${btn.label} (${btn.shortcut})` : btn.label}
               >
                 <btn.icon className="h-3.5 w-3.5" />
-                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity dark:bg-gray-700 pointer-events-none">
+                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-theme-main px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                   {btn.label}
                 </span>
               </button>
@@ -701,13 +701,13 @@ export function DocEditor({ project }: { project: Project }) {
                     basePath={`/docs/${project.id}`}
                   />
                 ) : (
-                  <p className="text-gray-400 italic dark:text-gray-500">No content yet</p>
+                  <p className="text-theme-muted italic">No content yet</p>
                 )}
               </div>
               {headings.length > 0 && (
-                <aside className="hidden xl:block w-64 shrink-0 border-l border-gray-100 p-4 border-theme-border">
+                <aside className="hidden xl:block w-64 shrink-0 border-l border-theme-border p-4">
                   <div className="rounded-xl border border-theme-border bg-theme-page p-4 sticky top-4">
-                    <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-gray-400 mb-3 dark:text-gray-500">
+                    <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-theme-muted mb-3">
                       <ListOrdered className="h-3 w-3" />
                       On this page
                     </div>
@@ -721,7 +721,7 @@ export function DocEditor({ project }: { project: Project }) {
                             const el = document.getElementById(h.id);
                             if (el) el.scrollIntoView({ behavior: 'smooth' });
                           }}
-                          className="block rounded-md px-2 py-1 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                          className="block rounded-md px-2 py-1 text-sm text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
                           style={{ paddingLeft: `${8 + (h.level - 1) * 12}px` }}
                         >
                           {h.text}
@@ -733,7 +733,7 @@ export function DocEditor({ project }: { project: Project }) {
               )}
             </div>
           ) : viewMode === 'split' ? (
-            <div className="flex w-full divide-x divide-gray-100 dark:divide-gray-800">
+            <div className="flex w-full divide-x divide-theme-border">
               <div className="relative min-w-0 flex-1 overflow-y-auto">
                 <WikiAutocomplete
                   textareaRef={textareaRef}
@@ -748,7 +748,7 @@ export function DocEditor({ project }: { project: Project }) {
                   onSelect={saveSelection}
                   onClick={saveSelection}
                   onKeyUp={saveSelection}
-                  className="h-full w-full resize-none bg-transparent p-4 sm:p-8 font-mono text-sm leading-relaxed text-gray-800 outline-none placeholder:text-gray-300 dark:text-gray-200 dark:placeholder:text-gray-600"
+                  className="h-full w-full resize-none bg-transparent p-4 sm:p-8 font-mono text-sm leading-relaxed text-theme-main outline-none placeholder:text-theme-muted"
                   placeholder="Write your documentation in Markdown..."
                   spellCheck={false}
                 />
@@ -764,7 +764,7 @@ export function DocEditor({ project }: { project: Project }) {
                       basePath={`/docs/${project.id}`}
                     />
                   ) : (
-                    <p className="text-gray-400 italic dark:text-gray-500">No content yet</p>
+                    <p className="text-theme-muted italic">No content yet</p>
                   )}
                 </div>
               </div>
@@ -784,7 +784,7 @@ export function DocEditor({ project }: { project: Project }) {
                 onSelect={saveSelection}
                 onClick={saveSelection}
                 onKeyUp={saveSelection}
-                className="h-full w-full resize-none bg-transparent p-8 font-mono text-sm leading-relaxed text-gray-800 outline-none placeholder:text-gray-300 dark:text-gray-200 dark:placeholder:text-gray-600"
+                className="h-full w-full resize-none bg-transparent p-8 font-mono text-sm leading-relaxed text-theme-main outline-none placeholder:text-theme-muted"
                 placeholder="Start writing..."
                 spellCheck={false}
               />
@@ -793,7 +793,7 @@ export function DocEditor({ project }: { project: Project }) {
         </div>
 
         {/* Status bar */}
-        <div className="flex items-center justify-between border-t border-gray-100 px-6 py-1.5 text-xs text-gray-400 border-theme-border">
+        <div className="flex items-center justify-between border-t border-theme-border px-6 py-1.5 text-xs text-theme-muted">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
               <Type className="h-3 w-3" />
@@ -820,12 +820,12 @@ export function DocEditor({ project }: { project: Project }) {
                   </span>
                 ))}
                 {tags.length > 3 && (
-                  <span className="text-[10px] text-gray-400">+{tags.length - 3}</span>
+                  <span className="text-[10px] text-theme-muted">+{tags.length - 3}</span>
                 )}
               </div>
             )}
             <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-              viewMode === 'edit' ? 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400' :
+              viewMode === 'edit' ? 'bg-theme-hover text-theme-muted' :
               viewMode === 'preview' ? 'bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400' :
               'bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400'
             }`}>
@@ -838,14 +838,14 @@ export function DocEditor({ project }: { project: Project }) {
       {/* Comments side panel */}
       {showComments && selectedPage && (
         <div className="w-80 shrink-0 border-l border-theme-border bg-theme-page flex flex-col">
-          <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3 border-theme-border">
+          <div className="flex items-center justify-between border-b border-theme-border px-4 py-3">
             <div className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4 text-fluid-600 dark:text-fluid-400" />
               <span className="text-sm font-medium text-theme-main">Discussion</span>
             </div>
             <button
               onClick={() => setShowComments(false)}
-              className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
+              className="rounded p-1 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
@@ -862,24 +862,24 @@ export function DocEditor({ project }: { project: Project }) {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm"
           onClick={(e) => { if (e.target === e.currentTarget) setShowDeleteConfirm(false); }}
         >
-          <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-gray-700 dark:bg-gray-900">
+          <div className="w-full max-w-sm rounded-2xl border border-theme-border bg-theme-page p-6 shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-red-500 dark:bg-red-900/30 dark:text-red-400">
                 <AlertTriangle className="h-5 w-5" />
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-theme-main">Delete page</h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400">This action cannot be undone.</p>
+                <p className="text-xs text-theme-muted">This action cannot be undone.</p>
               </div>
             </div>
-            <p className="text-sm text-gray-600 mb-6 dark:text-gray-400">
+            <p className="text-sm text-theme-subtle mb-6">
               Are you sure you want to delete <strong>{selectedPage?.title}</strong>?
               All content will be permanently removed.
             </p>
             <div className="flex gap-2 justify-end">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                className="rounded-lg border border-theme-border px-4 py-2 text-sm font-medium text-theme-subtle hover:bg-theme-hover transition-colors"
               >
                 Cancel
               </button>

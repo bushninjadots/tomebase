@@ -34,7 +34,7 @@ export function BookmarkButton({ pageId }: { pageId: string }) {
       className={`rounded-lg p-2 transition-colors ${
         bookmarked
           ? 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'
-          : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+          : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
       }`}
       title={bookmarked ? 'Remove bookmark' : 'Bookmark page'}
     >

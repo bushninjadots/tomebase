@@ -1,9 +1,8 @@
 import { prisma } from '@fluid/database';
 
 export const TIERS = {
-  free: { maxProjects: 1, maxPages: 50, maxMembers: 5, customDomain: false },
-  pro: { maxProjects: 10, maxPages: 500, maxMembers: 15, customDomain: true },
-  enterprise: { maxProjects: 100, maxPages: 10000, maxMembers: 100, customDomain: true },
+  free: { maxProjects: 1, maxPages: Infinity, maxMembers: 5, customDomain: false },
+  pro: { maxProjects: Infinity, maxPages: Infinity, maxMembers: Infinity, customDomain: true },
 } as const;
 
 export type Tier = keyof typeof TIERS;
@@ -13,7 +12,7 @@ export async function checkProjectLimit(teamId: string): Promise<{ allowed: bool
   const tier = isValidTier(team?.tier) ? (team!.tier as Tier) : 'free';
   const limit = TIERS[tier].maxProjects;
   const current = await prisma.project.count({ where: { teamId } });
-  return { allowed: current < limit, limit, current };
+  return { allowed: current < limit, limit: Number.isFinite(limit) ? limit : current + 1, current };
 }
 
 export async function checkPageLimit(projectId: string): Promise<{ allowed: boolean; limit: number; current: number }> {
@@ -24,7 +23,7 @@ export async function checkPageLimit(projectId: string): Promise<{ allowed: bool
   const tier = isValidTier(project?.team?.tier) ? (project!.team!.tier as Tier) : 'free';
   const limit = TIERS[tier].maxPages;
   const current = await prisma.docPage.count({ where: { projectId } });
-  return { allowed: current < limit, limit, current };
+  return { allowed: current < limit, limit: Number.isFinite(limit) ? limit : current + 1, current };
 }
 
 export async function checkMemberLimit(teamId: string): Promise<{ allowed: boolean; limit: number; current: number }> {
@@ -32,7 +31,7 @@ export async function checkMemberLimit(teamId: string): Promise<{ allowed: boole
   const tier = isValidTier(team?.tier) ? (team!.tier as Tier) : 'free';
   const limit = TIERS[tier].maxMembers;
   const current = await prisma.teamMember.count({ where: { teamId } });
-  return { allowed: current < limit, limit, current };
+  return { allowed: current < limit, limit: Number.isFinite(limit) ? limit : current + 1, current };
 }
 
 export async function getTeamTier(teamId: string): Promise<Tier> {
@@ -41,5 +40,5 @@ export async function getTeamTier(teamId: string): Promise<Tier> {
 }
 
 function isValidTier(tier: string | undefined | null): tier is Tier {
-  return tier === 'free' || tier === 'pro' || tier === 'enterprise';
+  return tier === 'free' || tier === 'pro';
 }

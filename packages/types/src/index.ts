@@ -47,7 +47,7 @@ export interface ApiKey {
   expiresAt: Date | null;
 }
 
-export type SubscriptionTier = 'free' | 'pro' | 'enterprise';
+export type SubscriptionTier = 'free' | 'pro';
 
 export interface Team {
   id: string;

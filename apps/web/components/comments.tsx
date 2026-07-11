@@ -177,7 +177,7 @@ export function Comments({ pageId, teamMembers }: CommentsProps) {
         key={comment.id}
         className={`group ${isReply ? 'ml-8 mt-2' : 'mt-4'}`}
       >
-        <div className={`rounded-xl border ${mentionedYou ? 'border-amber-200 bg-amber-50/50' : 'border-gray-100 bg-white'} p-3`}>
+        <div className={`rounded-xl border ${mentionedYou ? 'border-amber-200 bg-amber-50/50' : 'border-theme-border bg-theme-page'} p-3`}>
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2">
               {comment.user.image ? (
@@ -187,15 +187,15 @@ export function Comments({ pageId, teamMembers }: CommentsProps) {
                   className="h-6 w-6 rounded-full"
                 />
               ) : (
-                <div className="h-6 w-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium text-gray-600">
+                <div className="h-6 w-6 rounded-full bg-theme-hover flex items-center justify-center text-xs font-medium text-theme-subtle">
                   {(comment.user.name || comment.user.email || '?')[0]?.toUpperCase()}
                 </div>
               )}
               <div>
-                <span className="text-sm font-medium text-gray-900">
+                <span className="text-sm font-medium text-theme-main">
                   {comment.user.name || comment.user.email}
                 </span>
-                <span className="text-xs text-gray-400 ml-2">
+                <span className="text-xs text-theme-muted ml-2">
                   {formatTime(comment.createdAt)}
                 </span>
               </div>
@@ -204,7 +204,7 @@ export function Comments({ pageId, teamMembers }: CommentsProps) {
               {!isReply && (
                 <button
                   onClick={() => setReplyingTo(comment.id)}
-                  className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                  className="rounded p-1 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
                   title="Reply"
                 >
                   <Reply className="h-3.5 w-3.5" />
@@ -213,7 +213,7 @@ export function Comments({ pageId, teamMembers }: CommentsProps) {
               {isOwn && (
                 <button
                   onClick={() => handleDelete(comment.id)}
-                  className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+                  className="rounded p-1 text-theme-muted hover:bg-red-50 hover:text-red-600 transition-colors"
                   title="Delete"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -221,7 +221,7 @@ export function Comments({ pageId, teamMembers }: CommentsProps) {
               )}
             </div>
           </div>
-          <div className="mt-2 text-sm text-gray-700 whitespace-pre-wrap">
+          <div className="mt-2 text-sm text-theme-subtle whitespace-pre-wrap">
             {renderContent(comment.content)}
           </div>
         </div>
@@ -247,14 +247,14 @@ export function Comments({ pageId, teamMembers }: CommentsProps) {
   }
 
   return (
-    <div className="border-t border-gray-100 bg-gray-50/50 px-6 py-4">
+    <div className="border-t border-theme-border bg-theme-card/50 px-6 py-4">
       <div className="mx-auto max-w-3xl">
         <div className="flex items-center gap-2 mb-4">
-          <MessageSquare className="h-4 w-4 text-gray-400" />
-          <h3 className="text-sm font-semibold text-gray-900">
+          <MessageSquare className="h-4 w-4 text-theme-muted" />
+          <h3 className="text-sm font-semibold text-theme-main">
             Discussion
             {comments.length > 0 && (
-              <span className="ml-2 text-xs font-normal text-gray-400">
+              <span className="ml-2 text-xs font-normal text-theme-muted">
                 {comments.length} comment{comments.length !== 1 ? 's' : ''}
               </span>
             )}
@@ -262,14 +262,14 @@ export function Comments({ pageId, teamMembers }: CommentsProps) {
         </div>
 
         {loading ? (
-          <div className="text-center py-4 text-sm text-gray-400">Loading comments...</div>
+          <div className="text-center py-4 text-sm text-theme-muted">Loading comments...</div>
         ) : (
           <>
             {comments.length === 0 && !replyingTo && (
               <div className="text-center py-6">
-                <MessageSquare className="h-8 w-8 mx-auto text-gray-200 mb-2" />
-                <p className="text-sm text-gray-400">No comments yet</p>
-                <p className="text-xs text-gray-300 mt-1">Start the discussion</p>
+                <MessageSquare className="h-8 w-8 mx-auto text-theme-muted mb-2" />
+                <p className="text-sm text-theme-muted">No comments yet</p>
+                <p className="text-xs text-theme-muted mt-1">Start the discussion</p>
               </div>
             )}
 
@@ -277,12 +277,12 @@ export function Comments({ pageId, teamMembers }: CommentsProps) {
 
             {/* Reply indicator */}
             {replyingTo && (
-              <div className="mt-3 flex items-center gap-2 text-xs text-gray-500 bg-gray-100 rounded-lg px-3 py-2">
+              <div className="mt-3 flex items-center gap-2 text-xs text-theme-muted bg-theme-hover rounded-lg px-3 py-2">
                 <Reply className="h-3 w-3" />
                 <span>Replying to comment</span>
                 <button
                   onClick={() => setReplyingTo(null)}
-                  className="ml-auto p-0.5 hover:bg-gray-200 rounded"
+                  className="ml-auto p-0.5 hover:bg-theme-border rounded"
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -299,12 +299,12 @@ export function Comments({ pageId, teamMembers }: CommentsProps) {
                   onKeyDown={handleKeyDown}
                   placeholder={replyingTo ? 'Write a reply...' : 'Add a comment... (@ to mention)'}
                   rows={2}
-                  className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 pr-12 text-sm outline-none resize-none focus:border-fluid-500 focus:ring-1 focus:ring-fluid-500/20"
+                  className="w-full rounded-xl border border-theme-border bg-theme-page px-4 py-3 pr-12 text-sm outline-none resize-none focus:border-fluid-500 focus:ring-1 focus:ring-fluid-500/20"
                 />
                 <button
                   onClick={handleSubmit}
                   disabled={!newComment.trim() || submitting}
-                  className="absolute right-2 bottom-2 rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors disabled:opacity-30"
+                  className="absolute right-2 bottom-2 rounded-lg p-2 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors disabled:opacity-30"
                 >
                   <Send className="h-4 w-4" />
                 </button>
@@ -312,8 +312,8 @@ export function Comments({ pageId, teamMembers }: CommentsProps) {
 
               {/* Mentions dropdown */}
               {showMentions && filteredMembers.length > 0 && (
-                <div className="absolute bottom-full left-0 right-0 mb-1 rounded-xl border border-gray-200 bg-white shadow-xl overflow-hidden z-50">
-                  <div className="px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider text-gray-400 border-b border-gray-50 bg-gray-50/50">
+                <div className="absolute bottom-full left-0 right-0 mb-1 rounded-xl border border-theme-border bg-theme-page shadow-xl overflow-hidden z-50">
+                  <div className="px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider text-theme-muted border-b border-theme-border bg-theme-card/50">
                     Mention someone
                   </div>
                   {filteredMembers.slice(0, 5).map((member, i) => (
@@ -321,25 +321,25 @@ export function Comments({ pageId, teamMembers }: CommentsProps) {
                       key={member.id}
                       onClick={() => insertMention(member)}
                       className={`flex w-full items-center gap-2 px-3 py-2 text-sm text-left transition-colors ${
-                        i === mentionIndex ? 'bg-fluid-50' : 'hover:bg-gray-50'
+                        i === mentionIndex ? 'bg-fluid-50' : 'hover:bg-theme-hover'
                       }`}
                     >
                       {member.image ? (
                         <img src={member.image} alt="" className="h-5 w-5 rounded-full" />
                       ) : (
-                        <div className="h-5 w-5 rounded-full bg-gray-200 flex items-center justify-center text-[10px] font-medium text-gray-600">
+                        <div className="h-5 w-5 rounded-full bg-theme-hover flex items-center justify-center text-[10px] font-medium text-theme-subtle">
                           {(member.name || member.email || '?')[0]?.toUpperCase()}
                         </div>
                       )}
-                      <span className="font-medium text-gray-900">{member.name || 'Unknown'}</span>
-                      <span className="text-xs text-gray-400">{member.email}</span>
+                      <span className="font-medium text-theme-main">{member.name || 'Unknown'}</span>
+                      <span className="text-xs text-theme-muted">{member.email}</span>
                     </button>
                   ))}
                 </div>
               )}
 
-              <p className="mt-1.5 text-[11px] text-gray-400">
-                Press <kbd className="font-mono bg-gray-100 px-1 py-0.5 rounded">⌘ Enter</kbd> to send · <kbd className="font-mono bg-gray-100 px-1 py-0.5 rounded">@</kbd> to mention
+              <p className="mt-1.5 text-[11px] text-theme-muted">
+                Press <kbd className="font-mono bg-theme-hover px-1 py-0.5 rounded">⌘ Enter</kbd> to send · <kbd className="font-mono bg-theme-hover px-1 py-0.5 rounded">@</kbd> to mention
               </p>
             </div>
           </>

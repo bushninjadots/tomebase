@@ -147,6 +147,13 @@ model Team {
   slug      String   @unique
   tier      String   @default("free")
   personal  Boolean  @default(false)
+
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  stripePriceId        String?
+  currentPeriodEnd     DateTime?
+  trialEndsAt          DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

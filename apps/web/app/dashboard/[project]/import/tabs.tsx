@@ -14,13 +14,13 @@ export function ImportTabs({ projectId }: ImportTabsProps) {
 
   return (
     <div>
-      <div className="flex gap-1 rounded-xl border border-gray-200 bg-gray-50 p-1 mb-8">
+      <div className="flex gap-1 rounded-xl border border-theme-border bg-theme-card p-1 mb-8">
         <button
           onClick={() => setTab('code')}
           className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
             tab === 'code'
-              ? 'bg-white text-theme-main shadow-sm border border-gray-200'
-              : 'text-gray-500 hover:text-gray-700'
+              ? 'bg-white text-theme-main shadow-sm border border-theme-border'
+              : 'text-theme-muted hover:text-theme-main'
           }`}
         >
           <Code2 className="inline h-4 w-4 mr-1.5" />
@@ -30,8 +30,8 @@ export function ImportTabs({ projectId }: ImportTabsProps) {
           onClick={() => setTab('openapi')}
           className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
             tab === 'openapi'
-              ? 'bg-white text-theme-main shadow-sm border border-gray-200'
-              : 'text-gray-500 hover:text-gray-700'
+              ? 'bg-white text-theme-main shadow-sm border border-theme-border'
+              : 'text-theme-muted hover:text-theme-main'
           }`}
         >
           <FileJson className="inline h-4 w-4 mr-1.5" />
@@ -41,7 +41,7 @@ export function ImportTabs({ projectId }: ImportTabsProps) {
 
       {tab === 'code' ? (
         <div>
-          <p className="text-sm text-gray-500 mb-6">
+          <p className="text-sm text-theme-muted mb-6">
             Paste your TypeScript or JavaScript source code. TomeBase parses JSDoc comments, types, and signatures to
             generate documentation pages.
           </p>
@@ -49,7 +49,7 @@ export function ImportTabs({ projectId }: ImportTabsProps) {
         </div>
       ) : (
         <div>
-          <p className="text-sm text-gray-500 mb-6">
+          <p className="text-sm text-theme-muted mb-6">
             Import an OpenAPI 3.0/3.1 specification to generate API endpoint documentation pages. Supports JSON and YAML
             formats — paste directly or fetch from a URL.
           </p>

@@ -90,26 +90,26 @@ export function GuidedTutorial({ projectId }: { projectId?: string }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-gray-700 dark:bg-gray-900">
+      <div className="w-full max-w-md rounded-2xl border border-theme-border bg-white p-6 shadow-2xl">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400">
               <Icon className="h-4 w-4" />
             </div>
-            <span className="text-xs font-medium text-gray-400 dark:text-gray-500">
+            <span className="text-xs font-medium text-theme-muted">
               Step {step + 1} of {steps.length}
             </span>
           </div>
           <button
             onClick={dismiss}
-            className="rounded p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            className="rounded p-1 text-theme-muted hover:text-theme-subtle transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{current.title}</h3>
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{current.description}</p>
+        <h3 className="text-lg font-semibold text-theme-main">{current.title}</h3>
+        <p className="mt-2 text-sm text-theme-muted">{current.description}</p>
 
         {current.href && (
           <a
@@ -127,7 +127,7 @@ export function GuidedTutorial({ projectId }: { projectId?: string }) {
               <div
                 key={i}
                 className={`h-1.5 rounded-full transition-colors ${
-                  i === step ? 'w-6 bg-fluid-600' : 'w-1.5 bg-gray-200 dark:bg-gray-700'
+                  i === step ? 'w-6 bg-fluid-600' : 'w-1.5 bg-theme-hover'
                 }`}
               />
             ))}
@@ -137,14 +137,14 @@ export function GuidedTutorial({ projectId }: { projectId?: string }) {
             {step > 0 && (
               <button
                 onClick={prev}
-                className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800"
+                className="rounded-lg border border-theme-border px-3 py-1.5 text-sm font-medium text-theme-subtle hover:bg-theme-hover transition-colors"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
             )}
             <button
               onClick={next}
-              className="rounded-lg bg-gray-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors dark:bg-fluid-600 dark:hover:bg-fluid-700"
+              className="rounded-lg bg-theme-main px-4 py-1.5 text-sm font-medium text-white hover:opacity-90 transition-colors dark:bg-fluid-600 dark:hover:bg-fluid-700"
             >
               {step === steps.length - 1 ? 'Get Started' : 'Next'}
             </button>

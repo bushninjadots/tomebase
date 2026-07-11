@@ -15,7 +15,7 @@ export function CopyLinkButton() {
   return (
     <button
       onClick={copy}
-      className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+      className="rounded-lg p-1.5 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
       title="Copy page link"
     >
       {copied ? <Check className="h-4 w-4 text-green-500" /> : <Link2 className="h-4 w-4" />}

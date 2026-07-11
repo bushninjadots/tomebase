@@ -14,7 +14,7 @@ function GitHubButton() {
     >
       <button
         type="submit"
-        className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-200 bg-white px-6 py-3 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50 hover:shadow disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-3 rounded-lg border border-theme-border bg-white px-6 py-3 text-sm font-medium text-theme-subtle shadow-sm transition-all hover:border-theme-border hover:bg-theme-hover hover:shadow disabled:opacity-50"
         disabled={!process.env.AUTH_GITHUB_ID}
       >
         <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
@@ -37,7 +37,7 @@ function GoogleButton() {
     >
       <button
         type="submit"
-        className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-200 bg-white px-6 py-3 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50 hover:shadow disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-3 rounded-lg border border-theme-border bg-white px-6 py-3 text-sm font-medium text-theme-subtle shadow-sm transition-all hover:border-theme-border hover:bg-theme-hover hover:shadow disabled:opacity-50"
         disabled={!process.env.AUTH_GOOGLE_ID}
       >
         <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
@@ -58,7 +58,7 @@ export default async function LoginPage() {
   return (
     <div className="gradient-bg flex min-h-screen items-center justify-center">
       <div className="mx-auto max-w-sm w-full px-4">
-        <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
+        <div className="rounded-2xl border border-theme-border bg-white p-8 shadow-sm">
           <div className="mb-8 text-center">
             <Link href="/" className="mb-6 inline-flex items-center gap-2">
               <svg viewBox="0 0 32 32" fill="none" className="h-8 w-8" aria-hidden="true">
@@ -72,8 +72,8 @@ export default async function LoginPage() {
                 <circle cx="16" cy="16" r="4" fill="white" />
               </svg>
             </Link>
-            <h1 className="text-xl font-bold text-gray-900">Welcome to TomeBase</h1>
-            <p className="mt-2 text-sm text-gray-600">Sign in to start documenting</p>
+            <h1 className="text-xl font-bold text-theme-main">Welcome to TomeBase</h1>
+            <p className="mt-2 text-sm text-theme-subtle">Sign in to start documenting</p>
           </div>
 
           <LoginForm />
@@ -82,10 +82,10 @@ export default async function LoginPage() {
             <>
               <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200" />
+                  <div className="w-full border-t border-theme-border" />
                 </div>
                 <div className="relative flex justify-center text-xs">
-                  <span className="bg-white px-2 text-gray-400">or continue with</span>
+                  <span className="bg-white px-2 text-theme-muted">or continue with</span>
                 </div>
               </div>
               <div className="space-y-3">
@@ -95,11 +95,11 @@ export default async function LoginPage() {
             </>
           )}
 
-          <p className="mt-6 text-center text-xs text-gray-500">
+          <p className="mt-6 text-center text-xs text-theme-muted">
             By signing in, you agree to our{' '}
-            <Link href="/terms" className="underline hover:text-gray-700">Terms</Link>
+            <Link href="/terms" className="underline hover:text-theme-subtle">Terms</Link>
             {' '}and{' '}
-            <Link href="/privacy" className="underline hover:text-gray-700">Privacy Policy</Link>.
+            <Link href="/privacy" className="underline hover:text-theme-subtle">Privacy Policy</Link>.
           </p>
         </div>
       </div>

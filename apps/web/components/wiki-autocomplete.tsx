@@ -146,9 +146,9 @@ export function WikiAutocomplete({
     <div className="absolute left-0 right-0 z-50 mx-8 mt-1" style={{ top: 0 }}>
       <div
         ref={listRef}
-        className="rounded-xl border border-gray-200 bg-white shadow-xl overflow-hidden max-h-80 overflow-y-auto dark:border-gray-700 dark:bg-gray-900"
+        className="rounded-xl border border-theme-border bg-white shadow-xl overflow-hidden max-h-80 overflow-y-auto"
       >
-        <div className="px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider text-gray-400 border-b border-gray-50 bg-gray-50/50 dark:border-gray-800 dark:bg-gray-800/50">
+        <div className="px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider text-theme-muted border-b border-theme-border bg-theme-card/50">
           Link to page{filtered.length > 1 ? 's' : ''} {query && `— "${query}"`}
         </div>
         {filtered.map((page, i) => (
@@ -159,27 +159,27 @@ export function WikiAutocomplete({
             className={`flex w-full items-center gap-3 px-3 py-2.5 text-sm text-left transition-colors ${
               i === activeIndex
                 ? 'bg-fluid-50 text-fluid-700 dark:bg-fluid-900/30 dark:text-fluid-400'
-                : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'
+                : 'text-theme-subtle hover:bg-theme-hover'
             }`}
           >
             <FileText className={`h-4 w-4 shrink-0 ${
-              i === activeIndex ? 'text-fluid-500' : 'text-gray-400'
+              i === activeIndex ? 'text-fluid-500' : 'text-theme-muted'
             }`} />
             <div className="flex-1 min-w-0">
               <div className="font-medium truncate">{page.title}</div>
               {page.description && (
-                <div className="text-xs text-gray-400 truncate mt-0.5">
+                <div className="text-xs text-theme-muted truncate mt-0.5">
                   {page.description}
                 </div>
               )}
             </div>
-            <span className="text-[10px] text-gray-400 font-mono shrink-0">
+            <span className="text-[10px] text-theme-muted font-mono shrink-0">
               {i === activeIndex ? '⏎ enter' : ''}
             </span>
           </button>
         ))}
         {pages.length === 0 && (
-          <div className="px-3 py-6 text-center text-xs text-gray-400">
+          <div className="px-3 py-6 text-center text-xs text-theme-muted">
             <Plus className="h-5 w-5 mx-auto mb-2 opacity-50" />
             No pages yet — create one from the sidebar
           </div>

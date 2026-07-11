@@ -35,7 +35,7 @@ export async function PATCH(
       const tier = project.teamId ? await getTeamTier(project.teamId) : 'free';
       if (!TIERS[tier].customDomain) {
         return NextResponse.json(
-          { error: 'Custom domains require a Pro or Enterprise plan' },
+          { error: 'Custom domains require a Pro plan' },
           { status: 403 },
         );
       }

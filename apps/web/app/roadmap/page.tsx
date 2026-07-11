@@ -28,7 +28,7 @@ const shipped = [
   { label: 'Public search (Cmd+K on published docs)' },
   { label: 'Landing page with stats and pricing' },
   { label: 'Onboarding checklist for new users' },
-  { label: 'Tier limits (Free/Pro/Enterprise) with usage metering' },
+  { label: 'Tier limits (Free/Pro) with usage metering' },
   { label: 'Pricing page with comparison table' },
   { label: 'GitHub sync (connect repo, import .md files)' },
   { label: 'Webhook notifications (page create/update/publish)' },
@@ -38,6 +38,10 @@ const shipped = [
   { label: 'Page comments & discussions with @mentions' },
   { label: 'Revision diff — snapshot comparison' },
   { label: 'Breadcrumb navigation across dashboard' },
+  { label: 'Stripe billing (Checkout + Portal + webhooks)' },
+  { label: '2-tier pricing (Free €0 / Pro €15)' },
+  { label: 'Security hardening (rate limiting, SSRF, auth guards)' },
+  { label: 'CI/CD via GitHub Actions' },
 ];
 
 const categories = [
@@ -46,10 +50,9 @@ const categories = [
     icon: Zap,
     color: 'text-amber-600 bg-amber-50 border-amber-100 dark:text-amber-400 dark:bg-amber-950/30 dark:border-amber-900/50',
     items: [
-      'Mobile responsive public docs and editor',
-      'Global search across all projects',
-      'Email notifications for comments, @mentions, and invites',
-      'Project-level export button in settings (done)',
+      'Theme migration — all hardcoded colors to CSS variables',
+      'Test suite — Vitest unit/integration tests for core utilities',
+      'AI writing assistant — smart suggestions, auto-summarize, rewrite',
     ],
   },
   {
@@ -57,11 +60,10 @@ const categories = [
     icon: Clock,
     color: 'text-blue-600 bg-blue-50 border-blue-100 dark:text-blue-400 dark:bg-blue-950/30 dark:border-blue-900/50',
     items: [
-      'Stripe billing integration (paid tiers)',
-      'Welcome email with onboarding flow',
-      'Empty-state templates when creating first project',
-      'Self-hosted deployment guide (Docker)',
-      'Live doc health — real code repo integration',
+      'Global search across all projects',
+      'GitHub/GitLab sync — connect repo, auto-import .md files',
+      'Email notifications for comments, @mentions, and invites',
+      'Self-hosted deployment guide (Docker Compose)',
     ],
   },
   {
@@ -69,13 +71,12 @@ const categories = [
     icon: Circle,
     color: 'text-gray-600 bg-gray-50 border-gray-100 dark:text-gray-400 dark:bg-gray-900/50 dark:border-gray-800',
     items: [
-      'SSO/SAML (enterprise single sign-on)',
+      'SSO/SAML (single sign-on)',
       'Audit log for compliance',
       'Read-only sharing links',
       'Plugin system (custom blocks, themes)',
       'Community marketplace for templates',
       'Multi-region edge delivery',
-      'AI-powered answers over your docs',
     ],
   },
 ];
@@ -83,7 +84,7 @@ const categories = [
 export default function RoadmapPage() {
   return (
     <div className="gradient-bg">
-      <nav className="sticky top-0 z-50 border-b border-gray-100/80 bg-white/70 backdrop-blur-xl dark:border-gray-800/80 dark:bg-gray-950/70">
+      <nav className="sticky top-0 z-50 border-b border-theme-border/80 bg-theme-page/70 backdrop-blur-xl">
         <Container>
           <div className="flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
@@ -97,14 +98,14 @@ export default function RoadmapPage() {
                 <rect width="32" height="32" rx="8" fill="url(#logo-nav-r)" />
                 <circle cx="16" cy="16" r="4" fill="white" />
               </svg>
-              <span className="text-lg font-bold tracking-tight dark:text-white">TomeBase</span>
+              <span className="text-lg font-bold tracking-tight text-theme-main">TomeBase</span>
             </Link>
             <div className="flex items-center gap-6">
-              <Link href="/pricing" className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors dark:text-gray-400 dark:hover:text-white">Pricing</Link>
-              <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors dark:text-gray-400 dark:hover:text-white">Sign in</Link>
+              <Link href="/pricing" className="text-sm font-medium text-theme-subtle hover:text-theme-main transition-colors">Pricing</Link>
+              <Link href="/login" className="text-sm font-medium text-theme-subtle hover:text-theme-main transition-colors">Sign in</Link>
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+                className="inline-flex items-center gap-2 rounded-lg bg-theme-main px-4 py-2 text-sm font-medium text-theme-page hover:opacity-90 transition-colors"
               >
                 Get Started
                 <ArrowRight className="h-4 w-4" />
@@ -121,10 +122,10 @@ export default function RoadmapPage() {
               <Github className="h-3.5 w-3.5" />
               Open source · Active development
             </div>
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl dark:text-white">
+            <h1 className="text-4xl font-bold tracking-tight text-theme-main sm:text-5xl">
               Public Roadmap
             </h1>
-            <p className="mx-auto mt-4 max-w-xl text-lg text-gray-600 dark:text-gray-400">
+            <p className="mx-auto mt-4 max-w-xl text-lg text-theme-subtle">
               TomeBase is in active development. Here&apos;s what we&apos;ve shipped
               and what&apos;s coming next.
             </p>
@@ -132,32 +133,32 @@ export default function RoadmapPage() {
 
           {/* Stats */}
           <div className="mx-auto mt-12 grid max-w-2xl grid-cols-3 gap-6 text-center">
-            <div className="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">30</div>
-              <div className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">API routes</div>
+            <div className="rounded-xl border border-theme-border bg-theme-card p-5">
+              <div className="text-2xl font-bold text-theme-main">30</div>
+              <div className="mt-0.5 text-xs text-theme-muted">API routes</div>
             </div>
-            <div className="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400">35</div>
-              <div className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Features shipped</div>
+            <div className="rounded-xl border border-theme-border bg-theme-card p-5">
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">39</div>
+              <div className="mt-0.5 text-xs text-theme-muted">Features shipped</div>
             </div>
-            <div className="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">17</div>
-              <div className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">In progress / planned</div>
+            <div className="rounded-xl border border-theme-border bg-theme-card p-5">
+              <div className="text-2xl font-bold text-theme-main">10</div>
+              <div className="mt-0.5 text-xs text-theme-muted">In progress / planned</div>
             </div>
           </div>
 
           {/* Shipped */}
           <div className="mx-auto mt-16 max-w-2xl">
-            <h2 className="flex items-center gap-2 text-xl font-bold text-gray-900 mb-1 dark:text-white">
+            <h2 className="flex items-center gap-2 text-xl font-bold text-theme-main mb-1">
               <CheckCircle className="h-5 w-5 text-green-500" />
               Shipped
             </h2>
-            <p className="text-sm text-gray-500 mb-6 dark:text-gray-400">Everything available in TomeBase today.</p>
+            <p className="text-sm text-theme-muted mb-6">Everything available in TomeBase today.</p>
             <div className="grid gap-2">
               {shipped.map((item) => (
                 <div key={item.label} className="flex items-center gap-3 rounded-lg border border-green-100 bg-green-50/30 px-4 py-2.5 dark:border-green-900/50 dark:bg-green-950/30">
                   <CheckCircle className="h-4 w-4 shrink-0 text-green-500" />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">{item.label}</span>
+                  <span className="text-sm text-theme-subtle">{item.label}</span>
                 </div>
               ))}
             </div>
@@ -165,11 +166,11 @@ export default function RoadmapPage() {
 
           {/* Planned */}
           <div className="mx-auto mt-20 max-w-2xl">
-            <h2 className="flex items-center gap-2 text-xl font-bold text-gray-900 mb-1 dark:text-white">
+            <h2 className="flex items-center gap-2 text-xl font-bold text-theme-main mb-1">
               <Clock className="h-5 w-5 text-fluid-600" />
               Planned
             </h2>
-            <p className="text-sm text-gray-500 mb-6 dark:text-gray-400">What we&apos;re building next. Priorities may shift based on feedback.</p>
+            <p className="text-sm text-theme-muted mb-6">What we&apos;re building next. Priorities may shift based on feedback.</p>
             <div className="space-y-8">
               {categories.map((cat) => (
                 <div key={cat.title}>
@@ -179,9 +180,9 @@ export default function RoadmapPage() {
                   </div>
                   <div className="grid gap-2">
                     {cat.items.map((item) => (
-                      <div key={item} className="flex items-center gap-3 rounded-lg border border-gray-100 bg-white px-4 py-2.5 dark:border-gray-800 dark:bg-gray-900">
-                        <Circle className="h-4 w-4 shrink-0 text-gray-300" />
-                        <span className="text-sm text-gray-600 dark:text-gray-400">{item}</span>
+                      <div key={item} className="flex items-center gap-3 rounded-lg border border-theme-border bg-theme-card px-4 py-2.5">
+                        <Circle className="h-4 w-4 shrink-0 text-theme-muted" />
+                        <span className="text-sm text-theme-subtle">{item}</span>
                       </div>
                     ))}
                   </div>
@@ -191,14 +192,14 @@ export default function RoadmapPage() {
           </div>
 
           {/* CTA */}
-          <div className="mx-auto mt-20 max-w-lg text-center rounded-2xl border border-gray-100 bg-white p-8 dark:border-gray-800 dark:bg-gray-900">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Have feedback?</h2>
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+          <div className="mx-auto mt-20 max-w-lg text-center rounded-2xl border border-theme-border bg-theme-card p-8">
+            <h2 className="text-lg font-semibold text-theme-main">Have feedback?</h2>
+            <p className="mt-2 text-sm text-theme-muted">
               Open an issue on GitHub to report bugs, request features, or vote on what we build next.
             </p>
             <Link
               href="https://github.com/bushninjadots/tomebase/issues"
-              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-theme-main px-5 py-2.5 text-sm font-medium text-theme-page hover:opacity-90 transition-colors"
             >
               <Github className="h-4 w-4" />
               Open a GitHub Issue
@@ -207,25 +208,25 @@ export default function RoadmapPage() {
         </Container>
       </section>
 
-      <footer className="border-t border-gray-100 py-12 dark:border-gray-800">
+      <footer className="border-t border-theme-border py-12">
         <Container>
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex items-center gap-2 text-sm text-theme-muted">
               <svg viewBox="0 0 32 32" fill="none" className="h-5 w-5" aria-hidden="true">
                 <rect width="32" height="32" rx="8" fill="#0c8ee7" />
                 <circle cx="16" cy="16" r="4" fill="white" />
               </svg>
               TomeBase — Your knowledge base.
             </div>
-            <div className="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400">
-              <Link href="/pricing" className="hover:text-gray-900 transition-colors dark:hover:text-white">Pricing</Link>
-              <span className="text-gray-200">·</span>
-              <Link href="/roadmap" className="hover:text-gray-900 transition-colors dark:hover:text-white">Roadmap</Link>
-              <span className="text-gray-200">·</span>
-              <Link href="https://github.com/bushninjadots/tomebase" className="hover:text-gray-900 transition-colors dark:hover:text-white">GitHub</Link>
-              <span className="text-gray-200">·</span>
-              <Link href="/terms" className="hover:text-gray-900 transition-colors dark:hover:text-white">Terms</Link>
-              <Link href="/privacy" className="hover:text-gray-900 transition-colors dark:hover:text-white">Privacy</Link>
+            <div className="flex items-center gap-6 text-sm text-theme-muted">
+              <Link href="/pricing" className="hover:text-theme-main transition-colors">Pricing</Link>
+              <span className="text-theme-border">·</span>
+              <Link href="/roadmap" className="hover:text-theme-main transition-colors">Roadmap</Link>
+              <span className="text-theme-border">·</span>
+              <Link href="https://github.com/bushninjadots/tomebase" className="hover:text-theme-main transition-colors">GitHub</Link>
+              <span className="text-theme-border">·</span>
+              <Link href="/terms" className="hover:text-theme-main transition-colors">Terms</Link>
+              <Link href="/privacy" className="hover:text-theme-main transition-colors">Privacy</Link>
             </div>
           </div>
         </Container>

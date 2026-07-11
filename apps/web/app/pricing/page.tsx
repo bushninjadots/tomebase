@@ -1,82 +1,69 @@
 import { Container } from '@fluid/ui';
 import Link from 'next/link';
 import { Check, ArrowRight, Info } from 'lucide-react';
+import { PricingButtons } from './buttons';
 
 const plans = [
   {
     name: 'Free',
-    price: '$0',
-    description: 'For solo developers and small projects. Everything you need to start documenting.',
+    price: '\u20AC0',
+    period: '/month',
+    description: 'For students, hobbyists, and developers evaluating TomeBase. Build and publish complete documentation.',
     features: [
       '1 project',
-      '50 pages per project',
-      '5 team members',
-      'Full Markdown editor with live preview',
-      'Wiki links & backlinks',
-      'Graph view',
-      'Cmd+K search',
-      'Public docs hosting',
-      'Code generation (TS/JS)',
-      'Real-time notifications',
-      'API key management',
-      'Email/password or OAuth login',
+      'Unlimited documentation pages',
+      'Markdown editor with live preview',
+      'Auto-save',
+      'Wiki Links & Backlinks',
+      'Graph View',
+      'Search (Cmd+K)',
+      'Documentation publishing',
+      'TomeBase subdomain (project.tomebase.app)',
+      'Basic themes',
+      'Community support',
     ],
     note: 'No credit card required.',
-    cta: 'Get Started',
+    cta: 'Start Free',
     popular: false,
+    tier: 'free' as const,
   },
   {
     name: 'Pro',
-    price: '$29',
+    price: '\u20AC15',
     period: '/month',
-    description: 'For growing teams that need more projects, pages, and members.',
+    description: 'For indie developers, freelancers, startups, and engineering teams who need more.',
     features: [
-      '10 projects',
-      '500 pages per project',
-      '15 team members',
-      'Everything in Free',
-      'Custom domain support',
-      'Priority support',
-      'Advanced analytics',
-      'API access (higher rate limits)',
+      'Unlimited projects',
+      'Unlimited documentation pages',
+      'Private documentation',
+      'Custom domains',
+      'Remove TomeBase branding',
+      'Team collaboration',
+      'Unlimited collaborators',
+      'Version history',
+      'Documentation analytics',
+      'API access',
+      'Priority email support',
+      'Early access to new features',
     ],
-    note: 'Stripe billing coming soon.',
-    cta: 'Start Free Trial',
+    note: 'Cancel anytime.',
+    cta: 'Upgrade to Pro',
     popular: true,
-  },
-  {
-    name: 'Enterprise',
-    price: 'Custom',
-    description: 'For organizations that need maximum scale, control, and support.',
-    features: [
-      '100 projects',
-      '10,000 pages per project',
-      'Up to 100 team members',
-      'Everything in Pro',
-      'SSO / SAML',
-      'Audit logs',
-      'Role-based access control',
-      'Dedicated support & SLA',
-      'Self-hosted option',
-      'Custom integrations',
-    ],
-    note: 'Contact us for a tailored quote.',
-    cta: 'Contact Sales',
-    popular: false,
+    tier: 'pro' as const,
   },
 ];
 
 const faq = [
   { q: 'Can I upgrade from Free to Pro later?', a: 'Yes. You can upgrade at any time. Your data and pages are preserved.' },
-  { q: 'Is there a free trial for Pro?', a: 'Yes — start a 14-day free trial with no credit card required.' },
   { q: 'What payment methods do you accept?', a: 'Stripe-powered billing with credit/debit card support.' },
-  { q: 'Can I self-host Enterprise?', a: 'Yes, Enterprise plans include a self-hosted option for full data control.' },
+  { q: 'Can I cancel anytime?', a: 'Yes. Cancel from your dashboard settings anytime. You keep access until the end of your billing period.' },
+  { q: 'Does the Free plan feel limited?', a: 'No. The Free plan includes unlimited pages, the full editor, wiki links, graph view, search, and public hosting. You only upgrade when you need multiple projects, private docs, or custom domains.' },
 ];
 
 export default function PricingPage() {
   return (
     <div className="gradient-bg min-h-screen">
-      <nav className="sticky top-0 z-50 border-b border-gray-100/80 bg-white/70 backdrop-blur-xl dark:border-gray-800/80 dark:bg-gray-950/70">
+      <nav className="sticky top-0 z-50 border-b border-theme-border/80 bg-white/70 backdrop-blur-xl">
         <Container>
           <div className="flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
@@ -87,10 +74,10 @@ export default function PricingPage() {
               <span className="font-bold tracking-tight dark:text-white">TomeBase</span>
             </Link>
             <div className="flex items-center gap-4">
-              <Link href="/features" className="text-sm text-gray-500 hover:text-gray-900 transition-colors dark:text-gray-400 dark:hover:text-white">Features</Link>
+              <Link href="/features" className="text-sm text-theme-muted hover:text-theme-main transition-colors">Features</Link>
               <Link
                 href="/login"
-                className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+                className="rounded-lg bg-theme-main px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-colors"
               >
                 Get Started
               </Link>
@@ -101,23 +88,23 @@ export default function PricingPage() {
 
       <Container className="py-24">
         <div className="mx-auto max-w-2xl text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl dark:text-white">
+          <h1 className="text-4xl font-bold tracking-tight text-theme-main sm:text-5xl">
             Simple, transparent <span className="gradient-text">pricing</span>
           </h1>
-          <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
-            Start for free. Upgrade when you need more projects, pages, or team members.
+          <p className="mt-4 text-lg text-theme-subtle">
+            Start for free. Upgrade only when you need private docs, custom domains, or team collaboration.
           </p>
         </div>
 
-        <div className="mt-16 grid gap-8 lg:grid-cols-3">
+        <div className="mt-16 grid gap-8 lg:grid-cols-2 max-w-3xl mx-auto">
           {plans.map((plan) => (
             <div
               key={plan.name}
-className={`relative rounded-2xl border bg-white p-8 transition-all hover:shadow-lg dark:border-gray-800 dark:bg-gray-900 ${
-  plan.popular
-    ? 'border-fluid-200 shadow-md ring-1 ring-fluid-100 dark:border-fluid-700 dark:ring-fluid-800'
-    : 'border-gray-100 shadow-sm'
-}`}
+              className={`relative rounded-2xl border bg-white p-8 transition-all hover:shadow-lg ${
+                plan.popular
+                  ? 'border-fluid-200 shadow-md ring-1 ring-fluid-100 dark:border-fluid-700 dark:ring-fluid-800'
+                  : 'border-theme-border shadow-sm'
+              }`}
             >
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-fluid-600 px-4 py-1 text-xs font-semibold text-white">
@@ -125,61 +112,51 @@ className={`relative rounded-2xl border bg-white p-8 transition-all hover:shadow
                 </div>
               )}
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{plan.name}</h3>
+                <h3 className="text-lg font-semibold text-theme-main">{plan.name}</h3>
                 <div className="mt-3 flex items-baseline gap-1">
-                  <span className="text-4xl font-bold text-gray-900 dark:text-white">{plan.price}</span>
-                  {plan.period && <span className="text-sm text-gray-500 dark:text-gray-400">{plan.period}</span>}
+                  <span className="text-4xl font-bold text-theme-main">{plan.price}</span>
+                  {plan.period && <span className="text-sm text-theme-muted">{plan.period}</span>}
                 </div>
-                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{plan.description}</p>
+                <p className="mt-2 text-sm text-theme-muted">{plan.description}</p>
               </div>
               <ul className="mb-6 space-y-3">
                 {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3 text-sm text-gray-600 dark:text-gray-300">
+                  <li key={feature} className="flex items-start gap-3 text-sm text-theme-subtle">
                     <Check className="mt-0.5 h-4 w-4 shrink-0 text-fluid-600 dark:text-fluid-400" />
                     {feature}
                   </li>
                 ))}
               </ul>
               {plan.note && (
-                <p className="mb-6 flex items-start gap-2 text-xs text-gray-400">
+                <p className="mb-6 flex items-start gap-2 text-xs text-theme-muted">
                   <Info className="mt-0.5 h-3 w-3 shrink-0" />
                   {plan.note}
                 </p>
               )}
-              <Link
-                href="/login"
-className={`inline-flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
-  plan.popular
-    ? 'bg-gray-900 text-white hover:bg-gray-800'
-    : 'border border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:border-gray-600 dark:hover:bg-gray-800'
-}`}
-              >
-                {plan.cta}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
+              <PricingButtons plan={plan} />
             </div>
           ))}
         </div>
 
         <div className="mx-auto mt-24 max-w-2xl">
-          <h2 className="text-center text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+          <h2 className="text-center text-2xl font-bold tracking-tight text-theme-main">
             Frequently asked questions
           </h2>
           <div className="mt-10 space-y-6">
             {faq.map((item) => (
               <div key={item.q}>
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{item.q}</h3>
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{item.a}</p>
+                <h3 className="text-sm font-semibold text-theme-main">{item.q}</h3>
+                <p className="mt-1 text-sm text-theme-muted">{item.a}</p>
               </div>
             ))}
           </div>
         </div>
       </Container>
 
-      <footer className="border-t border-gray-100 bg-white py-12 dark:border-gray-800">
+      <footer className="border-t border-theme-border bg-white py-12">
         <Container>
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-            <div className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="text-sm text-theme-muted">
               TomeBase — Your knowledge base.
             </div>
           </div>

@@ -34,7 +34,6 @@ export interface User {
 export enum SubscriptionTier {
   Free = 'free',
   Pro = 'pro',
-  Enterprise = 'enterprise',
 }
 
 /**
@@ -98,7 +97,7 @@ export function ImportForm({ projectId }: ImportFormProps) {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
-          <label htmlFor="code" className="text-sm font-medium text-gray-700">
+          <label htmlFor="code" className="text-sm font-medium text-theme-subtle">
             Source Code
           </label>
           <button
@@ -114,11 +113,11 @@ export function ImportForm({ projectId }: ImportFormProps) {
           value={code}
           onChange={(e) => setCode(e.target.value)}
           rows={18}
-          className="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 font-mono text-sm leading-relaxed shadow-sm placeholder:text-gray-300 focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
+          className="block w-full rounded-xl border border-theme-border bg-white px-4 py-3 font-mono text-sm leading-relaxed shadow-sm placeholder:text-theme-muted focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
           placeholder={`/**\n * Paste your TypeScript/JavaScript code here...\n */\nexport function myFunction() {\n  // ...\n}`}
           spellCheck={false}
         />
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-theme-muted">
           Supports TypeScript and JavaScript with JSDoc comments.
         </p>
       </div>

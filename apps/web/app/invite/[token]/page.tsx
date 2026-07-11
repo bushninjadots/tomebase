@@ -20,12 +20,12 @@ export default async function InvitePage({ params }: PageProps) {
 
   if (invitation.expiresAt < new Date()) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-theme-card">
         <Container>
           <div className="mx-auto max-w-sm text-center">
-            <Users className="mx-auto h-12 w-12 text-gray-300" />
-            <h1 className="mt-4 text-xl font-bold text-gray-900">Link Expired</h1>
-            <p className="mt-2 text-sm text-gray-500">
+            <Users className="mx-auto h-12 w-12 text-theme-border" />
+            <h1 className="mt-4 text-xl font-bold text-theme-main">Link Expired</h1>
+            <p className="mt-2 text-sm text-theme-muted">
               This invitation link has expired. Ask your team admin for a new one.
             </p>
           </div>
@@ -36,17 +36,17 @@ export default async function InvitePage({ params }: PageProps) {
 
   if (invitation.accepted) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-theme-card">
         <Container>
           <div className="mx-auto max-w-sm text-center">
             <Users className="mx-auto h-12 w-12 text-green-500" />
-            <h1 className="mt-4 text-xl font-bold text-gray-900">Already Accepted</h1>
-            <p className="mt-2 text-sm text-gray-500">
+            <h1 className="mt-4 text-xl font-bold text-theme-main">Already Accepted</h1>
+            <p className="mt-2 text-sm text-theme-muted">
               This invitation has already been accepted.
             </p>
             <Link
               href="/dashboard"
-              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-theme-main px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-colors"
             >
               Go to Dashboard
             </Link>
@@ -58,17 +58,17 @@ export default async function InvitePage({ params }: PageProps) {
 
   if (!session?.user?.id) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-theme-card">
         <Container>
           <div className="mx-auto max-w-sm text-center">
             <Users className="mx-auto h-12 w-12 text-fluid-600" />
-            <h1 className="mt-4 text-xl font-bold text-gray-900">Join the Team</h1>
-            <p className="mt-2 text-sm text-gray-500">
+            <h1 className="mt-4 text-xl font-bold text-theme-main">Join the Team</h1>
+            <p className="mt-2 text-sm text-theme-muted">
               Sign in to accept this invitation and join the team.
             </p>
             <Link
               href={`/login?callbackUrl=/invite/${token}`}
-              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-theme-main px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-colors"
             >
               Sign In to Accept
             </Link>
@@ -92,12 +92,12 @@ export default async function InvitePage({ params }: PageProps) {
   });
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+    <div className="flex min-h-screen items-center justify-center bg-theme-card">
       <Container>
         <div className="mx-auto max-w-sm text-center">
           <Users className="mx-auto h-12 w-12 text-fluid-600" />
-          <h1 className="mt-4 text-xl font-bold text-gray-900">Join {team?.name ?? 'the Team'}</h1>
-          <p className="mt-2 text-sm text-gray-500">
+          <h1 className="mt-4 text-xl font-bold text-theme-main">Join {team?.name ?? 'the Team'}</h1>
+          <p className="mt-2 text-sm text-theme-muted">
             You&apos;ve been invited to join this team. Accept to get started.
           </p>
           <div className="mt-8">

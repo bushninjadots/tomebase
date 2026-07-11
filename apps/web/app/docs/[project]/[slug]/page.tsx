@@ -29,25 +29,25 @@ export default async function DocPageView({ params }: PageProps) {
   if (!page || page.projectId !== projectId) notFound();
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-theme-page">
       <Container className="py-8">
         <Link
           href={`/docs/${projectId}`}
-          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition-colors mb-6"
+          className="inline-flex items-center gap-1 text-sm text-theme-muted hover:text-theme-subtle transition-colors mb-6"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to {project.name}
         </Link>
 
         <article className="mx-auto max-w-3xl">
-          <h1 className="mb-2 text-4xl font-bold tracking-tight text-gray-900">{page.title}</h1>
+          <h1 className="mb-2 text-4xl font-bold tracking-tight text-theme-main">{page.title}</h1>
           {page.description && (
-            <p className="mb-8 text-lg text-gray-500">{page.description}</p>
+            <p className="mb-8 text-lg text-theme-muted">{page.description}</p>
           )}
           <Markdown content={page.content} />
         </article>
 
-        <div className="mx-auto mt-12 max-w-3xl border-t border-gray-100 pt-6 text-xs text-gray-400">
+        <div className="mx-auto mt-12 max-w-3xl border-t border-theme-border pt-6 text-xs text-theme-muted">
           Last updated: {new Date(page.updatedAt).toLocaleDateString()}
         </div>
       </Container>

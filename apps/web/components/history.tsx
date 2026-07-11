@@ -19,7 +19,7 @@ export function HistoryButton({ pageId }: { pageId: string }) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+        className="rounded-lg p-2 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
         title="Page history"
       >
         <History className="h-4 w-4" />
@@ -119,12 +119,12 @@ function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="flex w-full max-w-4xl max-h-[85vh] rounded-2xl border border-gray-200 bg-white shadow-2xl overflow-hidden">
+      <div className="flex w-full max-w-4xl max-h-[85vh] rounded-2xl border border-theme-border bg-theme-page shadow-2xl overflow-hidden">
         {/* Sidebar - version list */}
-        <div className="w-72 shrink-0 border-r border-gray-100 flex flex-col">
-          <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-            <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-              <History className="h-4 w-4 text-gray-400" />
+        <div className="w-72 shrink-0 border-r border-theme-border flex flex-col">
+          <div className="flex items-center justify-between border-b border-theme-border px-4 py-3">
+            <h3 className="text-sm font-semibold text-theme-main flex items-center gap-2">
+              <History className="h-4 w-4 text-theme-muted" />
               History
             </h3>
             <div className="flex items-center gap-1">
@@ -133,7 +133,7 @@ function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void
                 className={`rounded-lg p-1.5 transition-colors ${
                   mode === 'compare'
                     ? 'bg-fluid-50 text-fluid-600'
-                    : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'
+                    : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
                 }`}
                 title={mode === 'compare' ? 'Exit compare mode' : 'Compare versions'}
               >
@@ -141,7 +141,7 @@ function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void
               </button>
               <button
                 onClick={onClose}
-                className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                className="rounded-lg p-1.5 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -149,7 +149,7 @@ function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void
           </div>
 
           {mode === 'compare' && (
-            <div className="border-b border-gray-100 bg-fluid-50/50 px-4 py-2">
+            <div className="border-b border-theme-border bg-fluid-50/50 px-4 py-2">
               <p className="text-xs text-fluid-700">
                 {compareSelection.length === 0
                   ? 'Select two versions to compare'
@@ -162,13 +162,13 @@ function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void
 
           <div className="flex-1 overflow-y-auto">
             {loading && (
-              <div className="p-4 text-center text-sm text-gray-400">Loading...</div>
+              <div className="p-4 text-center text-sm text-theme-muted">Loading...</div>
             )}
             {error && (
               <div className="p-4 text-center text-sm text-red-500">{error}</div>
             )}
             {!loading && snapshots.length === 0 && (
-              <div className="p-4 text-center text-sm text-gray-400">
+              <div className="p-4 text-center text-sm text-theme-muted">
                 <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
                 No history yet
               </div>
@@ -182,12 +182,12 @@ function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void
                 <button
                   key={snap.id}
                   onClick={() => mode === 'compare' ? handleCompareSelect(snap) : setPreview(snap)}
-                  className={`w-full px-4 py-3 text-left border-b border-gray-50 transition-colors ${
+                  className={`w-full px-4 py-3 text-left border-b border-theme-border transition-colors ${
                     isPreviewing
                       ? 'bg-fluid-50 border-l-2 border-l-fluid-500'
                       : selected
                       ? 'bg-fluid-50 border-l-2 border-l-fluid-400'
-                      : 'hover:bg-gray-50'
+                      : 'hover:bg-theme-hover'
                   }`}
                 >
                   <div className="flex items-center gap-2">
@@ -195,7 +195,7 @@ function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void
                       <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
                         selected
                           ? 'border-fluid-500 bg-fluid-500'
-                          : 'border-gray-300'
+                          : 'border-theme-border'
                       }`}>
                         {selected && (
                           <span className="text-[8px] text-white font-bold">
@@ -204,8 +204,8 @@ function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void
                         )}
                       </div>
                     )}
-                    <Clock className="h-3 w-3 shrink-0 text-gray-400" />
-                    <span className="text-xs text-gray-500">
+                    <Clock className="h-3 w-3 shrink-0 text-theme-muted" />
+                    <span className="text-xs text-theme-muted">
                       {new Date(snap.createdAt).toLocaleDateString(undefined, {
                         month: 'short',
                         day: 'numeric',
@@ -214,11 +214,11 @@ function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void
                       })}
                     </span>
                   </div>
-                  <p className="mt-0.5 text-sm font-medium text-gray-700 truncate">
+                  <p className="mt-0.5 text-sm font-medium text-theme-subtle truncate">
                     {snap.title}
                   </p>
                   {i < snapshots.length - 1 && (
-                    <p className="text-[10px] text-gray-400 mt-0.5">
+                    <p className="text-[10px] text-theme-muted mt-0.5">
                       {getDiffSummary(snapshots[i + 1]!, snap)}
                     </p>
                   )}
@@ -236,13 +236,13 @@ function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void
                 <div className="flex items-center gap-3 mb-4">
                   <button
                     onClick={exitCompareMode}
-                    className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                    className="rounded-lg p-1.5 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
                   >
                     <ArrowLeft className="h-4 w-4" />
                   </button>
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-900">Comparing versions</h4>
-                    <p className="text-xs text-gray-400">
+                    <h4 className="text-sm font-semibold text-theme-main">Comparing versions</h4>
+                    <p className="text-xs text-theme-muted">
                       {new Date(compareSelection[0]!.createdAt).toLocaleString()} → {new Date(compareSelection[1]!.createdAt).toLocaleString()}
                     </p>
                   </div>
@@ -257,11 +257,11 @@ function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void
             ) : (
               <div className="flex-1 flex items-center justify-center">
                 <div className="text-center p-8">
-                  <GitCompare className="h-10 w-10 mx-auto text-gray-200" />
-                  <p className="mt-3 text-sm text-gray-400">
+                  <GitCompare className="h-10 w-10 mx-auto text-theme-muted" />
+                  <p className="mt-3 text-sm text-theme-muted">
                     Select two versions to compare
                   </p>
-                  <p className="mt-1 text-xs text-gray-300">
+                  <p className="mt-1 text-xs text-theme-muted">
                     {compareSelection.length === 0 ? 'Click two versions in the list' : 'Click one more version'}
                   </p>
                 </div>
@@ -269,12 +269,12 @@ function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void
             )
           ) : preview ? (
             <>
-              <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3">
+              <div className="flex items-center justify-between border-b border-theme-border px-5 py-3">
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-900 truncate">
+                  <h4 className="text-sm font-semibold text-theme-main truncate">
                     {preview.title}
                   </h4>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-theme-muted">
                     {new Date(preview.createdAt).toLocaleString()}
                   </p>
                 </div>
@@ -288,16 +288,16 @@ function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void
                 </button>
               </div>
               <div className="flex-1 overflow-y-auto p-5">
-                <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-gray-800">
-                  {preview.content || <span className="text-gray-300 italic">No content</span>}
+                <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-theme-main">
+                  {preview.content || <span className="text-theme-muted italic">No content</span>}
                 </pre>
               </div>
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center p-8">
-                <FileText className="h-10 w-10 mx-auto text-gray-200" />
-                <p className="mt-3 text-sm text-gray-400">
+                <FileText className="h-10 w-10 mx-auto text-theme-muted" />
+                <p className="mt-3 text-sm text-theme-muted">
                   Select a version from the history to preview
                 </p>
               </div>

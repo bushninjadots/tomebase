@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Input, Button, Badge } from '@fluid/ui';
-import { Copy, Check, Users, Link2, RefreshCw } from 'lucide-react';
+import { Copy, Check, Users, Link2, RefreshCw, CreditCard, ExternalLink } from 'lucide-react';
+import Link from 'next/link';
 
 interface TeamMember {
   user: { id: string; name: string | null; email: string | null; image: string | null };
@@ -14,9 +15,17 @@ interface Team {
   id: string;
   name: string;
   personal: boolean;
+  tier: string;
+  stripeSubscriptionId: string | null;
+  currentPeriodEnd: string | null;
   members: TeamMember[];
   _count: { projects: number };
 }
+
+const TIER_LABELS: Record<string, string> = {
+  free: 'Free',
+  pro: 'Pro',
+};
 
 export function TeamSettings({
   team,
@@ -35,6 +44,7 @@ export function TeamSettings({
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [creatingLink, setCreatingLink] = useState(false);
+  const [portalLoading, setPortalLoading] = useState(false);
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -80,10 +90,63 @@ export function TeamSettings({
     setTimeout(() => setCopied(false), 2000);
   }
 
+  async function handleManageBilling() {
+    setPortalLoading(true);
+    try {
+      const res = await fetch('/api/stripe/portal', { method: 'POST' });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch {
+      // ignore
+    }
+    setPortalLoading(false);
+  }
+
   return (
     <div className="space-y-8">
+      <div className="rounded-xl border border-theme-border bg-white p-6">
+        <h2 className="text-lg font-semibold text-theme-main flex items-center gap-2">
+          <CreditCard className="h-4 w-4 text-theme-muted" />
+          Billing
+        </h2>
+        <div className="mt-4 flex items-center justify-between">
+          <div>
+            <div className="text-sm font-medium text-theme-main">
+              Current Plan: <Badge variant={team.tier === 'free' ? 'warning' : 'success'}>{TIER_LABELS[team.tier] || team.tier}</Badge>
+            </div>
+            {team.stripeSubscriptionId && team.currentPeriodEnd && (
+              <p className="mt-1 text-xs text-theme-muted">
+                Renews {new Date(team.currentPeriodEnd).toLocaleDateString()}
+              </p>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {team.tier === 'free' ? (
+              <Link
+                href="/pricing"
+                className="inline-flex items-center gap-2 rounded-lg bg-theme-main px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-colors"
+              >
+                Upgrade
+                <ExternalLink className="h-3 w-3" />
+              </Link>
+            ) : (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleManageBilling}
+                disabled={portalLoading}
+              >
+                {portalLoading ? 'Loading...' : 'Manage Subscription'}
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+
       {!team.personal && (
-        <div className="rounded-xl border border-gray-100 bg-white p-6">
+        <div className="rounded-xl border border-theme-border bg-white p-6">
           <h2 className="text-lg font-semibold text-theme-main">Team Name</h2>
           <form onSubmit={handleSave} className="mt-4 space-y-4">
             <Input
@@ -108,16 +171,16 @@ export function TeamSettings({
         </div>
       )}
 
-      <div className="rounded-xl border border-gray-100 bg-white p-6">
+      <div className="rounded-xl border border-theme-border bg-white p-6">
         <h2 className="text-lg font-semibold text-theme-main">Members</h2>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-theme-muted">
           {team.members.length} member{team.members.length !== 1 ? 's' : ''}
         </p>
         <div className="mt-4 space-y-2">
           {team.members.map((member) => (
             <div
               key={member.user.id}
-              className="flex items-center gap-3 rounded-lg border border-gray-50 bg-gray-50/50 px-4 py-3"
+              className="flex items-center gap-3 rounded-lg border border-theme-border bg-theme-card/50 px-4 py-3"
             >
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-fluid-100 text-sm font-medium text-fluid-700">
                 {member.user.name?.charAt(0)?.toUpperCase() ?? '?'}
@@ -126,11 +189,11 @@ export function TeamSettings({
                 <div className="text-sm font-medium text-theme-main">
                   {member.user.name ?? 'Unknown'}
                   {member.user.id === currentUserId && (
-                    <span className="ml-2 text-xs text-gray-400">(you)</span>
+                    <span className="ml-2 text-xs text-theme-muted">(you)</span>
                   )}
                 </div>
                 {member.user.email && (
-                  <div className="text-xs text-gray-500">{member.user.email}</div>
+                  <div className="text-xs text-theme-muted">{member.user.email}</div>
                 )}
               </div>
               <Badge variant={member.role === 'admin' ? 'default' : 'success'}>
@@ -142,9 +205,9 @@ export function TeamSettings({
       </div>
 
       {isAdmin && (
-        <div className="rounded-xl border border-gray-100 bg-white p-6">
+        <div className="rounded-xl border border-theme-border bg-white p-6">
           <h2 className="text-lg font-semibold text-theme-main">Invite Members</h2>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-theme-muted">
             Create an invite link to share with your team. Links expire after 7 days. Your current plan supports up to {team._count.projects > 0 ? 'a certain number of' : '3'} members — the invite will be rejected if the limit is reached.
           </p>
           <div className="mt-4">
@@ -169,7 +232,7 @@ export function TeamSettings({
               </Button>
             ) : (
               <div className="space-y-3">
-                <div className="flex items-center gap-2 rounded-lg bg-gray-50 px-4 py-3 font-mono text-sm text-gray-700 break-all">
+                <div className="flex items-center gap-2 rounded-lg bg-theme-card px-4 py-3 font-mono text-sm text-theme-subtle break-all">
                   {inviteUrl}
                 </div>
                 <div className="flex items-center gap-2">
@@ -198,9 +261,9 @@ export function TeamSettings({
         </div>
       )}
 
-      <div className="rounded-xl border border-gray-100 bg-white p-6">
+      <div className="rounded-xl border border-theme-border bg-white p-6">
         <h2 className="text-lg font-semibold text-theme-main">Projects</h2>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-theme-muted">
           {team._count.projects} project{team._count.projects !== 1 ? 's' : ''} in this team.
           All team members can view and edit team projects.
         </p>

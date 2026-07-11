@@ -73,17 +73,17 @@ export function ApiKeyManager({ projectId }: { projectId: string }) {
   }
 
   return (
-    <div className="rounded-xl border border-gray-100 bg-white p-6">
+    <div className="rounded-xl border border-theme-border bg-white p-6">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-lg font-semibold text-theme-main">API Keys</h2>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-theme-muted">
             Keys allow programmatic access to your documentation.
           </p>
         </div>
         <button
           onClick={() => setShowNew(true)}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-theme-main px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 transition-colors"
         >
           <Plus className="h-3.5 w-3.5" />
           New Key
@@ -105,7 +105,7 @@ export function ApiKeyManager({ projectId }: { projectId: string }) {
             <code className="flex-1 break-all">{newKeyValue}</code>
             <button
               onClick={() => copyKey(newKeyValue)}
-              className="shrink-0 rounded p-1 text-gray-400 hover:text-gray-600 transition-colors"
+              className="shrink-0 rounded p-1 text-theme-muted hover:text-theme-subtle transition-colors"
             >
               {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
             </button>
@@ -117,19 +117,19 @@ export function ApiKeyManager({ projectId }: { projectId: string }) {
       )}
 
       {showNew && (
-        <form onSubmit={createKey} className="mb-4 rounded-lg border border-gray-200 bg-gray-50 p-4 space-y-3">
+        <form onSubmit={createKey} className="mb-4 rounded-lg border border-theme-border bg-theme-card p-4 space-y-3">
           <input
             type="text"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="Key name (e.g. CI/CD)"
-            className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
+            className="w-full rounded-lg border border-theme-border px-3 py-1.5 text-sm focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
             autoFocus
           />
           <select
             value={newExpiry}
             onChange={(e) => setNewExpiry(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-500 focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
+            className="w-full rounded-lg border border-theme-border px-3 py-1.5 text-sm text-theme-muted focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
           >
             <option value="">No expiry</option>
             <option value="7">7 days</option>
@@ -141,14 +141,14 @@ export function ApiKeyManager({ projectId }: { projectId: string }) {
             <button
               type="submit"
               disabled={creating || !newName.trim()}
-              className="rounded-lg bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors disabled:opacity-50"
+              className="rounded-lg bg-theme-main px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 transition-colors disabled:opacity-50"
             >
               {creating ? 'Creating...' : 'Create'}
             </button>
             <button
               type="button"
               onClick={() => setShowNew(false)}
-              className="rounded-lg px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-200 transition-colors"
+              className="rounded-lg px-3 py-1.5 text-sm text-theme-muted hover:bg-theme-hover transition-colors"
             >
               Cancel
             </button>
@@ -157,22 +157,22 @@ export function ApiKeyManager({ projectId }: { projectId: string }) {
       )}
 
       {loading ? (
-        <div className="py-8 text-center text-sm text-gray-400">Loading...</div>
+        <div className="py-8 text-center text-sm text-theme-muted">Loading...</div>
       ) : keys.length === 0 ? (
         <div className="py-8 text-center">
-          <Key className="mx-auto h-8 w-8 text-gray-300" />
-          <p className="mt-2 text-sm text-gray-500">No API keys yet.</p>
+          <Key className="mx-auto h-8 w-8 text-theme-muted" />
+          <p className="mt-2 text-sm text-theme-muted">No API keys yet.</p>
         </div>
       ) : (
         <div className="space-y-2">
           {keys.map((apiKey) => (
             <div
               key={apiKey.id}
-              className="flex items-center justify-between rounded-lg border border-gray-100 px-4 py-3"
+              className="flex items-center justify-between rounded-lg border border-theme-border px-4 py-3"
             >
               <div>
                 <p className="text-sm font-medium text-theme-main">{apiKey.name}</p>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-theme-muted">
                   <code className="text-fluid-600 mr-2">{apiKey.prefix}...</code>
                   Created {new Date(apiKey.createdAt).toLocaleDateString()}
                   {apiKey.expiresAt && ` · Expires ${new Date(apiKey.expiresAt).toLocaleDateString()}`}
@@ -180,7 +180,7 @@ export function ApiKeyManager({ projectId }: { projectId: string }) {
               </div>
               <button
                 onClick={() => deleteKey(apiKey.id)}
-                className="rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors"
+                className="rounded-lg p-2 text-theme-muted hover:bg-red-50 hover:text-red-500 transition-colors"
                 title="Revoke key"
               >
                 <Trash2 className="h-4 w-4" />

@@ -53,20 +53,20 @@ export function CreateProjectForm({ userId }: { userId: string }) {
         required
       />
       <div className="space-y-1.5">
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="description" className="block text-sm font-medium text-theme-subtle">
           Description (optional)
         </label>
         <textarea
           id="description"
           name="description"
           rows={3}
-          className="block w-full rounded-lg border border-gray-200 px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
+          className="block w-full rounded-lg border border-theme-border px-3 py-2 text-sm shadow-sm placeholder:text-theme-muted focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
           placeholder="What is this project about?"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-sm font-medium text-theme-subtle mb-3">
           Project Template
         </label>
         <div className="grid gap-3">
@@ -81,11 +81,11 @@ export function CreateProjectForm({ userId }: { userId: string }) {
                 className={`flex items-start gap-3 rounded-xl border p-4 text-left transition-all ${
                   isSelected
                     ? 'border-fluid-500 bg-fluid-50 ring-1 ring-fluid-500'
-                    : 'border-gray-200 bg-white hover:border-gray-300'
+                    : 'border-theme-border bg-white hover:border-theme-muted'
                 }`}
               >
                 <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
-                  isSelected ? 'bg-fluid-600 text-white' : 'bg-gray-100 text-gray-500'
+                  isSelected ? 'bg-fluid-600 text-white' : 'bg-theme-hover text-theme-muted'
                 }`}>
                   <Icon className="h-5 w-5" />
                 </div>
@@ -93,7 +93,7 @@ export function CreateProjectForm({ userId }: { userId: string }) {
                   <p className={`text-sm font-medium ${isSelected ? 'text-fluid-700' : 'text-theme-main'}`}>
                     {tpl.name}
                   </p>
-                  <p className="mt-0.5 text-xs text-gray-500">{tpl.description}</p>
+                  <p className="mt-0.5 text-xs text-theme-muted">{tpl.description}</p>
                 </div>
               </button>
             );

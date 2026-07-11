@@ -65,7 +65,7 @@ export function SchedulePublish({ pageId }: { pageId: string }) {
     return (
       <button
         onClick={() => setShowForm(true)}
-        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
+        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-theme-muted hover:bg-theme-hover hover:text-theme-main transition-colors"
       >
         <Clock className="h-4 w-4" />
         Schedule publish
@@ -102,37 +102,37 @@ export function SchedulePublish({ pageId }: { pageId: string }) {
   }
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+    <div className="rounded-xl border border-theme-border bg-white p-4">
       <div className="flex items-center justify-between mb-3">
-        <h4 className="text-sm font-medium text-gray-900 dark:text-white">Schedule publish</h4>
+        <h4 className="text-sm font-medium text-theme-main">Schedule publish</h4>
         <button
           onClick={() => setShowForm(false)}
-          className="rounded p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          className="rounded p-1 text-theme-muted hover:text-theme-subtle"
         >
           <X className="h-4 w-4" />
         </button>
       </div>
       <div className="space-y-3">
         <div>
-          <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+          <label className="block text-xs font-medium text-theme-muted mb-1">
             Publish at
           </label>
           <input
             type="datetime-local"
             value={publishAt}
             onChange={(e) => setPublishAt(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            className="w-full rounded-lg border border-theme-border px-3 py-1.5 text-sm"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+          <label className="block text-xs font-medium text-theme-muted mb-1">
             Unpublish at (optional)
           </label>
           <input
             type="datetime-local"
             value={unpublishAt}
             onChange={(e) => setUnpublishAt(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            className="w-full rounded-lg border border-theme-border px-3 py-1.5 text-sm"
           />
         </div>
         {error && (
@@ -144,7 +144,7 @@ export function SchedulePublish({ pageId }: { pageId: string }) {
         <button
           onClick={save}
           disabled={!publishAt || saving}
-          className="w-full rounded-lg bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors disabled:opacity-50 dark:bg-fluid-600 dark:hover:bg-fluid-700"
+          className="w-full rounded-lg bg-theme-main px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 transition-colors disabled:opacity-50 dark:bg-fluid-600 dark:hover:bg-fluid-700"
         >
           {saving ? 'Saving...' : 'Schedule'}
         </button>

@@ -14,7 +14,8 @@
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "db:generate": "turbo db:generate",
     "db:push": "turbo db:push",
-    "db:seed": "npx tsx scripts/seed-docs.ts"
+    "db:seed": "npx tsx scripts/seed-docs.ts",
+    "test": "turbo test"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

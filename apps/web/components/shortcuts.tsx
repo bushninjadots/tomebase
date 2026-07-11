@@ -88,7 +88,7 @@ export function ShortcutsModal() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors relative"
+        className="rounded-lg p-1.5 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors relative"
         title="Keyboard shortcuts (⌘/)"
       >
         <Keyboard className="h-3.5 w-3.5" />
@@ -101,15 +101,15 @@ export function ShortcutsModal() {
             if (e.target === e.currentTarget) setOpen(false);
           }}
         >
-          <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white shadow-2xl">
-            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3">
+          <div className="w-full max-w-md rounded-2xl border border-theme-border bg-white shadow-2xl">
+            <div className="flex items-center justify-between border-b border-theme-border px-5 py-3">
               <div className="flex items-center gap-2">
                 <Keyboard className="h-4 w-4 text-fluid-600" />
-                <h3 className="text-sm font-semibold text-gray-900">Keyboard Shortcuts</h3>
+                <h3 className="text-sm font-semibold text-theme-main">Keyboard Shortcuts</h3>
               </div>
               <button
                 onClick={() => setOpen(false)}
-                className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                className="rounded-lg p-1 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
               >
                 <Keyboard className="h-4 w-4" />
               </button>
@@ -118,7 +118,7 @@ export function ShortcutsModal() {
             <div className="max-h-96 overflow-y-auto p-3 space-y-3">
               {GROUPS.map((group) => (
                 <div key={group.title}>
-                  <div className="flex items-center gap-1.5 px-2 py-1 text-xs font-medium uppercase tracking-wider text-gray-400">
+                  <div className="flex items-center gap-1.5 px-2 py-1 text-xs font-medium uppercase tracking-wider text-theme-muted">
                     <group.icon className="h-3 w-3" />
                     {group.title}
                   </div>
@@ -128,8 +128,8 @@ export function ShortcutsModal() {
                         key={item.desc}
                         className="flex items-center justify-between rounded-lg px-3 py-2 text-sm"
                       >
-                        <span className="text-gray-600">{item.desc}</span>
-                        <kbd className="shrink-0 ml-3 rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[11px] font-medium text-gray-500">
+                        <span className="text-theme-subtle">{item.desc}</span>
+                        <kbd className="shrink-0 ml-3 rounded border border-theme-border bg-theme-card px-1.5 py-0.5 text-[11px] font-medium text-theme-muted">
                           {item.keys}
                         </kbd>
                       </div>
@@ -139,8 +139,8 @@ export function ShortcutsModal() {
               ))}
             </div>
 
-            <div className="border-t border-gray-100 px-5 py-2.5 text-xs text-gray-400 text-center">
-              Press <kbd className="rounded border border-gray-200 bg-gray-50 px-1 py-0.5 text-[10px] font-medium text-gray-500 mx-0.5">⌘/</kbd> to toggle this menu anytime
+            <div className="border-t border-theme-border px-5 py-2.5 text-xs text-theme-muted text-center">
+              Press <kbd className="rounded border border-theme-border bg-theme-card px-1 py-0.5 text-[10px] font-medium text-theme-muted mx-0.5">⌘/</kbd> to toggle this menu anytime
             </div>
           </div>
         </div>

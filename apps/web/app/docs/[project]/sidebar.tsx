@@ -87,7 +87,7 @@ function PageRow({
         className={`group flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm transition-all duration-150 ${
           isActive
             ? 'bg-fluid-50 text-fluid-700 font-medium shadow-sm dark:bg-fluid-900/30 dark:text-fluid-400'
-            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white'
+            : 'text-theme-subtle hover:bg-theme-hover hover:text-theme-main'
         }`}
         style={{ paddingLeft: `${8 + node.depth * 16}px` }}
       >
@@ -98,7 +98,7 @@ function PageRow({
           } ${
             isActive
               ? 'text-fluid-600 hover:text-fluid-700 dark:text-fluid-400 dark:hover:text-fluid-300'
-              : 'text-gray-400 hover:text-gray-600 dark:text-gray-600 dark:hover:text-gray-400'
+              : 'text-theme-muted hover:text-theme-subtle'
           }`}
         >
           {expanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
@@ -108,7 +108,7 @@ function PageRow({
           href={`/docs/${projectId}/${node.slug}`}
           className="flex flex-1 items-center gap-1.5 overflow-hidden"
         >
-          <BookOpen className={`h-3.5 w-3.5 shrink-0 ${isActive ? 'text-fluid-500' : 'text-gray-400 dark:text-gray-500'}`} />
+          <BookOpen className={`h-3.5 w-3.5 shrink-0 ${isActive ? 'text-fluid-500' : 'text-theme-muted'}`} />
           <span className="truncate">{node.title}</span>
           {nodeTags.length > 0 && (
             <span className="flex items-center gap-0.5 shrink-0">
@@ -121,7 +121,7 @@ function PageRow({
                 </span>
               ))}
               {nodeTags.length > 2 && (
-                <span className="text-[10px] text-gray-400 dark:text-gray-500">+{nodeTags.length - 2}</span>
+                <span className="text-[10px] text-theme-muted">+{nodeTags.length - 2}</span>
               )}
             </span>
           )}
@@ -212,7 +212,7 @@ function TemplateModal({
             <X className="h-4 w-4" />
           </button>
         </div>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+        <p className="text-sm text-theme-muted mb-4">
           Start with a pre-built structure or begin from scratch.
         </p>
         <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto">
@@ -223,10 +223,10 @@ function TemplateModal({
                 onSelect(t.id);
                 onClose();
               }}
-              className="flex flex-col items-start rounded-xl border border-gray-100 bg-white p-4 text-left transition-all hover:border-fluid-200 hover:shadow-md dark:border-gray-800 dark:bg-gray-800/50 dark:hover:border-fluid-700"
+              className="flex flex-col items-start rounded-xl border border-theme-border bg-theme-page p-4 text-left transition-all hover:border-fluid-200 hover:shadow-md"
             >
-              <span className="text-sm font-medium text-gray-900 dark:text-white">{t.name}</span>
-              <span className="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-2">{t.description}</span>
+              <span className="text-sm font-medium text-theme-main">{t.name}</span>
+              <span className="mt-1 text-xs text-theme-muted line-clamp-2">{t.description}</span>
             </button>
           ))}
         </div>
@@ -398,8 +398,8 @@ export function DocSidebar({ project }: { project: Project }) {
         {/* Tags section at top */}
         {allTags.length > 0 && (
           <div className="mb-4">
-            <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-gray-400 mb-2 dark:text-gray-500">
-              <Hash className="h-3 w-3 dark:text-gray-500" />
+            <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-theme-muted mb-2">
+              <Hash className="h-3 w-3" />
               Tags
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -410,7 +410,7 @@ export function DocSidebar({ project }: { project: Project }) {
                   className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${
                     activeTag === tag
                       ? 'bg-fluid-600 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
+                      : 'bg-theme-hover text-theme-subtle hover:bg-theme-border'
                   }`}
                 >
                   {tag}
@@ -418,7 +418,7 @@ export function DocSidebar({ project }: { project: Project }) {
                 </button>
               ))}
               {allTags.length > 8 && (
-                <span className="text-xs text-gray-400 dark:text-gray-500">+{allTags.length - 8} more</span>
+                <span className="text-xs text-theme-muted">+{allTags.length - 8} more</span>
               )}
             </div>
           </div>
@@ -426,13 +426,13 @@ export function DocSidebar({ project }: { project: Project }) {
 
         {/* Pages section */}
         <div className="mb-2 flex items-center justify-between">
-          <span className="text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500">
+          <span className="text-xs font-medium uppercase tracking-wider text-theme-muted">
             Pages
           </span>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setShowTemplateModal(true)}
-              className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
+              className="rounded p-1 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
               title="Templates"
             >
               <FileText className="h-3.5 w-3.5" />
@@ -447,7 +447,7 @@ export function DocSidebar({ project }: { project: Project }) {
               className={`rounded p-1 transition-colors ${
                 isCreating
                   ? 'bg-fluid-100 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400'
-                  : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+                  : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
               }`}
             >
               <Plus className="h-3.5 w-3.5" />
@@ -457,16 +457,16 @@ export function DocSidebar({ project }: { project: Project }) {
 
         {/* Quick create form */}
         {isCreating && (
-          <form onSubmit={createPage} className="mb-3 rounded-xl border border-fluid-200 bg-white p-3 dark:border-fluid-800 dark:bg-gray-800/50">
+          <form onSubmit={createPage} className="mb-3 rounded-xl border border-fluid-200 bg-theme-page p-3 dark:border-fluid-800">
             <div className="flex items-center gap-2 mb-2">
               <div className="flex h-6 w-6 items-center justify-center rounded-md bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400">
                 <Plus className="h-3.5 w-3.5" />
               </div>
-              <span className="text-xs font-medium text-gray-600 dark:text-gray-400">New page</span>
+              <span className="text-xs font-medium text-theme-subtle">New page</span>
               <button
                 type="button"
                 onClick={() => setIsCreating(false)}
-                className="ml-auto rounded p-0.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                className="ml-auto rounded p-0.5 text-theme-muted hover:text-theme-subtle"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -477,13 +477,13 @@ export function DocSidebar({ project }: { project: Project }) {
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               placeholder="Page title..."
-              className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm placeholder:text-gray-400 focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-500"
+              className="w-full rounded-lg border border-theme-border px-3 py-1.5 text-sm placeholder:text-theme-muted focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500 bg-theme-page text-theme-main"
             />
             {project.pages.length > 0 && (
               <select
                 value={newParentId ?? ''}
                 onChange={(e) => setNewParentId(e.target.value || null)}
-                className="mt-2 w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-500 focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                className="mt-2 w-full rounded-lg border border-theme-border px-3 py-1.5 text-sm text-theme-muted focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500 bg-theme-page"
               >
                 <option value="">Top level</option>
                 {project.pages.map((p) => (
@@ -497,14 +497,14 @@ export function DocSidebar({ project }: { project: Project }) {
               <button
                 type="submit"
                 disabled={!newTitle.trim()}
-                className="flex-1 rounded-lg bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors disabled:opacity-50 dark:bg-fluid-600 dark:hover:bg-fluid-700"
+                className="flex-1 rounded-lg bg-theme-main px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 transition-colors disabled:opacity-50"
               >
                 Create
               </button>
               <button
                 type="button"
                 onClick={() => setIsCreating(false)}
-                className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800"
+                className="rounded-lg border border-theme-border px-3 py-1.5 text-sm font-medium text-theme-subtle hover:bg-theme-hover transition-colors"
               >
                 Cancel
               </button>
@@ -527,8 +527,8 @@ export function DocSidebar({ project }: { project: Project }) {
           ))}
           {tree.length === 0 && !activeTag && (
             <div className="py-8 text-center">
-              <BookOpen className="mx-auto h-8 w-8 text-gray-300 dark:text-gray-600" />
-              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">No pages yet</p>
+              <BookOpen className="mx-auto h-8 w-8 text-theme-muted" />
+              <p className="mt-2 text-sm text-theme-muted">No pages yet</p>
               <button
                 onClick={() => setIsCreating(true)}
                 className="mt-2 text-sm font-medium text-fluid-600 hover:text-fluid-700 dark:text-fluid-400 dark:hover:text-fluid-300"
@@ -539,8 +539,8 @@ export function DocSidebar({ project }: { project: Project }) {
           )}
           {tree.length === 0 && activeTag && (
             <div className="py-8 text-center">
-              <Hash className="mx-auto h-8 w-8 text-gray-300 dark:text-gray-600" />
-              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">No pages with #{activeTag}</p>
+              <Hash className="mx-auto h-8 w-8 text-theme-muted" />
+              <p className="mt-2 text-sm text-theme-muted">No pages with #{activeTag}</p>
               <button
                 onClick={() => setActiveTag(null)}
                 className="mt-2 text-sm font-medium text-fluid-600 hover:text-fluid-700 dark:text-fluid-400 dark:hover:text-fluid-300"
@@ -552,7 +552,7 @@ export function DocSidebar({ project }: { project: Project }) {
         </nav>
       </div>
 
-      <div className="border-t border-gray-100 p-3 space-y-1 dark:border-gray-800">
+      <div className="border-t border-theme-border p-3 space-y-1">
         <Link
           href="/dashboard"
           className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"

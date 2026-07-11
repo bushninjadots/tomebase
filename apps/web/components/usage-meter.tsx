@@ -1,3 +1,5 @@
+'use client';
+
 import { TIERS } from '@/lib/limits';
 import type { Tier } from '@/lib/limits';
 
@@ -19,37 +21,39 @@ function Bar({
   limit: number;
   color: string;
 }) {
-  const pct = Math.min(100, Math.round((current / limit) * 100));
-  const isNearLimit = pct >= 80;
-  const isAtLimit = pct >= 100;
+  const isUnlimited = !Number.isFinite(limit);
+  const pct = isUnlimited ? 0 : Math.min(100, Math.round((current / limit) * 100));
+  const isNearLimit = !isUnlimited && pct >= 80;
+  const isAtLimit = !isUnlimited && pct >= 100;
 
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between text-xs">
         <span className="text-theme-subtle">{label}</span>
         <span className={isAtLimit ? 'text-red-600 font-medium' : isNearLimit ? 'text-amber-600' : 'text-theme-subtle'}>
-          {current}/{limit}
+          {current}{isUnlimited ? '' : `/${limit}`}
         </span>
       </div>
-      <div className="h-1.5 w-full rounded-full bg-theme-hover overflow-hidden">
-        <div
-          className={`h-full rounded-full transition-all ${color}`}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
+      {!isUnlimited && (
+        <div className="h-1.5 w-full rounded-full bg-theme-hover overflow-hidden">
+          <div
+            className={`h-full rounded-full transition-all ${color}`}
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      )}
     </div>
   );
 }
 
 export function UsageMeter({ tier, projects, pages, members }: UsageMeterProps) {
-  const tierConfig = TIERS[tier];
-  const isEnterprise = tier === 'enterprise';
+  const isPro = tier === 'pro';
 
   return (
     <div className="rounded-xl border border-theme-border bg-theme-card p-5 space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-theme-main capitalize">{tier} plan</h3>
-        {!isEnterprise && (
+        {!isPro && (
           <a
             href="/pricing"
             className="text-xs font-medium text-theme-accent hover:text-theme-accent-hover transition-colors"
@@ -78,7 +82,7 @@ export function UsageMeter({ tier, projects, pages, members }: UsageMeterProps) 
           color="bg-amber-500"
         />
       </div>
-      {!isEnterprise && tierConfig.customDomain && (
+      {isPro && (
         <p className="text-xs text-theme-muted">Custom domains included</p>
       )}
     </div>

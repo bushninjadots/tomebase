@@ -202,14 +202,14 @@ export function OpenApiForm({ projectId }: OpenApiFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="flex gap-1 rounded-xl border border-gray-200 bg-gray-50 p-1">
+      <div className="flex gap-1 rounded-xl border border-theme-border bg-theme-card p-1">
         <button
           type="button"
           onClick={() => setMode('paste')}
           className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
             mode === 'paste'
-              ? 'bg-white text-theme-main shadow-sm border border-gray-200'
-              : 'text-gray-500 hover:text-gray-700'
+              ? 'bg-white text-theme-main shadow-sm border border-theme-border'
+              : 'text-theme-muted hover:text-theme-main'
           }`}
         >
           <FileJson className="inline h-4 w-4 mr-1.5" />
@@ -220,8 +220,8 @@ export function OpenApiForm({ projectId }: OpenApiFormProps) {
           onClick={() => setMode('url')}
           className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
             mode === 'url'
-              ? 'bg-white text-theme-main shadow-sm border border-gray-200'
-              : 'text-gray-500 hover:text-gray-700'
+              ? 'bg-white text-theme-main shadow-sm border border-theme-border'
+              : 'text-theme-muted hover:text-theme-main'
           }`}
         >
           <Globe className="inline h-4 w-4 mr-1.5" />
@@ -232,7 +232,7 @@ export function OpenApiForm({ projectId }: OpenApiFormProps) {
       {mode === 'paste' ? (
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label htmlFor="spec" className="text-sm font-medium text-gray-700">
+            <label htmlFor="spec" className="text-sm font-medium text-theme-subtle">
               OpenAPI Spec (JSON or YAML)
             </label>
             <button
@@ -248,17 +248,17 @@ export function OpenApiForm({ projectId }: OpenApiFormProps) {
             value={spec}
             onChange={(e) => setSpec(e.target.value)}
             rows={18}
-            className="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 font-mono text-sm leading-relaxed shadow-sm placeholder:text-gray-300 focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
+            className="block w-full rounded-xl border border-theme-border bg-white px-4 py-3 font-mono text-sm leading-relaxed shadow-sm placeholder:text-theme-muted focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
             placeholder={`openapi: "3.0.0"\ninfo:\n  title: My API\n  version: "1.0.0"\npaths:\n  ...`}
             spellCheck={false}
           />
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-theme-muted">
             Supports OpenAPI 3.0 and 3.1 specs in JSON or YAML format.
           </p>
         </div>
       ) : (
         <div className="space-y-1.5">
-          <label htmlFor="url" className="text-sm font-medium text-gray-700">
+          <label htmlFor="url" className="text-sm font-medium text-theme-subtle">
             Spec URL
           </label>
           <input
@@ -267,9 +267,9 @@ export function OpenApiForm({ projectId }: OpenApiFormProps) {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://raw.githubusercontent.com/..."
-            className="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm shadow-sm placeholder:text-gray-300 focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
+            className="block w-full rounded-xl border border-theme-border bg-white px-4 py-3 text-sm shadow-sm placeholder:text-theme-muted focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
           />
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-theme-muted">
             URL must be publicly accessible and return a valid OpenAPI spec (JSON/YAML).
           </p>
         </div>

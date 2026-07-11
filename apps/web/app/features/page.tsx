@@ -83,7 +83,7 @@ const features = [
       'Personal team auto-created when you sign up',
       'Invite team members via shareable invite links (7-day expiry)',
       'Admin and member roles with distinct permissions',
-      'Member limit enforcement: Free (5), Pro (15), Enterprise (100)',
+      'Member limit enforcement: Free (5), Pro (unlimited)',
       'Team settings page to manage invites and members',
     ],
   },
@@ -106,7 +106,7 @@ const features = [
     capabilities: [
       'Email/password authentication with bcryptjs hashing',
       'GitHub and Google OAuth (configure credentials in .env.local)',
-      'Project-level limits: Free (1 project, 50 pages), Pro (10/500), Enterprise (100/10000)',
+      'Project-level limits: Free (1 project, unlimited pages), Pro (unlimited)',
       'API routes enforce limits at project creation, page creation, and team invites',
       'JWT-based sessions via NextAuth v5',
     ],
@@ -114,12 +114,11 @@ const features = [
   {
     icon: FileText,
     title: 'Pricing Tiers',
-    description: 'Start free and scale as you grow. From solo developers to enterprise teams — pick the plan that fits.',
+    description: 'Start free and scale as you grow. Upgrade when you need private docs, custom domains, or team collaboration.',
     capabilities: [
-      'Free: 1 project, 50 pages, 5 team members — everything you need to start',
-      'Pro: 10 projects, 500 pages, 15 team members — for growing teams',
-      'Enterprise: 100 projects, 10000 pages, 100 team members — unlimited potential',
-      'Stripe integration coming for Pro and Enterprise billing',
+      'Free: 1 project, unlimited pages, 5 team members \u2014 everything you need to start',
+      'Pro: unlimited projects, pages, and team members \u2014 for growing teams',
+      'Stripe-powered billing \u2014 upgrade or cancel anytime',
       'All tiers include the full editor, wiki links, graph view, and public docs',
     ],
   },
@@ -128,7 +127,7 @@ const features = [
 export default function FeaturesPage() {
   return (
     <div className="gradient-bg min-h-screen">
-      <nav className="sticky top-0 z-50 border-b border-gray-100/80 bg-white/70 backdrop-blur-xl">
+      <nav className="sticky top-0 z-50 border-b border-theme-border/80 bg-white/70 backdrop-blur-xl">
         <Container>
           <div className="flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
@@ -139,10 +138,10 @@ export default function FeaturesPage() {
               <span className="font-bold tracking-tight">TomeBase</span>
             </Link>
             <div className="flex items-center gap-4">
-              <Link href="/pricing" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Pricing</Link>
+              <Link href="/pricing" className="text-sm text-theme-muted hover:text-theme-main transition-colors">Pricing</Link>
               <Link
                 href="/login"
-                className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+                className="rounded-lg bg-theme-main px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-colors"
               >
                 Get Started
               </Link>
@@ -153,28 +152,28 @@ export default function FeaturesPage() {
 
       <Container className="py-24">
         <div className="mx-auto max-w-2xl text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+          <h1 className="text-4xl font-bold tracking-tight text-theme-main sm:text-5xl">
             Everything you need to <span className="gradient-text">document</span>
           </h1>
-          <p className="mt-4 text-lg text-gray-600">
+          <p className="mt-4 text-lg text-theme-subtle">
             A powerful editor, wiki-style linking, public hosting, and team tools — all in one platform.
           </p>
         </div>
 
         <div className="mt-20 space-y-6">
           {features.map((feature) => (
-            <div key={feature.title} className="group rounded-2xl border border-gray-100 bg-white p-6 transition-all hover:border-fluid-200 hover:shadow-md">
+            <div key={feature.title} className="group rounded-2xl border border-theme-border bg-white p-6 transition-all hover:border-fluid-200 hover:shadow-md">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-fluid-50 text-fluid-600 group-hover:bg-fluid-100 transition-colors">
                   <feature.icon className="h-6 w-6" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">{feature.title}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-gray-600">{feature.description}</p>
+                  <h3 className="text-lg font-semibold text-theme-main">{feature.title}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-theme-subtle">{feature.description}</p>
                   <ul className="mt-3 space-y-1">
                     {feature.capabilities.map((cap) => (
-                      <li key={cap} className="flex items-start gap-2 text-sm text-gray-500">
-                        <span className="mt-1.5 block h-1 w-1 shrink-0 rounded-full bg-gray-300" />
+                      <li key={cap} className="flex items-start gap-2 text-sm text-theme-muted">
+                        <span className="mt-1.5 block h-1 w-1 shrink-0 rounded-full bg-theme-border" />
                         {cap}
                       </li>
                     ))}
@@ -186,10 +185,10 @@ export default function FeaturesPage() {
         </div>
       </Container>
 
-      <footer className="border-t border-gray-100 bg-white py-12">
+      <footer className="border-t border-theme-border bg-white py-12">
         <Container>
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex items-center gap-2 text-sm text-theme-muted">
               <svg viewBox="0 0 32 32" fill="none" className="h-5 w-5">
                 <rect width="32" height="32" rx="8" fill="#0c8ee7" />
                 <circle cx="16" cy="16" r="4" fill="white" />

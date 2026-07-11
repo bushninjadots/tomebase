@@ -6,7 +6,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",
@@ -14,30 +15,34 @@
     "@fluid/types": "*",
     "@fluid/ui": "*",
     "@fluid/utils": "*",
-    "next": "^15.5.20",
     "bcryptjs": "^3.0.3",
     "date-fns": "^4.4.0",
     "js-yaml": "^5.2.1",
     "jszip": "^3.10.1",
     "lucide-react": "^0.468.0",
+    "next": "^15.5.20",
     "next-auth": "^5.0.0-beta.25",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-markdown": "^10.1.0",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
+    "stripe": "^22.3.1",
     "tailwindcss": "^4.0.0"
   },
   "devDependencies": {
     "@fluid/config": "*",
+    "@tailwindcss/postcss": "^4.0.0",
     "@types/js-yaml": "^4.0.9",
     "@types/jszip": "^3.4.0",
     "@types/node": "^22.10.5",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^6.0.3",
     "eslint": "^9.39.4",
-    "@tailwindcss/postcss": "^4.0.0",
     "eslint-config-next": "^15.5.20",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.10"
   }
 }

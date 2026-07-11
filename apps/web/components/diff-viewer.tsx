@@ -15,9 +15,9 @@ export function DiffViewer({ oldText, newText, oldLabel, newLabel }: DiffViewerP
   const diff = useMemo(() => computeDiff(oldText, newText), [oldText, newText]);
 
   return (
-    <div className="rounded-xl border border-gray-200 overflow-hidden">
+    <div className="rounded-xl border border-theme-border overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50 px-4 py-2">
+      <div className="flex items-center justify-between border-b border-theme-border bg-theme-card px-4 py-2">
         <div className="flex items-center gap-4 text-xs">
           <span className="flex items-center gap-1.5 text-green-600">
             <Plus className="h-3 w-3" />
@@ -27,13 +27,13 @@ export function DiffViewer({ oldText, newText, oldLabel, newLabel }: DiffViewerP
             <Minus className="h-3 w-3" />
             {diff.removed} removed
           </span>
-          <span className="flex items-center gap-1.5 text-gray-500">
+          <span className="flex items-center gap-1.5 text-theme-muted">
             <Equal className="h-3 w-3" />
             {diff.unchanged} unchanged
           </span>
         </div>
         {(oldLabel || newLabel) && (
-          <div className="flex items-center gap-3 text-xs text-gray-400">
+          <div className="flex items-center gap-3 text-xs text-theme-muted">
             {oldLabel && <span>{oldLabel}</span>}
             {newLabel && <span>{newLabel}</span>}
           </div>
@@ -43,14 +43,14 @@ export function DiffViewer({ oldText, newText, oldLabel, newLabel }: DiffViewerP
       {/* Diff content */}
       <div className="max-h-96 overflow-y-auto font-mono text-sm">
         {diff.lines.length === 0 ? (
-          <div className="p-4 text-center text-gray-400 text-sm">
+          <div className="p-4 text-center text-theme-muted text-sm">
             No changes
           </div>
         ) : (
           diff.lines.map((line, i) => (
             <div
               key={i}
-              className={`flex border-b border-gray-50 ${
+              className={`flex border-b border-theme-border ${
                 line.type === 'added'
                   ? 'bg-green-50'
                   : line.type === 'removed'
@@ -59,7 +59,7 @@ export function DiffViewer({ oldText, newText, oldLabel, newLabel }: DiffViewerP
               }`}
             >
               {/* Line number */}
-              <div className="w-12 shrink-0 text-right pr-2 py-1 text-xs text-gray-400 select-none border-r border-gray-100">
+              <div className="w-12 shrink-0 text-right pr-2 py-1 text-xs text-theme-muted select-none border-r border-theme-border">
                 {line.lineNumber}
               </div>
               {/* Diff indicator */}
@@ -78,7 +78,7 @@ export function DiffViewer({ oldText, newText, oldLabel, newLabel }: DiffViewerP
                     ? 'text-green-800'
                     : line.type === 'removed'
                     ? 'text-red-800'
-                    : 'text-gray-700'
+                    : 'text-theme-subtle'
                 }`}>
                   {line.content || ' '}
                 </pre>
