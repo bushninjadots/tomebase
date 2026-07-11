@@ -70,15 +70,15 @@ export function GitSync({ projectId }: GitSyncProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <Github className="h-4 w-4 text-gray-400" />
-        <h3 className="text-sm font-semibold text-gray-900">GitHub Sync</h3>
+        <Github className="h-4 w-4 text-theme-muted" />
+        <h3 className="text-sm font-semibold text-theme-main">GitHub Sync</h3>
         {hasConfig && (
           <span className="rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-medium text-green-700">
             Connected
           </span>
         )}
       </div>
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-theme-subtle">
         Sync Markdown files from a GitHub repository into this project.
       </p>
 
@@ -120,7 +120,7 @@ export function GitSync({ projectId }: GitSyncProps) {
         <button
           onClick={handleSync}
           disabled={syncing || !repo}
-          className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-5 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-lg bg-theme-main px-5 py-2 text-sm font-medium text-theme-page hover:opacity-90 transition-colors disabled:opacity-50"
         >
           <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
           {syncing ? 'Syncing...' : 'Sync Now'}
@@ -141,7 +141,7 @@ export function GitSync({ projectId }: GitSyncProps) {
           href={`https://github.com/${repo}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+          className="inline-flex items-center gap-1 text-xs text-theme-muted hover:text-theme-subtle transition-colors"
         >
           <ExternalLink className="h-3 w-3" />
           {repo}

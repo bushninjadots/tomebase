@@ -17,8 +17,15 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
 
   if (!project || !project.published) return { title: 'Not Found' };
 
+  let hideBranding = false;
+  if (project.teamId) {
+    const { TIERS, getTeamTier } = await import('@/lib/limits');
+    const tier = await getTeamTier(project.teamId);
+    hideBranding = TIERS[tier].hideBranding;
+  }
+
   return {
-    title: `${project.name} — TomeBase Docs`,
+    title: hideBranding ? project.name : `${project.name} — TomeBase Docs`,
     description: project.description ?? undefined,
   };
 }
@@ -43,7 +50,7 @@ function buildTree(pages: { id: string; title: string; slug: string; parentId: s
       <li key={page.id}>
         <Link
           href={`/p/${page.slug}`}
-          className="block rounded-lg px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+          className="block rounded-lg px-3 py-1.5 text-sm text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
           style={{ paddingLeft: `${12 + depth * 16}px` }}
         >
           {page.title}
@@ -65,10 +72,17 @@ export default async function PublicLayout({ children, params }: LayoutProps) {
 
   const project = await prisma.project.findUnique({
     where: { id: projectId },
-    select: { published: true, name: true, customDomain: true },
+    select: { published: true, name: true, customDomain: true, teamId: true },
   });
 
   if (!project || !project.published) notFound();
+
+  let hideBranding = false;
+  if (project.teamId) {
+    const { TIERS, getTeamTier } = await import('@/lib/limits');
+    const tier = await getTeamTier(project.teamId);
+    hideBranding = TIERS[tier].hideBranding;
+  }
 
   const pages = await prisma.docPage.findMany({
     where: { projectId, published: true },
@@ -77,8 +91,8 @@ export default async function PublicLayout({ children, params }: LayoutProps) {
   });
 
   return (
-    <div className="min-h-screen bg-white">
-      <nav className="border-b border-gray-100 bg-white">
+    <div className="min-h-screen bg-theme-page">
+      <nav className="border-b border-theme-border bg-theme-page">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-2 px-4">
           <div className="flex items-center gap-2 min-w-0">
             {pages.length > 0 && <PublicMobileNav pages={pages} projectId={projectId} />}
@@ -87,19 +101,19 @@ export default async function PublicLayout({ children, params }: LayoutProps) {
                 <rect width="32" height="32" rx="8" fill="#0c8ee7" />
                 <circle cx="16" cy="16" r="4" fill="white" />
               </svg>
-              <span className="truncate text-sm font-semibold text-gray-900">{project.name}</span>
+              <span className="truncate text-sm font-semibold text-theme-main">{project.name}</span>
             </Link>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <PublicSearchOverlay projectId={projectId} />
             <CopyLinkButton />
-            <span className="hidden text-xs text-gray-400 sm:inline">Powered by TomeBase</span>
+            {!hideBranding && <span className="hidden text-xs text-theme-muted sm:inline">Powered by TomeBase</span>}
           </div>
         </div>
       </nav>
       <div className="mx-auto flex max-w-6xl">
         {pages.length > 0 && (
-          <aside className="hidden w-64 shrink-0 border-r border-gray-100 p-4 lg:block">
+          <aside className="hidden w-64 shrink-0 border-r border-theme-border p-4 lg:block">
             <nav>
               <ul className="space-y-0.5">{buildTree(pages)}</ul>
             </nav>

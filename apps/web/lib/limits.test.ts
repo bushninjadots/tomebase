@@ -42,4 +42,12 @@ describe('TIERS', () => {
   it('pro tier allows custom domains', () => {
     expect(TIERS.pro.customDomain).toBe(true);
   });
+
+  it('free tier does not hide branding', () => {
+    expect(TIERS.free.hideBranding).toBe(false);
+  });
+
+  it('pro tier hides branding', () => {
+    expect(TIERS.pro.hideBranding).toBe(true);
+  });
 });

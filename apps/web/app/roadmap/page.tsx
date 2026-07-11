@@ -77,7 +77,7 @@ const categories = [
   {
     title: 'Later',
     icon: Circle,
-    color: 'text-gray-600 bg-gray-50 border-gray-100 dark:text-gray-400 dark:bg-gray-900/50 dark:border-gray-800',
+    color: 'text-theme-subtle bg-theme-hover border-theme-border dark:text-theme-muted dark:bg-theme-card/50 dark:border-theme-border',
     items: [
       'SSO/SAML (single sign-on)',
       'Audit log for compliance',

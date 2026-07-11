@@ -82,6 +82,21 @@ without build steps, separate hosting, or configuration overhead.
 
 ### Team & Administration
 
+- **Auth** — email/password out of the box; GitHub and Google OAuth when
+  credentials are configured.
+- **Team invites** — share invite links with 7-day expiry; assign admin or
+  member roles.
+- **API keys** — generate `tb_`-prefixed keys for programmatic access to your
+  documentation.
+- **Doc health** — scan for broken wiki links, orphan pages (zero inbound
+  links), and empty pages.
+- **Export** — download all pages as `.zip` of Markdown files with YAML
+  frontmatter.
+- **Stripe billing** — automated checkout, customer portal, and webhooks.
+  Two tiers: Free and Pro (€15/month).
+- **Custom domains** — DNS verification, SSL provisioning, and middleware
+  routing via Vercel API integration (Pro tier).
+
 ## Quick Start
 
 ```bash
@@ -153,22 +168,24 @@ development with SQLite.
 | `AUTH_GOOGLE_ID`       | No       | Google OAuth client ID          |
 | `AUTH_GOOGLE_SECRET`   | No       | Google OAuth client secret      |
 | `APP_URL`              | No       | Public URL (used for sitemap)   |
+| `STRIPE_SECRET_KEY`    | No       | Stripe API key for billing      |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | No | Stripe publishable key  |
+| `STRIPE_WEBHOOK_SECRET`| No       | Stripe webhook signing secret   |
+| `STRIPE_PRO_PRICE_ID`  | No       | Stripe Pro plan price ID        |
+| `VERCEL_TOKEN`         | No       | Vercel API token for custom domains |
+| `VERCEL_PROJECT_ID`    | No       | Vercel project ID for custom domains |
 
 ## Roadmap
 
 Most core features are shipped and working (editor, wiki links, graph view,
-search, imports, public hosting, team management — see [ROADMAP.md](ROADMAP.md)
-for the full shipped list, or the live [/roadmap](https://tomebase.vercel.app/roadmap)
-page). What's still outstanding:
+search, imports, public hosting, team management, Stripe billing, custom
+domains — see [ROADMAP.md](ROADMAP.md) for the full shipped list, or the
+live [/roadmap](https://tomebase.vercel.app/roadmap) page). What's still
+outstanding:
 
-- **Stripe billing** — Pro/Enterprise plans can't be paid for yet; tier is
-  currently set manually.
-- **AI writing assistant** — not started.
-- **GitHub/GitLab sync** — not started.
-- **SSO/SAML, audit logs, self-hosted deployment** — not started; not yet
-  enforced or offered despite appearing on the Enterprise pricing tier, so
-  don't sell Enterprise until these are either built or removed from the
-  pricing page.
+- **AI writing assistant** — placeholder UI only, not yet functional.
+- **GitHub/GitLab sync** — basic import exists, full bidirectional sync not started.
+- **SSO/SAML, audit logs, self-hosted deployment** — not started.
 
 See [ROADMAP.md](ROADMAP.md) for the complete, up-to-date breakdown by
 priority.

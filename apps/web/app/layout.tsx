@@ -44,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
-      <body className="min-h-screen bg-white font-sans text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100">
+      <body className="min-h-screen bg-theme-page font-sans text-theme-main antialiased">
           <Providers>{children}</Providers>
         </body>
     </html>

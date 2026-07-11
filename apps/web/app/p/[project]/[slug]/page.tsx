@@ -54,16 +54,16 @@ export default async function PublicDocPage({ params }: PageProps) {
     <div className="mx-auto max-w-3xl px-4 py-12">
       <Link
         href={`/p/${projectId}`}
-        className="mb-8 inline-flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 transition-colors"
+        className="mb-8 inline-flex items-center gap-1 text-sm text-theme-muted hover:text-theme-subtle transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to {project.name}
       </Link>
 
       <article>
-        <h1 className="mb-2 text-4xl font-bold tracking-tight text-gray-900">{page.title}</h1>
+        <h1 className="mb-2 text-4xl font-bold tracking-tight text-theme-main">{page.title}</h1>
         {page.description && (
-          <p className="mb-4 text-lg text-gray-500">{page.description}</p>
+          <p className="mb-4 text-lg text-theme-subtle">{page.description}</p>
         )}
         {tags.length > 0 && (
           <div className="mb-6 flex flex-wrap gap-1.5">
@@ -78,7 +78,7 @@ export default async function PublicDocPage({ params }: PageProps) {
             ))}
           </div>
         )}
-        <div className="border-t border-gray-100 pt-8">
+        <div className="border-t border-theme-border pt-8">
           <Markdown
             content={page.content}
             projectId={projectId}
@@ -90,7 +90,7 @@ export default async function PublicDocPage({ params }: PageProps) {
 
       <ViewTracker pageId={page.id} />
 
-      <div className="mt-16 border-t border-gray-100 pt-6 text-xs text-gray-400">
+      <div className="mt-16 border-t border-theme-border pt-6 text-xs text-theme-muted">
         <div className="flex items-center justify-between">
           <span>Last updated: {new Date(page.updatedAt).toLocaleDateString()}</span>
           {page.viewCount > 0 && (

@@ -95,11 +95,11 @@ export function PublicSearchOverlay({ projectId }: PublicSearchOverlayProps) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-400 hover:border-gray-300 hover:text-gray-500 transition-colors"
+        className="flex items-center gap-2 rounded-lg border border-theme-border px-3 py-1.5 text-sm text-theme-muted hover:border-theme-border hover:text-theme-subtle transition-colors"
       >
         <Search className="h-3.5 w-3.5" />
         <span>Search docs...</span>
-        <kbd className="ml-2 rounded border border-gray-200 bg-white px-1.5 py-0.5 text-[10px] font-medium text-gray-400">
+        <kbd className="ml-2 rounded border border-theme-border bg-theme-card px-1.5 py-0.5 text-[10px] font-medium text-theme-muted">
           ⌘K
         </kbd>
       </button>
@@ -111,9 +111,9 @@ export function PublicSearchOverlay({ projectId }: PublicSearchOverlayProps) {
             if (e.target === e.currentTarget) setOpen(false);
           }}
         >
-          <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white shadow-2xl">
-            <div className="flex items-center gap-3 border-b border-gray-100 px-4 py-3">
-              <Search className="h-4 w-4 shrink-0 text-gray-400" />
+          <div className="w-full max-w-lg rounded-2xl border border-theme-border bg-theme-card shadow-2xl">
+            <div className="flex items-center gap-3 border-b border-theme-border px-4 py-3">
+              <Search className="h-4 w-4 shrink-0 text-theme-muted" />
               <input
                 ref={inputRef}
                 type="text"
@@ -121,25 +121,25 @@ export function PublicSearchOverlay({ projectId }: PublicSearchOverlayProps) {
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Search docs..."
-                className="flex-1 bg-transparent text-sm text-gray-900 outline-none placeholder:text-gray-400"
+                className="flex-1 bg-transparent text-sm text-theme-main outline-none placeholder:text-theme-muted"
                 autoFocus
               />
-              <kbd className="shrink-0 rounded border border-gray-200 px-1.5 py-0.5 text-[10px] font-medium text-gray-400">
+              <kbd className="shrink-0 rounded border border-theme-border px-1.5 py-0.5 text-[10px] font-medium text-theme-muted">
                 ESC
               </kbd>
             </div>
 
             <div className="max-h-80 overflow-y-auto p-2">
               {loading && (
-                <p className="py-6 text-center text-sm text-gray-400">Searching...</p>
+                <p className="py-6 text-center text-sm text-theme-muted">Searching...</p>
               )}
               {!loading && results.length === 0 && query.trim() && (
-                <p className="py-6 text-center text-sm text-gray-400">
+                <p className="py-6 text-center text-sm text-theme-muted">
                   No results for &ldquo;{query}&rdquo;
                 </p>
               )}
               {!loading && results.length === 0 && !query.trim() && (
-                <p className="py-6 text-center text-sm text-gray-400">
+                <p className="py-6 text-center text-sm text-theme-muted">
                   Start typing to search docs
                 </p>
               )}
@@ -151,10 +151,10 @@ export function PublicSearchOverlay({ projectId }: PublicSearchOverlayProps) {
                   className={`flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
                     idx === selectedIdx
                       ? 'bg-fluid-50 text-fluid-700'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      : 'text-theme-subtle hover:bg-theme-hover'
                   }`}
                 >
-                  <FileText className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
+                  <FileText className="mt-0.5 h-4 w-4 shrink-0 text-theme-muted" />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium">{result.title}</span>
@@ -165,12 +165,12 @@ export function PublicSearchOverlay({ projectId }: PublicSearchOverlayProps) {
                       )}
                     </div>
                     {result.snippet && (
-                      <p className="mt-0.5 truncate text-xs text-gray-400">
+                      <p className="mt-0.5 truncate text-xs text-theme-muted">
                         {result.snippet}
                       </p>
                     )}
                   </div>
-                  <ArrowRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gray-300" />
+                  <ArrowRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-theme-muted" />
                 </button>
               ))}
             </div>

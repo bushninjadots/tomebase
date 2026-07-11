@@ -241,31 +241,31 @@ export function ExplainProject({ projectId, pages, currentPageId }: ExplainProje
     : -1;
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white">
+    <div className="rounded-lg border border-theme-border bg-theme-card">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center justify-between w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+        className="flex items-center justify-between w-full px-4 py-3 text-left hover:bg-theme-hover transition-colors"
       >
         <div className="flex items-center gap-2">
           <BookOpen className="h-5 w-5 text-fluid-600" />
-          <span className="font-medium text-gray-900">Explain This Project</span>
+          <span className="font-medium text-theme-main">Explain This Project</span>
         </div>
         {isExpanded ? (
-          <ChevronDown className="h-4 w-4 text-gray-400" />
+          <ChevronDown className="h-4 w-4 text-theme-muted" />
         ) : (
-          <ChevronRight className="h-4 w-4 text-gray-400" />
+          <ChevronRight className="h-4 w-4 text-theme-muted" />
         )}
       </button>
 
       {isExpanded && (
-        <div className="border-t border-gray-100 max-h-96 overflow-y-auto">
+        <div className="border-t border-theme-border max-h-96 overflow-y-auto">
           <div className="p-4">
             <div className="mb-4">
-              <div className="flex items-center justify-between text-sm text-gray-500 mb-2">
+              <div className="flex items-center justify-between text-sm text-theme-subtle mb-2">
                 <span>Reading Progress</span>
                 <span>{completedCount}/{readingOrder.length} pages ({progressPercentage}%)</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-theme-hover rounded-full h-2">
                 <div 
                   className="bg-fluid-600 h-2 rounded-full transition-all duration-300"
                   style={{ width: `${progressPercentage}%` }}
@@ -275,7 +275,7 @@ export function ExplainProject({ projectId, pages, currentPageId }: ExplainProje
 
             {readingOrder.length > 0 && (
               <div className="mb-4">
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Recommended Reading Order</h4>
+                <h4 className="text-sm font-medium text-theme-subtle mb-2">Recommended Reading Order</h4>
                 <div className="space-y-1 max-h-48 overflow-y-auto">
                   {readingOrder.map((page, index) => {
                     const pageProgress = progress.get(page.id);
@@ -290,16 +290,16 @@ export function ExplainProject({ projectId, pages, currentPageId }: ExplainProje
                             ? 'bg-fluid-50 text-fluid-700' 
                             : isCompleted 
                               ? 'text-green-600' 
-                              : 'text-gray-600'
+                              : 'text-theme-subtle'
                         }`}
                       >
                         {isCompleted ? (
                           <CheckCircle className="h-4 w-4 text-green-500" />
                         ) : (
-                          <Circle className="h-4 w-4 text-gray-300" />
+                          <Circle className="h-4 w-4 text-theme-muted" />
                         )}
                         <span className="flex-1 truncate">{page.title}</span>
-                        <span className="text-xs text-gray-400">{index + 1}</span>
+                        <span className="text-xs text-theme-muted">{index + 1}</span>
                       </div>
                     );
                   })}
@@ -312,16 +312,16 @@ export function ExplainProject({ projectId, pages, currentPageId }: ExplainProje
                 {getPreviousPage() && (
                   <a
                     href={`/docs/${projectId}/${getPreviousPage()!.slug}`}
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded transition-colors"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Previous
-                  </a>
-                )}
-                {getNextPage() && (
-                  <a
-                    href={`/docs/${projectId}/${getNextPage()!.slug}`}
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded transition-colors"
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm text-theme-subtle hover:bg-theme-hover rounded transition-colors"
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                      Previous
+                    </a>
+                  )}
+                  {getNextPage() && (
+                    <a
+                      href={`/docs/${projectId}/${getNextPage()!.slug}`}
+                      className="flex items-center gap-1 px-3 py-1.5 text-sm text-theme-subtle hover:bg-theme-hover rounded transition-colors"
                   >
                     Next
                     <ArrowRight className="h-4 w-4" />
@@ -353,7 +353,7 @@ export function ExplainProject({ projectId, pages, currentPageId }: ExplainProje
               )}
             </div>
 
-            <div className="mt-4 pt-4 border-t border-gray-100">
+            <div className="mt-4 pt-4 border-t border-theme-border">
               <button
                 onClick={() => setShowQuiz(!showQuiz)}
                 className="flex items-center gap-2 text-sm font-medium text-fluid-600 hover:text-fluid-700"
@@ -363,13 +363,13 @@ export function ExplainProject({ projectId, pages, currentPageId }: ExplainProje
               </button>
               
               {showQuiz && (
-                <div className="mt-3 p-4 bg-gray-50 rounded-lg">
+                <div className="mt-3 p-4 bg-theme-hover rounded-lg">
                   {quizCompleted ? (
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-gray-900 mb-2">
+                      <div className="text-2xl font-bold text-theme-main mb-2">
                         {quizScore}/{quizQuestions.length}
                       </div>
-                      <p className="text-sm text-gray-500 mb-4">
+                      <p className="text-sm text-theme-subtle mb-4">
                         {quizScore === quizQuestions.length 
                           ? 'Perfect score! You understand this project well.'
                           : 'Keep learning! Review the docs and try again.'
@@ -385,15 +385,15 @@ export function ExplainProject({ projectId, pages, currentPageId }: ExplainProje
                   ) : (
                     <>
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-gray-700">
+                        <span className="text-sm font-medium text-theme-subtle">
                           Question {currentQuestionIndex + 1} of {quizQuestions.length}
                         </span>
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm text-theme-subtle">
                           Score: {quizScore}
                         </span>
                       </div>
                       
-                      <p className="text-sm text-gray-800 mb-3">
+                      <p className="text-sm text-theme-main mb-3">
                         {quizQuestions[currentQuestionIndex]?.question}
                       </p>
                       
@@ -409,7 +409,7 @@ export function ExplainProject({ projectId, pages, currentPageId }: ExplainProje
                                     ? 'bg-green-100 text-green-800 border border-green-200'
                                     : 'bg-red-100 text-red-800 border border-red-200'
                                   : 'bg-fluid-100 text-fluid-800 border border-fluid-200'
-                                : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
+                                : 'bg-theme-card text-theme-subtle border border-theme-border hover:bg-theme-hover'
                             }`}
                             disabled={showExplanation}
                           >

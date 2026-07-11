@@ -116,10 +116,10 @@ export function CodeBlock({
   const lineCount = lines.length;
 
   return (
-    <div className="group relative my-4 rounded-xl border border-gray-200 bg-gray-50 overflow-hidden">
+    <div className="group relative my-4 rounded-xl border border-theme-border bg-theme-hover overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-gray-200 bg-gray-100 px-4 py-2">
-        <div className="flex items-center gap-2 text-sm text-gray-500">
+      <div className="flex items-center justify-between border-b border-theme-border bg-theme-card px-4 py-2">
+        <div className="flex items-center gap-2 text-sm text-theme-subtle">
           <LangIcon className="h-4 w-4" />
           {filename ? (
             <span className="font-mono text-xs">{filename}</span>
@@ -127,7 +127,7 @@ export function CodeBlock({
             <span className="text-xs">{displayLang}</span>
           )}
           {showLineNumbers && (
-            <span className="text-xs text-gray-400">({lineCount} lines)</span>
+            <span className="text-xs text-theme-muted">({lineCount} lines)</span>
           )}
         </div>
         <div className="flex items-center gap-1">
@@ -152,7 +152,7 @@ export function CodeBlock({
           )}
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition-colors"
+            className="flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
             title="Copy code"
           >
             {copied ? (
@@ -173,7 +173,7 @@ export function CodeBlock({
       {/* Code content */}
       <div className="overflow-x-auto">
         <pre className="p-4 text-sm">
-          <code className="font-mono text-gray-800">
+          <code className="font-mono text-theme-main">
             {showLineNumbers ? (
               <table className="border-collapse">
                 <tbody>
@@ -186,7 +186,7 @@ export function CodeBlock({
                           : ''
                       }`}
                     >
-                      <td className="pr-4 text-right text-gray-400 select-none whitespace-nowrap align-top">
+                      <td className="pr-4 text-right text-theme-muted select-none whitespace-nowrap align-top">
                         {i + 1}
                       </td>
                       <td className="whitespace-pre">{line || ' '}</td>
@@ -203,7 +203,7 @@ export function CodeBlock({
 
       {/* Highlight line indicator */}
       {highlightLines.length > 0 && (
-        <div className="border-t border-gray-200 bg-yellow-50 px-4 py-1 text-xs text-yellow-700">
+        <div className="border-t border-theme-border bg-theme-hover px-4 py-1 text-xs text-theme-subtle">
           Lines {highlightLines.join(', ')} highlighted
         </div>
       )}
@@ -252,7 +252,7 @@ export function MultiLanguageCodeBlock({
   return (
     <div className="my-4">
       {/* Language tabs */}
-      <div className="flex flex-wrap gap-1 border-b border-gray-200 bg-gray-100 px-2 pt-2">
+      <div className="flex flex-wrap gap-1 border-b border-theme-border bg-theme-card px-2 pt-2">
         {variants.map((v, i) => {
           const LangIcon = LANGUAGE_ICONS[v.language.toLowerCase()] || Code2;
           const displayLabel = v.label || LANGUAGE_LABELS[v.language.toLowerCase()] || v.language.toUpperCase();
@@ -262,8 +262,8 @@ export function MultiLanguageCodeBlock({
               onClick={() => setActiveTab(i)}
               className={`flex items-center gap-1.5 rounded-t-lg px-3 py-2 text-xs font-medium transition-colors ${
                 activeTab === i
-                  ? 'bg-white text-gray-900 border border-gray-200 border-b-white -mb-px'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                  ? 'bg-theme-card text-theme-main border border-theme-border border-b-theme-card -mb-px'
+                  : 'text-theme-subtle hover:text-theme-main hover:bg-theme-hover'
               }`}
             >
               <LangIcon className="h-3 w-3" />
@@ -274,7 +274,7 @@ export function MultiLanguageCodeBlock({
       </div>
 
       {/* Active code block */}
-      <div className="rounded-b-xl border border-t-0 border-gray-200">
+      <div className="rounded-b-xl border border-t-0 border-theme-border">
         <CodeBlock
           code={variants[activeTab]!.code}
           language={variants[activeTab]!.language}

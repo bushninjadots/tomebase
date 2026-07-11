@@ -42,7 +42,7 @@ const CALLOUT_COLORS: Record<string, string> = {
   question: 'border-l-violet-500 bg-violet-50',
   bug: 'border-l-rose-500 bg-rose-50',
   example: 'border-l-indigo-500 bg-indigo-50',
-  quote: 'border-l-gray-500 bg-gray-50',
+  quote: 'border-l-theme-border bg-theme-hover',
 };
 
 function preprocessCallouts(content: string): string {
@@ -58,7 +58,7 @@ function preprocessCallouts(content: string): string {
       const type = calloutMatch[1]!.toLowerCase();
       const title = calloutMatch[2]?.trim() || type.charAt(0).toUpperCase() + type.slice(1);
       const icon = CALLOUT_ICONS[type] || '📌';
-      const colorClass = CALLOUT_COLORS[type] || 'border-l-gray-500 bg-gray-50';
+      const colorClass = CALLOUT_COLORS[type] || 'border-l-theme-border bg-theme-hover';
 
       const bodyLines: string[] = [];
       i++;
@@ -74,11 +74,11 @@ function preprocessCallouts(content: string): string {
 
       const body = bodyLines.join('\n');
       result.push(
-        `<div class="callout ${colorClass} rounded-r-xl border-l-4 px-4 py-3 my-4">` +
-          `<div class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-1">` +
+          `<div class="callout ${colorClass} rounded-r-xl border-l-4 px-4 py-3 my-4">` +
+          `<div class="flex items-center gap-2 text-sm font-semibold text-theme-main mb-1">` +
           `<span>${icon}</span><span>${escapeHtml(title)}</span>` +
           `</div>` +
-          (body ? `<div class="text-sm text-gray-700 [&_p]:mb-1">${body}</div>` : '') +
+          (body ? `<div class="text-sm text-theme-subtle [&_p]:mb-1">${body}</div>` : '') +
           `</div>`
       );
     } else {
@@ -104,7 +104,7 @@ const components: Components = {
     if (isInline) {
       return (
         <code
-          className="rounded-md bg-gray-100 px-1.5 py-0.5 font-mono text-sm text-gray-800"
+          className="rounded-md bg-theme-hover px-1.5 py-0.5 font-mono text-sm text-theme-main"
           {...props}
         >
           {children}
@@ -125,32 +125,32 @@ const components: Components = {
   },
   pre: ({ children }) => <>{children}</>,
   h1: ({ children, ...props }) => (
-    <h1 className="mb-4 text-3xl font-bold tracking-tight text-gray-900" {...props}>
+    <h1 className="mb-4 text-3xl font-bold tracking-tight text-theme-main" {...props}>
       {children}
     </h1>
   ),
   h2: ({ children, ...props }) => (
-    <h2 className="mb-3 mt-8 text-2xl font-semibold tracking-tight text-gray-900" {...props}>
+    <h2 className="mb-3 mt-8 text-2xl font-semibold tracking-tight text-theme-main" {...props}>
       {children}
     </h2>
   ),
   h3: ({ children, ...props }) => (
-    <h3 className="mb-2 mt-6 text-xl font-semibold tracking-tight text-gray-900" {...props}>
+    <h3 className="mb-2 mt-6 text-xl font-semibold tracking-tight text-theme-main" {...props}>
       {children}
     </h3>
   ),
   p: ({ children, ...props }) => (
-    <p className="mb-4 leading-relaxed text-gray-700" {...props}>
+    <p className="mb-4 leading-relaxed text-theme-subtle" {...props}>
       {children}
     </p>
   ),
   ul: ({ children, ...props }) => (
-    <ul className="mb-4 list-disc space-y-1 pl-6 text-gray-700" {...props}>
+    <ul className="mb-4 list-disc space-y-1 pl-6 text-theme-subtle" {...props}>
       {children}
     </ul>
   ),
   ol: ({ children, ...props }) => (
-    <ol className="mb-4 list-decimal space-y-1 pl-6 text-gray-700" {...props}>
+    <ol className="mb-4 list-decimal space-y-1 pl-6 text-theme-subtle" {...props}>
       {children}
     </ol>
   ),
@@ -169,7 +169,7 @@ const components: Components = {
   span: ({ className, children, ...props }) => {
     if (className?.includes('wiki-link-unresolved')) {
       return (
-        <span className="inline-flex items-center gap-1 text-gray-400 italic bg-gray-100 rounded px-1.5 py-0.5 text-sm cursor-not-allowed" title="Page not found">
+        <span className="inline-flex items-center gap-1 text-theme-muted italic bg-theme-hover rounded px-1.5 py-0.5 text-sm cursor-not-allowed" title="Page not found">
           {children}
         </span>
       );
@@ -178,13 +178,13 @@ const components: Components = {
   },
   blockquote: ({ children, ...props }) => (
     <blockquote
-      className="mb-4 border-l-4 border-fluid-200 bg-fluid-50 py-2 pl-4 italic text-gray-700"
+      className="mb-4 border-l-4 border-fluid-200 bg-fluid-50 py-2 pl-4 italic text-theme-subtle"
       {...props}
     >
       {children}
     </blockquote>
   ),
-  hr: (props) => <hr className="my-8 border-gray-100" {...props} />,
+  hr: (props) => <hr className="my-8 border-theme-border" {...props} />,
   table: ({ children, ...props }) => (
     <div className="mb-4 overflow-x-auto">
       <table className="w-full border-collapse text-sm" {...props}>
@@ -194,24 +194,24 @@ const components: Components = {
   ),
   th: ({ children, ...props }) => (
     <th
-      className="border border-gray-200 bg-gray-50 px-3 py-2 text-left font-medium text-gray-700"
+      className="border border-theme-border bg-theme-hover px-3 py-2 text-left font-medium text-theme-subtle"
       {...props}
     >
       {children}
     </th>
   ),
   td: ({ children, ...props }) => (
-    <td className="border border-gray-200 px-3 py-2 text-gray-700" {...props}>
+    <td className="border border-theme-border px-3 py-2 text-theme-subtle" {...props}>
       {children}
     </td>
   ),
   strong: ({ children, ...props }) => (
-    <strong className="font-semibold text-gray-900" {...props}>
+    <strong className="font-semibold text-theme-main" {...props}>
       {children}
     </strong>
   ),
   em: ({ children, ...props }) => (
-    <em className="italic text-gray-800" {...props}>
+    <em className="italic text-theme-main" {...props}>
       {children}
     </em>
   ),

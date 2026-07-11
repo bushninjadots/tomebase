@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, Input } from '@fluid/ui';
 import { Globe, Check, Copy } from 'lucide-react';
+import { DomainSettings } from '@/components/domain-settings';
 
 interface Project {
   id: string;
@@ -21,7 +22,6 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
   const [published, setPublished] = useState(project.published);
   const [name, setName] = useState(project.name);
   const [description, setDescription] = useState(project.description ?? '');
-  const [customDomain, setCustomDomain] = useState(project.customDomain ?? '');
   const [logoUrl, setLogoUrl] = useState(project.logoUrl ?? '');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -37,7 +37,7 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
     const res = await fetch(`/api/projects/${project.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, description, published, customDomain, logoUrl }),
+      body: JSON.stringify({ name, description, published, logoUrl }),
     });
 
     if (res.ok) {
@@ -135,33 +135,11 @@ export function ProjectSettingsForm({ project }: { project: Project }) {
               {publicUrl}
             </div>
 
-            <div className="rounded-xl border border-theme-border p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <Globe className="h-4 w-4 text-theme-muted" />
-                <span className="text-sm font-medium text-theme-subtle">Custom Domain</span>
-                <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700">Pro</span>
-              </div>
-              <Input
-                id="customDomain"
-                label=""
-                value={customDomain}
-                onChange={(e) => setCustomDomain(e.target.value)}
-                placeholder="docs.yourcompany.com"
-              />
-              {customDomain && (
-                <div className="mt-3 rounded-lg bg-theme-card p-3 text-xs text-theme-subtle space-y-2">
-                  <p className="font-medium text-theme-subtle">DNS Setup Instructions</p>
-                  <p>Add a CNAME record pointing your domain to:</p>
-                  <code className="block rounded bg-white px-2 py-1 font-mono text-[11px] text-fluid-600 border border-theme-border">
-                    {window.location.host}
-                  </code>
-                  <p className="text-theme-muted">SSL certificates are provisioned automatically. Propagation may take up to 24 hours.</p>
-                </div>
-              )}
-              <p className="mt-1.5 text-xs text-theme-muted">
-                Point your own domain to your published documentation site.
-              </p>
-            </div>
+            <DomainSettings
+              projectId={project.id}
+              customDomain={project.customDomain}
+              published={published}
+            />
           </div>
         )}
       </div>

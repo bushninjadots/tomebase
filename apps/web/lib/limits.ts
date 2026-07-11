@@ -1,8 +1,8 @@
 import { prisma } from '@fluid/database';
 
 export const TIERS = {
-  free: { maxProjects: 1, maxPages: Infinity, maxMembers: 5, customDomain: false },
-  pro: { maxProjects: Infinity, maxPages: Infinity, maxMembers: Infinity, customDomain: true },
+  free: { maxProjects: 1, maxPages: Infinity, maxMembers: 5, customDomain: false, hideBranding: false },
+  pro: { maxProjects: Infinity, maxPages: Infinity, maxMembers: Infinity, customDomain: true, hideBranding: true },
 } as const;
 
 export type Tier = keyof typeof TIERS;

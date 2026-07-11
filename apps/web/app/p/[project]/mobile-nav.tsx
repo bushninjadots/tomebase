@@ -33,7 +33,7 @@ export function PublicMobileNav({ pages, projectId }: { pages: PageNode[]; proje
         <Link
           href={`/p/${page.slug}`}
           onClick={() => setOpen(false)}
-          className="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+          className="block rounded-lg px-3 py-2 text-sm text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
           style={{ paddingLeft: `${12 + depth * 16}px` }}
         >
           {page.title}
@@ -51,7 +51,7 @@ export function PublicMobileNav({ pages, projectId }: { pages: PageNode[]; proje
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm text-gray-500 hover:bg-gray-100 lg:hidden"
+        className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm text-theme-muted hover:bg-theme-hover lg:hidden"
         aria-label="Open navigation"
       >
         <Menu className="h-5 w-5" />
@@ -60,10 +60,10 @@ export function PublicMobileNav({ pages, projectId }: { pages: PageNode[]; proje
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="fixed inset-0 bg-black/30" onClick={() => setOpen(false)} />
-          <div className="fixed inset-y-0 left-0 w-72 bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-              <span className="text-sm font-semibold text-gray-900">Pages</span>
-              <button onClick={() => setOpen(false)} className="rounded-lg p-1 text-gray-400 hover:bg-gray-100">
+          <div className="fixed inset-y-0 left-0 w-72 bg-theme-card shadow-xl">
+            <div className="flex items-center justify-between border-b border-theme-border px-4 py-3">
+              <span className="text-sm font-semibold text-theme-main">Pages</span>
+              <button onClick={() => setOpen(false)} className="rounded-lg p-1 text-theme-muted hover:bg-theme-hover">
                 <X className="h-5 w-5" />
               </button>
             </div>

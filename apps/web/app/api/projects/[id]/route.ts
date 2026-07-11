@@ -1,6 +1,7 @@
 import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
+import { addDomain, isVercelConfigured } from '@/lib/vercel';
 
 export async function PATCH(
   request: Request,
@@ -53,8 +54,34 @@ export async function PATCH(
       }
 
       updateData.customDomain = domain;
+      updateData.domainStatus = 'pending';
+      updateData.domainSslStatus = 'provisioning';
+
+      if (isVercelConfigured()) {
+        try {
+          await addDomain(domain);
+        } catch {
+          // Domain registration with Vercel is best-effort;
+          // user can still retry via the verify endpoint
+        }
+      }
     }
-    if (body.customDomain === '') updateData.customDomain = null;
+    if (body.customDomain === '') {
+      updateData.customDomain = null;
+      updateData.domainStatus = null;
+      updateData.domainVerifiedAt = null;
+      updateData.domainLastCheckedAt = null;
+      updateData.domainSslStatus = null;
+
+      if (isVercelConfigured() && project.customDomain) {
+        try {
+          const { removeDomain: removeFromVercel } = await import('@/lib/vercel');
+          await removeFromVercel(project.customDomain);
+        } catch {
+          // Best-effort cleanup
+        }
+      }
+    }
     if (typeof body.logoUrl === 'string') updateData.logoUrl = body.logoUrl;
 
     const updated = await prisma.project.update({

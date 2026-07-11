@@ -10,6 +10,15 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  // Reject requests older than 5 minutes (replay protection)
+  const timestamp = request.headers.get('x-vercel-cron-execution-time') || request.headers.get('x-cron-timestamp');
+  if (timestamp) {
+    const age = Date.now() - new Date(timestamp).getTime();
+    if (age > 5 * 60 * 1000) {
+      return NextResponse.json({ error: 'Stale cron request rejected' }, { status: 410 });
+    }
+  }
+
   try {
     const toPublish = await prisma.scheduledPublish.findMany({
       where: {

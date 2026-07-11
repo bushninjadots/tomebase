@@ -39,15 +39,15 @@ export default async function PublicProjectPage({ params }: PageProps) {
   const totalPages = project.pages.length;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-theme-page">
       {/* Header */}
-      <div className="border-b border-gray-100">
+      <div className="border-b border-theme-border">
         <div className="mx-auto max-w-5xl px-4 py-12">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900">{project.name}</h1>
+              <h1 className="text-4xl font-bold tracking-tight text-theme-main">{project.name}</h1>
               {project.description && (
-                <p className="mt-3 text-lg text-gray-600 max-w-2xl">{project.description}</p>
+                <p className="mt-3 text-lg text-theme-subtle max-w-2xl">{project.description}</p>
               )}
             </div>
             {project.customDomain && (
@@ -58,7 +58,7 @@ export default async function PublicProjectPage({ params }: PageProps) {
           </div>
 
           {totalPages > 0 && (
-            <div className="mt-8 flex items-center gap-6 text-sm text-gray-500">
+            <div className="mt-8 flex items-center gap-6 text-sm text-theme-muted">
               <span className="flex items-center gap-1.5">
                 <FileText className="h-4 w-4" />
                 {totalPages} page{totalPages !== 1 ? 's' : ''}
@@ -77,10 +77,10 @@ export default async function PublicProjectPage({ params }: PageProps) {
       {/* Content */}
       <div className="mx-auto max-w-5xl px-4 py-8">
         {totalPages === 0 ? (
-          <div className="rounded-2xl border-2 border-dashed border-gray-200 p-16 text-center">
-            <BookOpen className="mx-auto h-12 w-12 text-gray-200" />
-            <h2 className="mt-4 text-lg font-semibold text-gray-900">No published pages yet</h2>
-            <p className="mt-1 text-sm text-gray-500">
+          <div className="rounded-2xl border-2 border-dashed border-theme-border p-16 text-center">
+            <BookOpen className="mx-auto h-12 w-12 text-theme-muted" />
+            <h2 className="mt-4 text-lg font-semibold text-theme-main">No published pages yet</h2>
+            <p className="mt-1 text-sm text-theme-subtle">
               Check back later for documentation.
             </p>
           </div>
@@ -90,15 +90,15 @@ export default async function PublicProjectPage({ params }: PageProps) {
               <Link
                 key={page.id}
                 href={`/p/${projectId}/${page.slug}`}
-                className="group relative rounded-xl border border-gray-100 p-5 transition-all hover:border-fluid-200 hover:shadow-sm hover:-translate-y-0.5"
+                className="group relative rounded-xl border border-theme-border p-5 transition-all hover:border-fluid-200 hover:shadow-sm hover:-translate-y-0.5"
               >
-                <h2 className="font-semibold text-gray-900 group-hover:text-fluid-600 transition-colors">
+                <h2 className="font-semibold text-theme-main group-hover:text-fluid-600 transition-colors">
                   {page.title}
                 </h2>
                 {page.description && (
-                  <p className="mt-1.5 text-sm text-gray-500 line-clamp-2">{page.description}</p>
+                  <p className="mt-1.5 text-sm text-theme-subtle line-clamp-2">{page.description}</p>
                 )}
-                <div className="mt-3 flex items-center gap-3 text-xs text-gray-400">
+                <div className="mt-3 flex items-center gap-3 text-xs text-theme-muted">
                   <span className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
                     {new Date(page.updatedAt).toLocaleDateString()}
@@ -110,7 +110,7 @@ export default async function PublicProjectPage({ params }: PageProps) {
                     </span>
                   )}
                 </div>
-                <ArrowRight className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-300 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
+                <ArrowRight className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-theme-muted opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
               </Link>
             ))}
           </div>
