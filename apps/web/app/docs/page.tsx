@@ -2,6 +2,7 @@ import { prisma } from '@fluid/database';
 import { Container } from '@fluid/ui';
 import Link from 'next/link';
 import { ArrowRight, BookOpen, FileText, Code2, Users, Globe, Key, Layers, HeartPulse, HelpCircle } from 'lucide-react';
+import { MarketingNav } from '@/components/marketing-nav';
 
 const DOCS_SLUG = 'tomebase-docs';
 
@@ -31,7 +32,8 @@ export default async function DocsPage() {
 
   return (
     <div className="min-h-screen bg-theme-page">
-      <Container className="py-24">
+      <MarketingNav />
+      <Container className="pt-24 pb-24">
         <div className="mx-auto max-w-2xl text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-theme-accent-light">
             <BookOpen className="h-8 w-8 text-theme-accent" />

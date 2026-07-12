@@ -1,6 +1,7 @@
 import { Container } from '@fluid/ui';
 import Link from 'next/link';
 import { ArrowRight, BookOpen, Search, Code2, Sparkles, Globe, Users, GitBranch, Hash, Network, FileText, Layers, ExternalLink, Zap, Key, Shield } from 'lucide-react';
+import { MarketingNav } from '@/components/marketing-nav';
 
 const features = [
   {
@@ -127,7 +128,8 @@ const features = [
 export default function FeaturesPage() {
   return (
     <div className="min-h-screen bg-theme-page">
-      <Container className="py-24">
+      <MarketingNav />
+      <Container className="pt-24 pb-24">
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="text-4xl font-bold tracking-tight text-theme-main sm:text-5xl">
             Everything you need to <span className="gradient-text">document</span>

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Mail, Send, CheckCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { MarketingNav } from '@/components/marketing-nav';
 
 export default function ContactPage() {
   const [name, setName] = useState('');
@@ -32,7 +33,8 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-theme-page">
-      <section className="py-24">
+      <MarketingNav />
+      <section className="pt-24 pb-24">
         <div className="mx-auto max-w-xl px-6">
           {/* Back link */}
           <Link

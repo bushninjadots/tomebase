@@ -1,6 +1,7 @@
 import { Container } from '@fluid/ui';
 import Link from 'next/link';
 import { CheckCircle, Circle, Clock, Zap, ArrowRight, Github, Mail } from 'lucide-react';
+import { MarketingNav } from '@/components/marketing-nav';
 
 const shipped = [
   { label: 'Auth (email/password, GitHub, Google OAuth)' },
@@ -98,7 +99,8 @@ const categories = [
 export default function RoadmapPage() {
   return (
     <div className="min-h-screen bg-theme-page">
-      <section className="py-24">
+      <MarketingNav />
+      <section className="pt-24 pb-24">
         <Container>
           <div className="mx-auto max-w-2xl text-center">
             <div className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-theme-accent/20 bg-theme-accent-light px-4 py-1.5 text-xs font-medium text-theme-accent">

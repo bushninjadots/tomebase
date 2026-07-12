@@ -1,6 +1,7 @@
 import { Container } from '@fluid/ui';
 import Link from 'next/link';
 import { Check, ArrowRight, Info } from 'lucide-react';
+import { MarketingNav } from '@/components/marketing-nav';
 import { PricingButtons } from './buttons';
 
 const plans = [
@@ -62,7 +63,8 @@ const faq = [
 export default function PricingPage() {
   return (
     <div className="min-h-screen bg-theme-page">
-      <Container className="py-24">
+      <MarketingNav />
+      <Container className="pt-24 pb-24">
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="text-4xl font-bold tracking-tight text-theme-main sm:text-5xl">
             Simple, transparent <span className="gradient-text">pricing</span>

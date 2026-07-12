@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/components/providers';
-import { Navigation } from '@fluid/ui';
 
 const geist = Geist({
   subsets: ['latin'],
@@ -47,7 +46,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen bg-theme-page font-sans text-theme-main antialiased">
           <Providers>
-            <Navigation />
             {children}
           </Providers>
         </body>
