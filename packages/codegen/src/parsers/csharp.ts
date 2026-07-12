@@ -170,7 +170,7 @@ function parseEnum(lines: string[], i: number): { enm: ParsedEnum; endLine: numb
     if (braceDepth > 0) {
       const memberMatch = cl.trim().match(/^(\w+)/);
       if (memberMatch && memberMatch[1] !== 'enum') {
-        enm.members.push(memberMatch[1]!);
+        enm.members.push({ name: memberMatch[1]! });
       }
     }
     if (braceDepth <= 0 && cl.includes('}')) { j++; break; }

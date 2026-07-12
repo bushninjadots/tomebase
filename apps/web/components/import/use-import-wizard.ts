@@ -2,19 +2,30 @@
 
 import { useState, useCallback, useRef } from 'react';
 
-export type WizardState = 'idle' | 'validating' | 'generating' | 'success' | 'error' | 'zero';
+export type WizardState = 'idle' | 'validating' | 'generating' | 'success' | 'error' | 'zero' | 'conflicts';
+
+export type ExportKind = 'function' | 'interface' | 'type' | 'class' | 'enum' | 'namespace';
 
 export interface GeneratedPage {
   id: string;
+  title: string;
+  slug: string;
+  kind: ExportKind;
+  description: string;
+  wordCount: number;
+}
+
+export interface SkippedPage {
   title: string;
   slug: string;
 }
 
 export interface GenerationResult {
   pages: GeneratedPage[];
+  skipped: SkippedPage[];
   total: number;
-  skipped: number;
   stats: GenerationStats;
+  warnings: string[];
 }
 
 export interface GenerationStats {
@@ -23,6 +34,7 @@ export interface GenerationStats {
   types: number;
   classes: number;
   enums: number;
+  namespaces: number;
   wikiLinks: number;
   tags: number;
   backlinks: number;
@@ -71,7 +83,6 @@ export function useImportWizard({ projectId, onToast }: UseImportWizardOptions) 
             updateStep(stepIndex, 'active');
             if (stepIndex > 0) updateStep(stepIndex - 1, 'done');
             stepIndex++;
-
             const elapsed = Date.now() - startTime;
             const targetTime = stepIndex * stepDuration;
             const delay = Math.max(0, targetTime - elapsed);
@@ -81,7 +92,6 @@ export function useImportWizard({ projectId, onToast }: UseImportWizardOptions) 
             resolve();
           }
         };
-
         advanceStep();
       });
     },
@@ -89,7 +99,7 @@ export function useImportWizard({ projectId, onToast }: UseImportWizardOptions) 
   );
 
   const generate = useCallback(
-    async (inputCode: string, inputLanguage: string) => {
+    async (inputCode: string, inputLanguage: string, conflictMode: 'skip' | 'replace' | 'merge' = 'skip') => {
       if (!inputCode.trim()) return;
 
       setState('validating');
@@ -108,14 +118,13 @@ export function useImportWizard({ projectId, onToast }: UseImportWizardOptions) 
         const res = await fetch('/api/codegen', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ code: inputCode, language: inputLanguage, projectId }),
+          body: JSON.stringify({ code: inputCode, language: inputLanguage, projectId, conflictMode }),
           signal: abortRef.current.signal,
         });
 
         const data = await res.json();
 
         await progressPromise;
-
         const elapsed = Date.now() - startTime;
         const remaining = Math.max(0, 800 - elapsed);
         if (remaining > 0) await new Promise((r) => setTimeout(r, remaining));
@@ -133,25 +142,35 @@ export function useImportWizard({ projectId, onToast }: UseImportWizardOptions) 
         }
 
         const pages: GeneratedPage[] = data.pages ?? [];
+        const skipped: SkippedPage[] = data.skipped ?? [];
+        const warnings: string[] = data.warnings ?? [];
         const stats: GenerationStats = {
           functions: data.stats?.functions ?? pages.length,
           interfaces: data.stats?.interfaces ?? 0,
           types: data.stats?.types ?? 0,
           classes: data.stats?.classes ?? 0,
           enums: data.stats?.enums ?? 0,
+          namespaces: data.stats?.namespaces ?? 0,
           wikiLinks: data.stats?.wikiLinks ?? 0,
           tags: data.stats?.tags ?? 0,
           backlinks: data.stats?.backlinks ?? 0,
           generationTimeMs: elapsed,
         };
 
-        if (pages.length === 0) {
-          setState('zero');
-          onToast('info', `All ${data.skipped} page(s) already exist`);
+        if (pages.length === 0 && skipped.length > 0) {
+          setResult({ pages: [], skipped, total: skipped.length, stats, warnings });
+          setState('conflicts');
+          onToast('info', `${skipped.length} page(s) already exist`);
           return;
         }
 
-        setResult({ pages, total: data.total ?? pages.length, skipped: data.skipped ?? 0, stats });
+        if (pages.length === 0) {
+          setState('zero');
+          onToast('info', 'No new pages generated');
+          return;
+        }
+
+        setResult({ pages, skipped, total: data.total ?? pages.length, stats, warnings });
         setState('success');
         onToast('success', `Generated ${pages.length} documentation page${pages.length === 1 ? '' : 's'}`);
       } catch (err) {

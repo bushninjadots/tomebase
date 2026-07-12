@@ -1,7 +1,7 @@
 'use client';
 
 import type { GenerationStats as Stats } from './use-import-wizard';
-import { FunctionSquare, Braces, Type, Box, List, Link2, Tag, ArrowUpRight, Timer } from 'lucide-react';
+import { FunctionSquare, Braces, Type, Box, List, Package, Link2, Tag, ArrowUpRight, Timer } from 'lucide-react';
 
 function StatItem({ icon: Icon, label, value, color }: { icon: React.ElementType; label: string; value: number; color: string }) {
   if (value === 0) return null;
@@ -19,7 +19,7 @@ function StatItem({ icon: Icon, label, value, color }: { icon: React.ElementType
 }
 
 export function GenerationStats({ stats }: { stats: Stats }) {
-  const hasAny = stats.functions || stats.interfaces || stats.types || stats.classes || stats.enums;
+  const hasAny = stats.functions || stats.interfaces || stats.types || stats.classes || stats.enums || stats.namespaces;
   if (!hasAny) return null;
 
   return (
@@ -30,9 +30,10 @@ export function GenerationStats({ stats }: { stats: Stats }) {
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <StatItem icon={FunctionSquare} label="functions" value={stats.functions} color="bg-blue-500/10 text-blue-400" />
         <StatItem icon={Braces} label="interfaces" value={stats.interfaces} color="bg-purple-500/10 text-purple-400" />
-        <StatItem icon={Type} label="types" value={stats.types} color="bg-amber-500/10 text-amber-400" />
-        <StatItem icon={Box} label="classes" value={stats.classes} color="bg-green-500/10 text-green-400" />
+        <StatItem icon={Type} label="types" value={stats.types} color="bg-green-500/10 text-green-400" />
+        <StatItem icon={Box} label="classes" value={stats.classes} color="bg-amber-500/10 text-amber-400" />
         <StatItem icon={List} label="enums" value={stats.enums} color="bg-rose-500/10 text-rose-400" />
+        <StatItem icon={Package} label="namespaces" value={stats.namespaces} color="bg-cyan-500/10 text-cyan-400" />
         <StatItem icon={Link2} label="wiki links" value={stats.wikiLinks} color="bg-teal-500/10 text-teal-400" />
         <StatItem icon={Tag} label="tags" value={stats.tags} color="bg-fuchsia-500/10 text-fuchsia-400" />
         <StatItem icon={ArrowUpRight} label="backlinks" value={stats.backlinks} color="bg-cyan-500/10 text-cyan-400" />

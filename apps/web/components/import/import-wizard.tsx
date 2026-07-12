@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@fluid/ui';
-import { Code2, ArrowRight, FileCode, Check } from 'lucide-react';
+import { Code2, ArrowRight, FileCode, Check, ExternalLink, GitBranch, RotateCcw, ArrowUpRight } from 'lucide-react';
 import { useImportWizard } from './use-import-wizard';
 import { ImportProgress } from './import-progress';
 import { ImportSummary } from './import-summary';
@@ -33,16 +33,19 @@ const EXPORT_FEATURES = [
   { label: 'Exported interfaces', icon: Check },
   { label: 'Exported types', icon: Check },
   { label: 'Exported enums', icon: Check },
+  { label: 'React components & hooks', icon: Check },
   { label: 'JSDoc comments', icon: Check },
 ];
 
 const sampleCode: Record<string, string> = {
   typescript: `/**
  * Calculates the total price including tax and discounts.
- * @param {number} basePrice - The base price before adjustments
- * @param {number} taxRate - The tax rate as a decimal (e.g., 0.08 for 8%)
- * @param {number} discount - Discount amount to subtract
- * @returns {number} The final price after all adjustments
+ * @param basePrice - The base price before adjustments
+ * @param taxRate - The tax rate as a decimal (e.g., 0.08 for 8%)
+ * @param discount - Discount amount to subtract
+ * @returns The final price after all adjustments
+ * @example
+ * calculateTotal(100, 0.08, 10) // returns 98
  */
 export function calculateTotal(basePrice: number, taxRate: number, discount: number = 0): number {
   const tax = basePrice * taxRate;
@@ -53,19 +56,25 @@ export function calculateTotal(basePrice: number, taxRate: number, discount: num
  * Represents a user in the system.
  */
 export interface User {
+  /** Unique identifier */
   id: string;
+  /** Display name */
   name: string;
+  /** Email address */
   email: string;
+  /** User role */
   role: 'admin' | 'user' | 'viewer';
+  /** Account creation date */
   createdAt: Date;
 }
 
 /**
  * Creates a new user with the given details.
- * @param {string} name - The user's display name
- * @param {string} email - The user's email address
- * @param {'admin' | 'user'} role - The user's role
- * @returns {User} The newly created user object
+ * @param name - The user's display name
+ * @param email - The user's email address
+ * @param role - The user's role
+ * @returns The newly created user object
+ * @throws {Error} If the email is already taken
  */
 export function createUser(name: string, email: string, role: 'admin' | 'user' = 'user'): User {
   return { id: crypto.randomUUID(), name, email, role, createdAt: new Date() };
@@ -79,27 +88,16 @@ export enum AuthResult {
   InvalidCredentials = 'INVALID_CREDENTIALS',
   UserNotFound = 'USER_NOT_FOUND',
   AccountLocked = 'ACCOUNT_LOCKED',
-}`,
-  javascript: `/**
- * Calculates the total price including tax and discounts.
- * @param {number} basePrice - The base price before adjustments
- * @param {number} taxRate - The tax rate as a decimal
- * @returns {number} The final price
- */
-export function calculateTotal(basePrice, taxRate, discount = 0) {
-  const tax = basePrice * taxRate;
-  return basePrice + tax - discount;
 }
 
 /**
- * Creates a new user.
- * @param {string} name - Display name
- * @param {string} email - Email address
- * @returns {object} The new user
+ * Configuration options for the authentication service.
  */
-export function createUser(name, email) {
-  return { id: crypto.randomUUID(), name, email, createdAt: new Date() };
-}`,
+export type AuthConfig = {
+  secret: string;
+  expiresIn: number;
+  issuer: string;
+};`,
   python: `"""Authentication module for the API."""
 
 from dataclasses import dataclass
@@ -260,9 +258,6 @@ public class AuthService
     /// <summary>
     /// Authenticates a user with email and password.
     /// </summary>
-    /// <param name="email">The user's email address</param>
-    /// <param name="password">The user's password</param>
-    /// <returns>The authenticated User, or null if authentication fails</returns>
     public async Task<User?> AuthenticateAsync(string email, string password)
     {
         var user = await FindUserByEmail(email);
@@ -301,37 +296,21 @@ private:
     std::string secret_;
 
 public:
-    /**
-     * @brief Creates a new AuthService instance.
-     * @param secret The JWT signing secret
-     */
     AuthService(const std::string& secret) : secret_(secret) {}
 
-    /**
-     * @brief Authenticates a user with email and password.
-     * @param email The user's email address
-     * @param password The user's password
-     * @return Pair of User and error message
-     */
     std::pair<User, std::string> authenticate(
         const std::string& email,
         const std::string& password
     );
 };
 
-/**
- * @brief Represents a user in the system.
- */
 struct User {
-    std::string id;      ///< Unique identifier
-    std::string name;    ///< Display name
-    std::string email;   ///< Email address
-    std::string role;    ///< User role
+    std::string id;
+    std::string name;
+    std::string email;
+    std::string role;
 };
 
-/**
- * @brief Authentication result codes.
- */
 enum class AuthResult {
     Success,
     InvalidCredentials,
@@ -342,22 +321,12 @@ enum class AuthResult {
  * Authentication service for managing user sessions.
  */
 class AuthService(private val secret: String) {
-
-    /**
-     * Authenticates a user with email and password.
-     * @param email The user's email address
-     * @param password The user's password
-     * @return The authenticated User, or null if authentication fails
-     */
     suspend fun authenticate(email: String, password: String): User? {
         val user = findUserByEmail(email)
         return if (user != null && verifyPassword(password, user.id)) user else null
     }
 }
 
-/**
- * Represents a user in the system.
- */
 data class User(
     val id: String,
     val name: String,
@@ -365,9 +334,6 @@ data class User(
     val role: Role = Role.MEMBER
 )
 
-/**
- * User roles in the system.
- */
 enum class Role {
     ADMIN,
     MEMBER,
@@ -375,18 +341,10 @@ enum class Role {
 }`,
   ruby: `# Authentication module for managing user sessions.
 class AuthService
-  # Creates a new AuthService instance.
-  #
-  # @param secret [String] the JWT signing secret
   def initialize(secret)
     @secret = secret
   end
 
-  # Authenticates a user with email and password.
-  #
-  # @param email [String] the user's email address
-  # @param password [String] the user's password
-  # @return [User, nil] the authenticated user or nil
   def authenticate(email, password)
     user = find_user_by_email(email)
     return user if user && verify_password(password, user.id)
@@ -394,7 +352,6 @@ class AuthService
   end
 end
 
-# Represents a user in the system.
 class User
   attr_accessor :id, :name, :email, :role
 
@@ -406,7 +363,6 @@ class User
   end
 end
 
-# Authentication result status.
 module AuthResult
   SUCCESS = :success
   INVALID_CREDENTIALS = :invalid_credentials
@@ -451,8 +407,58 @@ export function ImportWizard({ projectId, projectName }: ImportWizardProps) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [wizard]);
 
+  const handleConflictReplace = useCallback(() => {
+    wizard.generate(wizard.code, wizard.language, 'replace');
+  }, [wizard]);
+
+  const handleConflictSkip = useCallback(() => {
+    wizard.generate(wizard.code, wizard.language, 'skip');
+  }, [wizard]);
+
   return (
     <div className="space-y-8">
+      {/* Quick Actions Bar — visible during success state */}
+      {isSplitView && (
+        <div className="flex items-center justify-between rounded-xl border border-theme-border bg-theme-card px-4 py-2.5 animate-[fadeIn_0.3s_ease-out]">
+          <div className="flex items-center gap-2">
+            <Check className="h-4 w-4 text-green-400" />
+            <span className="text-sm text-theme-main font-medium">
+              {wizard.result!.pages.length} page{wizard.result!.pages.length === 1 ? '' : 's'} generated
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/docs/${projectId}/${wizard.result!.pages[0]?.slug}`}
+              className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-theme-main hover:bg-theme-hover transition-colors"
+            >
+              <ExternalLink className="h-3 w-3" />
+              Open in Editor
+            </Link>
+            <Link
+              href={`/docs/${projectId}/graph`}
+              className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-theme-main hover:bg-theme-hover transition-colors"
+            >
+              <GitBranch className="h-3 w-3" />
+              Open Graph
+            </Link>
+            <Link
+              href={`/docs/${projectId}`}
+              className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-theme-main hover:bg-theme-hover transition-colors"
+            >
+              <ArrowUpRight className="h-3 w-3" />
+              Generated Docs
+            </Link>
+            <button
+              onClick={handleGenerateMore}
+              className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-theme-accent hover:bg-theme-hover transition-colors"
+            >
+              <RotateCcw className="h-3 w-3" />
+              Import Another
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Tab selector */}
       <div className="flex gap-1 rounded-xl border border-theme-border bg-theme-card p-1">
         <div className="flex-1 rounded-lg px-4 py-2.5 text-sm font-medium bg-theme-hover text-theme-main shadow-sm border border-theme-border text-center">
@@ -468,21 +474,14 @@ export function ImportWizard({ projectId, projectName }: ImportWizardProps) {
         </button>
       </div>
 
-      {/* IDLE / VALIDATING state — show editor + sidebar */}
+      {/* IDLE / VALIDATING state — editor + sidebar */}
       {(wizard.state === 'idle' || wizard.state === 'validating') && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main editor — 2/3 */}
           <div className="lg:col-span-2 space-y-5">
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label htmlFor="code" className="text-sm font-medium text-theme-subtle">
-                  Source Code
-                </label>
-                <button
-                  type="button"
-                  onClick={loadSample}
-                  className="text-xs text-theme-accent hover:text-theme-accent/80 transition-colors"
-                >
+                <label htmlFor="code" className="text-sm font-medium text-theme-subtle">Source Code</label>
+                <button type="button" onClick={loadSample} className="text-xs text-theme-accent hover:text-theme-accent/80 transition-colors">
                   Load sample
                 </button>
               </div>
@@ -500,9 +499,7 @@ export function ImportWizard({ projectId, projectName }: ImportWizardProps) {
 
             <div className="flex items-center gap-4">
               <div className="space-y-1.5">
-                <label htmlFor="language" className="text-sm font-medium text-theme-subtle">
-                  Language
-                </label>
+                <label htmlFor="language" className="text-sm font-medium text-theme-subtle">Language</label>
                 <select
                   id="language"
                   value={wizard.language}
@@ -511,9 +508,7 @@ export function ImportWizard({ projectId, projectName }: ImportWizardProps) {
                   className="select-field px-4 py-2.5"
                 >
                   {languages.map((lang) => (
-                    <option key={lang.value} value={lang.value}>
-                      {lang.label}
-                    </option>
+                    <option key={lang.value} value={lang.value}>{lang.label}</option>
                   ))}
                 </select>
               </div>
@@ -522,11 +517,7 @@ export function ImportWizard({ projectId, projectName }: ImportWizardProps) {
               </p>
             </div>
 
-            <Button
-              onClick={handleSubmit}
-              disabled={wizard.state === 'validating' || !wizard.code.trim()}
-              size="lg"
-            >
+            <Button onClick={handleSubmit} disabled={wizard.state === 'validating' || !wizard.code.trim()} size="lg">
               {wizard.state === 'validating' ? (
                 <>
                   <div className="h-4 w-4 rounded-full border-2 border-gray-900/30 border-t-gray-900 animate-spin" />
@@ -542,7 +533,6 @@ export function ImportWizard({ projectId, projectName }: ImportWizardProps) {
             </Button>
           </div>
 
-          {/* Sidebar — 1/3 */}
           <div className="space-y-4">
             <div className="rounded-xl border border-theme-border bg-theme-card p-5">
               <h3 className="text-sm font-semibold text-theme-main mb-4">What gets generated</h3>
@@ -574,10 +564,8 @@ export function ImportWizard({ projectId, projectName }: ImportWizardProps) {
         </div>
       )}
 
-      {/* GENERATING state — centered progress */}
-      {wizard.state === 'generating' && (
-        <ImportProgress steps={wizard.steps} />
-      )}
+      {/* GENERATING state */}
+      {wizard.state === 'generating' && <ImportProgress steps={wizard.steps} />}
 
       {/* ERROR state */}
       {wizard.state === 'error' && (
@@ -585,22 +573,33 @@ export function ImportWizard({ projectId, projectName }: ImportWizardProps) {
           <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6 text-center animate-[fadeIn_0.3s_ease-out]">
             <p className="text-sm text-red-400 font-medium">{wizard.error}</p>
           </div>
-          <Button onClick={handleGenerateMore} variant="outline">
-            Try Again
-          </Button>
+          <Button onClick={handleGenerateMore} variant="outline">Try Again</Button>
         </div>
       )}
 
       {/* ZERO state */}
-      {wizard.state === 'zero' && (
-        <ZeroState language={wizard.language} onLoadExample={loadSample} />
+      {wizard.state === 'zero' && <ZeroState language={wizard.language} onLoadExample={loadSample} />}
+
+      {/* CONFLICTS state — all pages already exist */}
+      {wizard.state === 'conflicts' && wizard.result && (
+        <div className="space-y-6 animate-[slideUp_0.4s_ease-out]">
+          <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-6 text-center">
+            <p className="text-sm font-medium text-amber-400">
+              ⚠ {wizard.result.skipped.length} page{wizard.result.skipped.length > 1 ? 's' : ''} already existed.
+            </p>
+            <div className="mt-4 flex justify-center gap-3">
+              <Button onClick={handleConflictReplace} variant="outline" size="sm">Replace All</Button>
+              <Button onClick={handleConflictSkip} variant="outline" size="sm">Skip</Button>
+            </div>
+          </div>
+          <Button onClick={handleGenerateMore} variant="ghost">← Back to Editor</Button>
+        </div>
       )}
 
       {/* SUCCESS state */}
       {wizard.state === 'success' && wizard.result && (
         <div ref={summaryRef}>
           {isSplitView ? (
-            /* Split view: pages list + preview */
             <div className="space-y-6 animate-[slideUp_0.4s_ease-out]">
               {/* Success banner */}
               <div className="flex items-center gap-3 rounded-xl border border-green-500/20 bg-green-500/5 px-5 py-4">
@@ -609,12 +608,11 @@ export function ImportWizard({ projectId, projectName }: ImportWizardProps) {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-green-400">
-                    Generated {wizard.result.pages.length} documentation page{wizard.result.pages.length === 1 ? '' : 's'}
+                    Successfully generated documentation
                   </p>
                   <p className="text-xs text-theme-muted mt-0.5">
-                    {wizard.result.skipped > 0
-                      ? `${wizard.result.skipped} page${wizard.result.skipped > 1 ? 's' : ''} already exist and were skipped`
-                      : `All exports converted to documentation pages`}
+                    {wizard.result.pages.length} documentation page{wizard.result.pages.length === 1 ? '' : 's'} created.
+                    {wizard.result.skipped.length > 0 && ` ${wizard.result.skipped.length} skipped.`}
                   </p>
                 </div>
               </div>
@@ -625,6 +623,8 @@ export function ImportWizard({ projectId, projectName }: ImportWizardProps) {
                   <GeneratedPagesPanel
                     pages={wizard.result.pages}
                     projectId={projectId}
+                    onSelectSlug={setSelectedPreviewSlug}
+                    selectedSlug={selectedPreviewSlug}
                   />
                 </div>
                 <div className="rounded-xl border border-theme-border bg-theme-card p-4">
@@ -672,12 +672,7 @@ export function ImportWizard({ projectId, projectName }: ImportWizardProps) {
               </div>
             </div>
           ) : (
-            /* Simple summary (single page or fallback) */
-            <ImportSummary
-              result={wizard.result}
-              projectId={projectId}
-              onGenerateMore={handleGenerateMore}
-            />
+            <ImportSummary result={wizard.result} projectId={projectId} onGenerateMore={handleGenerateMore} />
           )}
         </div>
       )}
