@@ -1,9 +1,9 @@
-export type SupportedLanguage = 'typescript' | 'javascript' | 'python' | 'go' | 'rust';
+export type SupportedLanguage = 'typescript' | 'javascript' | 'python' | 'go' | 'rust' | 'csharp' | 'cpp' | 'kotlin' | 'ruby';
 
 export interface LanguageConfig {
   name: string;
   extensions: string[];
-  commentStyle: 'jsdoc' | 'python' | 'cstyle';
+  commentStyle: 'jsdoc' | 'python' | 'cstyle' | 'xml' | 'yard';
 }
 
 export const supportedLanguages: Record<SupportedLanguage, LanguageConfig> = {
@@ -12,4 +12,8 @@ export const supportedLanguages: Record<SupportedLanguage, LanguageConfig> = {
   python: { name: 'Python', extensions: ['.py'], commentStyle: 'python' },
   go: { name: 'Go', extensions: ['.go'], commentStyle: 'cstyle' },
   rust: { name: 'Rust', extensions: ['.rs'], commentStyle: 'cstyle' },
+  csharp: { name: 'C#', extensions: ['.cs'], commentStyle: 'xml' },
+  cpp: { name: 'C++', extensions: ['.cpp', '.cc', '.h', '.hpp'], commentStyle: 'cstyle' },
+  kotlin: { name: 'Kotlin', extensions: ['.kt', '.kts'], commentStyle: 'jsdoc' },
+  ruby: { name: 'Ruby', extensions: ['.rb'], commentStyle: 'yard' },
 };

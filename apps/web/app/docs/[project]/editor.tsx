@@ -634,7 +634,7 @@ export function DocEditor({ project }: { project: Project }) {
                   <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="inline-flex items-center gap-1 rounded-lg bg-theme-main px-2.5 py-1.5 text-sm font-medium text-white hover:opacity-90 transition-colors disabled:opacity-50 shrink-0"
+                    className="inline-flex items-center gap-1 rounded-lg bg-theme-accent px-2.5 py-1.5 text-sm font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors disabled:opacity-50 shrink-0"
                     title="Save (⌘S)"
                   >
                     <Save className="h-4 w-4" />
@@ -679,7 +679,7 @@ export function DocEditor({ project }: { project: Project }) {
                 title={btn.shortcut ? `${btn.label} (${btn.shortcut})` : btn.label}
               >
                 <btn.icon className="h-3.5 w-3.5" />
-                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-theme-main px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-theme-card border border-theme-border px-2 py-1 text-xs text-theme-main opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                   {btn.label}
                 </span>
               </button>
@@ -827,7 +827,7 @@ export function DocEditor({ project }: { project: Project }) {
             <span className={`text-[10px] px-1.5 py-0.5 rounded ${
               viewMode === 'edit' ? 'bg-theme-hover text-theme-muted' :
               viewMode === 'preview' ? 'bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400' :
-              'bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400'
+              'bg-theme-accent-light text-theme-accent'
             }`}>
               {viewMode === 'edit' ? 'Edit' : viewMode === 'preview' ? 'Preview' : 'Split'}
             </span>

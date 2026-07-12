@@ -11,6 +11,10 @@ const languages = [
   { value: 'python', label: 'Python' },
   { value: 'go', label: 'Go' },
   { value: 'rust', label: 'Rust' },
+  { value: 'csharp', label: 'C#' },
+  { value: 'cpp', label: 'C++' },
+  { value: 'kotlin', label: 'Kotlin' },
+  { value: 'ruby', label: 'Ruby' },
 ];
 
 const sampleCode: Record<string, string> = {
@@ -213,6 +217,181 @@ impl Authenticator {
         Ok(user)
     }
 }`,
+
+  csharp: `/// <summary>
+/// Authentication service for managing user sessions.
+/// </summary>
+public class AuthService
+{
+    private readonly string _secret;
+
+    /// <summary>
+    /// Creates a new AuthService instance.
+    /// </summary>
+    /// <param name="secret">The JWT signing secret</param>
+    public AuthService(string secret)
+    {
+        _secret = secret;
+    }
+
+    /// <summary>
+    /// Authenticates a user with email and password.
+    /// </summary>
+    /// <param name="email">The user's email address</param>
+    /// <param name="password">The user's password</param>
+    /// <returns>The authenticated User, or null if authentication fails</returns>
+    public async Task<User?> AuthenticateAsync(string email, string password)
+    {
+        var user = await FindUserByEmail(email);
+        if (user != null && VerifyPassword(password, user.Id))
+            return user;
+        return null;
+    }
+}
+
+/// <summary>
+/// Represents a user in the system.
+/// </summary>
+public class User
+{
+    public string Id { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Role { get; set; } = "user";
+}
+
+/// <summary>
+/// Authentication result status.
+/// </summary>
+public enum AuthResult
+{
+    Success,
+    InvalidCredentials,
+    UserNotFound,
+    AccountLocked
+}`,
+
+  cpp: `/**
+ * @brief Authentication module for managing user sessions.
+ */
+class AuthService {
+private:
+    std::string secret_;
+
+public:
+    /**
+     * @brief Creates a new AuthService instance.
+     * @param secret The JWT signing secret
+     */
+    AuthService(const std::string& secret) : secret_(secret) {}
+
+    /**
+     * @brief Authenticates a user with email and password.
+     * @param email The user's email address
+     * @param password The user's password
+     * @return Pair of User and error message
+     */
+    std::pair<User, std::string> authenticate(
+        const std::string& email,
+        const std::string& password
+    );
+};
+
+/**
+ * @brief Represents a user in the system.
+ */
+struct User {
+    std::string id;      ///< Unique identifier
+    std::string name;    ///< Display name
+    std::string email;   ///< Email address
+    std::string role;    ///< User role
+};
+
+/**
+ * @brief Authentication result codes.
+ */
+enum class AuthResult {
+    Success,
+    InvalidCredentials,
+    UserNotFound,
+    AccountLocked
+};`,
+
+  kotlin: `/**
+ * Authentication service for managing user sessions.
+ */
+class AuthService(private val secret: String) {
+
+    /**
+     * Authenticates a user with email and password.
+     * @param email The user's email address
+     * @param password The user's password
+     * @return The authenticated User, or null if authentication fails
+     */
+    suspend fun authenticate(email: String, password: String): User? {
+        val user = findUserByEmail(email)
+        return if (user != null && verifyPassword(password, user.id)) user else null
+    }
+}
+
+/**
+ * Represents a user in the system.
+ */
+data class User(
+    val id: String,
+    val name: String,
+    val email: String,
+    val role: Role = Role.MEMBER
+)
+
+/**
+ * User roles in the system.
+ */
+enum class Role {
+    ADMIN,
+    MEMBER,
+    VIEWER
+}`,
+
+  ruby: `# Authentication module for managing user sessions.
+class AuthService
+  # Creates a new AuthService instance.
+  #
+  # @param secret [String] the JWT signing secret
+  def initialize(secret)
+    @secret = secret
+  end
+
+  # Authenticates a user with email and password.
+  #
+  # @param email [String] the user's email address
+  # @param password [String] the user's password
+  # @return [User, nil] the authenticated user or nil
+  def authenticate(email, password)
+    user = find_user_by_email(email)
+    return user if user && verify_password(password, user.id)
+    nil
+  end
+end
+
+# Represents a user in the system.
+class User
+  attr_accessor :id, :name, :email, :role
+
+  def initialize(id:, name:, email:, role: :member)
+    @id = id
+    @name = name
+    @email = email
+    @role = role
+  end
+end
+
+# Authentication result status.
+module AuthResult
+  SUCCESS = :success
+  INVALID_CREDENTIALS = :invalid_credentials
+  USER_NOT_FOUND = :user_not_found
+end`,
 };
 
 interface ImportFormProps {
@@ -288,7 +467,7 @@ export function ImportForm({ projectId }: ImportFormProps) {
           onChange={(e) => setCode(e.target.value)}
           rows={18}
           className="code-editor"
-          placeholder={`// Paste your code here...\n// Supported: TypeScript, JavaScript, Python, Go, Rust\n`}
+          placeholder={`// Paste your code here...\n// Supported: TypeScript, JavaScript, Python, Go, Rust, C#, C++, Kotlin, Ruby\n`}
           spellCheck={false}
         />
       </div>
@@ -312,7 +491,7 @@ export function ImportForm({ projectId }: ImportFormProps) {
           </select>
         </div>
         <p className="text-xs text-theme-muted pt-6">
-          Paste code with doc comments (JSDoc, docstrings, Go doc, Rust doc)
+          Paste code with doc comments (JSDoc, docstrings, Go doc, Rust doc, XML doc, KDoc, YARD)
         </p>
       </div>
 

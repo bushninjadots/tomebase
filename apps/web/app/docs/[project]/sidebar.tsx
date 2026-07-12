@@ -424,7 +424,7 @@ export function DocSidebar({ project }: { project: Project }) {
   }
 
   return (
-    <aside className="flex w-64 flex-col border-r border-theme-border/60 bg-[#0B1020]">
+    <aside className="flex w-64 flex-col border-r border-theme-border/60 bg-theme-page">
       {/* Header */}
       <div className="flex items-center gap-2.5 border-b border-theme-border/40 px-4 py-3">
         <Link
@@ -600,7 +600,7 @@ export function DocSidebar({ project }: { project: Project }) {
               <button
                 type="submit"
                 disabled={!newTitle.trim()}
-                className="flex-1 rounded-md bg-theme-accent px-2.5 py-1.5 text-[13px] font-medium text-white hover:bg-theme-accent-hover transition-colors disabled:opacity-40"
+                className="flex-1 rounded-md bg-theme-accent px-2.5 py-1.5 text-[13px] font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors disabled:opacity-40"
               >
                 Create
               </button>

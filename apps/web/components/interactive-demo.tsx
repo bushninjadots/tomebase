@@ -219,6 +219,135 @@ impl Authenticator {
         Ok(user)
     }
 }`,
+  csharp: `/// <summary>
+/// Authentication service for managing user sessions.
+/// </summary>
+public class AuthService
+{
+    private readonly string _secret;
+
+    /// <summary>
+    /// Creates a new AuthService instance.
+    /// </summary>
+    /// <param name="secret">The JWT signing secret</param>
+    public AuthService(string secret) { _secret = secret; }
+
+    /// <summary>
+    /// Authenticates a user with email and password.
+    /// </summary>
+    /// <param name="email">The user's email address</param>
+    /// <param name="password">The user's password</param>
+    /// <returns>The authenticated User, or null</returns>
+    public async Task<User?> AuthenticateAsync(string email, string password)
+    {
+        var user = await FindUserByEmail(email);
+        if (user != null && VerifyPassword(password, user.Id))
+            return user;
+        return null;
+    }
+}
+
+/// <summary>Represents a user in the system.</summary>
+public class User
+{
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string Email { get; set; }
+    public string Role { get; set; } = "member";
+}`,
+  cpp: `/**
+ * @brief Authentication service for managing user sessions.
+ */
+class AuthService {
+private:
+    std::string secret_;
+public:
+    /**
+     * @brief Creates a new AuthService instance.
+     * @param secret The JWT signing secret
+     */
+    AuthService(const std::string& secret) : secret_(secret) {}
+
+    /**
+     * @brief Authenticates a user with email and password.
+     * @param email The user's email address
+     * @param password The user's password
+     * @return Pair of User and error message
+     */
+    std::pair<User, std::string> authenticate(
+        const std::string& email,
+        const std::string& password);
+};
+
+/**
+ * @brief Represents a user in the system.
+ */
+struct User {
+    std::string id;    ///< Unique identifier
+    std::string name;  ///< Display name
+    std::string email; ///< Email address
+    std::string role;  ///< User role
+};`,
+  kotlin: `/**
+ * Authentication service for managing user sessions.
+ */
+class AuthService(private val secret: String) {
+
+    /**
+     * Authenticates a user with email and password.
+     * @param email The user's email address
+     * @param password The user's password
+     * @return The authenticated User, or null
+     */
+    suspend fun authenticate(email: String, password: String): User? {
+        val user = findUserByEmail(email)
+        return if (user != null && verifyPassword(password, user.id)) user else null
+    }
+}
+
+/**
+ * Represents a user in the system.
+ */
+data class User(
+    val id: String,
+    val name: String,
+    val email: String,
+    val role: Role = Role.MEMBER
+)
+
+enum class Role { ADMIN, MEMBER, VIEWER }`,
+  ruby: `# Authentication service for managing user sessions.
+class AuthService
+  # Creates a new AuthService instance.
+  #
+  # @param secret [String] the JWT signing secret
+  def initialize(secret)
+    @secret = secret
+  end
+
+  # Authenticates a user with email and password.
+  #
+  # @param email [String] the user's email address
+  # @param password [String] the user's password
+  # @return [User, nil] the authenticated user or nil
+  def authenticate(email, password)
+    user = find_user_by_email(email)
+    return user if user && verify_password(password, user.id)
+    nil
+  end
+end
+
+# Represents a user in the system.
+class User
+  attr_accessor :id, :name, :email, :role
+
+  def initialize(id:, name:, email:, role: :member)
+    @id = id
+    @name = name
+    @email = email
+    @role = role
+  end
+end`,
   openapi: `openapi: "3.0.0"
 info:
   title: TomeBase API
@@ -273,6 +402,10 @@ const languages = [
   { value: 'python', label: 'Python' },
   { value: 'go', label: 'Go' },
   { value: 'rust', label: 'Rust' },
+  { value: 'csharp', label: 'C#' },
+  { value: 'cpp', label: 'C++' },
+  { value: 'kotlin', label: 'Kotlin' },
+  { value: 'ruby', label: 'Ruby' },
   { value: 'openapi', label: 'OpenAPI' },
 ];
 
@@ -538,7 +671,7 @@ export function InteractiveDemo() {
         {/* Bottom tips */}
         <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
           {[
-            { icon: Code2, title: 'All languages supported', desc: 'TypeScript, JavaScript, Python, Go, Rust, and OpenAPI specs.' },
+            { icon: Code2, title: 'All languages supported', desc: 'TypeScript, JavaScript, Python, Go, Rust, C#, C++, Kotlin, Ruby, and OpenAPI specs.' },
             { icon: Zap, title: 'Instant generation', desc: 'Documentation generated in seconds, not hours.' },
             { icon: ExternalLink, title: 'Ready to publish', desc: 'SEO-optimized, responsive, and beautifully designed.' },
           ].map((tip) => (

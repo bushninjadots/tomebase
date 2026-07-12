@@ -24,7 +24,7 @@ export default async function ProjectDocsPage({ params }: PageProps) {
   if (!project || project.userId !== session.user.id) notFound();
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#0B1020]">
+    <div className="flex h-screen overflow-hidden bg-theme-page">
       <DocSidebar project={project} />
       <main className="flex flex-1 flex-col min-w-0 overflow-hidden">
         <DocEditor project={project} />

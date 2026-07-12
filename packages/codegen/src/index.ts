@@ -2,6 +2,10 @@ import { parseTypeScript } from './parsers/typescript';
 import { parsePython } from './parsers/python';
 import { parseGo } from './parsers/go';
 import { parseRust } from './parsers/rust';
+import { parseCSharp } from './parsers/csharp';
+import { parseCpp } from './parsers/cpp';
+import { parseKotlin } from './parsers/kotlin';
+import { parseRuby } from './parsers/ruby';
 import type { SupportedLanguage } from './languages';
 import type { ParseResult, ParsedExport, ParsedFunction, ParsedInterface, ParsedType, ParsedClass, ParsedEnum, Param, Prop } from './types';
 export type { ParseResult, ParsedExport, ParsedFunction, ParsedInterface, ParsedType, ParsedClass, ParsedEnum, Param, Prop, SupportedLanguage };
@@ -19,6 +23,14 @@ export function parseCode(code: string, language: SupportedLanguage): ParseResul
       return parseGo(code);
     case 'rust':
       return parseRust(code);
+    case 'csharp':
+      return parseCSharp(code);
+    case 'cpp':
+      return parseCpp(code);
+    case 'kotlin':
+      return parseKotlin(code);
+    case 'ruby':
+      return parseRuby(code);
     default:
       return parseTypeScript(code);
   }
