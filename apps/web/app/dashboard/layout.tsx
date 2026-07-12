@@ -15,6 +15,7 @@ import {
   Upload,
   BarChart3,
   Users,
+  User,
 } from 'lucide-react';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -107,7 +108,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
             className="sidebar-link"
           >
             <Settings />
-            Settings
+            Team Settings
+          </Link>
+          <Link
+            href="/dashboard/account"
+            className="sidebar-link"
+          >
+            <User />
+            Account
           </Link>
           <Link
             href="/help"

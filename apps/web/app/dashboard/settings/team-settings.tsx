@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Input, Button, Badge } from '@fluid/ui';
-import { Copy, Check, Users, Link2, RefreshCw, CreditCard, ExternalLink } from 'lucide-react';
+import { Copy, Check, Users, Link2, RefreshCw, CreditCard, ExternalLink, XCircle } from 'lucide-react';
 import Link from 'next/link';
+import { CancelSubscriptionModal } from '@/components/cancel-subscription-modal';
 
 interface TeamMember {
   user: { id: string; name: string | null; email: string | null; image: string | null };
@@ -45,6 +46,7 @@ export function TeamSettings({
   const [copied, setCopied] = useState(false);
   const [creatingLink, setCreatingLink] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -132,14 +134,24 @@ export function TeamSettings({
                 <ExternalLink className="h-3 w-3" />
               </Link>
             ) : (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleManageBilling}
-                disabled={portalLoading}
-              >
-                {portalLoading ? 'Loading...' : 'Manage Subscription'}
-              </Button>
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleManageBilling}
+                  disabled={portalLoading}
+                >
+                  {portalLoading ? 'Loading...' : 'Manage Subscription'}
+                </Button>
+                <button
+                  type="button"
+                  onClick={() => setShowCancelModal(true)}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs font-medium text-red-400 hover:bg-red-500/20 transition-colors"
+                >
+                  <XCircle className="h-3.5 w-3.5" />
+                  Cancel
+                </button>
+              </>
             )}
           </div>
         </div>
@@ -268,6 +280,12 @@ export function TeamSettings({
           All team members can view and edit team projects.
         </p>
       </div>
+
+      <CancelSubscriptionModal
+        open={showCancelModal}
+        onClose={() => setShowCancelModal(false)}
+        currentPeriodEnd={team.currentPeriodEnd}
+      />
     </div>
   );
 }

@@ -8,6 +8,8 @@ import { ProjectSettingsForm } from './form';
 import { ApiKeyManager } from './api-keys';
 import { WebhookSettings } from '@/components/webhook-settings';
 import { GitSync } from '@/components/git-sync';
+import { ExportProjectSection } from './export-section';
+import { ProjectDangerZone } from './danger-zone';
 
 interface PageProps {
   params: Promise<{ project: string }>;
@@ -46,24 +48,7 @@ export default async function ProjectSettingsPage({ params }: PageProps) {
           <div className="mt-8 space-y-8">
             <ProjectSettingsForm project={project} />
 
-            <div className="rounded-2xl border border-theme-border bg-theme-card p-6">
-              <h2 className="text-lg font-semibold text-theme-main flex items-center gap-2">
-                <Download className="h-4 w-4 text-theme-muted" />
-                Export
-              </h2>
-              <p className="mt-1 text-sm text-theme-subtle">
-                Download all pages as Markdown files with frontmatter metadata.
-              </p>
-              <div className="mt-4">
-                <a
-                  href={`/api/projects/${project.id}/export`}
-                  className="btn-secondary text-sm"
-                >
-                  <Download className="h-4 w-4" />
-                  Export as .zip
-                </a>
-              </div>
-            </div>
+            <ExportProjectSection projectId={project.id} projectName={project.name} pageCount={project._count.pages} />
 
             <div className="rounded-2xl border border-theme-border bg-theme-card p-6">
               <GitSync projectId={project.id} />
@@ -75,42 +60,7 @@ export default async function ProjectSettingsPage({ params }: PageProps) {
               <WebhookSettings projectId={project.id} />
             </div>
 
-            <div className="rounded-2xl border border-red-500/20 bg-theme-card p-6">
-              <h2 className="text-lg font-semibold text-red-400">Danger Zone</h2>
-              <p className="mt-1 text-sm text-theme-subtle">
-                Irreversible actions for this project.
-              </p>
-              <div className="mt-4">
-                <form
-                  action={async () => {
-                    'use server';
-                    const { auth: getAuth } = await import('@/lib/auth');
-                    const session = await getAuth();
-                    if (!session?.user?.id) return;
-
-                    const project = await prisma.project.findFirst({
-                      where: {
-                        id: projectId,
-                        team: { members: { some: { userId: session.user.id, role: 'admin' } } },
-                      },
-                    });
-                    if (!project) return;
-
-                    await prisma.docPage.deleteMany({ where: { projectId } });
-                    await prisma.apiKey.deleteMany({ where: { projectId } });
-                    await prisma.project.delete({ where: { id: projectId } });
-                    redirect('/dashboard');
-                  }}
-                >
-                  <button
-                    type="submit"
-                    className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-400 hover:bg-red-500/20 transition-colors"
-                  >
-                    Delete Project
-                  </button>
-                </form>
-              </div>
-            </div>
+            <ProjectDangerZone projectId={project.id} projectName={project.name} />
           </div>
         </div>
       </Container>
