@@ -1,147 +1,75 @@
-"""Style Guide: Mapping Zip File Design to TomeBase Themed System
+# Style Guide
 
-## Design Philosophy
-The zip file contains a design with clean, modern aesthetics using:
-- Clean card-based layouts with subtle borders
-- Consistent spacing and typography
-- Theme-aware colors using CSS variables
-- Hover states and micro-interactions
+## Design Principles
 
-## Theme Mapping
+- **Clean, modern aesthetics** — card-based layouts with subtle borders
+- **Theme-aware** — all components use CSS variables, never hardcoded colors
+- **Consistent spacing** — Tailwind spacing scale (4px increments)
+- **Subtle interactions** — hover states, transitions, micro-animations
 
-### Color Variables (Zip → TomeBase)
-- Zip: `--bg`, `--surface`, `--text`, `--accent`
-- TomeBase: `--bg-page`, `--bg-card`, `--text-main`, `--accent`
+## Color System
 
-### Spacing Scale (Zip → TomeBase)
-- Zip: Uses rem units directly
-- TomeBase: Uses Tailwind spacing scale (4px increments)
+All UI uses theme CSS variables:
 
-### Border Radius
-- Zip: Mixed usage (8px, 12px, 14px, 50%)
-- TomeBase: Standardized with CSS variables (`--card-radius`, `--button-radius`)
+| Purpose | Classes |
+|---------|---------|
+| Primary text | `text-theme-main` |
+| Secondary text | `text-theme-subtle` |
+| Muted text | `text-theme-muted` |
+| Page background | `bg-theme-page` |
+| Card background | `bg-theme-card` |
+| Hover background | `bg-theme-hover` |
+| Borders | `border-theme-border` |
+| Accent (gold) | `text-theme-accent`, `bg-theme-accent` |
+| Accent hover | `text-theme-accent-hover`, `bg-theme-accent-hover` |
+| Accent light | `bg-theme-accent-light` |
 
-## Component Mapping
-
-### Common Components
-
-#### Card Component
-**Zip:** Simple div with background, border, border-radius
-**TomeBase Update:** Create a Card component with theme-aware styles
-
-#### Button Component  
-**Zip:** Inline styled buttons with variants (primary, outline, ghost)
-**TomeBase Update:** Update existing button component with theme variables
-
-#### Stats Cards
-**Zip:** Grid of cards with icons, values, labels
-**TomeBase Update:** Create themed stat card components
-
-#### Navigation Tabs
-**Zip:** Tab navigation with active states
-**TomeBase Update:** Integrate with existing navigation patterns
-
-#### Form Controls
-**Zip:** Inputs, textareas, select elements with theme styling
-**TomeBase Update:** Update existing input component
+**Never use** hardcoded Tailwind colors for UI elements. Use semantic colors:
+- Green: success, published, health good
+- Red: danger, errors, health bad
+- Amber: warnings, health medium
+- Blue: informational, links
+- Purple: health score, graph
 
 ## Typography
-### Zip Font Stack
-- Primary: Inter font family
-- Code: JetBrains Mono monospace
 
-### TomeBase Font Stack  
-- Primary: Similar (Inter + Geist)
-- Code: JetBrains Mono (already matches)
+- **Primary**: Geist (sans-serif)
+- **Code**: Geist Mono (monospace)
+- **Scale**: text-xs (12px), text-sm (14px), text-base (16px), text-lg (18px), text-xl (20px), text-2xl (24px)
 
-## Component Updates
+## Border Radius
 
-### 1. Button Component (/home/bender/tomebase/tomebase/packages/ui/src/components/button.tsx)
-- Add theme variants (primary, secondary, ghost)
-- Add hover states with theme variables
-- Standardize border-radius using CSS variables
-- Add active states with scale transform
+- Cards: `rounded-xl` (12px)
+- Buttons: `rounded-lg` (8px) or `rounded-xl` (12px)
+- Avatars: `rounded-lg` (8px)
+- Badges: `rounded-full`
 
-### 2. Card Component (/home/bender/tomebase/tomebase/packages/ui/src/components/card.tsx)  
-- Update to use theme variables
-- Add border-radius control via CSS variable
-- Add hover states and transitions
-- Support theming across all 5 themes
+## Spacing
 
-### 3. Badge Component (/home/bender/tomebase/tomebase/packages/ui/src/components/badge.tsx)
-- Update for theme compatibility
-- Use theme colors for status indicators
-- Ensure accessibility and contrast
+- Card padding: `p-5` (20px)
+- Section gaps: `gap-4` (16px)
+- Item gaps: `gap-3` (12px)
+- Tight gaps: `gap-2` (8px)
 
-### 4. Input Component (/home/bender/tomebase/tomebase/packages/ui/src/components/input.tsx)
-- Update for theme awareness
-- Match the visual style from zip file
-- Add proper spacing and typography
+## Components
 
-### 5. Navigation Component (/home/bender/tomebase/tomebase/packages/ui/src/components/navigation.tsx)
-- Update for theme compatibility
-- Add hover states matching zip file behavior
-- Standardize spacing and transitions
+### Buttons
+- Primary: `bg-theme-accent text-gray-900 hover:bg-theme-accent-hover`
+- Secondary: `border border-theme-border bg-theme-card text-theme-main`
+- Ghost: `text-theme-muted hover:text-theme-main hover:bg-theme-hover`
+- Danger: `border border-red-500/30 bg-red-500/10 text-red-400`
 
-### 6. Logo Component (/home/bender/tomebase/tomebase/packages/ui/src/components/logo.tsx)
-- Update for theme compatibility (SVG path may need updating)
-- Ensure it works with all themes
-- Match the zip file logo style
+### Cards
+- Default: `border border-theme-border bg-theme-card rounded-xl`
+- Interactive: add `hover:border-theme-accent/30 hover:bg-theme-hover transition-all`
 
-## Page Component Updates
+### Stat Cards
+- Subtle tinted background via `color-mix(in srgb, var(--color-{color}-500) 4%, transparent)`
+- Large number as visual focus (`text-3xl font-bold`)
+- Icon with category-colored background
 
-### Dashboard (/home/bender/tomebase/tomebase/apps/web/app/dashboard/page.tsx)
-- Update stat cards to use new themed components
-- Ensure grid layouts match zip file
-- Update color schemes to use theme variables
-- Maintain responsive design
+## Themes
 
-### Landing (/home/bender/tomebase/tomebase/apps/web/app/page.tsx)  
-- Update feature cards to use themed Card component
-- Update hero section with theme-aware styling
-- Ensure responsive layout
-- Add scroll animations and hover effects
+5 themes available: Dark (default), Light, Gruvbox, Dracula, Nord.
 
-### Docs Editor (/home/bender/tomebase/tomebase/apps/web/app/docs/[project]/editor.tsx)
-- Update markdown editor with themed components
-- Ensure syntax highlighting matches theme
-- Update toolbar buttons with new theme system
-- Add hover states and transitions
-
-## Implementation Priority
-
-1. **High Priority:**
-   - Button component update (affects many pages)
-   - Card component update (affects many pages)
-   - Dashboard page updates
-   - Landing page updates
-
-2. **Medium Priority:**
-   - Badge component updates
-   - Input component updates
-   - Navigation component updates
-
-3. **Low Priority:**
-   - Logo component
-   - Unused components
-
-## Verification Checklist
-- [ ] All components use theme variables
-- [ ] Design matches zip file visually
-- [ ] Theme switching works correctly
-- [ ] Responsive design maintained
-- [ ] Hover states and transitions work
-- [ ] Accessibility maintained
-- [ ] No console errors
-- [ ] Tests pass
-
-## Next Steps
-1. Update Button component with theme variants
-2. Update Card component with theme awareness
-3. Update Dashboard page to use new components
-4. Update Landing page to use themed components
-5. Update remaining page components
-6. Verify all changes work together
-7. Test theme switching
-8. Run tests to ensure no regressions
-"""
+Theme variables are defined in `apps/web/app/globals.css`.
