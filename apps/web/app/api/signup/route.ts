@@ -1,7 +1,7 @@
 import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import { checkRateLimit, rateLimitResponse, cleanupRateLimits } from '@/lib/rate-limit';
+import { checkRateLimit, rateLimitResponse, rateLimitHeaders, cleanupRateLimits } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
   cleanupRateLimits();
@@ -10,6 +10,8 @@ export async function POST(request: Request) {
   const rateLimit = checkRateLimit(`signup:${ip}`, 5, 60_000);
   const rateLimited = rateLimitResponse(rateLimit);
   if (rateLimited) return rateLimited;
+
+  const rlHeaders = rateLimitHeaders(rateLimit);
 
   try {
     let body;
@@ -61,7 +63,7 @@ export async function POST(request: Request) {
       console.error('Team creation error:', e);
     }
 
-    return NextResponse.json({ success: true }, { status: 201 });
+    return NextResponse.json({ success: true }, { status: 201, headers: rlHeaders });
   } catch {
     return NextResponse.json({ error: 'Failed to create account' }, { status: 500 });
   }

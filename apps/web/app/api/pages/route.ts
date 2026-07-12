@@ -46,10 +46,14 @@ export async function POST(request: Request) {
     const baseSlug = slugify(title);
     let slug = baseSlug;
     let counter = 1;
+    const maxAttempts = 10;
 
     while (await prisma.docPage.findFirst({ where: { projectId, slug } })) {
-      slug = `${baseSlug}-${counter}`;
       counter++;
+      if (counter > maxAttempts) {
+        return NextResponse.json({ error: 'Could not generate unique slug' }, { status: 409 });
+      }
+      slug = `${baseSlug}-${counter}`;
     }
 
     const maxOrder = await prisma.docPage.findFirst({

@@ -43,6 +43,13 @@ export function rateLimitResponse(result: RateLimitResult): Response | null {
   );
 }
 
+export function rateLimitHeaders(result: RateLimitResult): Record<string, string> {
+  return {
+    'X-RateLimit-Remaining': String(result.remaining),
+    'X-RateLimit-Reset': String(Math.ceil(result.resetAt / 1000)),
+  };
+}
+
 const CLEANUP_INTERVAL = 60_000;
 let lastCleanup = Date.now();
 

@@ -3,7 +3,7 @@ import { parseCode, exportsToMarkdown } from '@fluid/codegen';
 import { slugify } from '@fluid/utils';
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
-import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit';
+import { checkRateLimit, rateLimitResponse, rateLimitHeaders } from '@/lib/rate-limit';
 import type { SupportedLanguage } from '@fluid/codegen';
 
 export async function POST(request: Request) {
@@ -16,6 +16,8 @@ export async function POST(request: Request) {
     const rl = checkRateLimit(`codegen:${session.user.id}`, 10, 60_000);
     const rlResponse = rateLimitResponse(rl);
     if (rlResponse) return rlResponse;
+
+    const rlHeaders = rateLimitHeaders(rl);
 
     const { code, language, projectId } = await request.json();
 
@@ -95,7 +97,7 @@ export async function POST(request: Request) {
       pages: createdPages,
       total: result.exports.length,
       skipped: result.exports.length - createdPages.length,
-    });
+    }, { headers: rlHeaders });
   } catch (error) {
     console.error('Code generation error:', error);
     return NextResponse.json({ error: 'Failed to generate documentation' }, { status: 500 });

@@ -85,6 +85,9 @@ model Project {
   healthReports HealthReport[]
   teamId    String?
   team      Team?      @relation(fields: [teamId], references: [id])
+
+  @@index([teamId])
+  @@index([customDomain])
 }
 
 model DocPage {
@@ -110,6 +113,9 @@ model DocPage {
   bookmarks         Bookmark[]
   scheduledPublish  ScheduledPublish?
   viewEvents        ViewEvent[]
+
+  @@index([projectId])
+  @@index([projectId, published])
 }
 
 model PageSnapshot {
@@ -264,6 +270,7 @@ model ViewEvent {
 
   @@index([pageId, createdAt])
   @@index([createdAt])
+  @@index([visitorId])
 }
 
 model HealthReport {

@@ -40,10 +40,14 @@ export async function POST(request: Request) {
     const baseSlug = slugify(name);
     let slug = baseSlug;
     let counter = 1;
+    const maxAttempts = 10;
 
     while (await prisma.project.findFirst({ where: { slug, userId: session.user.id } })) {
-      slug = `${baseSlug}-${counter}`;
       counter++;
+      if (counter > maxAttempts) {
+        return NextResponse.json({ error: 'Could not generate unique slug' }, { status: 409 });
+      }
+      slug = `${baseSlug}-${counter}`;
     }
 
     const project = await prisma.project.create({

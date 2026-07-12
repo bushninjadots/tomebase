@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
+  const baseUrl = process.env.APP_URL || 'https://tomebase.vercel.app';
+
   return {
     rules: [
       {
@@ -9,6 +11,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/api/', '/docs/', '/p/', '/dashboard/', '/invite/'],
       },
     ],
-    sitemap: 'https://tomebase.vercel.app/sitemap.xml',
+    sitemap: `${baseUrl}/sitemap.xml`,
   };
 }
