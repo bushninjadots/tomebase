@@ -287,7 +287,7 @@ export function ImportForm({ projectId }: ImportFormProps) {
           value={code}
           onChange={(e) => setCode(e.target.value)}
           rows={18}
-          className="block w-full rounded-xl border border-theme-border bg-theme-card px-4 py-3 font-mono text-sm leading-relaxed shadow-sm placeholder:text-theme-muted focus:border-theme-accent focus:outline-none focus:ring-1 focus:ring-theme-accent"
+          className="code-editor"
           placeholder={`// Paste your code here...\n// Supported: TypeScript, JavaScript, Python, Go, Rust\n`}
           spellCheck={false}
         />
@@ -302,7 +302,7 @@ export function ImportForm({ projectId }: ImportFormProps) {
             id="language"
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
-            className="rounded-xl border border-theme-border bg-theme-card px-4 py-2.5 text-sm text-theme-main outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent"
+            className="rounded-lg border border-theme-border bg-theme-card px-4 py-2.5 text-sm text-theme-main outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent"
           >
             {languages.map((lang) => (
               <option key={lang.value} value={lang.value}>

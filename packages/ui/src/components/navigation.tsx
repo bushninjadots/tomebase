@@ -160,7 +160,7 @@ export function Navigation({ items = defaultNavItems, actions }: NavigationProps
               </Link>
 
               {/* Avatar */}
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 text-[13px] font-bold text-white">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[#6366f1] to-[#a855f7] text-[13px] font-bold text-white">
                 T
               </div>
             </>

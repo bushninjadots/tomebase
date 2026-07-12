@@ -585,7 +585,13 @@ export default function HelpPage() {
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div className="flex items-center gap-2 text-sm text-theme-muted">
               <svg viewBox="0 0 32 32" fill="none" className="h-5 w-5" aria-hidden="true">
-                <rect width="32" height="32" rx="8" fill="#3B3BFF" />
+                <defs>
+                  <linearGradient id="logo-help-footer" x1="0" y1="0" x2="32" y2="32">
+                    <stop offset="0%" stopColor="#3B3BFF" />
+                    <stop offset="100%" stopColor="#818cf8" />
+                  </linearGradient>
+                </defs>
+                <rect width="32" height="32" rx="8" fill="url(#logo-help-footer)" />
                 <circle cx="16" cy="16" r="4" fill="white" />
               </svg>
               TomeBase — Your knowledge base.
@@ -596,6 +602,8 @@ export default function HelpPage() {
               <Link href="/pricing" className="hover:text-theme-main transition-colors">Pricing</Link>
               <span className="text-theme-border">&middot;</span>
               <Link href="/roadmap" className="hover:text-theme-main transition-colors">Roadmap</Link>
+              <span className="text-theme-border">&middot;</span>
+              <Link href="/contact" className="hover:text-theme-main transition-colors">Contact</Link>
               <span className="text-theme-border">&middot;</span>
               <Link href="https://github.com/bushninjadots/tomebase" className="hover:text-theme-main transition-colors">GitHub</Link>
             </div>

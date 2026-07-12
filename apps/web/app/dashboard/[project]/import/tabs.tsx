@@ -19,7 +19,7 @@ export function ImportTabs({ projectId }: ImportTabsProps) {
           onClick={() => setTab('code')}
           className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
             tab === 'code'
-              ? 'bg-white text-theme-main shadow-sm border border-theme-border'
+              ? 'bg-theme-hover text-theme-main shadow-sm border border-theme-border'
               : 'text-theme-muted hover:text-theme-main'
           }`}
         >
@@ -30,7 +30,7 @@ export function ImportTabs({ projectId }: ImportTabsProps) {
           onClick={() => setTab('openapi')}
           className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
             tab === 'openapi'
-              ? 'bg-white text-theme-main shadow-sm border border-theme-border'
+              ? 'bg-theme-hover text-theme-main shadow-sm border border-theme-border'
               : 'text-theme-muted hover:text-theme-main'
           }`}
         >
@@ -40,12 +40,42 @@ export function ImportTabs({ projectId }: ImportTabsProps) {
       </div>
 
       {tab === 'code' ? (
-        <div>
-          <p className="text-sm text-theme-muted mb-6">
-            Paste your TypeScript or JavaScript source code. TomeBase parses JSDoc comments, types, and signatures to
-            generate documentation pages.
-          </p>
-          <ImportForm projectId={projectId} />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left: Code Editor */}
+          <div>
+            <p className="text-sm text-theme-muted mb-4">
+              Paste source code with doc comments. TomeBase extracts types, signatures, and descriptions.
+            </p>
+            <ImportForm projectId={projectId} />
+          </div>
+
+          {/* Right: Preview */}
+          <div className="rounded-xl border border-theme-border bg-theme-card p-5">
+            <h3 className="text-sm font-semibold text-theme-main mb-3">What gets generated</h3>
+            <div className="space-y-3">
+              <div className="rounded-lg bg-theme-page border border-theme-border p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="h-2 w-2 rounded-full bg-theme-accent" />
+                  <span className="text-xs font-medium text-theme-main">Function pages</span>
+                </div>
+                <p className="text-xs text-theme-muted">Each exported function becomes a documentation page with parameters, return types, and usage examples.</p>
+              </div>
+              <div className="rounded-lg bg-theme-page border border-theme-border p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="h-2 w-2 rounded-full bg-purple-500" />
+                  <span className="text-xs font-medium text-theme-main">Type pages</span>
+                </div>
+                <p className="text-xs text-theme-muted">Interfaces, types, and enums become reference pages with field descriptions.</p>
+              </div>
+              <div className="rounded-lg bg-theme-page border border-theme-border p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="h-2 w-2 rounded-full bg-green-500" />
+                  <span className="text-xs font-medium text-theme-main">Wiki links</span>
+                </div>
+                <p className="text-xs text-theme-muted">Cross-references between types are automatically linked with [[wiki links]].</p>
+              </div>
+            </div>
+          </div>
         </div>
       ) : (
         <div>

@@ -10,6 +10,11 @@ import {
   HeartPulse,
   HelpCircle,
   LogOut,
+  FolderOpen,
+  Code2,
+  Upload,
+  BarChart3,
+  Users,
 } from 'lucide-react';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -29,7 +34,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <div className="flex min-h-screen bg-theme-page">
       {/* Sidebar */}
-      <aside className="hidden md:flex w-56 shrink-0 flex-col border-r border-theme-border bg-theme-card/50">
+      <aside className="hidden md:flex w-56 shrink-0 flex-col border-r border-theme-border bg-theme-card/30">
         {/* Logo */}
         <div className="flex h-14 items-center gap-2 border-b border-theme-border px-4">
           <Link href="/dashboard" className="flex items-center gap-2">
@@ -48,52 +53,75 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </div>
 
         {/* Nav links */}
-        <nav className="flex-1 p-3 space-y-1">
+        <nav className="flex-1 overflow-y-auto p-3">
+          {/* Workspace */}
+          <div className="sidebar-label">Workspace</div>
           <Link
             href="/dashboard"
-            className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-theme-main bg-theme-hover transition-colors"
+            className="sidebar-link active"
           >
-            <LayoutDashboard className="h-4 w-4 text-theme-accent" />
+            <LayoutDashboard />
             Dashboard
           </Link>
+          <Link
+            href="/dashboard"
+            className="sidebar-link"
+          >
+            <FolderOpen />
+            Projects
+            <span className="ml-auto text-[11px] text-theme-muted">{projects.length}</span>
+          </Link>
+
+          {/* Documentation */}
           {firstProjectId && (
             <>
+              <div className="sidebar-label">Documentation</div>
               <Link
                 href={`/docs/${firstProjectId}`}
-                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
+                className="sidebar-link"
               >
-                <FileText className="h-4 w-4" />
+                <FileText />
                 Editor
               </Link>
               <Link
-                href={`/dashboard/${firstProjectId}/health`}
-                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
+                href={`/dashboard/${firstProjectId}/import`}
+                className="sidebar-link"
               >
-                <HeartPulse className="h-4 w-4" />
+                <Upload />
+                Import
+              </Link>
+              <Link
+                href={`/dashboard/${firstProjectId}/health`}
+                className="sidebar-link"
+              >
+                <BarChart3 />
                 Health
               </Link>
             </>
           )}
-          <Link
-            href="/help"
-            className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
-          >
-            <HelpCircle className="h-4 w-4" />
-            Help
-          </Link>
+
+          {/* Account */}
+          <div className="sidebar-label">Account</div>
           <Link
             href="/dashboard/settings"
-            className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
+            className="sidebar-link"
           >
-            <Settings className="h-4 w-4" />
+            <Settings />
             Settings
+          </Link>
+          <Link
+            href="/help"
+            className="sidebar-link"
+          >
+            <HelpCircle />
+            Help
           </Link>
         </nav>
 
         {/* User */}
         <div className="border-t border-theme-border p-3">
-          <div className="flex items-center gap-2 px-3 py-2">
-            <div className="h-7 w-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-[11px] font-bold text-white">
+          <div className="flex items-center gap-2.5 px-3 py-2">
+            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#6366f1] to-[#a855f7] flex items-center justify-center text-[11px] font-bold text-white shrink-0">
               {session.user.name?.[0]?.toUpperCase() || session.user.email?.[0]?.toUpperCase() || 'U'}
             </div>
             <div className="min-w-0 flex-1">
@@ -110,9 +138,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
           >
             <button
               type="submit"
-              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-colors"
+              className="sidebar-link w-full"
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut />
               Sign out
             </button>
           </form>

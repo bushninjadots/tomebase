@@ -93,11 +93,11 @@ export default async function DashboardPage() {
     : 0;
 
   function getProgressColor(current: number, limit: number) {
-    if (!Number.isFinite(limit)) return 'bg-blue-500';
+    if (!Number.isFinite(limit)) return 'bg-theme-accent';
     const pct = Math.round((current / limit) * 100);
     if (pct >= 100) return 'bg-red-500';
-    if (pct >= 80) return 'bg-orange-400';
-    return 'bg-blue-500';
+    if (pct >= 80) return 'bg-amber-400';
+    return 'bg-theme-accent';
   }
 
   return (
@@ -105,65 +105,65 @@ export default async function DashboardPage() {
       {/* Section A — Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {/* Total Pages */}
-        <div className="bg-theme-card border border-theme-border rounded-[14px] p-5 flex flex-col">
+        <div className="bg-theme-card border border-theme-border rounded-xl p-5 flex flex-col">
           <div className="flex items-center justify-between mb-3">
-            <div className="w-9 h-9 rounded-lg bg-blue-500/15 flex items-center justify-center">
-              <FileText className="h-4.5 w-4.5 text-blue-400" />
+            <div className="w-9 h-9 rounded-lg bg-theme-accent/10 flex items-center justify-center">
+              <FileText className="h-4.5 w-4.5 text-theme-accent" />
             </div>
           </div>
           <p className="text-2xl font-bold text-theme-main mb-0.5">{totalPages}</p>
           <p className="text-xs text-theme-muted mb-4">Total Pages</p>
           <Link
             href={firstProjectId ? `/docs/${firstProjectId}` : '/dashboard/new'}
-            className="mt-auto text-xs font-medium text-blue-400 hover:text-blue-300 transition-colors"
+            className="mt-auto text-xs font-medium text-theme-accent hover:text-theme-accent-hover transition-colors"
           >
             View pages
           </Link>
         </div>
 
         {/* Published */}
-        <div className="bg-theme-card border border-theme-border rounded-[14px] p-5 flex flex-col">
+        <div className="bg-theme-card border border-theme-border rounded-xl p-5 flex flex-col">
           <div className="flex items-center justify-between mb-3">
-            <div className="w-9 h-9 rounded-full bg-emerald-500/15 flex items-center justify-center">
-              <Globe className="h-4.5 w-4.5 text-emerald-400" />
+            <div className="w-9 h-9 rounded-lg bg-green-500/10 flex items-center justify-center">
+              <Globe className="h-4.5 w-4.5 text-green-400" />
             </div>
           </div>
           <p className="text-2xl font-bold text-theme-main mb-0.5">{publishedCount}</p>
           <p className="text-xs text-theme-muted mb-4">Published</p>
           <Link
             href={firstProjectId ? `/p/${firstProjectId}` : '/dashboard/new'}
-            className="mt-auto text-xs font-medium text-emerald-400 hover:text-emerald-300 transition-colors"
+            className="mt-auto text-xs font-medium text-green-400 hover:text-green-300 transition-colors"
           >
             See docs
           </Link>
         </div>
 
         {/* Page Views */}
-        <div className="bg-theme-card border border-theme-border rounded-[14px] p-5 flex flex-col">
+        <div className="bg-theme-card border border-theme-border rounded-xl p-5 flex flex-col">
           <div className="flex items-center justify-between mb-3">
-            <div className="w-9 h-9 rounded-full bg-violet-500/15 flex items-center justify-center">
-              <Eye className="h-4.5 w-4.5 text-violet-400" />
+            <div className="w-9 h-9 rounded-lg bg-purple-500/10 flex items-center justify-center">
+              <Eye className="h-4.5 w-4.5 text-[var(--purple)]" />
             </div>
           </div>
           <p className="text-2xl font-bold text-theme-main mb-0.5">{totalViewCount.toLocaleString()}</p>
           <p className="text-xs text-theme-muted mb-4">Page Views</p>
-          <span className="mt-auto text-xs font-medium text-violet-400">
+          <span className="mt-auto text-xs font-medium text-[var(--purple)]">
             Across {projects.length} project{projects.length === 1 ? '' : 's'}
           </span>
         </div>
 
         {/* Health Score */}
-        <div className="bg-theme-card border border-theme-border rounded-[14px] p-5 flex flex-col">
+        <div className="bg-theme-card border border-theme-border rounded-xl p-5 flex flex-col">
           <div className="flex items-center justify-between mb-3">
-            <div className="w-9 h-9 rounded-lg bg-orange-500/15 flex items-center justify-center">
-              <AlertTriangle className="h-4.5 w-4.5 text-orange-400" />
+            <div className="w-9 h-9 rounded-lg bg-amber-500/10 flex items-center justify-center">
+              <AlertTriangle className="h-4.5 w-4.5 text-amber-400" />
             </div>
           </div>
           <p className="text-2xl font-bold text-theme-main mb-0.5">{avgHealthScore}/100</p>
           <p className="text-xs text-theme-muted mb-4">Health Score</p>
           <Link
             href={firstProjectId ? `/dashboard/${firstProjectId}/health` : '/dashboard/new'}
-            className="mt-auto text-xs font-medium text-orange-400 hover:text-orange-300 transition-colors"
+            className="mt-auto text-xs font-medium text-amber-400 hover:text-amber-300 transition-colors"
           >
             Improve →
           </Link>
@@ -174,25 +174,25 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <Link
           href={firstProjectId ? `/dashboard/${firstProjectId}/import` : '/dashboard/new'}
-          className="bg-theme-card border border-theme-border rounded-[14px] p-5 flex items-center gap-4 hover:border-theme-accent/30 transition-all group"
+          className="bg-theme-card border border-theme-border rounded-xl p-5 flex items-center gap-4 hover:border-theme-accent/30 transition-all group"
         >
-          <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
-            <GitBranch className="h-5 w-5 text-blue-400" />
+          <div className="w-10 h-10 rounded-lg bg-theme-accent/10 flex items-center justify-center shrink-0">
+            <GitBranch className="h-5 w-5 text-theme-accent" />
           </div>
           <div>
             <p className="text-sm font-semibold text-theme-main group-hover:text-theme-accent transition-colors">
               Import from Code
             </p>
-            <p className="text-xs text-theme-muted mt-0.5">Paste TypeScript/JS, get structured docs</p>
+            <p className="text-xs text-theme-muted mt-0.5">Paste code, get structured docs</p>
           </div>
         </Link>
 
         <Link
           href={firstProjectId ? `/dashboard/${firstProjectId}/health` : '/dashboard/new'}
-          className="bg-theme-card border border-theme-border rounded-[14px] p-5 flex items-center gap-4 hover:border-theme-accent/30 transition-all group"
+          className="bg-theme-card border border-theme-border rounded-xl p-5 flex items-center gap-4 hover:border-theme-accent/30 transition-all group"
         >
-          <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center shrink-0">
-            <Activity className="h-5 w-5 text-violet-400" />
+          <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
+            <Activity className="h-5 w-5 text-amber-400" />
           </div>
           <div>
             <p className="text-sm font-semibold text-theme-main group-hover:text-theme-accent transition-colors">
@@ -204,10 +204,10 @@ export default async function DashboardPage() {
 
         <Link
           href={firstProjectId ? `/docs/${firstProjectId}` : '/dashboard/new'}
-          className="bg-theme-card border border-theme-border rounded-[14px] p-5 flex items-center gap-4 hover:border-theme-accent/30 transition-all group"
+          className="bg-theme-card border border-theme-border rounded-xl p-5 flex items-center gap-4 hover:border-theme-accent/30 transition-all group"
         >
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
-            <Network className="h-5 w-5 text-emerald-400" />
+          <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0">
+            <Network className="h-5 w-5 text-green-400" />
           </div>
           <div>
             <p className="text-sm font-semibold text-theme-main group-hover:text-theme-accent transition-colors">
@@ -235,7 +235,7 @@ export default async function DashboardPage() {
               <Link
                 key={page.id}
                 href={`/docs/${page.projectId}/${page.slug}`}
-                className="bg-theme-card border border-theme-border rounded-[14px] px-4 py-3.5 flex items-center justify-between hover:border-theme-accent/30 transition-all group"
+                className="bg-theme-card border border-theme-border rounded-xl px-4 py-3.5 flex items-center justify-between hover:border-theme-accent/30 transition-all group"
               >
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-theme-main truncate group-hover:text-theme-accent transition-colors">
@@ -256,7 +256,7 @@ export default async function DashboardPage() {
       {/* Section D — Bottom Two-Column Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Left: Free Plan */}
-        <div className="bg-theme-card border border-theme-border rounded-[14px] p-5">
+        <div className="bg-theme-card border border-theme-border rounded-xl p-5">
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-sm font-semibold text-theme-main">{tier === 'pro' ? 'Pro Plan' : 'Free Plan'}</h3>
             {tier === 'free' && (
@@ -316,7 +316,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Right: All Projects */}
-        <div className="bg-theme-card border border-theme-border rounded-[14px] p-5">
+        <div className="bg-theme-card border border-theme-border rounded-xl p-5">
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-sm font-semibold text-theme-main">All Projects</h3>
             <Link

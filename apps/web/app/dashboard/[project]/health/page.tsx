@@ -161,7 +161,7 @@ export default async function ProjectHealthPage({ params }: PageProps) {
 
           {/* Hero Score */}
           <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-1 rounded-2xl border border-theme-border bg-theme-card p-6 flex flex-col items-center justify-center">
+            <div className="md:col-span-1 rounded-xl border border-theme-border bg-theme-card p-6 flex flex-col items-center justify-center">
               <ScoreRing score={report.score} />
               <div className="mt-4 text-center">
                 <div className="text-sm font-medium text-theme-main">{getHealthLabel(report.score)}</div>
@@ -169,7 +169,7 @@ export default async function ProjectHealthPage({ params }: PageProps) {
               </div>
             </div>
 
-            <div className="md:col-span-2 rounded-2xl border border-theme-border bg-theme-card p-6">
+            <div className="md:col-span-2 rounded-xl border border-theme-border bg-theme-card p-6">
               <h3 className="text-sm font-semibold text-theme-main mb-4">Issue Summary</h3>
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <div className="text-center">
@@ -203,19 +203,19 @@ export default async function ProjectHealthPage({ params }: PageProps) {
 
           {/* Stats Row */}
           <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="rounded-2xl border border-theme-border bg-theme-card p-4">
+            <div className="rounded-xl border border-theme-border bg-theme-card p-4">
               <div className="flex items-center gap-2 text-xs text-theme-muted"><FileText className="h-3.5 w-3.5" />Total Pages</div>
               <div className="mt-1 text-xl font-bold text-theme-main">{report.totalPages}</div>
             </div>
-            <div className="rounded-2xl border border-theme-border bg-theme-card p-4">
+            <div className="rounded-xl border border-theme-border bg-theme-card p-4">
               <div className="flex items-center gap-2 text-xs text-theme-muted"><CheckCircle className="h-3.5 w-3.5" />Perfect Pages</div>
               <div className="mt-1 text-xl font-bold text-green-400">{bestPages}</div>
             </div>
-            <div className="rounded-2xl border border-theme-border bg-theme-card p-4">
+            <div className="rounded-xl border border-theme-border bg-theme-card p-4">
               <div className="flex items-center gap-2 text-xs text-theme-muted"><BookOpen className="h-3.5 w-3.5" />Total Words</div>
               <div className="mt-1 text-xl font-bold text-theme-main">{totalWordCount.toLocaleString()}</div>
             </div>
-            <div className="rounded-2xl border border-theme-border bg-theme-card p-4">
+            <div className="rounded-xl border border-theme-border bg-theme-card p-4">
               <div className="flex items-center gap-2 text-xs text-theme-muted"><Clock className="h-3.5 w-3.5" />Avg. Reading Time</div>
               <div className="mt-1 text-xl font-bold text-theme-main">{avgReadingTime} min</div>
             </div>
@@ -253,7 +253,7 @@ export default async function ProjectHealthPage({ params }: PageProps) {
                 <span className="ml-auto text-sm font-normal text-theme-muted">{worstPages.length}</span>
               </h2>
               <p className="mt-1 text-sm text-theme-subtle mb-3">Pages with the lowest health scores — prioritize these first.</p>
-              <div className="rounded-2xl border border-theme-border bg-theme-card overflow-hidden">
+              <div className="rounded-xl border border-theme-border bg-theme-card overflow-hidden">
                 <div className="grid grid-cols-[1fr_80px_80px_80px_60px] gap-4 px-4 py-2 text-xs font-medium text-theme-muted border-b border-theme-border bg-theme-page/50">
                   <span>Page</span><span className="text-center">Score</span><span className="text-center">Words</span><span className="text-center">Views</span><span className="text-center">Issues</span>
                 </div>
@@ -324,7 +324,7 @@ export default async function ProjectHealthPage({ params }: PageProps) {
           {/* All clear */}
           {report.issues.length === 0 && (
             <div className="mt-12 text-center">
-              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-500/10">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-500/10">
                 <CheckCircle className="h-10 w-10 text-green-500" />
               </div>
               <h2 className="mt-4 text-xl font-semibold text-theme-main">Documentation is healthy!</h2>
@@ -334,7 +334,7 @@ export default async function ProjectHealthPage({ params }: PageProps) {
             </div>
           )}
 
-          <div className="mt-8 rounded-2xl border border-theme-border bg-theme-card px-4 py-3 flex items-center gap-2 text-xs text-theme-muted">
+          <div className="mt-8 rounded-xl border border-theme-border bg-theme-card px-4 py-3 flex items-center gap-2 text-xs text-theme-muted">
             <Activity className="h-3.5 w-3.5 shrink-0" />
             Health score considers link quality, content structure, freshness, engagement, and code examples.
             {previousReport && <span className="ml-auto">Last scan: {formatDistanceToNow(previousReport.createdAt, { addSuffix: true })}</span>}

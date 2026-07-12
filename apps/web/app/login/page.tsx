@@ -71,8 +71,8 @@ export default async function LoginPage() {
               <svg viewBox="0 0 32 32" fill="none" className="h-10 w-10" aria-hidden="true">
                 <defs>
                   <linearGradient id="logo-login" x1="0" y1="0" x2="32" y2="32">
-                    <stop offset="0%" stopColor="#0c8ee7" />
-                    <stop offset="100%" stopColor="#7cc8fb" />
+                    <stop offset="0%" stopColor="#6366f1" />
+                    <stop offset="100%" stopColor="#a855f7" />
                   </linearGradient>
                 </defs>
                 <rect width="32" height="32" rx="8" fill="url(#logo-login)" />
