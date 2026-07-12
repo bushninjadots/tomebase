@@ -60,6 +60,7 @@ export default async function DashboardPage() {
   const totalViewCount = totalViews._sum.viewCount || 0;
 
   const firstProjectId = projects[0]?.id;
+  const firstPublishedProject = projects.find((p) => p.published);
 
   // Latest health report per project
   const latestHealthReports = await prisma.healthReport.groupBy({
@@ -131,7 +132,7 @@ export default async function DashboardPage() {
           <p className="text-2xl font-bold text-theme-main mb-0.5">{publishedCount}</p>
           <p className="text-xs text-theme-muted mb-4">Published</p>
           <Link
-            href={firstProjectId ? `/p/${firstProjectId}` : '/dashboard/new'}
+            href={firstPublishedProject ? `/p/${firstPublishedProject.id}` : (firstProjectId ? `/dashboard/${firstProjectId}/settings` : '/dashboard/new')}
             className="mt-auto text-xs font-medium text-green-400 hover:text-green-300 transition-colors"
           >
             See docs
