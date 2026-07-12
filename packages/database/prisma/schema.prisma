@@ -162,6 +162,7 @@ model Team {
   stripeCustomerId     String?
   stripeSubscriptionId String?
   stripePriceId        String?
+  stripeCancelAtPeriodEnd Boolean @default(false)
   currentPeriodEnd     DateTime?
   trialEndsAt          DateTime?
 

@@ -20,6 +20,7 @@ export default async function TeamSettingsPage() {
           personal: true,
           tier: true,
           stripeSubscriptionId: true,
+          stripeCancelAtPeriodEnd: true,
           currentPeriodEnd: true,
           members: {
             include: {

@@ -47,6 +47,7 @@ export async function POST(request: Request) {
             stripeCustomerId: session.customer as string,
             stripeSubscriptionId: subscriptionId,
             stripePriceId: priceId,
+            stripeCancelAtPeriodEnd: false,
             currentPeriodEnd: periodEnd ? new Date(periodEnd * 1000) : null,
           },
         });
@@ -78,6 +79,7 @@ export async function POST(request: Request) {
             tier,
             stripePriceId: priceId,
             currentPeriodEnd: periodEnd ? new Date(periodEnd * 1000) : null,
+            stripeCancelAtPeriodEnd: subscription.cancel_at_period_end,
           },
         });
         break;
@@ -103,6 +105,7 @@ export async function POST(request: Request) {
               tier: 'free',
               stripeSubscriptionId: null,
               stripePriceId: null,
+              stripeCancelAtPeriodEnd: false,
               currentPeriodEnd: null,
             },
           });
@@ -124,6 +127,50 @@ export async function POST(request: Request) {
           if (team) {
             console.error(`Payment failed for team ${team.id} (${team.name})`);
           }
+        }
+        break;
+      }
+
+      case 'invoice.paid': {
+        const invoice = event.data.object as Stripe.Invoice;
+        const subscriptionDetails = invoice.parent?.subscription_details;
+        const subscriptionId = typeof subscriptionDetails?.subscription === 'string'
+          ? subscriptionDetails.subscription
+          : subscriptionDetails?.subscription?.id;
+
+        if (subscriptionId) {
+          const team = await prisma.team.findFirst({
+            where: { stripeSubscriptionId: subscriptionId },
+          });
+          if (team) {
+            const subscription = await getStripe().subscriptions.retrieve(subscriptionId);
+            const periodEnd = subscription.items.data[0]?.current_period_end;
+            await prisma.team.update({
+              where: { id: team.id },
+              data: {
+                currentPeriodEnd: periodEnd ? new Date(periodEnd * 1000) : null,
+              },
+            });
+          }
+        }
+        break;
+      }
+
+      case 'customer.subscription.trial_will_end': {
+        const subscription = event.data.object as Stripe.Subscription;
+        const teamId = subscription.metadata?.teamId;
+
+        let team;
+        if (teamId) {
+          team = await prisma.team.findUnique({ where: { id: teamId } });
+        } else {
+          team = await prisma.team.findFirst({
+            where: { stripeSubscriptionId: subscription.id },
+          });
+        }
+
+        if (team) {
+          console.log(`Trial ending soon for team ${team.id} (${team.name})`);
         }
         break;
       }

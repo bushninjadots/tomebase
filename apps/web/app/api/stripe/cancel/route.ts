@@ -21,18 +21,30 @@ export async function POST() {
 
     const stripe = getStripe();
 
-    await stripe.subscriptions.cancel(teamMember.team.stripeSubscriptionId);
+    const subscription = await stripe.subscriptions.retrieve(teamMember.team.stripeSubscriptionId);
+
+    if (subscription.cancel_at_period_end) {
+      return NextResponse.json({ error: 'Subscription is already scheduled for cancellation' }, { status: 400 });
+    }
+
+    await stripe.subscriptions.update(teamMember.team.stripeSubscriptionId, {
+      cancel_at_period_end: true,
+    });
+
+    const periodEnd = subscription.items.data[0]?.current_period_end;
 
     await prisma.team.update({
       where: { id: teamMember.teamId },
       data: {
-        tier: 'free',
-        stripeSubscriptionId: null,
-        stripePriceId: null,
+        stripeCancelAtPeriodEnd: true,
+        currentPeriodEnd: periodEnd ? new Date(periodEnd * 1000) : null,
       },
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({
+      success: true,
+      currentPeriodEnd: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
+    });
   } catch (error) {
     console.error('Cancel subscription error:', error);
     return NextResponse.json({ error: 'Failed to cancel subscription' }, { status: 500 });

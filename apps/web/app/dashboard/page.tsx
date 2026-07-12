@@ -2,6 +2,7 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { prisma } from '@fluid/database';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import {
   Plus,
   BookOpen,
@@ -19,6 +20,8 @@ import {
 import { getOrCreatePersonalTeam } from '@/lib/team';
 import { TIERS } from '@/lib/limits';
 import { ProjectCard } from '@/components/project-card';
+import { UpgradeBanner } from '@/components/upgrade-banner';
+import { UpgradePrompt } from '@/components/upgrade-prompt';
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -103,6 +106,16 @@ export default async function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8">
+      <Suspense>
+        <UpgradeBanner />
+      </Suspense>
+
+      {tier === 'free' && (
+        <div className="mb-6">
+          <UpgradePrompt />
+        </div>
+      )}
+
       {/* Section A — Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {/* Total Pages */}

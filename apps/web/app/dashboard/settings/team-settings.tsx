@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Input, Button, Badge } from '@fluid/ui';
-import { Copy, Check, Users, Link2, RefreshCw, CreditCard, ExternalLink, XCircle } from 'lucide-react';
+import { Copy, Check, Users, Link2, RefreshCw, CreditCard, ExternalLink, XCircle, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { CancelSubscriptionModal } from '@/components/cancel-subscription-modal';
 
@@ -18,6 +18,7 @@ interface Team {
   personal: boolean;
   tier: string;
   stripeSubscriptionId: string | null;
+  stripeCancelAtPeriodEnd: boolean | null;
   currentPeriodEnd: string | null;
   members: TeamMember[];
   _count: { projects: number };
@@ -120,7 +121,14 @@ export function TeamSettings({
             </div>
             {team.stripeSubscriptionId && team.currentPeriodEnd && (
               <p className="mt-1 text-xs text-theme-muted">
-                Renews {new Date(team.currentPeriodEnd).toLocaleDateString()}
+                {team.stripeCancelAtPeriodEnd ? (
+                  <span className="flex items-center gap-1 text-amber-400">
+                    <Clock className="h-3 w-3" />
+                    Cancels {new Date(team.currentPeriodEnd).toLocaleDateString()}
+                  </span>
+                ) : (
+                  `Renews ${new Date(team.currentPeriodEnd).toLocaleDateString()}`
+                )}
               </p>
             )}
           </div>
@@ -133,6 +141,21 @@ export function TeamSettings({
                 Upgrade
                 <ExternalLink className="h-3 w-3" />
               </Link>
+            ) : team.stripeCancelAtPeriodEnd ? (
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleManageBilling}
+                  disabled={portalLoading}
+                >
+                  {portalLoading ? 'Loading...' : 'Resume Subscription'}
+                </Button>
+                <span className="text-xs text-amber-400 flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  Cancels {team.currentPeriodEnd ? new Date(team.currentPeriodEnd).toLocaleDateString() : 'soon'}
+                </span>
+              </>
             ) : (
               <>
                 <Button
