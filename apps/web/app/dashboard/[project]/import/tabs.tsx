@@ -62,7 +62,7 @@ export function ImportTabs({ projectId }: ImportTabsProps) {
               </div>
               <div className="rounded-lg bg-theme-page border border-theme-border p-3">
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="h-2 w-2 rounded-full bg-purple-500" />
+                  <div className="h-2 w-2 rounded-full bg-theme-accent" />
                   <span className="text-xs font-medium text-theme-main">Type pages</span>
                 </div>
                 <p className="text-xs text-theme-muted">Interfaces, types, and enums become reference pages with field descriptions.</p>

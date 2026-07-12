@@ -90,7 +90,7 @@ export function GuidedTutorial({ projectId }: { projectId?: string }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl border border-theme-border bg-white p-6 shadow-2xl">
+      <div className="w-full max-w-md rounded-2xl border border-theme-border bg-theme-card p-6 shadow-2xl">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-fluid-50 text-fluid-600 dark:bg-fluid-900/30 dark:text-fluid-400">
@@ -114,7 +114,7 @@ export function GuidedTutorial({ projectId }: { projectId?: string }) {
         {current.href && (
           <a
             href={current.href}
-            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-fluid-600 px-4 py-2 text-sm font-medium text-white hover:bg-fluid-700 transition-colors"
+            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-theme-accent px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors"
           >
             {current.action}
             <ChevronRight className="h-4 w-4" />
@@ -144,7 +144,7 @@ export function GuidedTutorial({ projectId }: { projectId?: string }) {
             )}
             <button
               onClick={next}
-              className="rounded-lg bg-theme-main px-4 py-1.5 text-sm font-medium text-white hover:opacity-90 transition-colors dark:bg-fluid-600 dark:hover:bg-fluid-700"
+              className="rounded-lg bg-theme-accent px-4 py-1.5 text-sm font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors"
             >
               {step === steps.length - 1 ? 'Get Started' : 'Next'}
             </button>

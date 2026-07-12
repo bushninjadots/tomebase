@@ -102,7 +102,7 @@ export function SchedulePublish({ pageId }: { pageId: string }) {
   }
 
   return (
-    <div className="rounded-xl border border-theme-border bg-white p-4">
+    <div className="rounded-xl border border-theme-border bg-theme-card p-4">
       <div className="flex items-center justify-between mb-3">
         <h4 className="text-sm font-medium text-theme-main">Schedule publish</h4>
         <button
@@ -121,7 +121,7 @@ export function SchedulePublish({ pageId }: { pageId: string }) {
             type="datetime-local"
             value={publishAt}
             onChange={(e) => setPublishAt(e.target.value)}
-            className="w-full rounded-lg border border-theme-border px-3 py-1.5 text-sm"
+            className="input-field"
           />
         </div>
         <div>
@@ -132,7 +132,7 @@ export function SchedulePublish({ pageId }: { pageId: string }) {
             type="datetime-local"
             value={unpublishAt}
             onChange={(e) => setUnpublishAt(e.target.value)}
-            className="w-full rounded-lg border border-theme-border px-3 py-1.5 text-sm"
+            className="input-field"
           />
         </div>
         {error && (
@@ -144,7 +144,7 @@ export function SchedulePublish({ pageId }: { pageId: string }) {
         <button
           onClick={save}
           disabled={!publishAt || saving}
-          className="w-full rounded-lg bg-theme-main px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 transition-colors disabled:opacity-50 dark:bg-fluid-600 dark:hover:bg-fluid-700"
+          className="w-full btn-primary"
         >
           {saving ? 'Saving...' : 'Schedule'}
         </button>

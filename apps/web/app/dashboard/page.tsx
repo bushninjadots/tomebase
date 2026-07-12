@@ -141,13 +141,13 @@ export default async function DashboardPage() {
         {/* Page Views */}
         <div className="bg-theme-card border border-theme-border rounded-xl p-5 flex flex-col">
           <div className="flex items-center justify-between mb-3">
-            <div className="w-9 h-9 rounded-lg bg-purple-500/10 flex items-center justify-center">
-              <Eye className="h-4.5 w-4.5 text-[var(--purple)]" />
+            <div className="w-9 h-9 rounded-lg bg-theme-accent/10 flex items-center justify-center">
+              <Eye className="h-4.5 w-4.5 text-theme-accent" />
             </div>
           </div>
           <p className="text-2xl font-bold text-theme-main mb-0.5">{totalViewCount.toLocaleString()}</p>
           <p className="text-xs text-theme-muted mb-4">Page Views</p>
-          <span className="mt-auto text-xs font-medium text-[var(--purple)]">
+          <span className="mt-auto text-xs font-medium text-theme-accent">
             Across {projects.length} project{projects.length === 1 ? '' : 's'}
           </span>
         </div>

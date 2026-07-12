@@ -144,7 +144,7 @@ export default function Home() {
               </p>
 
               <div className="mt-10 flex items-center justify-center gap-4">
-                <a href="#try-tomebase" className="inline-flex items-center gap-2.5 rounded-xl bg-theme-accent px-8 py-3.5 text-base font-bold text-white shadow-[0_4px_20px_rgba(99,102,241,0.45)] transition-all hover:bg-theme-accent-hover hover:shadow-[0_6px_28px_rgba(99,102,241,0.55)]">
+                <a href="#try-tomebase" className="inline-flex items-center gap-2.5 rounded-xl bg-theme-accent px-8 py-3.5 text-base font-bold text-white shadow-[0_4px_20px_rgba(229,165,11,0.45)] transition-all hover:bg-theme-accent-hover hover:shadow-[0_6px_28px_rgba(229,165,11,0.55)]">
                   Try it now
                   <ArrowRight className="h-5 w-5" />
                 </a>
@@ -373,7 +373,7 @@ export default function Home() {
             </div>
 
             <div className="mt-12 flex items-center justify-center gap-4">
-              <a href="#try-tomebase" className="inline-flex items-center gap-2 rounded-xl bg-theme-accent px-7 py-3 text-sm font-bold text-white shadow-[0_2px_12px_rgba(99,102,241,0.3)] transition-all hover:bg-theme-accent-hover">
+              <a href="#try-tomebase" className="inline-flex items-center gap-2 rounded-xl bg-theme-accent px-7 py-3 text-sm font-bold text-white shadow-[0_2px_12px_rgba(229,165,11,0.3)] transition-all hover:bg-theme-accent-hover">
                 Try import now
                 <ArrowRight className="h-4 w-4" />
               </a>
@@ -433,7 +433,7 @@ export default function Home() {
                   href="/login"
                   className={`flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold transition-all ${
                     plan.popular
-                      ? 'bg-theme-accent text-white shadow-[0_2px_12px_rgba(99,102,241,0.3)] hover:bg-theme-accent-hover'
+                      ? 'bg-theme-accent text-white shadow-[0_2px_12px_rgba(229,165,11,0.3)] hover:bg-theme-accent-hover'
                       : 'border border-theme-border bg-theme-card text-theme-main hover:bg-theme-hover'
                   }`}
                 >
@@ -489,7 +489,7 @@ export default function Home() {
               <div className="mt-8 flex items-center justify-center gap-4">
                 <Link
                   href="/login"
-                  className="inline-flex items-center gap-2.5 rounded-xl bg-theme-accent px-8 py-3.5 text-base font-bold text-white shadow-[0_4px_20px_rgba(99,102,241,0.4)] transition-all hover:bg-theme-accent-hover hover:shadow-[0_6px_28px_rgba(99,102,241,0.5)]"
+                  className="inline-flex items-center gap-2.5 rounded-xl bg-theme-accent px-8 py-3.5 text-base font-bold text-white shadow-[0_4px_20px_rgba(229,165,11,0.4)] transition-all hover:bg-theme-accent-hover hover:shadow-[0_6px_28px_rgba(229,165,11,0.5)]"
                 >
                   Get Started Free
                   <ArrowRight className="h-5 w-5" />

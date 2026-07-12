@@ -73,7 +73,7 @@ export function ApiKeyManager({ projectId }: { projectId: string }) {
   }
 
   return (
-    <div className="rounded-xl border border-theme-border bg-white p-6">
+    <div className="rounded-xl border border-theme-border bg-theme-card p-6">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-lg font-semibold text-theme-main">API Keys</h2>
@@ -83,7 +83,7 @@ export function ApiKeyManager({ projectId }: { projectId: string }) {
         </div>
         <button
           onClick={() => setShowNew(true)}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-theme-main px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-theme-accent px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors"
         >
           <Plus className="h-3.5 w-3.5" />
           New Key
@@ -101,7 +101,7 @@ export function ApiKeyManager({ projectId }: { projectId: string }) {
               Dismiss
             </button>
           </div>
-          <div className="flex items-center gap-2 rounded-lg bg-white px-3 py-2 font-mono text-sm text-theme-main border border-fluid-200">
+          <div className="flex items-center gap-2 rounded-lg bg-theme-page px-3 py-2 font-mono text-sm text-theme-main border border-theme-border">
             <code className="flex-1 break-all">{newKeyValue}</code>
             <button
               onClick={() => copyKey(newKeyValue)}
@@ -123,13 +123,13 @@ export function ApiKeyManager({ projectId }: { projectId: string }) {
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="Key name (e.g. CI/CD)"
-            className="w-full rounded-lg border border-theme-border px-3 py-1.5 text-sm focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
+            className="w-full input-field"
             autoFocus
           />
           <select
             value={newExpiry}
             onChange={(e) => setNewExpiry(e.target.value)}
-            className="w-full rounded-lg border border-theme-border px-3 py-1.5 text-sm text-theme-muted focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
+            className="w-full select-field"
           >
             <option value="">No expiry</option>
             <option value="7">7 days</option>
@@ -141,7 +141,7 @@ export function ApiKeyManager({ projectId }: { projectId: string }) {
             <button
               type="submit"
               disabled={creating || !newName.trim()}
-              className="rounded-lg bg-theme-main px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 transition-colors disabled:opacity-50"
+              className="rounded-lg bg-theme-accent px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors disabled:opacity-50"
             >
               {creating ? 'Creating...' : 'Create'}
             </button>

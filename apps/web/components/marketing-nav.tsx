@@ -89,7 +89,7 @@ export function MarketingNav() {
             </Link>
             <Link
               href="/login"
-              className="rounded-lg bg-theme-accent px-4 py-2 text-[13px] font-semibold text-white shadow-[0_2px_12px_rgba(99,102,241,0.3)] transition-all hover:bg-theme-accent-hover hover:shadow-[0_4px_20px_rgba(99,102,241,0.45)]"
+              className="rounded-lg bg-theme-accent px-4 py-2 text-[13px] font-semibold text-gray-900 shadow-[0_2px_12px_rgba(229,165,11,0.3)] transition-all hover:bg-theme-accent-hover hover:shadow-[0_4px_20px_rgba(229,165,11,0.45)]"
             >
               Start Free
             </Link>

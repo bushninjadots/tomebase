@@ -213,7 +213,7 @@ export function DomainSettings({ projectId, customDomain: initialDomain, publish
             <div className="rounded-lg bg-theme-card p-3 text-xs text-theme-subtle space-y-2 border border-theme-border">
               <p className="font-medium text-theme-subtle">DNS Setup Instructions</p>
               <p>Add a <strong>CNAME</strong> record pointing your domain to:</p>
-              <code className="block rounded bg-white px-2 py-1 font-mono text-[11px] text-fluid-600 border border-theme-border">
+              <code className="block rounded bg-theme-page px-2 py-1 font-mono text-[11px] text-theme-accent border border-theme-border">
                 cname.vercel-dns.com
               </code>
               {status.vercelAvailable ? (

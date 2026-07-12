@@ -70,7 +70,7 @@ const categories = [
   {
     title: 'Next',
     icon: Clock,
-    color: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
+    color: 'text-theme-accent bg-theme-accent/10 border-theme-accent/20',
     items: [
       'Documentation Observatory — cross-platform dashboard',
       'Global search across all projects',

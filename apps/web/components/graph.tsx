@@ -524,7 +524,7 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
             </div>
             {mode === 'local' && currentPage && (
               <span className="text-xs text-theme-muted flex items-center gap-1.5">
-                <span className="inline-block w-2 h-2 rounded-full bg-blue-500" />
+                <span className="inline-block w-2 h-2 rounded-full bg-theme-accent" />
                 focused on <span className="font-medium text-theme-subtle">{currentPage.title}</span>
               </span>
             )}
@@ -859,7 +859,7 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
               </h4>
               <div className="space-y-2.5 mb-4">
                 <div className="flex items-center gap-2 text-xs text-theme-subtle">
-                  <span className="inline-block w-3 h-3 rounded-full bg-blue-500" />
+                  <span className="inline-block w-3 h-3 rounded-full bg-theme-accent" />
                   <span>Connected to hovered</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-theme-subtle">
@@ -867,7 +867,7 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
                   <span>No connection</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-theme-subtle">
-                  <span className="inline-flex items-center justify-center w-3 h-3 rounded-full border-2 border-blue-500 border-dashed" />
+                  <span className="inline-flex items-center justify-center w-3 h-3 rounded-full border-2 border-theme-accent border-dashed" />
                   <span>Current page (local)</span>
                 </div>
               </div>

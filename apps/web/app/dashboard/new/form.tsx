@@ -81,11 +81,11 @@ export function CreateProjectForm({ userId }: { userId: string }) {
                 className={`flex items-start gap-3 rounded-xl border p-4 text-left transition-all ${
                   isSelected
                     ? 'border-fluid-500 bg-fluid-50 ring-1 ring-fluid-500'
-                    : 'border-theme-border bg-white hover:border-theme-muted'
+                    : 'border-theme-border bg-theme-card hover:border-theme-muted'
                 }`}
               >
                 <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
-                  isSelected ? 'bg-fluid-600 text-white' : 'bg-theme-hover text-theme-muted'
+                  isSelected ? 'bg-theme-accent text-gray-900' : 'bg-theme-hover text-theme-muted'
                 }`}>
                   <Icon className="h-5 w-5" />
                 </div>

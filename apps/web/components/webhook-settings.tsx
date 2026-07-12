@@ -105,7 +105,7 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-theme-main px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 transition-colors dark:bg-fluid-600 dark:hover:bg-fluid-700"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-theme-accent px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors"
         >
           <Plus className="h-3.5 w-3.5" />
           Add webhook
@@ -113,7 +113,7 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
       </div>
 
       {showForm && (
-        <div className="rounded-xl border border-theme-border bg-white p-4">
+        <div className="rounded-xl border border-theme-border bg-theme-card p-4">
           <div className="space-y-3">
             <div>
               <label className="block text-xs font-medium text-theme-muted mb-1">
@@ -124,7 +124,7 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://example.com/webhook"
-                className="w-full rounded-lg border border-theme-border px-3 py-1.5 text-sm"
+                className="input-field"
               />
             </div>
             <div>
@@ -164,7 +164,7 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
               <button
                 onClick={create}
                 disabled={!url.trim() || saving}
-                className="rounded-lg bg-theme-main px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 transition-colors disabled:opacity-50 dark:bg-fluid-600 dark:hover:bg-fluid-700"
+                className="rounded-lg bg-theme-accent px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors disabled:opacity-50"
               >
                 {saving ? 'Creating...' : 'Create'}
               </button>
@@ -189,7 +189,7 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
         {webhooks.map((webhook) => (
           <div
             key={webhook.id}
-            className="flex items-center justify-between rounded-xl border border-theme-border bg-white p-4"
+            className="flex items-center justify-between rounded-xl border border-theme-border bg-theme-card p-4"
           >
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">

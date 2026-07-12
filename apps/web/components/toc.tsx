@@ -12,7 +12,7 @@ export function TableOfContents({ headings }: { headings: TocItem[] }) {
   if (headings.length === 0) return null;
 
   return (
-    <div className="rounded-xl border border-theme-border bg-white p-4">
+    <div className="rounded-xl border border-theme-border bg-theme-card p-4">
       <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-theme-muted mb-3">
         <ListOrdered className="h-3 w-3" />
         On this page

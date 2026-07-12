@@ -55,7 +55,7 @@ export function DiffViewer({ oldText, newText, oldLabel, newLabel }: DiffViewerP
                   ? 'bg-green-50'
                   : line.type === 'removed'
                   ? 'bg-red-50'
-                  : 'bg-white'
+                    : 'bg-theme-page'
               }`}
             >
               {/* Line number */}

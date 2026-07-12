@@ -67,13 +67,13 @@ export function UsageMeter({ tier, projects, pages, members }: UsageMeterProps) 
           label="Projects"
           current={projects.current}
           limit={projects.limit}
-          color="bg-blue-500"
+          color="bg-theme-accent"
         />
         <Bar
           label="Pages"
           current={pages.current}
           limit={pages.limit}
-          color="bg-violet-500"
+          color="bg-amber-500"
         />
         <Bar
           label="Team Members"

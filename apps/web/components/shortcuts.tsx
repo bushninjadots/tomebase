@@ -101,7 +101,7 @@ export function ShortcutsModal() {
             if (e.target === e.currentTarget) setOpen(false);
           }}
         >
-          <div className="w-full max-w-md rounded-2xl border border-theme-border bg-white shadow-2xl">
+          <div className="w-full max-w-md rounded-2xl border border-theme-border bg-theme-card shadow-2xl">
             <div className="flex items-center justify-between border-b border-theme-border px-5 py-3">
               <div className="flex items-center gap-2">
                 <Keyboard className="h-4 w-4 text-fluid-600" />

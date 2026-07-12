@@ -121,7 +121,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         {/* User */}
         <div className="border-t border-theme-border p-3">
           <div className="flex items-center gap-2.5 px-3 py-2">
-            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#6366f1] to-[#a855f7] flex items-center justify-center text-[11px] font-bold text-white shrink-0">
+            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#E5A50B] to-[#ca8a04] flex items-center justify-center text-[11px] font-bold text-gray-900 shrink-0">
               {session.user.name?.[0]?.toUpperCase() || session.user.email?.[0]?.toUpperCase() || 'U'}
             </div>
             <div className="min-w-0 flex-1">

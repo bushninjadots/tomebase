@@ -63,12 +63,12 @@ function CategoryCard({ item }: { item: CategorySummary }) {
   const severityStyles = {
     error: 'border-red-500/20 bg-red-500/10',
     warning: 'border-amber-500/20 bg-amber-500/10',
-    info: 'border-blue-500/20 bg-blue-500/10',
+    info: 'border-theme-accent/20 bg-theme-accent/10',
   };
   const iconStyles = {
     error: 'text-red-400',
     warning: 'text-amber-400',
-    info: 'text-blue-400',
+    info: 'text-theme-accent',
   };
   return (
     <div className={`rounded-xl border p-4 ${severityStyles[item.severity]}`}>
@@ -181,7 +181,7 @@ export default async function ProjectHealthPage({ params }: PageProps) {
                   <div className="text-xs text-theme-muted">Warnings</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-400">{infoIssues.length}</div>
+                  <div className="text-2xl font-bold text-theme-accent">{infoIssues.length}</div>
                   <div className="text-xs text-theme-muted">Info</div>
                 </div>
               </div>
@@ -304,7 +304,7 @@ export default async function ProjectHealthPage({ params }: PageProps) {
                 {warningIssues.filter((i) => i.category === 'orphan').length > 0 && (
                   <div>
                     <h2 className="flex items-center gap-2 text-lg font-semibold text-theme-main mb-3">
-                      <GitBranch className="h-4 w-4 text-blue-400" />Orphan Pages
+                      <GitBranch className="h-4 w-4 text-theme-accent" />Orphan Pages
                       <span className="ml-auto text-sm font-normal text-theme-muted">{warningIssues.filter((i) => i.category === 'orphan').length}</span>
                     </h2>
                     <div className="space-y-2">

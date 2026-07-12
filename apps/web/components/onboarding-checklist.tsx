@@ -54,10 +54,10 @@ export function OnboardingChecklist({
   }
 
   return (
-    <div className="relative rounded-2xl border border-fluid-100 bg-gradient-to-br from-fluid-50/80 to-white p-6 mb-8">
+    <div className="relative rounded-2xl border border-theme-border bg-theme-card p-6 mb-8">
       <button
         onClick={handleDismiss}
-        className="absolute right-4 top-4 rounded-lg p-1 text-theme-muted hover:bg-white/50 hover:text-theme-subtle transition-colors"
+        className="absolute right-4 top-4 rounded-lg p-1 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
       >
         <X className="h-4 w-4" />
       </button>
@@ -91,7 +91,7 @@ export function OnboardingChecklist({
             className={`flex items-center justify-between rounded-xl border px-4 py-3 transition-all ${
               step.done
                 ? 'border-green-100 bg-green-50/50'
-                : 'border-theme-border bg-white hover:border-fluid-200'
+                : 'border-theme-border bg-theme-card hover:border-theme-accent/30'
             }`}
           >
             <div className="flex items-center gap-3 min-w-0">
@@ -107,7 +107,7 @@ export function OnboardingChecklist({
             {!step.done && (
               <Link
                 href={step.href}
-                className="shrink-0 flex items-center gap-1 rounded-lg bg-theme-main px-3 py-1.5 text-xs font-medium text-white hover:opacity-90 transition-colors"
+                className="shrink-0 flex items-center gap-1 rounded-lg bg-theme-accent px-3 py-1.5 text-xs font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors"
               >
                 {step.cta}
                 <ArrowRight className="h-3 w-3" />

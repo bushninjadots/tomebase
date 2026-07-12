@@ -32,7 +32,7 @@ export function ThemeSelector() {
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-full mt-1 z-50 w-36 rounded-lg border border-theme-border bg-white py-1 shadow-lg">
+          <div className="absolute right-0 top-full mt-1 z-50 w-36 rounded-lg border border-theme-border bg-theme-card py-1 shadow-lg">
             {themes.map((t) => (
               <button
                 key={t.id}

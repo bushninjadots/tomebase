@@ -534,7 +534,7 @@ function FeatureBlock({ feature }: { feature: FeatureSection }) {
                   <div key={api.endpoint} className="flex items-center gap-3 rounded-xl border border-theme-border bg-theme-page px-3 py-2">
                     <span className={`shrink-0 rounded-lg px-1.5 py-0.5 text-[10px] font-bold uppercase ${
                       api.method === 'GET' ? 'bg-green-500/10 text-green-400' :
-                      api.method === 'POST' ? 'bg-blue-500/10 text-blue-400' :
+                      api.method === 'POST' ? 'bg-theme-accent-light text-theme-accent' :
                       api.method === 'PATCH' ? 'bg-amber-500/10 text-amber-400' :
                       'bg-red-500/10 text-red-400'
                     }`}>

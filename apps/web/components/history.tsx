@@ -281,7 +281,7 @@ function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void
                 <button
                   onClick={() => handleRestore(preview.id)}
                   disabled={restoring === preview.id}
-                  className="flex items-center gap-1.5 rounded-lg bg-fluid-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-fluid-700 transition-colors disabled:opacity-50"
+                  className="flex items-center gap-1.5 rounded-lg bg-theme-accent px-3 py-1.5 text-xs font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors disabled:opacity-50"
                 >
                   <RotateCcw className={`h-3.5 w-3.5 ${restoring === preview.id ? 'animate-spin' : ''}`} />
                   {restoring === preview.id ? 'Restoring...' : 'Restore'}

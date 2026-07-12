@@ -208,7 +208,7 @@ export function OpenApiForm({ projectId }: OpenApiFormProps) {
           onClick={() => setMode('paste')}
           className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
             mode === 'paste'
-              ? 'bg-white text-theme-main shadow-sm border border-theme-border'
+              ? 'bg-theme-surface text-theme-main shadow-sm border border-theme-border'
               : 'text-theme-muted hover:text-theme-main'
           }`}
         >
@@ -220,7 +220,7 @@ export function OpenApiForm({ projectId }: OpenApiFormProps) {
           onClick={() => setMode('url')}
           className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
             mode === 'url'
-              ? 'bg-white text-theme-main shadow-sm border border-theme-border'
+              ? 'bg-theme-surface text-theme-main shadow-sm border border-theme-border'
               : 'text-theme-muted hover:text-theme-main'
           }`}
         >
@@ -248,7 +248,7 @@ export function OpenApiForm({ projectId }: OpenApiFormProps) {
             value={spec}
             onChange={(e) => setSpec(e.target.value)}
             rows={18}
-            className="block w-full rounded-xl border border-theme-border bg-white px-4 py-3 font-mono text-sm leading-relaxed shadow-sm placeholder:text-theme-muted focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
+            className="code-editor"
             placeholder={`openapi: "3.0.0"\ninfo:\n  title: My API\n  version: "1.0.0"\npaths:\n  ...`}
             spellCheck={false}
           />
@@ -267,7 +267,7 @@ export function OpenApiForm({ projectId }: OpenApiFormProps) {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://raw.githubusercontent.com/..."
-            className="block w-full rounded-xl border border-theme-border bg-white px-4 py-3 text-sm shadow-sm placeholder:text-theme-muted focus:border-fluid-500 focus:outline-none focus:ring-1 focus:ring-fluid-500"
+            className="input-field"
           />
           <p className="text-xs text-theme-muted">
             URL must be publicly accessible and return a valid OpenAPI spec (JSON/YAML).

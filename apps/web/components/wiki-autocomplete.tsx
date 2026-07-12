@@ -146,7 +146,7 @@ export function WikiAutocomplete({
     <div className="absolute left-0 right-0 z-50 mx-8 mt-1" style={{ top: 0 }}>
       <div
         ref={listRef}
-        className="rounded-xl border border-theme-border bg-white shadow-xl overflow-hidden max-h-80 overflow-y-auto"
+        className="rounded-xl border border-theme-border bg-theme-card shadow-xl overflow-hidden max-h-80 overflow-y-auto"
       >
         <div className="px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider text-theme-muted border-b border-theme-border bg-theme-card/50">
           Link to page{filtered.length > 1 ? 's' : ''} {query && `— "${query}"`}

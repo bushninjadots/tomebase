@@ -419,10 +419,10 @@ export function ExplainProject({ projectId, pages, currentPageId }: ExplainProje
                       </div>
                       
                       {showExplanation && (
-                        <div className="p-3 bg-blue-50 rounded-lg mb-4">
+                        <div className="p-3 bg-theme-accent-light rounded-lg mb-4">
                           <div className="flex items-start gap-2">
-                            <Lightbulb className="h-4 w-4 text-blue-600 mt-0.5" />
-                            <p className="text-sm text-blue-800">
+                            <Lightbulb className="h-4 w-4 text-theme-accent mt-0.5" />
+                            <p className="text-sm text-theme-main">
                               {quizQuestions[currentQuestionIndex]?.explanation}
                             </p>
                           </div>

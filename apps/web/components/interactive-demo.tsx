@@ -425,7 +425,7 @@ export function InteractiveDemo() {
                   <button
                     onClick={startGeneration}
                     disabled={!code?.trim()}
-                    className="inline-flex items-center gap-2.5 rounded-xl bg-theme-accent px-7 py-3.5 text-[15px] font-bold text-white shadow-[0_4px_20px_rgba(99,102,241,0.4)] transition-all hover:bg-theme-accent-hover hover:shadow-[0_6px_28px_rgba(99,102,241,0.5)] disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="inline-flex items-center gap-2.5 rounded-xl bg-theme-accent px-7 py-3.5 text-[15px] font-bold text-white shadow-[0_4px_20px_rgba(229,165,11,0.4)] transition-all hover:bg-theme-accent-hover hover:shadow-[0_6px_28px_rgba(229,165,11,0.5)] disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <Code2 className="h-4.5 w-4.5" />
                     Generate Documentation
@@ -576,7 +576,7 @@ export function InteractiveDemo() {
               </p>
               <Link
                 href="/login"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-theme-accent px-6 py-3 text-[15px] font-bold text-white shadow-[0_4px_20px_rgba(99,102,241,0.4)] transition-all hover:bg-theme-accent-hover"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-theme-accent px-6 py-3 text-[15px] font-bold text-white shadow-[0_4px_20px_rgba(229,165,11,0.4)] transition-all hover:bg-theme-accent-hover"
               >
                 Get Started Free
                 <ArrowRight className="h-4 w-4" />
@@ -702,7 +702,7 @@ function PreviewContent({ page, language, onNavigate }: { page: string; language
 
           <div className="rounded-xl border border-theme-border bg-theme-page/50 p-4">
             <div className="flex items-center gap-2 mb-2">
-              <span className="rounded bg-blue-500/15 px-2 py-0.5 text-[11px] font-bold text-blue-400">interface</span>
+              <span className="rounded bg-theme-accent/10 px-2 py-0.5 text-[11px] font-bold text-theme-accent">interface</span>
               <code className="font-mono text-sm font-semibold text-theme-main">User</code>
             </div>
             <p className="text-xs text-theme-subtle mb-3">Represents a user account in the system.</p>
