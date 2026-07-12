@@ -46,6 +46,7 @@ export async function POST(request: Request) {
       );
     }
 
+    const startTime = Date.now();
     const result = parseCode(code, language as SupportedLanguage);
 
     if (result.exports.length === 0) {
@@ -92,11 +93,26 @@ export async function POST(request: Request) {
       }
     }
 
+    const elapsed = Date.now() - startTime;
+
+    const stats = {
+      functions: result.exports.filter((e) => e.kind === 'function').length,
+      interfaces: result.exports.filter((e) => e.kind === 'interface').length,
+      types: result.exports.filter((e) => e.kind === 'type').length,
+      classes: result.exports.filter((e) => e.kind === 'class').length,
+      enums: result.exports.filter((e) => e.kind === 'enum').length,
+      wikiLinks: createdPages.length > 1 ? Math.max(0, createdPages.length - 1) : 0,
+      tags: 0,
+      backlinks: 0,
+      generationTimeMs: elapsed,
+    };
+
     return NextResponse.json({
       message: `Generated ${createdPages.length} documentation pages`,
       pages: createdPages,
       total: result.exports.length,
       skipped: result.exports.length - createdPages.length,
+      stats,
     }, { headers: rlHeaders });
   } catch (error) {
     console.error('Code generation error:', error);

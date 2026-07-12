@@ -4,7 +4,7 @@ import { prisma } from '@fluid/database';
 import { Container } from '@fluid/ui';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { ImportTabs } from './tabs';
+import { ImportWizard } from '@/components/import/import-wizard';
 
 interface PageProps {
   params: Promise<{ project: string }>;
@@ -43,7 +43,7 @@ export default async function ImportPage({ params }: PageProps) {
             </div>
           </div>
 
-          <ImportTabs projectId={project.id} />
+          <ImportWizard projectId={project.id} projectName={project.name} />
         </div>
       </Container>
     </div>
