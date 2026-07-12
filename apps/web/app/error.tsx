@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 export default function Error({
   error,
   reset,
@@ -7,13 +9,17 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  useEffect(() => {
+    console.error('[ErrorBoundary]', error.message, error.stack);
+  }, [error]);
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-theme-page">
       <div className="text-center">
         <h1 className="text-7xl font-bold text-red-400">500</h1>
         <h2 className="mt-4 text-lg font-semibold text-theme-main">Something went wrong</h2>
         <p className="mt-2 text-sm text-theme-subtle max-w-md">
-          An unexpected error occurred. Please try again.
+          {error.digest ? `Error ${error.digest}` : 'An unexpected error occurred. Please try again.'}
         </p>
         <button
           onClick={reset}

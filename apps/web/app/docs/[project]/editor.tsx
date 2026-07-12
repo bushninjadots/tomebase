@@ -13,7 +13,6 @@ import { WikiAutocomplete } from '@/components/wiki-autocomplete';
 import { Comments } from '@/components/comments';
 import { BookmarkButton } from '@/components/bookmark-button';
 import { SchedulePublish } from '@/components/schedule-publish';
-import { ExplainProject } from '@/components/explain-project';
 import Link from 'next/link';
 
 interface Page {
@@ -490,11 +489,6 @@ export function DocEditor({ project }: { project: Project }) {
               </div>
             </div>
           )}
-
-          <ExplainProject
-            projectId={project.id}
-            pages={pageList}
-          />
         </div>
       </div>
     );

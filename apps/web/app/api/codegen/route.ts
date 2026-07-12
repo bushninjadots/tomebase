@@ -3,6 +3,7 @@ import { parseCode, exportsToMarkdown } from '@fluid/codegen';
 import { slugify } from '@fluid/utils';
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit';
 import type { SupportedLanguage } from '@fluid/codegen';
 
 export async function POST(request: Request) {
@@ -11,6 +12,10 @@ export async function POST(request: Request) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const rl = checkRateLimit(`codegen:${session.user.id}`, 10, 60_000);
+    const rlResponse = rateLimitResponse(rl);
+    if (rlResponse) return rlResponse;
 
     const { code, language, projectId } = await request.json();
 
@@ -31,7 +36,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
     }
 
-    const supportedLanguages: SupportedLanguage[] = ['typescript', 'javascript', 'python', 'go', 'rust'];
+    const supportedLanguages: SupportedLanguage[] = ['typescript', 'javascript', 'python', 'go', 'rust', 'csharp', 'cpp', 'kotlin', 'ruby'];
     if (!supportedLanguages.includes(language as SupportedLanguage)) {
       return NextResponse.json(
         { error: `Unsupported language. Must be one of: ${supportedLanguages.join(', ')}` },
