@@ -39,7 +39,7 @@ export async function POST(request: Request) {
       });
     }
 
-    const appUrl = process.env.APP_URL || 'https://tomebase.io';
+    const appUrl = process.env.APP_URL || 'https://tomebase.vercel.app';
 
     const checkoutSession = await getStripe().checkout.sessions.create({
       customer: customerId,

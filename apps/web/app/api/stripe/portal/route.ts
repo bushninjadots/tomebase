@@ -19,7 +19,7 @@ export async function POST() {
       return NextResponse.json({ error: 'No active subscription' }, { status: 400 });
     }
 
-    const appUrl = process.env.APP_URL || 'https://tomebase.io';
+    const appUrl = process.env.APP_URL || 'https://tomebase.vercel.app';
 
     const portalSession = await getStripe().billingPortal.sessions.create({
       customer: teamMember.team.stripeCustomerId,
