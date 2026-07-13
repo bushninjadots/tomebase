@@ -69,23 +69,6 @@ const result: ReturnType<typeof NextAuth> = NextAuth({
       return session;
     },
   },
-  events: {
-    createUser: async ({ user }) => {
-      if (!user.id) return;
-      try {
-        const { getOrCreatePersonalTeam } = await import('@/lib/team');
-        const userId = user.id;
-        const userName = user.name;
-        setTimeout(() => {
-          getOrCreatePersonalTeam(userId, userName).catch((e) => {
-            console.error('Failed to create team for user:', e);
-          });
-        }, 1000);
-      } catch (e) {
-        console.error('Failed to create team for user:', e);
-      }
-    },
-  },
 });
 
 export const handlers = result.handlers as {
