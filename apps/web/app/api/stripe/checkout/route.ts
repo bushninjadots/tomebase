@@ -39,7 +39,7 @@ export async function POST(request: Request) {
       });
     }
 
-    const appUrl = process.env.APP_URL || 'http://localhost:3000';
+    const appUrl = process.env.APP_URL || 'https://tomebase.io';
 
     const checkoutSession = await getStripe().checkout.sessions.create({
       customer: customerId,

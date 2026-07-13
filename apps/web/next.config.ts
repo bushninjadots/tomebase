@@ -2,7 +2,7 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   output: 'standalone',
-  transpilePackages: ['@fluid/ui', '@fluid/utils', '@fluid/database', '@fluid/types', '@fluid/codegen'],
+  transpilePackages: ['@fluid/ui', '@fluid/utils', '@fluid/database', '@fluid/types', '@fluid/codegen', '@fluid/ai'],
   experimental: {
     optimizePackageImports: ['lucide-react'],
   },
@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
             "style-src 'self' 'unsafe-inline'",
             "img-src 'self' data: blob: https: http:",
             "font-src 'self'",
-            "connect-src 'self' https://api.stripe.com https://checkout.stripe.com",
+            "connect-src 'self' https://api.stripe.com https://checkout.stripe.com https://api.github.com https://api.vercel.com https://vitals.vercel-insights.com https://va.vercel-scripts.com",
             "frame-src https://js.stripe.com https://checkout.stripe.com",
             "object-src 'none'",
             "base-uri 'self'",

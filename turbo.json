@@ -11,13 +11,15 @@
       ],
       "env": [
         "DATABASE_URL",
-        "DIRECT_URL",
         "AUTH_SECRET",
         "APP_URL",
-        "NEXTAUTH_SECRET",
-        "NEXTAUTH_URL",
+        "APP_HOST",
         "STRIPE_SECRET_KEY",
+        "STRIPE_PRO_PRICE_ID",
         "STRIPE_WEBHOOK_SECRET",
+        "CRON_SECRET",
+        "VERCEL_TOKEN",
+        "VERCEL_PROJECT_ID",
         "NODE_ENV"
       ]
     },
@@ -26,6 +28,9 @@
       "persistent": true
     },
     "lint": {},
+    "test": {
+      "dependsOn": ["^build"]
+    },
     "typecheck": {
       "dependsOn": ["^build"]
     },
