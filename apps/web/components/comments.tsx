@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import Image from 'next/image';
 import { MessageSquare, Send, Trash2, Reply, AtSign, X } from 'lucide-react';
 
 interface User {
@@ -35,19 +36,7 @@ export function Comments({ pageId, teamMembers }: CommentsProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    fetchComments();
-    fetch('/api/auth/session')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.user) {
-          setCurrentUser(data.user);
-        }
-      })
-      .catch(() => {});
-  }, [pageId]);
-
-  async function fetchComments() {
+  const fetchComments = useCallback(async () => {
     try {
       const res = await fetch(`/api/pages/${pageId}/comments`);
       if (res.ok) {
@@ -58,7 +47,19 @@ export function Comments({ pageId, teamMembers }: CommentsProps) {
       // ignore
     }
     setLoading(false);
-  }
+  }, [pageId]);
+
+  useEffect(() => {
+    fetchComments();
+    fetch('/api/auth/session')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.user) {
+          setCurrentUser(data.user);
+        }
+      })
+      .catch(() => {});
+  }, [fetchComments]);
 
   const handleSubmit = async () => {
     if (!newComment.trim() || submitting) return;
@@ -181,9 +182,12 @@ export function Comments({ pageId, teamMembers }: CommentsProps) {
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2">
               {comment.user.image ? (
-                <img
+                <Image
                   src={comment.user.image}
                   alt={comment.user.name || ''}
+                  width={24}
+                  height={24}
+                  unoptimized
                   className="h-6 w-6 rounded-full"
                 />
               ) : (
@@ -325,7 +329,7 @@ export function Comments({ pageId, teamMembers }: CommentsProps) {
                       }`}
                     >
                       {member.image ? (
-                        <img src={member.image} alt="" className="h-5 w-5 rounded-full" />
+                        <Image src={member.image} alt="" width={20} height={20} unoptimized className="h-5 w-5 rounded-full" />
                       ) : (
                         <div className="h-5 w-5 rounded-full bg-theme-hover flex items-center justify-center text-[10px] font-medium text-theme-subtle">
                           {(member.name || member.email || '?')[0]?.toUpperCase()}

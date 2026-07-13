@@ -275,7 +275,7 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
   const [panning, setPanning] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
 
-  const dims = { width: 800, height: 580 };
+  const dims = useMemo(() => ({ width: 800, height: 580 }), []);
 
   const { filteredPages, filteredEdges, allEdges, localFilteredIds } = useMemo(() => {
     const titleMap = new Map(pages.map((p) => [p.title.toLowerCase(), p]));
@@ -338,7 +338,7 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
     }
 
     return { filteredPages, filteredEdges, allNodes, allEdges: edgeList, localFilteredIds: localIds };
-  }, [pages, currentPageId, search]);
+  }, [pages, currentPageId, search, healthData]);
 
   const nodes = useMemo(() => {
     if (mode === 'local' && currentPageId && localFilteredIds.size > 0) {
@@ -368,7 +368,7 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
       simulateForceLayout(copies, edgeCopies, dims);
     }
     return copies;
-  }, [nodes, edges, viewMode]);
+  }, [nodes, edges, viewMode, currentPageId, dims]);
 
   const [displayNodes, setDisplayNodes] = useState<GraphNode[]>([]);
   useEffect(() => { setDisplayNodes(layoutNodes); }, [layoutNodes]);
