@@ -24,22 +24,24 @@ export async function getOrCreatePersonalTeam(userId: string, userName?: string 
     });
 
     return team;
-  } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
-      const team = await prisma.team.findUnique({ where: { slug } });
-      if (team) {
-        const alreadyMember = await prisma.teamMember.findFirst({
-          where: { userId, teamId: team.id },
-        });
-        if (!alreadyMember) {
-          await prisma.teamMember.create({
-            data: { userId, teamId: team.id, role: 'admin' },
-          });
-        }
-        return team;
-      }
-    }
-    throw e;
+  } catch {
+    // Team may already exist (slug collision) or user may not exist yet.
+    // Try to find an existing personal team for this user.
+    const memberWithTeam = await prisma.teamMember.findFirst({
+      where: { userId },
+      include: { team: true },
+    });
+    if (memberWithTeam) return memberWithTeam.team;
+
+    // No team found — create one with a unique slug
+    const uniqueSlug = slug + '-' + Date.now().toString(36);
+    const team = await prisma.team.create({
+      data: { name, slug: uniqueSlug, personal: true },
+    });
+    await prisma.teamMember.create({
+      data: { userId, teamId: team.id, role: 'admin' },
+    });
+    return team;
   }
 }
 

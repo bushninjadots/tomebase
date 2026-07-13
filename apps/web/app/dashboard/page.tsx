@@ -48,7 +48,16 @@ export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user?.id) redirect('/login');
 
-  const team = await getOrCreatePersonalTeam(session.user.id);
+  const userExists = await prisma.user.findUnique({ where: { id: session.user.id }, select: { id: true } });
+  if (!userExists) redirect('/login');
+
+  let team;
+  try {
+    team = await getOrCreatePersonalTeam(session.user.id, session.user.name);
+  } catch (e) {
+    console.error('Dashboard: failed to get/create team:', e);
+    redirect('/login');
+  }
   const tier = (team.tier || 'free') as keyof typeof TIERS;
   const firstName = session.user.name?.split(' ')[0] || 'there';
 
