@@ -53,7 +53,12 @@ function GoogleButton() {
 }
 
 export default async function LoginPage() {
-  const session = await auth();
+  let session = null;
+  try {
+    session = await auth();
+  } catch (e) {
+    console.error('Auth session check failed:', e);
+  }
   if (session?.user) redirect('/dashboard');
 
   const hasOAuth = !!(process.env.AUTH_GITHUB_ID || process.env.AUTH_GOOGLE_ID);
