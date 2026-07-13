@@ -3,7 +3,7 @@ import { slugify } from '@fluid/utils';
 import { Prisma } from '@prisma/client';
 import crypto from 'crypto';
 
-export async function getOrCreatePersonalTeam(userId: string) {
+export async function getOrCreatePersonalTeam(userId: string, userName?: string | null | undefined) {
   const existing = await prisma.teamMember.findFirst({
     where: { userId },
     include: { team: true },
@@ -11,8 +11,7 @@ export async function getOrCreatePersonalTeam(userId: string) {
 
   if (existing) return existing.team;
 
-  const user = await prisma.user.findUnique({ where: { id: userId } });
-  const name = `${user?.name ?? 'Personal'}'s Team`;
+  const name = `${userName ?? 'Personal'}'s Team`;
   const slug = slugify(name) + '-' + userId.slice(0, 8);
 
   try {

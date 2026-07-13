@@ -74,7 +74,13 @@ const result: ReturnType<typeof NextAuth> = NextAuth({
       if (!user.id) return;
       try {
         const { getOrCreatePersonalTeam } = await import('@/lib/team');
-        await getOrCreatePersonalTeam(user.id);
+        const userId = user.id;
+        const userName = user.name;
+        setTimeout(() => {
+          getOrCreatePersonalTeam(userId, userName).catch((e) => {
+            console.error('Failed to create team for user:', e);
+          });
+        }, 1000);
       } catch (e) {
         console.error('Failed to create team for user:', e);
       }
