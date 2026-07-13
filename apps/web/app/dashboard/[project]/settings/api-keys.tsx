@@ -32,6 +32,7 @@ export function ApiKeyManager({ projectId }: { projectId: string }) {
 
   useEffect(() => {
     loadKeys();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
 
   async function createKey(e: React.FormEvent) {

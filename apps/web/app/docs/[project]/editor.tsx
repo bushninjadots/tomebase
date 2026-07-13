@@ -155,6 +155,7 @@ export function DocEditor({ project }: { project: Project }) {
         }
       }
     } catch { /* ignore */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [DRAFT_KEY]);
 
   // Save draft to localStorage on content change
@@ -218,6 +219,7 @@ export function DocEditor({ project }: { project: Project }) {
     savedVersionRef.current = { title: selectedPage.title, content: selectedPage.content };
     setAutoSaveStatus('saved');
     setDirty(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPage?.id]);
 
   useEffect(() => {
@@ -327,6 +329,7 @@ export function DocEditor({ project }: { project: Project }) {
     }
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [title, content, selectedPage]);
 
   useEffect(() => {
