@@ -1,5 +1,6 @@
 import { prisma } from '@fluid/database';
 import { slugify } from '@fluid/utils';
+import { Prisma } from '@prisma/client';
 import crypto from 'crypto';
 
 export async function getOrCreatePersonalTeam(userId: string) {
@@ -14,15 +15,33 @@ export async function getOrCreatePersonalTeam(userId: string) {
   const name = `${user?.name ?? 'Personal'}'s Team`;
   const slug = slugify(name) + '-' + userId.slice(0, 8);
 
-  const team = await prisma.team.create({
-    data: { name, slug, personal: true },
-  });
+  try {
+    const team = await prisma.team.create({
+      data: { name, slug, personal: true },
+    });
 
-  await prisma.teamMember.create({
-    data: { userId, teamId: team.id, role: 'admin' },
-  });
+    await prisma.teamMember.create({
+      data: { userId, teamId: team.id, role: 'admin' },
+    });
 
-  return team;
+    return team;
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
+      const team = await prisma.team.findUnique({ where: { slug } });
+      if (team) {
+        const alreadyMember = await prisma.teamMember.findFirst({
+          where: { userId, teamId: team.id },
+        });
+        if (!alreadyMember) {
+          await prisma.teamMember.create({
+            data: { userId, teamId: team.id, role: 'admin' },
+          });
+        }
+        return team;
+      }
+    }
+    throw e;
+  }
 }
 
 export async function getTeamProjects(teamId: string) {
