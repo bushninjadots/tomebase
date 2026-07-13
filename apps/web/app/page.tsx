@@ -12,12 +12,7 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { MarketingNav } from '@/components/marketing-nav';
-import dynamic from 'next/dynamic';
-
-const InteractiveDemo = dynamic(
-  () => import('@/components/interactive-demo').then((m) => ({ default: m.InteractiveDemo })),
-  { ssr: false, loading: () => <div className="h-[500px] animate-pulse rounded-2xl bg-theme-card" /> }
-);
+import { InteractiveDemoLazy } from '@/components/interactive-demo-lazy';
 
 const features = [
   {
@@ -216,7 +211,7 @@ export default function Home() {
       </section>
 
       {/* ─── Interactive Demo ─── */}
-      <InteractiveDemo />
+      <InteractiveDemoLazy />
 
       {/* ─── Stats ─── */}
       <section className="border-y border-theme-border bg-theme-page py-0">
