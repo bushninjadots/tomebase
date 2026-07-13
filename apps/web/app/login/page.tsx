@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { LoginForm } from './form';
 
+export const dynamic = 'force-dynamic';
+
 function GitHubButton() {
   return (
     <form
