@@ -33,8 +33,8 @@ export async function GET(request: Request) {
         projectId,
         published: true,
         OR: [
-          { title: { contains: q, mode: 'insensitive' } },
-          { content: { contains: q, mode: 'insensitive' } },
+          { title: { contains: q } },
+          { content: { contains: q } },
         ],
       },
       select: { id: true, title: true, slug: true, content: true },
