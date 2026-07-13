@@ -46,6 +46,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen bg-theme-page font-sans text-theme-main antialiased">
           <Providers>
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:p-4 focus:bg-theme-page focus:text-theme-accent focus:outline focus:outline-2 focus:outline-theme-accent"
+            >
+              Skip to main content
+            </a>
             {children}
           </Providers>
         </body>

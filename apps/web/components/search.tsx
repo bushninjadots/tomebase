@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useId } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, FileText, ArrowRight } from 'lucide-react';
 
@@ -23,6 +23,7 @@ export function SearchOverlay({ projectId, pages }: SearchOverlayProps) {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const inputId = useId();
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -96,9 +97,10 @@ export function SearchOverlay({ projectId, pages }: SearchOverlayProps) {
     <>
       <button
         onClick={() => setOpen(true)}
+        aria-label="Open search (Control+K)"
         className="flex items-center gap-2 rounded-lg border border-theme-border bg-theme-hover px-3 py-1.5 text-sm text-theme-muted hover:border-theme-border hover:text-theme-subtle transition-colors"
       >
-        <Search className="h-3.5 w-3.5" />
+        <Search className="h-3.5 w-3.5" aria-hidden="true" />
         <span>Search pages...</span>
         <kbd className="ml-6 rounded border border-theme-border bg-theme-card px-1.5 py-0.5 text-[10px] font-medium text-theme-muted">
           ⌘K
@@ -107,6 +109,9 @@ export function SearchOverlay({ projectId, pages }: SearchOverlayProps) {
 
       {open && (
         <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Search pages"
           className="fixed inset-0 z-50 flex items-start justify-center bg-black/20 pt-[15vh]"
           onClick={(e) => {
             if (e.target === e.currentTarget) setOpen(false);
@@ -114,14 +119,22 @@ export function SearchOverlay({ projectId, pages }: SearchOverlayProps) {
         >
           <div className="w-full max-w-lg rounded-2xl border border-theme-border bg-theme-card shadow-2xl">
             <div className="flex items-center gap-3 border-b border-theme-border px-4 py-3">
-              <Search className="h-4 w-4 shrink-0 text-theme-muted" />
+              <Search className="h-4 w-4 shrink-0 text-theme-muted" aria-hidden="true" />
               <input
                 ref={inputRef}
+                id={inputId}
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Search pages by title or content..."
+                aria-label="Search pages by title or content"
+                role="combobox"
+                aria-expanded={results.length > 0}
+                aria-controls="search-results"
+                aria-activedescendant={
+                  results[selectedIdx] ? `search-option-${results[selectedIdx]!.id}` : undefined
+                }
                 className="flex-1 bg-transparent text-sm text-theme-main outline-none placeholder:text-theme-muted"
                 autoFocus
               />
@@ -130,9 +143,15 @@ export function SearchOverlay({ projectId, pages }: SearchOverlayProps) {
               </kbd>
             </div>
 
-            <div ref={listRef} className="max-h-80 overflow-y-auto p-2">
+            <div
+              ref={listRef}
+              id="search-results"
+              role="listbox"
+              aria-label="Search results"
+              className="max-h-80 overflow-y-auto p-2"
+            >
               {results.length === 0 && query.trim() && (
-                <p className="py-6 text-center text-sm text-theme-muted">
+                <p className="py-6 text-center text-sm text-theme-muted" role="status">
                   No results for &ldquo;{query}&rdquo;
                 </p>
               )}
@@ -144,6 +163,9 @@ export function SearchOverlay({ projectId, pages }: SearchOverlayProps) {
               {results.map((result, idx) => (
                 <button
                   key={result.id}
+                  id={`search-option-${result.id}`}
+                  role="option"
+                  aria-selected={idx === selectedIdx}
                   onClick={() => navigate(result.slug)}
                   onMouseEnter={() => setSelectedIdx(idx)}
                   className={`flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
@@ -152,7 +174,7 @@ export function SearchOverlay({ projectId, pages }: SearchOverlayProps) {
                       : 'text-theme-subtle hover:bg-theme-hover'
                   }`}
                 >
-                  <FileText className="mt-0.5 h-4 w-4 shrink-0 text-theme-muted" />
+                  <FileText className="mt-0.5 h-4 w-4 shrink-0 text-theme-muted" aria-hidden="true" />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium">{result.title}</span>
@@ -168,7 +190,7 @@ export function SearchOverlay({ projectId, pages }: SearchOverlayProps) {
                       </p>
                     )}
                   </div>
-                  <ArrowRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-theme-muted" />
+                  <ArrowRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-theme-muted" aria-hidden="true" />
                 </button>
               ))}
             </div>

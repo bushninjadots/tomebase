@@ -14,6 +14,9 @@
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "db:generate": "turbo db:generate",
     "db:push": "turbo db:push",
+    "db:migrate": "turbo db:migrate",
+    "db:migrate:deploy": "turbo db:migrate:deploy",
+    "db:migrate:status": "turbo db:migrate:status",
     "db:seed": "npx tsx scripts/seed-docs.ts",
     "test": "turbo test"
   },

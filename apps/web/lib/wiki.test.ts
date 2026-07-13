@@ -4,6 +4,8 @@ import {
   resolveWikiLink,
   preprocessWikiLinks,
   extractTags,
+  findBacklinks,
+  getPageLinks,
 } from './wiki';
 
 describe('extractWikiLinks', () => {
@@ -93,5 +95,77 @@ describe('extractTags', () => {
 
   it('returns empty array for no tags', () => {
     expect(extractTags('No tags here.')).toEqual([]);
+  });
+});
+
+describe('findBacklinks', () => {
+  const pages = [
+    { title: 'Getting Started', slug: 'getting-started', content: 'See [[API Reference]] for details.' },
+    { title: 'API Reference', slug: 'api-reference', content: 'Welcome to the API.' },
+    { title: 'Architecture', slug: 'architecture', content: 'Uses [[Getting Started]] as a base.' },
+    { title: 'Other', slug: 'other', content: 'No wiki links here.' },
+  ];
+
+  it('finds pages that link to a given title', () => {
+    const backlinks = findBacklinks('Getting Started', pages);
+    expect(backlinks).toEqual([
+      { title: 'Architecture', slug: 'architecture' },
+    ]);
+  });
+
+  it('returns empty array when no pages link to the title', () => {
+    const backlinks = findBacklinks('Nonexistent', pages);
+    expect(backlinks).toEqual([]);
+  });
+
+  it('excludes the page itself from backlinks', () => {
+    const selfRef = [
+      { title: 'Page A', slug: 'page-a', content: 'Link to [[Page A]]' },
+    ];
+    const backlinks = findBacklinks('Page A', selfRef);
+    expect(backlinks).toEqual([]);
+  });
+
+  it('finds backlinks with alias syntax', () => {
+    const withAlias = [
+      { title: 'Source', slug: 'source', content: 'See [[Target|click here]].' },
+      { title: 'Target', slug: 'target', content: 'Some content.' },
+    ];
+    const backlinks = findBacklinks('Target', withAlias);
+    expect(backlinks).toEqual([{ title: 'Source', slug: 'source' }]);
+  });
+});
+
+describe('getPageLinks', () => {
+  const pages = [
+    { title: 'Getting Started', slug: 'getting-started' },
+    { title: 'API Reference', slug: 'api-reference' },
+  ];
+
+  it('returns resolved links', () => {
+    const result = getPageLinks('See [[Getting Started]] and [[API Reference]].', pages);
+    expect(result).toEqual([
+      { title: 'Getting Started', slug: 'getting-started', resolved: true },
+      { title: 'API Reference', slug: 'api-reference', resolved: true },
+    ]);
+  });
+
+  it('marks unresolved links', () => {
+    const result = getPageLinks('See [[Missing Page]].', pages);
+    expect(result).toEqual([
+      { title: 'Missing Page', slug: '', resolved: false },
+    ]);
+  });
+
+  it('returns empty array for no links', () => {
+    expect(getPageLinks('No links.', pages)).toEqual([]);
+  });
+
+  it('handles mixed resolved and unresolved', () => {
+    const result = getPageLinks('[[Getting Started]] and [[Unknown]].', pages);
+    expect(result).toEqual([
+      { title: 'Getting Started', slug: 'getting-started', resolved: true },
+      { title: 'Unknown', slug: '', resolved: false },
+    ]);
   });
 });

@@ -56,21 +56,33 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ toasts, addToast, dismissToast }}>
       {children}
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none">
+      <div
+        aria-live="polite"
+        aria-label="Notifications"
+        className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"
+      >
         {toasts.map((toast) => (
           <div
             key={toast.id}
+            role={toast.type === 'error' ? 'alert' : 'status'}
             className="pointer-events-auto flex items-center gap-3 rounded-xl border border-theme-border bg-theme-card px-4 py-3 shadow-lg animate-[slideUp_0.3s_ease-out]"
           >
-            {toast.type === 'success' && <CheckCircle className="h-4 w-4 text-green-400 shrink-0" />}
-            {toast.type === 'error' && <AlertCircle className="h-4 w-4 text-red-400 shrink-0" />}
-            {toast.type === 'info' && <Info className="h-4 w-4 text-blue-400 shrink-0" />}
+            {toast.type === 'success' && (
+              <CheckCircle className="h-4 w-4 text-green-400 shrink-0" aria-hidden="true" />
+            )}
+            {toast.type === 'error' && (
+              <AlertCircle className="h-4 w-4 text-red-400 shrink-0" aria-hidden="true" />
+            )}
+            {toast.type === 'info' && (
+              <Info className="h-4 w-4 text-blue-400 shrink-0" aria-hidden="true" />
+            )}
             <span className="text-sm text-theme-main">{toast.message}</span>
             <button
               onClick={() => dismissToast(toast.id)}
+              aria-label="Dismiss notification"
               className="ml-2 text-theme-muted hover:text-theme-main transition-colors shrink-0"
             >
-              <X className="h-3.5 w-3.5" />
+              <X className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
           </div>
         ))}

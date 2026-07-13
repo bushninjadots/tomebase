@@ -14,7 +14,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-theme-page">
+    <main className="flex min-h-screen items-center justify-center bg-theme-page" role="alert">
       <div className="text-center">
         <h1 className="text-7xl font-bold text-red-400">500</h1>
         <h2 className="mt-4 text-lg font-semibold text-theme-main">Something went wrong</h2>
@@ -23,11 +23,12 @@ export default function Error({
         </p>
         <button
           onClick={reset}
+          aria-label="Try loading the page again"
           className="mt-8 inline-flex items-center gap-2 btn-primary"
         >
           Try again
         </button>
       </div>
-    </div>
+    </main>
   );
 }

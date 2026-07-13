@@ -27,6 +27,8 @@ export async function GET(request: Request) {
     const projectIds = projects.map((p) => p.id);
     const projectMap = new Map(projects.map((p) => [p.id, p]));
 
+    const lower = q.toLowerCase();
+
     const pages = await prisma.docPage.findMany({
       where: {
         projectId: { in: projectIds },
@@ -40,19 +42,39 @@ export async function GET(request: Request) {
         title: true,
         slug: true,
         projectId: true,
+        content: true,
         updatedAt: true,
       },
       orderBy: { updatedAt: 'desc' },
-      take: 30,
+      take: 50,
     });
 
-    const results = pages.map((page) => ({
-      id: page.id,
-      title: page.title,
-      slug: page.slug,
-      projectId: page.projectId,
-      projectName: projectMap.get(page.projectId)?.name ?? '',
-    }));
+    const results = pages
+      .map((page) => {
+        const titleMatch = page.title.toLowerCase().includes(lower);
+        const contentMatch = page.content.toLowerCase().includes(lower);
+        let score = 0;
+        if (titleMatch) score += 10;
+        if (contentMatch) score += 1;
+
+        const idx = page.content.toLowerCase().indexOf(lower);
+        const snippet =
+          idx >= 0
+            ? page.content.slice(Math.max(0, idx - 40), idx + 80).replace(/\n/g, ' ')
+            : '';
+
+        return {
+          id: page.id,
+          title: page.title,
+          slug: page.slug,
+          projectId: page.projectId,
+          projectName: projectMap.get(page.projectId)?.name ?? '',
+          snippet,
+          score,
+        };
+      })
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 30);
 
     return NextResponse.json(results);
   } catch (error) {

@@ -3,6 +3,7 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
 import type { Components } from 'react-markdown';
 import { preprocessWikiLinks } from '@/lib/wiki';
 import { CodeBlock } from '@/components/interactive-code-block';
@@ -155,17 +156,20 @@ const components: Components = {
     </ol>
   ),
   li: ({ children, ...props }) => <li {...props}>{children}</li>,
-  a: ({ children, href, ...props }) => (
-    <a
-      href={href}
-      className="text-fluid-600 underline-offset-2 hover:text-fluid-700 hover:underline font-medium"
-      target={href?.startsWith('http') ? '_blank' : undefined}
-      rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
-      {...props}
-    >
-      {children}
-    </a>
-  ),
+  a: ({ children, href, ...props }) => {
+    const isSafe = href && !href.startsWith('javascript:') && !href.startsWith('data:');
+    return (
+      <a
+        href={isSafe ? href : undefined}
+        className="text-fluid-600 underline-offset-2 hover:text-fluid-700 hover:underline font-medium"
+        target={href?.startsWith('http') ? '_blank' : undefined}
+        rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+        {...props}
+      >
+        {children}
+      </a>
+    );
+  },
   span: ({ className, children, ...props }) => {
     if (className?.includes('wiki-link-unresolved')) {
       return (
@@ -236,7 +240,7 @@ export function Markdown({
       <ReactMarkdown
         components={components}
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeRaw]}
+        rehypePlugins={[rehypeRaw, rehypeSanitize]}
       >
         {withCallouts}
       </ReactMarkdown>
