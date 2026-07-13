@@ -12,7 +12,12 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { MarketingNav } from '@/components/marketing-nav';
-import { InteractiveDemo } from '@/components/interactive-demo';
+import dynamic from 'next/dynamic';
+
+const InteractiveDemo = dynamic(
+  () => import('@/components/interactive-demo').then((m) => ({ default: m.InteractiveDemo })),
+  { ssr: false, loading: () => <div className="h-[500px] animate-pulse rounded-2xl bg-theme-card" /> }
+);
 
 const features = [
   {

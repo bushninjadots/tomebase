@@ -13,7 +13,12 @@ export type IssueCategory =
   | 'long_paragraph'
   | 'no_lists'
   | 'thin_content'
-  | 'reading_time';
+  | 'reading_time'
+  | 'duplicate_title'
+  | 'missing_description'
+  | 'missing_params'
+  | 'missing_returns'
+  | 'naming_inconsistency';
 
 export interface HealthIssue {
   id: string;
@@ -68,6 +73,11 @@ const CATEGORY_META: Record<IssueCategory, { label: string; severity: IssueSever
   no_lists:             { label: 'No Lists',            severity: 'info',    icon: 'List' },
   thin_content:         { label: 'Thin Content',        severity: 'warning', icon: 'FileText' },
   reading_time:         { label: 'Reading Time',        severity: 'info',    icon: 'BookOpen' },
+  duplicate_title:      { label: 'Duplicate Titles',    severity: 'warning', icon: 'Copy' },
+  missing_description:  { label: 'Missing Description', severity: 'warning', icon: 'FileText' },
+  missing_params:       { label: 'Missing Parameters',  severity: 'info',    icon: 'ListOrdered' },
+  missing_returns:      { label: 'Missing Returns',     severity: 'info',    icon: 'ArrowRightLeft' },
+  naming_inconsistency: { label: 'Naming Inconsistency', severity: 'info',   icon: 'ALargeSmall' },
 };
 
 let issueCounter = 0;
@@ -156,6 +166,43 @@ export function analyzePages(pages: {
     const headings = content.match(/^#{1,6}\s+.+$/gm) || [];
     if (headings.length === 0 && content.length > 100) {
       pageIssues.push(makeIssue('no_headings', page.title, page.id, page.slug, 'Page has no headings for navigation'));
+    }
+
+    const titleCounts = new Map<string, string[]>();
+    for (const p of pages) {
+      const key = p.title.toLowerCase().trim();
+      const existing = titleCounts.get(key) ?? [];
+      existing.push(p.id);
+      titleCounts.set(key, existing);
+    }
+    const titleDuplicates = titleCounts.get(page.title.toLowerCase().trim());
+    if (titleDuplicates && titleDuplicates.length > 1 && titleDuplicates[0] === page.id) {
+      pageIssues.push(makeIssue('duplicate_title', page.title, page.id, page.slug, `${titleDuplicates.length} pages share the same title`));
+    }
+
+    const afterTitle = content.replace(/^#\s+.+\n?/, '').trim();
+    const firstLine = afterTitle.split('\n')[0] ?? '';
+    if (firstLine.length < 10 && content.length > 100) {
+      pageIssues.push(makeIssue('missing_description', page.title, page.id, page.slug, 'Page has no description after the title heading'));
+    }
+
+    const hasParamDoc = /@param\s+\w+/.test(content) || /\*\s+\w+\s*[:–-]/.test(content);
+    const hasReturnDoc = /@returns?\s/.test(content) || /returns?\s*[:–-]/i.test(content);
+    if (hasParamDoc && !hasReturnDoc) {
+      pageIssues.push(makeIssue('missing_returns', page.title, page.id, page.slug, 'Parameters documented but no return value documentation'));
+    }
+
+    const hasCodeTerms = /\b(function|class|interface|type|const|let|var|export|import|from|module)\b/.test(content);
+    const hasParamSection = /##?\s*(Parameters|Arguments|Options|Props|Input)/i.test(content);
+    if (hasCodeTerms && !hasParamSection && wordCount > 200) {
+      pageIssues.push(makeIssue('missing_params', page.title, page.id, page.slug, 'Code documentation may be missing a parameters section'));
+    }
+
+    const inconsistentCasing = /\b[A-Z][a-z]+[A-Z]\w*\b/.test(page.title) && /[a-z][A-Z]/.test(page.title);
+    const allLowerTitle = page.title === page.title.toLowerCase();
+    const allUpperTitle = page.title === page.title.toUpperCase();
+    if (allLowerTitle && page.title.length > 3) {
+      pageIssues.push(makeIssue('naming_inconsistency', page.title, page.id, page.slug, 'Title is all lowercase — consider Title Case for consistency'));
     }
 
     const codeBlocks = content.match(/```/g) || [];

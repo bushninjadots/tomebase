@@ -16,14 +16,13 @@ export function DiffViewer({ oldText, newText, oldLabel, newLabel }: DiffViewerP
 
   return (
     <div className="rounded-xl border border-theme-border overflow-hidden">
-      {/* Header */}
       <div className="flex items-center justify-between border-b border-theme-border bg-theme-card px-4 py-2">
         <div className="flex items-center gap-4 text-xs">
-          <span className="flex items-center gap-1.5 text-green-600">
+          <span className="flex items-center gap-1.5 text-green-600 dark:text-green-400">
             <Plus className="h-3 w-3" />
             {diff.added} added
           </span>
-          <span className="flex items-center gap-1.5 text-red-600">
+          <span className="flex items-center gap-1.5 text-red-600 dark:text-red-400">
             <Minus className="h-3 w-3" />
             {diff.removed} removed
           </span>
@@ -40,7 +39,6 @@ export function DiffViewer({ oldText, newText, oldLabel, newLabel }: DiffViewerP
         )}
       </div>
 
-      {/* Diff content */}
       <div className="max-h-96 overflow-y-auto font-mono text-sm">
         {diff.lines.length === 0 ? (
           <div className="p-4 text-center text-theme-muted text-sm">
@@ -52,32 +50,29 @@ export function DiffViewer({ oldText, newText, oldLabel, newLabel }: DiffViewerP
               key={i}
               className={`flex border-b border-theme-border ${
                 line.type === 'added'
-                  ? 'bg-green-50'
+                  ? 'bg-green-50 dark:bg-green-950/30'
                   : line.type === 'removed'
-                  ? 'bg-red-50'
+                  ? 'bg-red-50 dark:bg-red-950/30'
                     : 'bg-theme-page'
               }`}
             >
-              {/* Line number */}
               <div className="w-12 shrink-0 text-right pr-2 py-1 text-xs text-theme-muted select-none border-r border-theme-border">
                 {line.lineNumber}
               </div>
-              {/* Diff indicator */}
               <div className="w-6 shrink-0 text-center py-1 select-none">
                 {line.type === 'added' && (
-                  <Plus className="h-3 w-3 text-green-500 mx-auto" />
+                  <Plus className="h-3 w-3 text-green-500 dark:text-green-400 mx-auto" />
                 )}
                 {line.type === 'removed' && (
-                  <Minus className="h-3 w-3 text-red-500 mx-auto" />
+                  <Minus className="h-3 w-3 text-red-500 dark:text-red-400 mx-auto" />
                 )}
               </div>
-              {/* Content */}
               <div className="flex-1 py-1 px-2 overflow-x-auto">
                 <pre className={`whitespace-pre-wrap ${
                   line.type === 'added'
-                    ? 'text-green-800'
+                    ? 'text-green-800 dark:text-green-300'
                     : line.type === 'removed'
-                    ? 'text-red-800'
+                    ? 'text-red-800 dark:text-red-300'
                     : 'text-theme-subtle'
                 }`}>
                   {line.content || ' '}

@@ -22,7 +22,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const session = await auth();
   if (!session?.user?.id) redirect('/login');
 
-  const team = await getOrCreatePersonalTeam(session.user.id);
+  const [team, firstProject] = await Promise.all([
+    getOrCreatePersonalTeam(session.user.id),
+    prisma.project.findFirst({
+      where: { team: { members: { some: { userId: session.user.id } } } },
+      select: { id: true },
+      orderBy: { updatedAt: 'desc' },
+    }),
+  ]);
+
   const projects = await prisma.project.findMany({
     where: { teamId: team.id },
     select: { id: true, name: true },
@@ -30,7 +38,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     take: 10,
   });
 
-  const firstProjectId = projects[0]?.id;
+  const firstProjectId = firstProject?.id || projects[0]?.id;
 
   return (
     <div className="flex min-h-screen bg-theme-page">

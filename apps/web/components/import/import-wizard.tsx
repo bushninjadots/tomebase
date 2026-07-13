@@ -570,10 +570,45 @@ export function ImportWizard({ projectId, projectName }: ImportWizardProps) {
       {/* ERROR state */}
       {wizard.state === 'error' && (
         <div className="space-y-6">
-          <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6 text-center animate-[fadeIn_0.3s_ease-out]">
-            <p className="text-sm text-red-400 font-medium">{wizard.error}</p>
+          <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6 animate-[fadeIn_0.3s_ease-out]">
+            <div className="flex items-start gap-3">
+              <div className="h-5 w-5 rounded-full bg-red-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                <span className="text-red-400 text-xs font-bold">!</span>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm text-red-400 font-medium">{wizard.error}</p>
+                <div className="text-xs text-theme-muted space-y-1">
+                  {wizard.error?.includes('No functions') || wizard.error?.includes('No exports') ? (
+                    <>
+                      <p>Your code has no exported functions or classes with doc comments.</p>
+                      <p className="text-theme-muted">Try adding JSDoc comments to your exported functions:</p>
+                      <pre className="mt-1 p-2 bg-theme-hover rounded text-[11px] text-theme-subtle font-mono">
+{`/** Description of what this does */
+export function myFunction(param) { ... }`}
+                      </pre>
+                    </>
+                  ) : wizard.error?.includes('rate limit') ? (
+                    <p>Too many requests. Wait a moment and try again.</p>
+                  ) : wizard.error?.includes('network') || wizard.error?.includes('fetch') ? (
+                    <p>Check your connection and try again.</p>
+                  ) : (
+                    <>
+                      <p>If this keeps happening, try:</p>
+                      <ul className="list-disc list-inside space-y-0.5 mt-1">
+                        <li>Paste smaller code snippets (one file at a time)</li>
+                        <li>Ensure code has exported functions with doc comments</li>
+                        <li>Try a different language from the dropdown</li>
+                      </ul>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-          <Button onClick={handleGenerateMore} variant="outline">Try Again</Button>
+          <div className="flex gap-3">
+            <Button onClick={handleGenerateMore} variant="outline">Try Again</Button>
+            <Button onClick={() => wizard.reset()} variant="ghost" size="sm">Clear & Start Over</Button>
+          </div>
         </div>
       )}
 

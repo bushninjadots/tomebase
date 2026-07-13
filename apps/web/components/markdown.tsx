@@ -4,9 +4,10 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
+import rehypeHighlight from 'rehype-highlight';
 import type { Components } from 'react-markdown';
 import { preprocessWikiLinks } from '@/lib/wiki';
-import { CodeBlock } from '@/components/interactive-code-block';
+import 'highlight.js/styles/github-dark.css';
 
 interface MarkdownProps {
   content: string;
@@ -32,17 +33,17 @@ const CALLOUT_ICONS: Record<string, string> = {
 };
 
 const CALLOUT_COLORS: Record<string, string> = {
-  note: 'border-l-blue-500 bg-blue-50',
-  tip: 'border-l-emerald-500 bg-emerald-50',
-  important: 'border-l-purple-500 bg-purple-50',
-  warning: 'border-l-amber-500 bg-amber-50',
-  danger: 'border-l-red-500 bg-red-50',
-  caution: 'border-l-orange-500 bg-orange-50',
-  info: 'border-l-sky-500 bg-sky-50',
-  success: 'border-l-green-500 bg-green-50',
-  question: 'border-l-violet-500 bg-violet-50',
-  bug: 'border-l-rose-500 bg-rose-50',
-  example: 'border-l-indigo-500 bg-indigo-50',
+  note: 'border-l-blue-500 bg-blue-50 dark:bg-blue-950/30',
+  tip: 'border-l-emerald-500 bg-emerald-50 dark:bg-emerald-950/30',
+  important: 'border-l-purple-500 bg-purple-50 dark:bg-purple-950/30',
+  warning: 'border-l-amber-500 bg-amber-50 dark:bg-amber-950/30',
+  danger: 'border-l-red-500 bg-red-50 dark:bg-red-950/30',
+  caution: 'border-l-orange-500 bg-orange-50 dark:bg-orange-950/30',
+  info: 'border-l-sky-500 bg-sky-50 dark:bg-sky-950/30',
+  success: 'border-l-green-500 bg-green-50 dark:bg-green-950/30',
+  question: 'border-l-violet-500 bg-violet-50 dark:bg-violet-950/30',
+  bug: 'border-l-rose-500 bg-rose-50 dark:bg-rose-950/30',
+  example: 'border-l-indigo-500 bg-indigo-50 dark:bg-indigo-950/30',
   quote: 'border-l-theme-border bg-theme-hover',
 };
 
@@ -67,6 +68,9 @@ function preprocessCallouts(content: string): string {
         const nextLine = lines[i]!;
         if (nextLine.startsWith('>')) {
           bodyLines.push(nextLine.replace(/^>\s?/, ''));
+          i++;
+        } else if (nextLine.trim() === '' && i + 1 < lines.length && lines[i + 1]?.startsWith('>')) {
+          bodyLines.push('');
           i++;
         } else {
           break;
@@ -112,19 +116,17 @@ const components: Components = {
         </code>
       );
     }
-    
-    const language = className?.replace('language-', '') || 'text';
-    const code = typeof children === 'string' ? children : String(children);
-    
     return (
-      <CodeBlock
-        code={code}
-        language={language}
-        showLineNumbers={code.split('\n').length > 5}
-      />
+      <code className={className} {...props}>
+        {children}
+      </code>
     );
   },
-  pre: ({ children }) => <>{children}</>,
+  pre: ({ children }) => (
+    <pre className="mb-4 overflow-x-auto rounded-lg border border-theme-border bg-[#0d1117] p-4 text-sm [&_code]:bg-transparent [&_code]:p-0">
+      {children}
+    </pre>
+  ),
   h1: ({ children, ...props }) => (
     <h1 className="mb-4 text-3xl font-bold tracking-tight text-theme-main" {...props}>
       {children}
@@ -139,6 +141,21 @@ const components: Components = {
     <h3 className="mb-2 mt-6 text-xl font-semibold tracking-tight text-theme-main" {...props}>
       {children}
     </h3>
+  ),
+  h4: ({ children, ...props }) => (
+    <h4 className="mb-2 mt-5 text-lg font-semibold text-theme-main" {...props}>
+      {children}
+    </h4>
+  ),
+  h5: ({ children, ...props }) => (
+    <h5 className="mb-1 mt-4 text-base font-semibold text-theme-main" {...props}>
+      {children}
+    </h5>
+  ),
+  h6: ({ children, ...props }) => (
+    <h6 className="mb-1 mt-3 text-sm font-semibold text-theme-subtle" {...props}>
+      {children}
+    </h6>
   ),
   p: ({ children, ...props }) => (
     <p className="mb-4 leading-relaxed text-theme-subtle" {...props}>
@@ -158,22 +175,38 @@ const components: Components = {
   li: ({ children, ...props }) => <li {...props}>{children}</li>,
   a: ({ children, href, ...props }) => {
     const isSafe = href && !href.startsWith('javascript:') && !href.startsWith('data:');
+    const isExternal = href?.startsWith('http');
     return (
       <a
         href={isSafe ? href : undefined}
         className="text-fluid-600 underline-offset-2 hover:text-fluid-700 hover:underline font-medium"
-        target={href?.startsWith('http') ? '_blank' : undefined}
-        rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+        target={isExternal ? '_blank' : undefined}
+        rel={isExternal ? 'noopener noreferrer' : undefined}
         {...props}
       >
         {children}
+        {isExternal && (
+          <span className="sr-only"> (opens in new tab)</span>
+        )}
       </a>
     );
   },
+  img: ({ src, alt, ...props }) => (
+    <img
+      src={src}
+      alt={alt || ''}
+      loading="lazy"
+      className="my-4 max-w-full rounded-lg border border-theme-border"
+      {...props}
+    />
+  ),
   span: ({ className, children, ...props }) => {
     if (className?.includes('wiki-link-unresolved')) {
       return (
-        <span className="inline-flex items-center gap-1 text-theme-muted italic bg-theme-hover rounded px-1.5 py-0.5 text-sm cursor-not-allowed" title="Page not found">
+        <span
+          className="inline-flex items-center gap-1 text-theme-muted italic bg-theme-hover rounded px-1.5 py-0.5 text-sm cursor-not-allowed"
+          aria-label={`Page not found: ${children}`}
+        >
           {children}
         </span>
       );
@@ -182,7 +215,7 @@ const components: Components = {
   },
   blockquote: ({ children, ...props }) => (
     <blockquote
-      className="mb-4 border-l-4 border-fluid-200 bg-fluid-50 py-2 pl-4 italic text-theme-subtle"
+      className="mb-4 border-l-4 border-fluid-200 dark:border-fluid-700 bg-fluid-50 dark:bg-fluid-950/20 py-2 pl-4 italic text-theme-subtle"
       {...props}
     >
       {children}
@@ -240,7 +273,7 @@ export function Markdown({
       <ReactMarkdown
         components={components}
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeRaw, rehypeSanitize]}
+        rehypePlugins={[rehypeRaw, rehypeHighlight, rehypeSanitize]}
       >
         {withCallouts}
       </ReactMarkdown>

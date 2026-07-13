@@ -8,11 +8,14 @@ import {
   Trash2, Hash, Download, HeartPulse, X, FileText, Sparkles, HelpCircle,
   LayoutGrid, Search, GripVertical,
 } from 'lucide-react';
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect, lazy, Suspense } from 'react';
 import { extractTags } from '@/lib/wiki';
 import { SearchOverlay } from '@/components/search';
-import { GraphButtonWithHealth } from '@/components/graph-button-with-health';
 import { templates } from '@/lib/templates';
+
+const GraphButtonWithHealth = lazy(() =>
+  import('@/components/graph-button-with-health').then((m) => ({ default: m.GraphButtonWithHealth }))
+);
 
 interface Page {
   id: string;
@@ -657,7 +660,9 @@ export function DocSidebar({ project }: { project: Project }) {
 
       {/* Footer nav */}
       <div className="border-t border-theme-border/40 p-2 space-y-px">
-        <GraphButtonWithHealth projectId={project.id} pages={project.pages} />
+        <Suspense fallback={null}>
+          <GraphButtonWithHealth projectId={project.id} pages={project.pages} />
+        </Suspense>
       </div>
 
       {/* Template modal */}

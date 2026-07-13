@@ -154,6 +154,21 @@ export default async function PublicDocPage({ params }: PageProps) {
 
   return (
     <div className="mx-auto max-w-[760px] px-6 py-10 sm:py-14">
+      {/* Breadcrumbs */}
+      <nav aria-label="Breadcrumb" className="mb-6">
+        <ol className="flex items-center gap-1.5 text-xs text-theme-muted">
+          <li>
+            <Link href={`/p/${projectId}`} className="hover:text-theme-main transition-colors">
+              {project.name}
+            </Link>
+          </li>
+          <li aria-hidden="true" className="text-theme-muted/50">/</li>
+          <li aria-current="page" className="font-medium text-theme-subtle truncate max-w-[300px]">
+            {page.title}
+          </li>
+        </ol>
+      </nav>
+
       {/* Centered hero header */}
       <header className="mb-10 text-center">
         {/* Page title — monospace, large, bold */}
@@ -163,12 +178,7 @@ export default async function PublicDocPage({ params }: PageProps) {
 
         {/* Subtitle with score */}
         <p className="mt-3 text-sm text-theme-subtle">
-          Product overview{' '}
-          <span className="text-theme-muted">·</span>{' '}
-          Score:{' '}
-          <span className="font-semibold text-amber-400">
-            {page.viewCount > 0 ? Math.min(99, Math.floor(page.viewCount / 10) + 1) : '—'}
-          </span>
+          {page.description || 'Documentation page'}
         </p>
 
         {/* Tags row */}

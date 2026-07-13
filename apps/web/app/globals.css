@@ -472,6 +472,17 @@ body {
   background: rgba(255, 255, 255, 0.18);
 }
 
+/* Skeleton loading animation */
+@keyframes skeleton {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+.skeleton {
+  animation: skeleton 1.5s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

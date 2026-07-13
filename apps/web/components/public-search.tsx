@@ -70,9 +70,9 @@ export function PublicSearchOverlay({ projectId }: PublicSearchOverlayProps) {
   const navigate = useCallback(
     (slug: string) => {
       setOpen(false);
-      router.push(`/p/${slug}`);
+      router.push(`/p/${projectId}/${slug}`);
     },
-    [router]
+    [router, projectId]
   );
 
   function handleKeyDown(e: React.KeyboardEvent) {
