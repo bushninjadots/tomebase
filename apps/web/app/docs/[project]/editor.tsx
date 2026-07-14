@@ -4,10 +4,11 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Save, Eye, Edit3, FileText, ChevronRight, Cloud, CloudOff,
-  Bold, Italic, Heading1, Heading2, Link as LinkIcon, Code, List,
-  ListOrdered, Quote, MoreHorizontal, Copy, Trash2, Layers,
-  BookOpen, Clock, Type, AlertTriangle, Minus, Table, CheckSquare,
-  MessageSquare, X, Maximize2, Minimize2, Image as ImageIcon, Code2,
+  MoreHorizontal, Copy, Trash2, Layers, BookOpen, Clock, Type,
+  AlertTriangle, MessageSquare, X, Maximize2, Minimize2, Search,
+  ListOrdered, Users, ChevronDown, ChevronRight as ChevronRightIcon,
+  Folder, FolderOpen, File, Plus, PanelRightOpen, PanelRightClose,
+  Bold, Code2, Link as LinkIcon, Image as ImageIcon,
 } from 'lucide-react';
 import { Markdown } from '@/components/markdown';
 import { ShortcutsModal } from '@/components/shortcuts';
@@ -20,6 +21,9 @@ import { BookmarkButton } from '@/components/bookmark-button';
 import { SchedulePublish } from '@/components/schedule-publish';
 import { CodeMirrorEditor, type CodeMirrorEditorRef } from '@/components/editor/codemirror-editor';
 import { SlashCommandMenu, type SlashCommand } from '@/components/editor/slash-commands';
+import { EditorToolbar } from '@/components/editor/toolbar';
+import { DocumentOutline } from '@/components/editor/document-outline';
+import { TeamPresence } from '@/components/editor/team-presence';
 import Link from 'next/link';
 
 
@@ -65,6 +69,11 @@ export function DocEditor({ project }: { project: Project }) {
   const [isDragging, setIsDragging] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const [zenMode, setZenMode] = useState(false);
+  const [showOutline, setShowOutline] = useState(true);
+  const [showTeamPanel, setShowTeamPanel] = useState(false);
+  const [rightPanel, setRightPanel] = useState<'none' | 'outline' | 'team' | 'comments'>('none');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
   const actionsRef = useRef<HTMLDivElement>(null);
   const splitDividerRef = useRef<HTMLDivElement>(null);
 
@@ -443,68 +452,6 @@ export function DocEditor({ project }: { project: Project }) {
     setSlashQuery('');
   }, []);
 
-  // Formatting actions for toolbar
-  const formattingActions = useMemo(() => [
-    {
-      icon: Heading1, label: 'Heading 1', shortcut: '', action: () => editorRef.current?.insertText('# '),
-    },
-    {
-      icon: Heading2, label: 'Heading 2', shortcut: '', action: () => editorRef.current?.insertText('## '),
-    },
-    {
-      icon: Bold, label: 'Bold', shortcut: '⌘B', action: () => {
-        const view = editorRef.current?.view;
-        if (!view) return;
-        const { from, to } = view.state.selection.main;
-        const selected = view.state.sliceDoc(from, to);
-        const replacement = selected ? `**${selected}**` : '**bold text**';
-        view.dispatch({ changes: { from, to, insert: replacement } });
-        view.focus();
-      },
-    },
-    {
-      icon: Italic, label: 'Italic', shortcut: '⌘I', action: () => {
-        const view = editorRef.current?.view;
-        if (!view) return;
-        const { from, to } = view.state.selection.main;
-        const selected = view.state.sliceDoc(from, to);
-        const replacement = selected ? `*${selected}*` : '*italic text*';
-        view.dispatch({ changes: { from, to, insert: replacement } });
-        view.focus();
-      },
-    },
-    {
-      icon: Code, label: 'Code', shortcut: '`', action: () => {
-        const view = editorRef.current?.view;
-        if (!view) return;
-        const { from, to } = view.state.selection.main;
-        const selected = view.state.sliceDoc(from, to);
-        const replacement = selected ? `\`${selected}\`` : '`code`';
-        view.dispatch({ changes: { from, to, insert: replacement } });
-        view.focus();
-      },
-    },
-    {
-      icon: LinkIcon, label: 'Link', shortcut: '⌘K', action: () => {
-        const view = editorRef.current?.view;
-        if (!view) return;
-        const { from, to } = view.state.selection.main;
-        const selected = view.state.sliceDoc(from, to);
-        const replacement = selected ? `[${selected}](url)` : '[link text](url)';
-        view.dispatch({ changes: { from, to, insert: replacement } });
-        view.focus();
-      },
-    },
-    { icon: List, label: 'Bullets', shortcut: '', action: () => editorRef.current?.insertText('- ') },
-    { icon: ListOrdered, label: 'Numbers', shortcut: '', action: () => editorRef.current?.insertText('1. ') },
-    { icon: Quote, label: 'Quote', shortcut: '', action: () => editorRef.current?.insertText('> ') },
-    { icon: CheckSquare, label: 'Task', shortcut: '', action: () => editorRef.current?.insertText('- [ ] ') },
-    { icon: Code2, label: 'Code Block', shortcut: '', action: () => editorRef.current?.insertText('```javascript\n\n```') },
-    { icon: Minus, label: 'Divider', shortcut: '', action: () => editorRef.current?.insertText('\n---\n') },
-    { icon: Table, label: 'Table', shortcut: '', action: () => editorRef.current?.insertText('\n| Header | Header |\n|--------|--------|\n| Cell   | Cell   |\n') },
-    { icon: ImageIcon, label: 'Image', shortcut: '', action: () => editorRef.current?.insertText('![alt text](url)') },
-  ], []);
-
   // Page selection
   function selectPage(page: Page) {
     setSelectedPage(page);
@@ -770,17 +717,42 @@ export function DocEditor({ project }: { project: Project }) {
                   )}
                 </div>
 
-                <button
-                  onClick={() => setShowComments(!showComments)}
-                  className={`rounded-lg p-1.5 shrink-0 transition-colors ${
-                    showComments
-                      ? 'bg-theme-accent/10 text-theme-accent'
-                      : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
-                  }`}
-                  title="Toggle discussion"
-                >
-                  <MessageSquare className="h-4 w-4" />
-                </button>
+                {/* Right panel toggles */}
+                <div className="flex items-center gap-0.5 px-1 border-l border-theme-border ml-1">
+                  <button
+                    onClick={() => setRightPanel(rightPanel === 'outline' ? 'none' : 'outline')}
+                    className={`rounded-lg p-1.5 shrink-0 transition-colors ${
+                      rightPanel === 'outline'
+                        ? 'bg-theme-accent/10 text-theme-accent'
+                        : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
+                    }`}
+                    title="Document outline"
+                  >
+                    <ListOrdered className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => setRightPanel(rightPanel === 'team' ? 'none' : 'team')}
+                    className={`rounded-lg p-1.5 shrink-0 transition-colors ${
+                      rightPanel === 'team'
+                        ? 'bg-theme-accent/10 text-theme-accent'
+                        : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
+                    }`}
+                    title="Team members"
+                  >
+                    <Users className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => setRightPanel(rightPanel === 'comments' ? 'none' : 'comments')}
+                    className={`rounded-lg p-1.5 shrink-0 transition-colors ${
+                      rightPanel === 'comments'
+                        ? 'bg-theme-accent/10 text-theme-accent'
+                        : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
+                    }`}
+                    title="Discussion"
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                  </button>
+                </div>
 
                 {selectedPage && <BookmarkButton pageId={selectedPage.id} />}
 
@@ -851,21 +823,50 @@ export function DocEditor({ project }: { project: Project }) {
 
         {/* Formatting toolbar */}
         {viewMode !== 'preview' && !zenMode && (
-          <div className="flex items-center gap-0.5 overflow-x-auto border-b border-theme-border px-3 py-1.5 sm:px-4 shrink-0">
-            {formattingActions.map((btn) => (
-              <button
-                key={btn.label}
-                onClick={btn.action}
-                className="group relative shrink-0 rounded-md p-1.5 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
-                title={btn.shortcut ? `${btn.label} (${btn.shortcut})` : btn.label}
-              >
-                <btn.icon className="h-3.5 w-3.5" />
-                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-theme-card border border-theme-border px-2 py-1 text-xs text-theme-main opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                  {btn.label}
-                </span>
-              </button>
-            ))}
-          </div>
+          <EditorToolbar
+            onAction={(action) => {
+              const view = editorRef.current?.view;
+              if (!view) return;
+
+              const { from, to } = view.state.selection.main;
+              const selected = view.state.sliceDoc(from, to);
+
+              const wrapSelection = (prefix: string, suffix: string) => {
+                const replacement = selected ? `${prefix}${selected}${suffix}` : `${prefix}text${suffix}`;
+                view.dispatch({ changes: { from, to, insert: replacement } });
+                view.focus();
+              };
+
+              const insertAtCursor = (text: string) => {
+                view.dispatch({ changes: { from: view.state.selection.main.head, insert: text } });
+                view.focus();
+              };
+
+              switch (action) {
+                case 'bold': wrapSelection('**', '**'); break;
+                case 'italic': wrapSelection('*', '*'); break;
+                case 'strikethrough': wrapSelection('~~', '~~'); break;
+                case 'code': wrapSelection('`', '`'); break;
+                case 'link': wrapSelection('[', '](url)'); break;
+                case 'h1': insertAtCursor('# '); break;
+                case 'h2': insertAtCursor('## '); break;
+                case 'h3': insertAtCursor('### '); break;
+                case 'bullet-list': insertAtCursor('- '); break;
+                case 'numbered-list': insertAtCursor('1. '); break;
+                case 'task-list': insertAtCursor('- [ ] '); break;
+                case 'blockquote': insertAtCursor('> '); break;
+                case 'code-block': insertAtCursor('```javascript\n\n```'); break;
+                case 'divider': insertAtCursor('\n---\n'); break;
+                case 'mermaid': insertAtCursor('```mermaid\ngraph TD\n    A[Start] --> B[End]\n```'); break;
+                case 'table': insertAtCursor('\n| Header | Header |\n|--------|--------|\n| Cell   | Cell   |\n'); break;
+                case 'callout': insertAtCursor('> [!NOTE]\n> '); break;
+                case 'image': insertAtCursor('![alt text](url)'); break;
+                case 'columns': insertAtCursor('\n| Left | Right |\n|------|-------|\n|      |       |\n'); break;
+                case 'undo': editorRef.current?.undo(); break;
+                case 'redo': editorRef.current?.redo(); break;
+              }
+            }}
+          />
         )}
 
         {/* Editor content */}
@@ -1054,23 +1055,47 @@ export function DocEditor({ project }: { project: Project }) {
         )}
       </div>
 
-      {/* Comments side panel */}
-      {showComments && selectedPage && (
+      {/* Right panel */}
+      {rightPanel !== 'none' && selectedPage && (
         <div className="w-80 shrink-0 border-l border-theme-border bg-theme-page flex flex-col">
           <div className="flex items-center justify-between border-b border-theme-border px-4 py-3">
             <div className="flex items-center gap-2">
-              <MessageSquare className="h-4 w-4 text-theme-accent" />
-              <span className="text-sm font-medium text-theme-main">Discussion</span>
+              {rightPanel === 'outline' && (
+                <>
+                  <ListOrdered className="h-4 w-4 text-theme-accent" />
+                  <span className="text-sm font-medium text-theme-main">Document Outline</span>
+                </>
+              )}
+              {rightPanel === 'team' && (
+                <>
+                  <Users className="h-4 w-4 text-theme-accent" />
+                  <span className="text-sm font-medium text-theme-main">Team Members</span>
+                </>
+              )}
+              {rightPanel === 'comments' && (
+                <>
+                  <MessageSquare className="h-4 w-4 text-theme-accent" />
+                  <span className="text-sm font-medium text-theme-main">Discussion</span>
+                </>
+              )}
             </div>
             <button
-              onClick={() => setShowComments(false)}
+              onClick={() => setRightPanel('none')}
               className="rounded p-1 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto">
-            <Comments pageId={selectedPage.id} teamMembers={teamMembers} />
+          <div className="flex-1 overflow-y-auto p-4">
+            {rightPanel === 'outline' && (
+              <DocumentOutline content={content} />
+            )}
+            {rightPanel === 'team' && (
+              <TeamPresence members={teamMembers} />
+            )}
+            {rightPanel === 'comments' && (
+              <Comments pageId={selectedPage.id} teamMembers={teamMembers} />
+            )}
           </div>
         </div>
       )}
