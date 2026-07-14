@@ -7,9 +7,22 @@ import rehypeSanitize from 'rehype-sanitize';
 import rehypeHighlight from 'rehype-highlight';
 import type { Components } from 'react-markdown';
 import { preprocessWikiLinks } from '@/lib/wiki';
-import { useState, useCallback, type ReactNode } from 'react';
+import { useState, useCallback, lazy, Suspense, type ReactNode } from 'react';
 import { Copy, Check } from 'lucide-react';
 import 'highlight.js/styles/github-dark.css';
+
+const MermaidDiagram = lazy(() =>
+  import('./mermaid-diagram').then((m) => ({ default: m.MermaidDiagram }))
+);
+
+function MermaidFallback() {
+  return (
+    <div className="my-4 flex items-center gap-2 rounded-xl border border-theme-border bg-theme-card p-4 text-sm text-theme-muted">
+      <div className="h-4 w-4 animate-spin rounded-full border-2 border-theme-accent border-t-transparent" />
+      Loading diagram...
+    </div>
+  );
+}
 
 interface MarkdownProps {
   content: string;
@@ -178,6 +191,15 @@ const components: Components = {
         >
           {children}
         </code>
+      );
+    }
+    const isMermaid = className?.includes('language-mermaid');
+    if (isMermaid) {
+      const code = typeof children === 'string' ? children.trim() : '';
+      return (
+        <Suspense fallback={<MermaidFallback />}>
+          <MermaidDiagram code={code} />
+        </Suspense>
       );
     }
     return (
