@@ -1,8 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Users, Circle, Clock } from 'lucide-react';
-
 interface TeamMember {
   id: string;
   name: string | null;
@@ -18,102 +15,6 @@ interface TeamPresenceProps {
   currentUserId?: string;
 }
 
-export function TeamPresence({ members, currentUserId }: TeamPresenceProps) {
-  const onlineMembers = members.filter((m) => m.isOnline && m.id !== currentUserId);
-  const offlineMembers = members.filter((m) => !m.isOnline && m.id !== currentUserId);
-
-  return (
-    <div className="rounded-xl border border-theme-border bg-theme-card p-4">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-theme-muted">
-          <Users className="h-3 w-3" />
-          Team Members
-        </div>
-        <span className="text-[10px] text-theme-muted bg-theme-hover px-2 py-0.5 rounded-full">
-          {onlineMembers.length} online
-        </span>
-      </div>
-
-      <div className="space-y-2">
-        {onlineMembers.map((member) => (
-          <div key={member.id} className="flex items-center gap-2.5 py-1">
-            <div className="relative">
-              {member.image ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={member.image}
-                  alt={member.name || 'User'}
-                  className="h-6 w-6 rounded-full object-cover"
-                />
-              ) : (
-                <div className="h-6 w-6 rounded-full bg-theme-accent/20 flex items-center justify-center text-[10px] font-medium text-theme-accent">
-                  {(member.name || member.email || '?').charAt(0).toUpperCase()}
-                </div>
-              )}
-              <Circle className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 fill-green-500 text-green-500" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="text-sm font-medium text-theme-main truncate">
-                {member.name || 'Unknown'}
-                {member.id === currentUserId && (
-                  <span className="text-[10px] text-theme-muted ml-1">(you)</span>
-                )}
-              </div>
-              {member.currentPage && (
-                <div className="text-[10px] text-theme-muted truncate">
-                  Viewing: {member.currentPage}
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-
-        {offlineMembers.length > 0 && (
-          <>
-            <div className="pt-2 mt-2 border-t border-theme-border">
-              <div className="text-[10px] text-theme-muted mb-2">Offline</div>
-            </div>
-            {offlineMembers.slice(0, 5).map((member) => (
-              <div key={member.id} className="flex items-center gap-2.5 py-1 opacity-60">
-                <div className="relative">
-                  {member.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={member.image}
-                      alt={member.name || 'User'}
-                      className="h-6 w-6 rounded-full object-cover grayscale"
-                    />
-                  ) : (
-                    <div className="h-6 w-6 rounded-full bg-theme-hover flex items-center justify-center text-[10px] font-medium text-theme-muted">
-                      {(member.name || member.email || '?').charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-sm text-theme-muted truncate">
-                    {member.name || 'Unknown'}
-                  </div>
-                  {member.lastSeen && (
-                    <div className="flex items-center gap-1 text-[10px] text-theme-muted/60">
-                      <Clock className="h-2.5 w-2.5" />
-                      {formatTimeAgo(new Date(member.lastSeen))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-            {offlineMembers.length > 5 && (
-              <div className="text-[10px] text-theme-muted text-center">
-                +{offlineMembers.length - 5} more
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
 function formatTimeAgo(date: Date): string {
   const now = new Date();
   const diff = now.getTime() - date.getTime();
@@ -126,4 +27,108 @@ function formatTimeAgo(date: Date): string {
   if (hours < 24) return `${hours}h ago`;
   if (days < 7) return `${days}d ago`;
   return date.toLocaleDateString();
+}
+
+function Avatar({ name, email, image, online, size = 'md' }: {
+  name: string | null;
+  email: string | null;
+  image: string | null;
+  online?: boolean;
+  size?: 'sm' | 'md';
+}) {
+  const sizeClasses = size === 'sm' ? 'w-6 h-6 text-[9px]' : 'w-8 h-8 text-[10px]';
+  const dotClasses = size === 'sm' ? 'w-2 h-2 -bottom-0 -right-0' : 'w-2.5 h-2.5 -bottom-0.5 -right-0.5';
+
+  return (
+    <div className="relative shrink-0">
+      {image ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={image} alt={name || 'User'} className={`${sizeClasses} rounded-full object-cover`} />
+      ) : (
+        <div className={`${sizeClasses} rounded-full bg-theme-accent/15 flex items-center justify-center font-medium text-theme-accent`}>
+          {(name || email || '?').charAt(0).toUpperCase()}
+        </div>
+      )}
+      {online !== undefined && (
+        <div className={`absolute ${dotClasses} rounded-full border-2 border-theme-card ${online ? 'bg-green-500' : 'bg-theme-muted/40'}`} />
+      )}
+    </div>
+  );
+}
+
+export function TeamPresence({ members, currentUserId }: TeamPresenceProps) {
+  const online = members.filter((m) => m.isOnline);
+  const offline = members.filter((m) => !m.isOnline);
+
+  return (
+    <div className="space-y-4">
+      {online.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            <span className="text-[11px] font-medium text-theme-muted uppercase tracking-wider">Online</span>
+            <span className="text-[10px] text-theme-muted/60">({online.length})</span>
+          </div>
+          <div className="space-y-1">
+            {online.map((member) => (
+              <div
+                key={member.id}
+                className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-theme-hover transition-colors duration-150"
+              >
+                <Avatar name={member.name} email={member.email} image={member.image} online />
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm font-medium text-theme-main truncate">
+                    {member.name || 'Unknown'}
+                    {member.id === currentUserId && (
+                      <span className="text-[10px] text-theme-muted ml-1 font-normal">(you)</span>
+                    )}
+                  </div>
+                  {member.currentPage && (
+                    <div className="text-[11px] text-theme-muted truncate">
+                      {member.currentPage}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {offline.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-theme-muted/40" />
+            <span className="text-[11px] font-medium text-theme-muted uppercase tracking-wider">Offline</span>
+            <span className="text-[10px] text-theme-muted/60">({offline.length})</span>
+          </div>
+          <div className="space-y-1">
+            {offline.slice(0, 8).map((member) => (
+              <div
+                key={member.id}
+                className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-theme-hover transition-colors duration-150 opacity-60"
+              >
+                <Avatar name={member.name} email={member.email} image={member.image} />
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm text-theme-muted truncate">
+                    {member.name || 'Unknown'}
+                  </div>
+                  {member.lastSeen && (
+                    <div className="text-[10px] text-theme-muted/60">
+                      {formatTimeAgo(new Date(member.lastSeen))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+            {offline.length > 8 && (
+              <div className="text-[10px] text-theme-muted/60 px-2 pt-1">
+                +{offline.length - 8} more
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

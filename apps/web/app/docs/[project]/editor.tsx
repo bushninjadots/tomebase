@@ -4,11 +4,9 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Save, Eye, Edit3, FileText, ChevronRight, Cloud, CloudOff,
-  MoreHorizontal, Copy, Trash2, Layers, BookOpen, Clock, Type,
-  AlertTriangle, MessageSquare, X, Maximize2, Minimize2, Search,
-  ListOrdered, Users, ChevronDown, ChevronRight as ChevronRightIcon,
-  Folder, FolderOpen, File, Plus, PanelRightOpen, PanelRightClose,
-  Bold, Code2, Link as LinkIcon, Image as ImageIcon,
+  Copy, Trash2, Layers, BookOpen, Clock, Type, AlertTriangle,
+  X, Maximize2, Minimize2, Users, ListOrdered, MessageSquare,
+  MoreHorizontal, Search, SplitSquareHorizontal, Image as ImageIcon,
 } from 'lucide-react';
 import { Markdown } from '@/components/markdown';
 import { ShortcutsModal } from '@/components/shortcuts';
@@ -25,7 +23,6 @@ import { EditorToolbar } from '@/components/editor/toolbar';
 import { DocumentOutline } from '@/components/editor/document-outline';
 import { TeamPresence } from '@/components/editor/team-presence';
 import Link from 'next/link';
-
 
 interface Page {
   id: string;
@@ -44,46 +41,49 @@ interface Project {
 }
 
 type ViewMode = 'edit' | 'preview' | 'split';
+type SidebarTab = 'outline' | 'team' | 'comments';
 
 export function DocEditor({ project }: { project: Project }) {
   const router = useRouter();
   const editorRef = useRef<CodeMirrorEditorRef>(null);
-  const titleRef = useRef<HTMLInputElement>(null);
   const splitRef = useRef<HTMLDivElement>(null);
+  const splitDividerRef = useRef<HTMLDivElement>(null);
+  const actionsRef = useRef<HTMLDivElement>(null);
 
+  // Core state
   const [selectedPage, setSelectedPage] = useState<Page | null>(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('edit');
   const [pageList, setPageList] = useState<Page[]>(project.pages);
+
+  // UI state
+  const [zenMode, setZenMode] = useState(false);
+  const [sidebarTab, setSidebarTab] = useState<SidebarTab | null>(null);
   const [showActions, setShowActions] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [showCopiedTip, setShowCopiedTip] = useState(false);
-  const [showComments, setShowComments] = useState(false);
-  const [teamMembers, setTeamMembers] = useState<{ id: string; name: string | null; email: string | null; image: string | null }[]>([]);
+
+  // Overlays
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [showSlashCommands, setShowSlashCommands] = useState(false);
   const [slashQuery, setSlashQuery] = useState('');
   const [slashPosition, setSlashPosition] = useState({ top: 0, left: 0 });
-  const [splitPosition, setSplitPosition] = useState(50);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isDragOver, setIsDragOver] = useState(false);
-  const [zenMode, setZenMode] = useState(false);
-  const [showOutline, setShowOutline] = useState(true);
-  const [showTeamPanel, setShowTeamPanel] = useState(false);
-  const [rightPanel, setRightPanel] = useState<'none' | 'outline' | 'team' | 'comments'>('none');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showSearch, setShowSearch] = useState(false);
-  const actionsRef = useRef<HTMLDivElement>(null);
-  const splitDividerRef = useRef<HTMLDivElement>(null);
 
-  // Autosave state
-  const [dirty, setDirty] = useState(false);
+  // Autosave
   const [autoSaveStatus, setAutoSaveStatus] = useState<'saved' | 'unsaved' | 'saving'>('saved');
-  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const savedVersionRef = useRef({ title: '', content: '' });
   const [saving, setSaving] = useState(false);
   const [draftAvailable, setDraftAvailable] = useState(false);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const savedVersionRef = useRef({ title: '', content: '' });
+
+  // Team
+  const [teamMembers, setTeamMembers] = useState<{ id: string; name: string | null; email: string | null; image: string | null }[]>([]);
+
+  // Split view
+  const [splitPosition, setSplitPosition] = useState(50);
+  const splitPositionRef = useRef(splitPosition);
+  splitPositionRef.current = splitPosition;
 
   const DRAFT_KEY = useMemo(
     () => (selectedPage ? `fluid_draft_${selectedPage.id}` : null),
@@ -97,21 +97,21 @@ export function DocEditor({ project }: { project: Project }) {
       const draft = localStorage.getItem(DRAFT_KEY);
       if (draft) {
         const parsed = JSON.parse(draft);
-        if (parsed && parsed.content !== selectedPage?.content) {
-          setDraftAvailable(true);
-        }
+        if (parsed && parsed.content !== selectedPage?.content) setDraftAvailable(true);
       }
     } catch { /* ignore */ }
   }, [DRAFT_KEY, selectedPage]);
 
   useEffect(() => {
     if (!DRAFT_KEY || !selectedPage) return;
-    if (dirty) {
-      try {
+    try {
+      const saved = savedVersionRef.current;
+      const isDirty = title !== saved.title || content !== saved.content;
+      if (isDirty) {
         localStorage.setItem(DRAFT_KEY, JSON.stringify({ title, content, updatedAt: Date.now() }));
-      } catch { /* ignore */ }
-    }
-  }, [title, content, dirty, DRAFT_KEY, selectedPage]);
+      }
+    } catch { /* ignore */ }
+  }, [title, content, DRAFT_KEY, selectedPage]);
 
   const clearDraft = useCallback(() => {
     if (DRAFT_KEY) {
@@ -133,20 +133,16 @@ export function DocEditor({ project }: { project: Project }) {
     } catch { /* ignore */ }
   }
 
-  // Team members for @mentions
+  // Team members
   useEffect(() => {
     fetch('/api/team/members')
       .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) setTeamMembers(data);
-      })
+      .then((data) => { if (Array.isArray(data)) setTeamMembers(data); })
       .catch(() => {});
   }, []);
 
   // Page list sync
-  useEffect(() => {
-    setPageList(project.pages);
-  }, [project.pages]);
+  useEffect(() => { setPageList(project.pages); }, [project.pages]);
 
   // Breadcrumbs
   const breadcrumbs = useMemo(() => {
@@ -164,18 +160,13 @@ export function DocEditor({ project }: { project: Project }) {
     return crumbs;
   }, [selectedPage, pageList]);
 
-  const backlinks = useMemo(
-    () => (selectedPage ? findBacklinks(selectedPage.title, pageList) : []),
-    [selectedPage, pageList]
+  const headings = useMemo(
+    () => (selectedPage ? extractHeadings(selectedPage.content) : []),
+    [selectedPage]
   );
 
   const tags = useMemo(
     () => (selectedPage ? extractTags(selectedPage.content) : []),
-    [selectedPage]
-  );
-
-  const headings = useMemo(
-    () => (selectedPage ? extractHeadings(selectedPage.content) : []),
     [selectedPage]
   );
 
@@ -192,10 +183,7 @@ export function DocEditor({ project }: { project: Project }) {
     if (res.ok) {
       savedVersionRef.current = { title: t, content: c };
       setAutoSaveStatus('saved');
-      setDirty(false);
-      setPageList((prev) =>
-        prev.map((p) => (p.id === selectedPage.id ? { ...p, title: t, content: c } : p)),
-      );
+      setPageList((prev) => prev.map((p) => (p.id === selectedPage.id ? { ...p, title: t, content: c } : p)));
     } else {
       setAutoSaveStatus('unsaved');
     }
@@ -205,70 +193,53 @@ export function DocEditor({ project }: { project: Project }) {
     if (!selectedPage) return;
     savedVersionRef.current = { title: selectedPage.title, content: selectedPage.content };
     setAutoSaveStatus('saved');
-    setDirty(false);
   }, [selectedPage?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!selectedPage) return;
     const saved = savedVersionRef.current;
     const isDirty = title !== saved.title || content !== saved.content;
-    setDirty(isDirty);
 
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
 
     if (isDirty) {
       setAutoSaveStatus('unsaved');
-      saveTimerRef.current = setTimeout(() => {
-        doSave(title, content);
-      }, 2000);
+      saveTimerRef.current = setTimeout(() => doSave(title, content), 2000);
     }
 
-    return () => {
-      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    };
+    return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
   }, [title, content, selectedPage, doSave]);
 
-  async function handleSave() {
+  const handleSaveRef = useRef(async () => {});
+  handleSaveRef.current = async () => {
     if (!selectedPage) return;
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     setSaving(true);
-
     const res = await fetch(`/api/pages/${selectedPage.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title, content }),
     });
-
     if (res.ok) {
       savedVersionRef.current = { title, content };
       setAutoSaveStatus('saved');
-      setDirty(false);
       clearDraft();
-      setPageList((prev) =>
-        prev.map((p) => (p.id === selectedPage.id ? { ...p, title, content } : p)),
-      );
+      setPageList((prev) => prev.map((p) => (p.id === selectedPage.id ? { ...p, title, content } : p)));
       fetch(`/api/pages/${selectedPage.id}/snapshots`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, content }),
       }).catch(() => {});
     }
-
     setSaving(false);
     router.refresh();
-  }
+  };
 
-  // Global keyboard shortcuts — use refs to avoid re-attaching
-  const handleSaveRef = useRef(handleSave);
-  handleSaveRef.current = handleSave;
-
+  // Global keyboard shortcuts
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       const isMeta = e.metaKey || e.ctrlKey;
-      if (isMeta && e.key === 's') {
-        e.preventDefault();
-        handleSaveRef.current();
-      }
+      if (isMeta && e.key === 's') { e.preventDefault(); handleSaveRef.current(); }
       if (isMeta && e.shiftKey && e.key === 'P') {
         e.preventDefault();
         setViewMode((v) => v === 'edit' ? 'preview' : v === 'preview' ? 'split' : 'edit');
@@ -282,25 +253,19 @@ export function DocEditor({ project }: { project: Project }) {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Click outside actions menu
+  // Click outside
   useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (actionsRef.current && !actionsRef.current.contains(e.target as Node)) {
-        setShowActions(false);
-      }
+    function handleClick(e: MouseEvent) {
+      if (actionsRef.current && !actionsRef.current.contains(e.target as Node)) setShowActions(false);
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  // Split view divider drag — use ref to avoid re-attaching on each position change
-  const splitPositionRef = useRef(splitPosition);
-  splitPositionRef.current = splitPosition;
-
+  // Split view drag
   useEffect(() => {
     const divider = splitDividerRef.current;
     if (!divider || viewMode !== 'split') return;
-
     let startX = 0;
     let startPct = 0;
 
@@ -318,8 +283,7 @@ export function DocEditor({ project }: { project: Project }) {
       const container = splitRef.current;
       if (!container) return;
       const rect = container.getBoundingClientRect();
-      const dx = e.clientX - startX;
-      const pct = startPct + (dx / rect.width) * 100;
+      const pct = startPct + ((e.clientX - startX) / rect.width) * 100;
       setSplitPosition(Math.min(Math.max(pct, 25), 75));
     }
 
@@ -334,7 +298,7 @@ export function DocEditor({ project }: { project: Project }) {
     return () => divider.removeEventListener('mousedown', onMouseDown);
   }, [viewMode]);
 
-  // Image upload handler
+  // Image upload
   const uploadImage = useCallback(async (file: File): Promise<string | null> => {
     const formData = new FormData();
     formData.append('file', file);
@@ -348,7 +312,7 @@ export function DocEditor({ project }: { project: Project }) {
     return null;
   }, []);
 
-  // Image paste handler
+  // Image paste
   useEffect(() => {
     function handlePaste(e: ClipboardEvent) {
       if (viewMode === 'preview') return;
@@ -359,13 +323,10 @@ export function DocEditor({ project }: { project: Project }) {
           e.preventDefault();
           const file = item.getAsFile();
           if (file) {
-            setIsDragging(true);
+            setIsUploading(true);
             uploadImage(file).then((url) => {
-              if (url && editorRef.current) {
-                const md = `![image](${url})`;
-                editorRef.current.insertText(md);
-              }
-              setIsDragging(false);
+              if (url && editorRef.current) editorRef.current.insertText(`![image](${url})`);
+              setIsUploading(false);
             });
           }
           break;
@@ -377,35 +338,16 @@ export function DocEditor({ project }: { project: Project }) {
   }, [viewMode, uploadImage]);
 
   // Image drag-and-drop
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragOver(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragOver(false);
-  }, []);
-
   const handleDrop = useCallback(async (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragOver(false);
-
-    const files = e.dataTransfer.files;
-    if (!files.length) return;
-
-    for (const file of files) {
+    for (const file of e.dataTransfer.files) {
       if (file.type.startsWith('image/')) {
-        setIsDragging(true);
+        setIsUploading(true);
         const url = await uploadImage(file);
-        if (url && editorRef.current) {
-          const md = `![${file.name}](${url})`;
-          editorRef.current.insertText(md);
-        }
-        setIsDragging(false);
+        if (url && editorRef.current) editorRef.current.insertText(`![${file.name}](${url})`);
+        setIsUploading(false);
       }
     }
   }, [uploadImage]);
@@ -414,13 +356,10 @@ export function DocEditor({ project }: { project: Project }) {
   const handleSlashCommand = useCallback((query: string) => {
     setSlashQuery(query);
     setShowSlashCommands(true);
-    // Calculate menu position from CodeMirror cursor
     const view = editorRef.current?.view;
     if (view) {
       const coords = view.coordsAtPos(view.state.selection.main.head);
-      if (coords) {
-        setSlashPosition({ top: coords.bottom + 4, left: coords.left });
-      }
+      if (coords) setSlashPosition({ top: coords.bottom + 4, left: coords.left });
     }
   }, []);
 
@@ -430,13 +369,11 @@ export function DocEditor({ project }: { project: Project }) {
       if (view) {
         const pos = view.state.selection.main.head;
         const line = view.state.doc.lineAt(pos);
-        const lineText = line.text;
-        const slashIndex = lineText.lastIndexOf('/');
+        const slashIndex = line.text.lastIndexOf('/');
         if (slashIndex !== -1) {
           const from = line.from + slashIndex;
-          const to = pos;
           view.dispatch({
-            changes: { from, to, insert: command.insert },
+            changes: { from, to: pos, insert: command.insert },
             selection: { anchor: from + command.insert.length },
           });
           view.focus();
@@ -447,12 +384,7 @@ export function DocEditor({ project }: { project: Project }) {
     setSlashQuery('');
   }, []);
 
-  const handleSlashCommandClose = useCallback(() => {
-    setShowSlashCommands(false);
-    setSlashQuery('');
-  }, []);
-
-  // Page selection
+  // Page operations
   function selectPage(page: Page) {
     setSelectedPage(page);
     setTitle(page.title);
@@ -460,7 +392,6 @@ export function DocEditor({ project }: { project: Project }) {
     setViewMode('edit');
   }
 
-  // Page operations
   async function handleDuplicatePage() {
     if (!selectedPage) return;
     const res = await fetch('/api/pages', {
@@ -483,71 +414,110 @@ export function DocEditor({ project }: { project: Project }) {
 
   async function handleDeletePage() {
     if (!selectedPage) return;
-    setDeleting(true);
     const res = await fetch(`/api/pages/${selectedPage.id}`, { method: 'DELETE' });
     if (res.ok) {
       setPageList((prev) => prev.filter((p) => p.id !== selectedPage.id));
       setSelectedPage(null);
       setShowDeleteConfirm(false);
-      setShowActions(false);
       router.refresh();
     }
-    setDeleting(false);
   }
 
   async function handleCopyLink() {
     if (!selectedPage) return;
     const url = `${window.location.origin}/docs/${project.id}/${selectedPage.slug}`;
     await navigator.clipboard.writeText(url);
-    setShowCopiedTip(true);
-    setTimeout(() => setShowCopiedTip(false), 2000);
+    setShowActions(false);
   }
 
   // Stats
-  const wordCount = useMemo(
-    () => (content.trim() ? content.trim().split(/\s+/).length : 0),
-    [content],
-  );
+  const wordCount = useMemo(() => content.trim() ? content.trim().split(/\s+/).length : 0, [content]);
   const charCount = content.length;
   const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 
-  // Empty states
+  // Toolbar action handler
+  const handleToolbarAction = useCallback((action: string) => {
+    const view = editorRef.current?.view;
+    if (!view) return;
+    const { from, to } = view.state.selection.main;
+    const selected = view.state.sliceDoc(from, to);
+
+    const wrap = (prefix: string, suffix: string) => {
+      const replacement = selected ? `${prefix}${selected}${suffix}` : `${prefix}text${suffix}`;
+      view.dispatch({ changes: { from, to, insert: replacement } });
+      view.focus();
+    };
+
+    const insert = (text: string) => {
+      view.dispatch({ changes: { from: view.state.selection.main.head, insert: text } });
+      view.focus();
+    };
+
+    switch (action) {
+      case 'bold': wrap('**', '**'); break;
+      case 'italic': wrap('*', '*'); break;
+      case 'strikethrough': wrap('~~', '~~'); break;
+      case 'code': wrap('`', '`'); break;
+      case 'link': wrap('[', '](url)'); break;
+      case 'h1': insert('# '); break;
+      case 'h2': insert('## '); break;
+      case 'h3': insert('### '); break;
+      case 'bullet-list': insert('- '); break;
+      case 'numbered-list': insert('1. '); break;
+      case 'task-list': insert('- [ ] '); break;
+      case 'blockquote': insert('> '); break;
+      case 'code-block': insert('```javascript\n\n```'); break;
+      case 'divider': insert('\n---\n'); break;
+      case 'mermaid': insert('```mermaid\ngraph TD\n    A[Start] --> B[End]\n```'); break;
+      case 'table': insert('\n| Header | Header |\n|--------|--------|\n| Cell   | Cell   |\n'); break;
+      case 'callout': insert('> [!NOTE]\n> '); break;
+      case 'image': insert('![alt text](url)'); break;
+      case 'columns': insert('\n| Left | Right |\n|------|-------|\n|      |       |\n'); break;
+      case 'undo': editorRef.current?.undo(); break;
+      case 'redo': editorRef.current?.redo(); break;
+    }
+  }, []);
+
+  const isDirty = selectedPage && (title !== savedVersionRef.current.title || content !== savedVersionRef.current.content);
+
+  // ===== EMPTY STATES =====
   if (!selectedPage && pageList.length === 0) {
     return (
-      <div className="flex flex-1 items-center justify-center">
+      <div className="flex flex-1 items-center justify-center p-8">
         <div className="w-full max-w-md text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-theme-accent/10 text-theme-accent">
-            <FileText className="h-8 w-8" />
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-theme-accent/20 to-theme-accent/5 flex items-center justify-center mx-auto mb-6">
+            <FileText className="w-7 h-7 text-theme-accent" />
           </div>
-          <h2 className="mt-6 text-xl font-semibold text-theme-main">Create your first page</h2>
-          <p className="mt-2 text-sm text-theme-muted">
-            Start documenting by creating a page from the sidebar. Use{' '}
-            <kbd className="rounded-md border border-theme-border bg-theme-card px-1.5 py-0.5 text-xs font-medium text-theme-subtle">
-              ⌘K
-            </kbd>{' '}
-            to search anytime.
+          <h2 className="text-xl font-semibold text-theme-main">Create your first page</h2>
+          <p className="mt-2 text-sm text-theme-muted leading-relaxed">
+            Start writing documentation. Press{' '}
+            <kbd className="px-1.5 py-0.5 rounded bg-theme-hover border border-theme-border text-[11px] font-mono">/</kbd>
+            {' '}for quick formatting commands.
           </p>
           <div className="mt-8 grid grid-cols-3 gap-3 text-left">
-            <Link href={`/dashboard/${project.id}/import`} className="rounded-xl border border-theme-border bg-theme-page p-4 transition-all hover:border-theme-accent/20 hover:shadow-sm">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-theme-accent/10 text-theme-accent">
-                <Code2 className="h-4 w-4" />
+            <Link
+              href={`/dashboard/${project.id}/import`}
+              className="group rounded-xl border border-theme-border bg-theme-card p-4 transition-all duration-200 hover:border-theme-accent/30 hover:shadow-sm hover:shadow-theme-accent/5"
+            >
+              <div className="w-8 h-8 rounded-lg bg-theme-accent/10 flex items-center justify-center mb-3 group-hover:bg-theme-accent/15 transition-colors">
+                <Search className="w-4 h-4 text-theme-accent" />
               </div>
-              <p className="mt-2 text-xs font-medium text-theme-main">Import from Code</p>
-              <p className="mt-1 text-xs text-theme-muted">Auto-generate from TS/JS</p>
+              <p className="text-xs font-medium text-theme-main">Import Code</p>
+              <p className="text-[11px] text-theme-muted mt-0.5">Auto-generate docs</p>
             </Link>
-            <div className="rounded-xl border border-theme-border bg-theme-page p-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-theme-accent/10 text-theme-accent">
-                <Bold className="h-4 w-4" />
+            <div className="rounded-xl border border-theme-border bg-theme-card p-4">
+              <div className="w-8 h-8 rounded-lg bg-theme-accent/10 flex items-center justify-center mb-3">
+                <Type className="w-4 h-4 text-theme-accent" />
               </div>
-              <p className="mt-2 text-xs font-medium text-theme-main">Rich Markdown</p>
-              <p className="mt-1 text-xs text-theme-muted">Bold, tables, code, and more</p>
+              <p className="text-xs font-medium text-theme-main">Rich Markdown</p>
+              <p className="text-[11px] text-theme-muted mt-0.5">Bold, tables, code</p>
             </div>
-            <div className="rounded-xl border border-theme-border bg-theme-page p-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-theme-accent/10 text-theme-accent">
-                <LinkIcon className="h-4 w-4" />
+            <div className="rounded-xl border border-theme-border bg-theme-card p-4">
+              <div className="w-8 h-8 rounded-lg bg-theme-accent/10 flex items-center justify-center mb-3">
+                <MessageSquare className="w-4 h-4 text-theme-accent" />
               </div>
-              <p className="mt-2 text-xs font-medium text-theme-main">Wiki Links</p>
-              <p className="mt-1 text-xs text-theme-muted">Connect pages with [[links]]</p>
+              <p className="text-xs font-medium text-theme-main">Wiki Links</p>
+              <p className="text-[11px] text-theme-muted mt-0.5">Connect pages</p>
             </div>
           </div>
         </div>
@@ -557,49 +527,44 @@ export function DocEditor({ project }: { project: Project }) {
 
   if (!selectedPage) {
     return (
-      <div className="flex flex-1 items-center justify-center">
-        <div className="w-full max-w-2xl space-y-6 p-8">
-          <div className="rounded-2xl border border-theme-border bg-theme-card/30 p-6 text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-theme-accent/10 text-theme-accent">
-              <BookOpen className="h-6 w-6" />
+      <div className="flex flex-1 items-center justify-center p-8">
+        <div className="w-full max-w-2xl space-y-6">
+          <div className="text-center">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-theme-accent/15 to-theme-accent/5 flex items-center justify-center mx-auto mb-4">
+              <BookOpen className="w-5 h-5 text-theme-accent" />
             </div>
-            <h2 className="mt-4 text-lg font-semibold text-theme-main">Welcome back</h2>
-            <p className="mt-1 text-sm text-theme-muted">
-              Select a page from the sidebar or create a new one.
-            </p>
-            <div className="mt-4 flex flex-wrap justify-center gap-2 text-xs text-theme-muted">
-              <span className="rounded-lg bg-theme-card border border-theme-border px-3 py-1.5 shadow-sm">
-                <kbd className="font-medium text-theme-subtle">⌘K</kbd> Search
-              </span>
-              <span className="rounded-lg bg-theme-card border border-theme-border px-3 py-1.5 shadow-sm">
-                <kbd className="font-medium text-theme-subtle">⌘S</kbd> Save
-              </span>
-              <span className="rounded-lg bg-theme-card border border-theme-border px-3 py-1.5 shadow-sm">
-                <kbd className="font-medium text-theme-subtle">⌘⇧P</kbd> Preview
-              </span>
-              <span className="rounded-lg bg-theme-card border border-theme-border px-3 py-1.5 shadow-sm">
-                <kbd className="font-medium text-theme-subtle">⌘\</kbd> Zen Mode
-              </span>
+            <h2 className="text-lg font-semibold text-theme-main">Welcome back</h2>
+            <p className="mt-1 text-sm text-theme-muted">Select a page from the sidebar to start editing.</p>
+            <div className="mt-4 flex flex-wrap justify-center gap-3">
+              {[
+                { keys: '⌘K', label: 'Search' },
+                { keys: '⌘S', label: 'Save' },
+                { keys: '⌘⇧P', label: 'Preview' },
+              ].map((s) => (
+                <span key={s.label} className="inline-flex items-center gap-1.5 text-xs text-theme-muted">
+                  <kbd className="px-1.5 py-0.5 rounded bg-theme-hover border border-theme-border text-[10px] font-mono">{s.keys}</kbd>
+                  {s.label}
+                </span>
+              ))}
             </div>
           </div>
-
           {pageList.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs font-medium uppercase tracking-wider text-theme-muted">Recent pages</p>
+              <p className="text-[11px] font-medium uppercase tracking-wider text-theme-muted px-1">Recent pages</p>
               <div className="grid gap-2 sm:grid-cols-2">
                 {pageList.slice(0, 6).map((page) => (
                   <button
                     key={page.id}
                     onClick={() => selectPage(page)}
-                    className="flex items-start gap-3 rounded-xl border border-theme-border bg-theme-card p-4 text-left transition-all hover:border-theme-accent/20 hover:shadow-sm"
+                    className="flex items-start gap-3 rounded-xl border border-theme-border bg-theme-card p-4 text-left transition-all duration-200 hover:border-theme-accent/30 hover:shadow-sm"
                   >
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-theme-hover text-theme-muted">
-                      <FileText className="h-4 w-4" />
+                    <div className="w-8 h-8 rounded-lg bg-theme-hover flex items-center justify-center shrink-0">
+                      <FileText className="w-3.5 h-3.5 text-theme-muted" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-medium text-theme-main truncate">{page.title}</h3>
+                      <h3 className="text-sm font-medium text-theme-main truncate">{page.title}</h3>
                       {page.description && (
-                        <p className="mt-0.5 text-xs text-theme-muted line-clamp-1">{page.description}</p>
+                        <p className="mt-0.5 text-[11px] text-theme-muted truncate">{page.description}</p>
                       )}
                     </div>
                   </button>
@@ -612,273 +577,180 @@ export function DocEditor({ project }: { project: Project }) {
     );
   }
 
+  // ===== MAIN EDITOR =====
   return (
     <div
       className="flex flex-1 overflow-hidden"
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
+      onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+      onDragLeave={() => setIsDragOver(false)}
       onDrop={handleDrop}
     >
-      {/* Main editor area */}
+      {/* Main content area */}
       <div className="flex flex-1 flex-col min-w-0">
-        {/* Header */}
+        {/* ===== HEADER ===== */}
         {!zenMode && (
-          <div className="border-b border-theme-border px-4 sm:px-6 py-2 shrink-0">
-            {breadcrumbs.length > 0 && (
-              <div className="flex items-center gap-1 text-xs text-theme-muted mb-1 overflow-x-auto">
-                {breadcrumbs.map((crumb) => (
-                  <span key={crumb.id} className="flex items-center gap-1 shrink-0">
-                    <Link
-                      href={`/docs/${project.id}/${crumb.slug}`}
-                      className="hover:text-theme-subtle transition-colors"
-                    >
-                      {crumb.title}
-                    </Link>
-                    <ChevronRight className="h-3 w-3" />
-                  </span>
-                ))}
-              </div>
-            )}
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="shrink-0 border-b border-theme-border">
+            {/* Top row: Title + actions */}
+            <div className="flex items-center gap-3 px-4 sm:px-6 py-3">
+              {/* Breadcrumbs */}
+              {breadcrumbs.length > 0 && (
+                <div className="hidden sm:flex items-center gap-1 text-xs text-theme-muted">
+                  {breadcrumbs.map((crumb, i) => (
+                    <span key={crumb.id} className="flex items-center gap-1">
+                      {i > 0 && <ChevronRight className="w-3 h-3" />}
+                      <Link href={`/docs/${project.id}/${crumb.slug}`} className="hover:text-theme-subtle transition-colors">
+                        {crumb.title}
+                      </Link>
+                    </span>
+                  ))}
+                  <ChevronRight className="w-3 h-3" />
+                </div>
+              )}
+
+              {/* Title */}
               <input
-                ref={titleRef}
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-transparent text-lg font-semibold text-theme-main outline-none placeholder:text-theme-muted"
+                className="flex-1 bg-transparent text-lg font-semibold text-theme-main outline-none placeholder:text-theme-muted/50 min-w-0"
                 placeholder="Page title"
               />
-              <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0">
-                <button
-                  onClick={() => setViewMode((v) => v === 'edit' ? 'preview' : v === 'preview' ? 'split' : 'edit')}
-                  className={`rounded-lg p-1.5 shrink-0 transition-colors ${
-                    viewMode !== 'edit'
-                      ? 'bg-theme-accent/10 text-theme-accent'
-                      : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
-                  }`}
-                  title={`${viewMode === 'edit' ? 'Preview' : viewMode === 'preview' ? 'Split view' : 'Edit'} (⌘⇧P)`}
-                >
-                  {viewMode === 'edit' ? <Eye className="h-4 w-4" /> : viewMode === 'preview' ? <Edit3 className="h-4 w-4" /> : (
-                    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" stroke="currentColor" strokeWidth="2">
-                      <rect x="2" y="3" width="20" height="18" rx="2" />
-                      <line x1="12" y1="3" x2="12" y2="21" />
-                    </svg>
-                  )}
-                </button>
 
-                {selectedPage && (
-                  <GraphModalOpener
-                    projectId={project.id}
-                    pages={pageList}
-                    currentPageId={selectedPage.id}
-                  />
-                )}
-                {selectedPage && <HistoryButton pageId={selectedPage.id} />}
-                <ShortcutsModal />
-
-                <div className="relative shrink-0" ref={actionsRef}>
-                  <button
-                    onClick={() => setShowActions((v) => !v)}
-                    className="rounded-lg p-1.5 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
-                    title="Page actions"
-                  >
-                    <MoreHorizontal className="h-4 w-4" />
-                  </button>
-                  {showActions && (
-                    <div className="absolute right-0 top-full mt-1 z-50 w-56 rounded-xl border border-theme-border bg-theme-card shadow-xl py-1">
-                      <button
-                        onClick={handleCopyLink}
-                        className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-theme-subtle hover:bg-theme-hover transition-colors"
-                      >
-                        <Copy className="h-4 w-4 text-theme-muted" />
-                        Copy Link
-                        {showCopiedTip && <span className="ml-auto text-xs text-green-500">Copied!</span>}
-                      </button>
-                      <button
-                        onClick={handleDuplicatePage}
-                        className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-theme-subtle hover:bg-theme-hover transition-colors"
-                      >
-                        <Layers className="h-4 w-4 text-theme-muted" />
-                        Duplicate Page
-                      </button>
-                      <div className="border-t border-theme-border my-1" />
-                      <div className="px-4 py-2">
-                        <SchedulePublish pageId={selectedPage!.id} />
-                      </div>
-                      <div className="border-t border-theme-border my-1" />
-                      <button
-                        onClick={() => { setShowDeleteConfirm(true); setShowActions(false); }}
-                        className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-red-500 hover:bg-red-500/10 transition-colors"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        Delete Page
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {/* Right panel toggles */}
-                <div className="flex items-center gap-0.5 px-1 border-l border-theme-border ml-1">
-                  <button
-                    onClick={() => setRightPanel(rightPanel === 'outline' ? 'none' : 'outline')}
-                    className={`rounded-lg p-1.5 shrink-0 transition-colors ${
-                      rightPanel === 'outline'
-                        ? 'bg-theme-accent/10 text-theme-accent'
-                        : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
-                    }`}
-                    title="Document outline"
-                  >
-                    <ListOrdered className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => setRightPanel(rightPanel === 'team' ? 'none' : 'team')}
-                    className={`rounded-lg p-1.5 shrink-0 transition-colors ${
-                      rightPanel === 'team'
-                        ? 'bg-theme-accent/10 text-theme-accent'
-                        : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
-                    }`}
-                    title="Team members"
-                  >
-                    <Users className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => setRightPanel(rightPanel === 'comments' ? 'none' : 'comments')}
-                    className={`rounded-lg p-1.5 shrink-0 transition-colors ${
-                      rightPanel === 'comments'
-                        ? 'bg-theme-accent/10 text-theme-accent'
-                        : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
-                    }`}
-                    title="Discussion"
-                  >
-                    <MessageSquare className="h-4 w-4" />
-                  </button>
-                </div>
-
-                {selectedPage && <BookmarkButton pageId={selectedPage.id} />}
-
-                <button
-                  onClick={() => setZenMode((v) => !v)}
-                  className="rounded-lg p-1.5 shrink-0 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
-                  title="Zen mode (⌘\)"
-                >
-                  {zenMode ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-                </button>
-
+              {/* Right side: status + actions */}
+              <div className="flex items-center gap-2 shrink-0">
+                {/* Save status */}
                 {autoSaveStatus === 'saving' && (
-                  <span className="flex items-center gap-1 text-xs text-theme-muted shrink-0">
-                    <Cloud className="h-3 w-3 animate-pulse" />
-                    <span className="hidden sm:inline">Saving...</span>
+                  <span className="flex items-center gap-1.5 text-xs text-theme-muted">
+                    <Cloud className="w-3 h-3 animate-pulse" />
+                    <span className="hidden sm:inline">Saving</span>
                   </span>
                 )}
-                {autoSaveStatus === 'saved' && !dirty && (
-                  <span className="flex items-center gap-1 text-xs text-theme-muted shrink-0">
-                    <Cloud className="h-3 w-3" />
+                {autoSaveStatus === 'saved' && !isDirty && (
+                  <span className="flex items-center gap-1.5 text-xs text-theme-muted">
+                    <Cloud className="w-3 h-3" />
                     <span className="hidden sm:inline">Saved</span>
                   </span>
                 )}
                 {autoSaveStatus === 'unsaved' && (
-                  <span className="flex items-center gap-1 text-xs text-amber-500 shrink-0">
-                    <CloudOff className="h-3 w-3" />
+                  <span className="flex items-center gap-1.5 text-xs text-amber-500">
+                    <CloudOff className="w-3 h-3" />
                     <span className="hidden sm:inline">Unsaved</span>
                   </span>
                 )}
-                {dirty && (
+
+                {/* Save button */}
+                {isDirty && (
                   <button
-                    onClick={handleSave}
+                    onClick={() => handleSaveRef.current()}
                     disabled={saving}
-                    className="inline-flex items-center gap-1 rounded-lg bg-theme-accent px-2.5 py-1.5 text-sm font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors disabled:opacity-50 shrink-0"
-                    title="Save (⌘S)"
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-theme-accent px-3 py-1.5 text-xs font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors disabled:opacity-50"
                   >
-                    <Save className="h-4 w-4" />
+                    <Save className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">{saving ? 'Saving...' : 'Save'}</span>
                   </button>
                 )}
+
+                {/* View mode toggle */}
+                <div className="flex items-center rounded-lg border border-theme-border bg-theme-page p-0.5">
+                  {([
+                    { mode: 'edit' as ViewMode, icon: Edit3, label: 'Edit' },
+                    { mode: 'split' as ViewMode, icon: SplitSquareHorizontal, label: 'Split' },
+                    { mode: 'preview' as ViewMode, icon: Eye, label: 'Preview' },
+                  ]).map(({ mode, icon: Icon, label }) => (
+                    <button
+                      key={mode}
+                      onClick={() => setViewMode(mode)}
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all duration-150 ${
+                        viewMode === mode
+                          ? 'bg-theme-card text-theme-main shadow-sm'
+                          : 'text-theme-muted hover:text-theme-subtle'
+                      }`}
+                      title={`${label} (⌘⇧P)`}
+                    >
+                      <Icon className="w-3 h-3" />
+                      <span className="hidden sm:inline">{label}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Sidebar toggle */}
+                <button
+                  onClick={() => setSidebarTab(sidebarTab ? null : 'outline')}
+                  className={`p-1.5 rounded-lg transition-colors duration-150 ${
+                    sidebarTab ? 'bg-theme-accent/10 text-theme-accent' : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
+                  }`}
+                  title="Toggle sidebar"
+                >
+                  <ListOrdered className="w-4 h-4" />
+                </button>
+
+                {/* Zen mode */}
+                <button
+                  onClick={() => setZenMode(true)}
+                  className="p-1.5 rounded-lg text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors duration-150"
+                  title="Zen mode (⌘\\)"
+                >
+                  <Maximize2 className="w-4 h-4" />
+                </button>
+
+                {/* More actions */}
+                <div className="relative" ref={actionsRef}>
+                  <button
+                    onClick={() => setShowActions((v) => !v)}
+                    className="p-1.5 rounded-lg text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors duration-150"
+                  >
+                    <MoreHorizontal className="w-4 h-4" />
+                  </button>
+                  {showActions && (
+                    <div className="absolute right-0 top-full mt-1 z-50 w-52 rounded-xl border border-theme-border bg-theme-card shadow-xl py-1 animate-in fade-in slide-in-from-top-1 duration-150">
+                      <DropdownItem icon={Copy} label="Copy link" onClick={handleCopyLink} />
+                      <DropdownItem icon={Layers} label="Duplicate page" onClick={handleDuplicatePage} />
+                      <DropdownItem icon={Clock} label="Page history" onClick={() => {}} />
+                      <div className="h-px bg-theme-border my-1" />
+                      <div className="px-3 py-2">
+                        <SchedulePublish pageId={selectedPage.id} />
+                      </div>
+                      <div className="h-px bg-theme-border my-1" />
+                      <DropdownItem icon={Trash2} label="Delete page" onClick={() => { setShowDeleteConfirm(true); setShowActions(false); }} danger />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
+
+            {/* Draft banner */}
+            {draftAvailable && (
+              <div className="flex items-center justify-between px-4 sm:px-6 py-2 bg-amber-500/5 border-t border-amber-500/10">
+                <p className="text-xs text-amber-600 dark:text-amber-400">
+                  <strong>Draft available</strong> — unsaved changes from a previous session
+                </p>
+                <div className="flex items-center gap-2">
+                  <button onClick={restoreDraft} className="rounded-md bg-amber-500 px-2.5 py-1 text-xs font-medium text-white hover:bg-amber-600 transition-colors">
+                    Restore
+                  </button>
+                  <button onClick={clearDraft} className="rounded-md px-2.5 py-1 text-xs font-medium text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 transition-colors">
+                    Discard
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
-        {/* Draft banner */}
-        {draftAvailable && (
-          <div className="flex items-center justify-between bg-amber-500/10 border-b border-amber-500/20 px-6 py-2">
-            <p className="text-xs text-amber-500">
-              <strong>Unsaved draft found</strong> — you have unsaved changes from a previous session.
-            </p>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={restoreDraft}
-                className="rounded-lg bg-amber-600 px-3 py-1 text-xs font-medium text-white hover:bg-amber-700 transition-colors"
-              >
-                Restore
-              </button>
-              <button
-                onClick={() => clearDraft()}
-                className="rounded-lg px-3 py-1 text-xs font-medium text-amber-500 hover:bg-amber-500/10 transition-colors"
-              >
-                Discard
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Formatting toolbar */}
+        {/* ===== TOOLBAR ===== */}
         {viewMode !== 'preview' && !zenMode && (
-          <EditorToolbar
-            onAction={(action) => {
-              const view = editorRef.current?.view;
-              if (!view) return;
-
-              const { from, to } = view.state.selection.main;
-              const selected = view.state.sliceDoc(from, to);
-
-              const wrapSelection = (prefix: string, suffix: string) => {
-                const replacement = selected ? `${prefix}${selected}${suffix}` : `${prefix}text${suffix}`;
-                view.dispatch({ changes: { from, to, insert: replacement } });
-                view.focus();
-              };
-
-              const insertAtCursor = (text: string) => {
-                view.dispatch({ changes: { from: view.state.selection.main.head, insert: text } });
-                view.focus();
-              };
-
-              switch (action) {
-                case 'bold': wrapSelection('**', '**'); break;
-                case 'italic': wrapSelection('*', '*'); break;
-                case 'strikethrough': wrapSelection('~~', '~~'); break;
-                case 'code': wrapSelection('`', '`'); break;
-                case 'link': wrapSelection('[', '](url)'); break;
-                case 'h1': insertAtCursor('# '); break;
-                case 'h2': insertAtCursor('## '); break;
-                case 'h3': insertAtCursor('### '); break;
-                case 'bullet-list': insertAtCursor('- '); break;
-                case 'numbered-list': insertAtCursor('1. '); break;
-                case 'task-list': insertAtCursor('- [ ] '); break;
-                case 'blockquote': insertAtCursor('> '); break;
-                case 'code-block': insertAtCursor('```javascript\n\n```'); break;
-                case 'divider': insertAtCursor('\n---\n'); break;
-                case 'mermaid': insertAtCursor('```mermaid\ngraph TD\n    A[Start] --> B[End]\n```'); break;
-                case 'table': insertAtCursor('\n| Header | Header |\n|--------|--------|\n| Cell   | Cell   |\n'); break;
-                case 'callout': insertAtCursor('> [!NOTE]\n> '); break;
-                case 'image': insertAtCursor('![alt text](url)'); break;
-                case 'columns': insertAtCursor('\n| Left | Right |\n|------|-------|\n|      |       |\n'); break;
-                case 'undo': editorRef.current?.undo(); break;
-                case 'redo': editorRef.current?.redo(); break;
-              }
-            }}
-          />
+          <EditorToolbar onAction={handleToolbarAction} />
         )}
 
-        {/* Editor content */}
-        <div
-          ref={splitRef}
-          className="flex flex-1 overflow-hidden relative"
-        >
+        {/* ===== EDITOR CONTENT ===== */}
+        <div ref={splitRef} className="flex flex-1 overflow-hidden relative">
           {/* Drag overlay */}
           {isDragOver && (
-            <div className="absolute inset-0 z-50 flex items-center justify-center bg-theme-accent/5 border-2 border-dashed border-theme-accent/30 rounded-lg">
+            <div className="absolute inset-0 z-50 flex items-center justify-center bg-theme-accent/5 border-2 border-dashed border-theme-accent/30 rounded-lg m-2">
               <div className="text-center">
-                <ImageIcon className="h-10 w-10 mx-auto mb-2 text-theme-accent" aria-hidden="true" />
+                <div className="w-12 h-12 rounded-xl bg-theme-accent/10 flex items-center justify-center mx-auto mb-3">
+                  <ImageIcon className="w-5 h-5 text-theme-accent" />
+                </div>
                 <p className="text-sm font-medium text-theme-accent">Drop image here</p>
                 <p className="text-xs text-theme-muted mt-1">PNG, JPG, GIF, WebP up to 10MB</p>
               </div>
@@ -886,221 +758,183 @@ export function DocEditor({ project }: { project: Project }) {
           )}
 
           {/* Upload overlay */}
-          {isDragging && (
-            <div className="absolute inset-0 z-50 flex items-center justify-center bg-theme-accent/5">
-              <div className="flex items-center gap-2 rounded-xl bg-theme-card border border-theme-border px-4 py-3 shadow-xl">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-theme-accent border-t-transparent" />
-                <span className="text-sm text-theme-main">Uploading image...</span>
+          {isUploading && (
+            <div className="absolute inset-0 z-50 flex items-center justify-center bg-theme-card/80 backdrop-blur-sm">
+              <div className="flex items-center gap-3 rounded-xl bg-theme-card border border-theme-border px-5 py-3 shadow-xl">
+                <div className="w-4 h-4 animate-spin rounded-full border-2 border-theme-accent border-t-transparent" />
+                <span className="text-sm text-theme-main">Uploading...</span>
               </div>
             </div>
           )}
 
-          {viewMode === 'preview' ? (
-            <div className="flex w-full">
-              <div className="min-w-0 flex-1 mx-auto max-w-3xl p-4 sm:p-8">
-                <h1 className="mb-6 text-2xl sm:text-3xl font-bold tracking-tight text-theme-main">{title}</h1>
-                {content ? (
-                  <Markdown
-                    content={content}
-                    projectId={project.id}
-                    pages={pageList}
-                    basePath={`/docs/${project.id}`}
-                  />
-                ) : (
-                  <p className="text-theme-muted italic">No content yet</p>
-                )}
-              </div>
-              {headings.length > 0 && (
-                <aside className="hidden xl:block w-64 shrink-0 border-l border-theme-border p-4">
-                  <div className="rounded-xl border border-theme-border bg-theme-card p-4 sticky top-4">
-                    <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-theme-muted mb-3">
-                      <ListOrdered className="h-3 w-3" />
-                      On this page
-                    </div>
-                    <nav className="space-y-0.5">
-                      {headings.map((h) => (
-                        <a
-                          key={h.id}
-                          href={`#${h.id}`}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            const el = document.getElementById(h.id);
-                            if (el) el.scrollIntoView({ behavior: 'smooth' });
-                          }}
-                          className="block rounded-md px-2 py-1 text-sm text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
-                          style={{ paddingLeft: `${8 + (h.level - 1) * 12}px` }}
-                        >
-                          {h.text}
-                        </a>
-                      ))}
-                    </nav>
-                  </div>
-                </aside>
-              )}
-            </div>
-          ) : viewMode === 'split' ? (
-            <div className="flex w-full h-full">
-              <div className="relative min-w-0 h-full overflow-hidden" style={{ width: `${splitPosition}%` }}>
-                <div className="relative h-full overflow-y-auto">
-                  <div className="px-8 pt-6 pb-6">
-                    {showSlashCommands && (
-                      <SlashCommandMenu
-                        open={showSlashCommands}
-                        query={slashQuery}
-                        position={slashPosition}
-                        onSelect={handleSlashCommandSelect}
-                        onClose={handleSlashCommandClose}
-                      />
-                    )}
-                    <CodeMirrorEditor
-                      ref={editorRef}
-                      value={content}
-                      onChange={setContent}
-                      className="h-full min-h-[calc(100vh-200px)]"
-                      placeholder="Write your documentation in Markdown... Type / for commands"
-                      onSlashCommand={handleSlashCommand}
-                      onSlashCommandClose={handleSlashCommandClose}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div
-                ref={splitDividerRef}
-                className="w-1 bg-theme-border hover:bg-theme-accent/40 cursor-col-resize shrink-0 transition-colors"
-              />
-              <div className="flex-1 overflow-y-auto min-w-0">
-                <div className="p-4 sm:p-8">
-                  <h1 className="mb-6 text-2xl sm:text-3xl font-bold tracking-tight text-theme-main">{title}</h1>
-                  {content ? (
-                    <Markdown
-                      content={content}
-                      projectId={project.id}
-                      pages={pageList}
-                      basePath={`/docs/${project.id}`}
-                    />
-                  ) : (
-                    <p className="text-theme-muted italic">No content yet</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="relative flex-1 overflow-y-auto">
-              <div className="px-8 pt-6 pb-32 max-w-4xl mx-auto">
+          {/* Edit mode */}
+          {viewMode === 'edit' && (
+            <div className="flex-1 overflow-y-auto">
+              <div className="max-w-4xl mx-auto px-6 sm:px-8 pt-8 pb-32">
                 {showSlashCommands && (
                   <SlashCommandMenu
                     open={showSlashCommands}
                     query={slashQuery}
                     position={slashPosition}
                     onSelect={handleSlashCommandSelect}
-                    onClose={handleSlashCommandClose}
+                    onClose={() => setShowSlashCommands(false)}
                   />
                 )}
                 <CodeMirrorEditor
                   ref={editorRef}
                   value={content}
                   onChange={setContent}
-                  className="min-h-[calc(100vh-200px)]"
+                  className="min-h-[calc(100vh-280px)]"
                   placeholder="Start writing... Type / for commands"
                   onSlashCommand={handleSlashCommand}
-                  onSlashCommandClose={handleSlashCommandClose}
+                  onSlashCommandClose={() => setShowSlashCommands(false)}
                 />
+              </div>
+            </div>
+          )}
+
+          {/* Preview mode */}
+          {viewMode === 'preview' && (
+            <div className="flex-1 overflow-y-auto">
+              <div className="max-w-3xl mx-auto px-6 sm:px-8 py-8">
+                <h1 className="mb-6 text-3xl font-bold tracking-tight text-theme-main">{title}</h1>
+                {content ? (
+                  <Markdown content={content} projectId={project.id} pages={pageList} basePath={`/docs/${project.id}`} />
+                ) : (
+                  <p className="text-theme-muted italic">No content yet</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Split mode */}
+          {viewMode === 'split' && (
+            <div className="flex w-full h-full">
+              <div className="relative min-w-0 h-full overflow-hidden" style={{ width: `${splitPosition}%` }}>
+                <div className="relative h-full overflow-y-auto">
+                  <div className="px-6 sm:px-8 pt-8 pb-32">
+                    {showSlashCommands && (
+                      <SlashCommandMenu
+                        open={showSlashCommands}
+                        query={slashQuery}
+                        position={slashPosition}
+                        onSelect={handleSlashCommandSelect}
+                        onClose={() => setShowSlashCommands(false)}
+                      />
+                    )}
+                    <CodeMirrorEditor
+                      ref={editorRef}
+                      value={content}
+                      onChange={setContent}
+                      className="min-h-[calc(100vh-280px)]"
+                      placeholder="Start writing..."
+                      onSlashCommand={handleSlashCommand}
+                      onSlashCommandClose={() => setShowSlashCommands(false)}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div
+                ref={splitDividerRef}
+                className="w-1 bg-theme-border hover:bg-theme-accent/30 cursor-col-resize shrink-0 transition-colors duration-150"
+              />
+
+              {/* Preview pane */}
+              <div className="flex-1 overflow-y-auto min-w-0">
+                <div className="max-w-3xl mx-auto px-6 sm:px-8 py-8">
+                  <h1 className="mb-6 text-3xl font-bold tracking-tight text-theme-main">{title}</h1>
+                  {content ? (
+                    <Markdown content={content} projectId={project.id} pages={pageList} basePath={`/docs/${project.id}`} />
+                  ) : (
+                    <p className="text-theme-muted italic">No content yet</p>
+                  )}
+                </div>
               </div>
             </div>
           )}
         </div>
 
-        {/* Status bar */}
+        {/* ===== STATUS BAR ===== */}
         {!zenMode && (
-          <div className="flex items-center justify-between border-t border-theme-border px-6 py-1.5 text-xs text-theme-muted shrink-0">
+          <div className="shrink-0 flex items-center justify-between border-t border-theme-border px-4 sm:px-6 py-1.5 text-[11px] text-theme-muted">
             <div className="flex items-center gap-4">
-              <span className="flex items-center gap-1">
-                <Type className="h-3 w-3" />
-                {charCount} {charCount === 1 ? 'char' : 'chars'}
-              </span>
-              <span className="flex items-center gap-1">
-                <BookOpen className="h-3 w-3" />
-                {wordCount} {wordCount === 1 ? 'word' : 'words'}
-              </span>
-              <span className="flex items-center gap-1">
-                <Clock className="h-3 w-3" />
-                {readingTime} min read
-              </span>
+              <span>{charCount} chars</span>
+              <span>{wordCount} words</span>
+              <span>{readingTime} min read</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               {tags.length > 0 && (
                 <div className="flex items-center gap-1">
                   {tags.slice(0, 3).map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-flex items-center rounded-full bg-theme-accent/10 px-2 py-0.5 text-[10px] font-medium text-theme-accent"
-                    >
+                    <span key={tag} className="px-1.5 py-0.5 rounded bg-theme-accent/10 text-theme-accent text-[10px]">
                       {tag}
                     </span>
                   ))}
-                  {tags.length > 3 && (
-                    <span className="text-[10px] text-theme-muted">+{tags.length - 3}</span>
-                  )}
+                  {tags.length > 3 && <span>+{tags.length - 3}</span>}
                 </div>
               )}
-              <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                viewMode === 'edit' ? 'bg-theme-hover text-theme-muted' :
-                viewMode === 'preview' ? 'bg-theme-accent/10 text-theme-accent' :
-                'bg-theme-accent-light text-theme-accent'
-              }`}>
-                {viewMode === 'edit' ? 'Edit' : viewMode === 'preview' ? 'Preview' : 'Split'}
+              <span className="px-1.5 py-0.5 rounded bg-theme-hover text-[10px] uppercase tracking-wider">
+                {viewMode}
               </span>
             </div>
           </div>
         )}
       </div>
 
-      {/* Right panel */}
-      {rightPanel !== 'none' && selectedPage && (
-        <div className="w-80 shrink-0 border-l border-theme-border bg-theme-page flex flex-col">
-          <div className="flex items-center justify-between border-b border-theme-border px-4 py-3">
-            <div className="flex items-center gap-2">
-              {rightPanel === 'outline' && (
-                <>
-                  <ListOrdered className="h-4 w-4 text-theme-accent" />
-                  <span className="text-sm font-medium text-theme-main">Document Outline</span>
-                </>
-              )}
-              {rightPanel === 'team' && (
-                <>
-                  <Users className="h-4 w-4 text-theme-accent" />
-                  <span className="text-sm font-medium text-theme-main">Team Members</span>
-                </>
-              )}
-              {rightPanel === 'comments' && (
-                <>
-                  <MessageSquare className="h-4 w-4 text-theme-accent" />
-                  <span className="text-sm font-medium text-theme-main">Discussion</span>
-                </>
-              )}
-            </div>
+      {/* ===== SIDEBAR ===== */}
+      {sidebarTab && selectedPage && (
+        <div className="w-72 shrink-0 border-l border-theme-border bg-theme-page flex flex-col animate-in slide-in-from-right duration-200">
+          {/* Tabs */}
+          <div className="flex items-center border-b border-theme-border">
+            {([
+              { id: 'outline' as SidebarTab, label: 'Outline', icon: ListOrdered },
+              { id: 'team' as SidebarTab, label: 'Team', icon: Users },
+              { id: 'comments' as SidebarTab, label: 'Comments', icon: MessageSquare },
+            ]).map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                onClick={() => setSidebarTab(id)}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium transition-colors duration-150 border-b-2 ${
+                  sidebarTab === id
+                    ? 'text-theme-accent border-theme-accent'
+                    : 'text-theme-muted border-transparent hover:text-theme-subtle'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                {label}
+              </button>
+            ))}
             <button
-              onClick={() => setRightPanel('none')}
-              className="rounded p-1 text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors"
+              onClick={() => setSidebarTab(null)}
+              className="p-2 text-theme-muted hover:bg-theme-hover transition-colors"
             >
-              <X className="h-4 w-4" />
+              <X className="w-3.5 h-3.5" />
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto p-4">
-            {rightPanel === 'outline' && (
-              <DocumentOutline content={content} />
-            )}
-            {rightPanel === 'team' && (
-              <TeamPresence members={teamMembers} />
-            )}
-            {rightPanel === 'comments' && (
-              <Comments pageId={selectedPage.id} teamMembers={teamMembers} />
-            )}
+
+          {/* Tab content */}
+          <div className="flex-1 overflow-y-auto p-3">
+            {sidebarTab === 'outline' && <DocumentOutline content={content} />}
+            {sidebarTab === 'team' && <TeamPresence members={teamMembers} />}
+            {sidebarTab === 'comments' && <Comments pageId={selectedPage.id} teamMembers={teamMembers} />}
           </div>
         </div>
       )}
 
-      {/* Delete confirmation modal */}
+      {/* ===== ZEN MODE EXIT BUTTON ===== */}
+      {zenMode && (
+        <button
+          onClick={() => setZenMode(false)}
+          className="fixed top-4 right-4 z-50 p-2 rounded-lg bg-theme-card/80 backdrop-blur-sm border border-theme-border text-theme-muted hover:text-theme-subtle hover:bg-theme-card transition-all opacity-0 hover:opacity-100"
+          title="Exit zen mode (⌘\\)"
+        >
+          <Minimize2 className="w-4 h-4" />
+        </button>
+      )}
+
+      {/* ===== DELETE MODAL ===== */}
       {showDeleteConfirm && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
@@ -1108,8 +942,8 @@ export function DocEditor({ project }: { project: Project }) {
         >
           <div className="w-full max-w-sm rounded-2xl border border-theme-border bg-theme-card p-6 shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/10 text-red-500">
-                <AlertTriangle className="h-5 w-5" />
+              <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5 text-red-500" />
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-theme-main">Delete page</h3>
@@ -1118,7 +952,6 @@ export function DocEditor({ project }: { project: Project }) {
             </div>
             <p className="text-sm text-theme-subtle mb-6">
               Are you sure you want to delete <strong>{selectedPage?.title}</strong>?
-              All content will be permanently removed.
             </p>
             <div className="flex gap-2 justify-end">
               <button
@@ -1129,15 +962,36 @@ export function DocEditor({ project }: { project: Project }) {
               </button>
               <button
                 onClick={handleDeletePage}
-                disabled={deleting}
-                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 transition-colors disabled:opacity-50"
+                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 transition-colors"
               >
-                {deleting ? 'Deleting...' : 'Delete'}
+                Delete
               </button>
             </div>
           </div>
         </div>
       )}
     </div>
+  );
+}
+
+// Dropdown item component
+function DropdownItem({ icon: Icon, label, onClick, danger }: {
+  icon: React.ElementType;
+  label: string;
+  onClick: () => void;
+  danger?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm transition-colors duration-150 ${
+        danger
+          ? 'text-red-500 hover:bg-red-500/10'
+          : 'text-theme-subtle hover:bg-theme-hover'
+      }`}
+    >
+      <Icon className={`w-4 h-4 ${danger ? '' : 'text-theme-muted'}`} />
+      {label}
+    </button>
   );
 }
