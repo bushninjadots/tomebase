@@ -7,6 +7,8 @@ import rehypeSanitize from 'rehype-sanitize';
 import rehypeHighlight from 'rehype-highlight';
 import type { Components } from 'react-markdown';
 import { preprocessWikiLinks } from '@/lib/wiki';
+import { useState, useCallback, type ReactNode } from 'react';
+import { Copy, Check } from 'lucide-react';
 import 'highlight.js/styles/github-dark.css';
 
 interface MarkdownProps {
@@ -18,18 +20,18 @@ interface MarkdownProps {
 }
 
 const CALLOUT_ICONS: Record<string, string> = {
-  note: '📝',
-  tip: '💡',
-  important: '❗',
-  warning: '⚠️',
-  danger: '🚨',
-  caution: '⚡',
-  info: 'ℹ️',
-  success: '✅',
-  question: '❓',
-  bug: '🐛',
-  example: '📋',
-  quote: '💬',
+  note: '\u{1F4DD}',
+  tip: '\u{1F4A1}',
+  important: '\u{2757}',
+  warning: '\u{26A0}\u{FE0F}',
+  danger: '\u{1F6A8}',
+  caution: '\u{26A1}',
+  info: '\u{2139}\u{FE0F}',
+  success: '\u{2705}',
+  question: '\u{2753}',
+  bug: '\u{1F41B}',
+  example: '\u{1F4CB}',
+  quote: '\u{1F4AC}',
 };
 
 const CALLOUT_COLORS: Record<string, string> = {
@@ -59,7 +61,7 @@ function preprocessCallouts(content: string): string {
     if (calloutMatch) {
       const type = calloutMatch[1]!.toLowerCase();
       const title = calloutMatch[2]?.trim() || type.charAt(0).toUpperCase() + type.slice(1);
-      const icon = CALLOUT_ICONS[type] || '📌';
+      const icon = CALLOUT_ICONS[type] || '\u{1F4CC}';
       const colorClass = CALLOUT_COLORS[type] || 'border-l-theme-border bg-theme-hover';
 
       const bodyLines: string[] = [];
@@ -79,12 +81,12 @@ function preprocessCallouts(content: string): string {
 
       const body = bodyLines.join('\n');
       result.push(
-          `<div class="callout ${colorClass} rounded-r-xl border-l-4 px-4 py-3 my-4">` +
-          `<div class="flex items-center gap-2 text-sm font-semibold text-theme-main mb-1">` +
-          `<span>${icon}</span><span>${escapeHtml(title)}</span>` +
-          `</div>` +
-          (body ? `<div class="text-sm text-theme-subtle [&_p]:mb-1">${body}</div>` : '') +
-          `</div>`
+        `<div class="callout ${colorClass} rounded-r-xl border-l-4 px-4 py-3 my-4">` +
+        `<div class="flex items-center gap-2 text-sm font-semibold text-theme-main mb-1">` +
+        `<span>${icon}</span><span>${escapeHtml(title)}</span>` +
+        `</div>` +
+        (body ? `<div class="text-sm text-theme-subtle [&_p]:mb-1">${body}</div>` : '') +
+        `</div>`
       );
     } else {
       result.push(line);
@@ -103,13 +105,75 @@ function escapeHtml(text: string): string {
     .replace(/"/g, '&quot;');
 }
 
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  }, [text]);
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="absolute top-2 right-2 rounded-md bg-theme-hover/80 border border-theme-border p-1.5 text-theme-muted hover:text-theme-main hover:bg-theme-hover transition-all opacity-0 group-hover:opacity-100"
+      title="Copy code"
+    >
+      {copied ? (
+        <Check className="h-3.5 w-3.5 text-green-500" />
+      ) : (
+        <Copy className="h-3.5 w-3.5" />
+      )}
+    </button>
+  );
+}
+
+function LanguageLabel({ language }: { language?: string }) {
+  if (!language) return null;
+  const label = language.replace(/^language-/, '').replace(/-.*/, '');
+  return (
+    <span className="absolute top-2 left-3 text-[10px] font-medium uppercase tracking-wider text-theme-muted/60 select-none">
+      {label}
+    </span>
+  );
+}
+
+function CodeBlock({ className, children, ...props }: { className?: string; children?: ReactNode }) {
+  const code = typeof children === 'string' ? children : '';
+  const language = className?.replace(/^language-/, '') || '';
+
+  return (
+    <div className="group relative mb-4">
+      <LanguageLabel language={className} />
+      <CopyButton text={code} />
+      <pre className="overflow-x-auto rounded-lg border border-theme-border bg-[#0d1117] p-4 pt-8 text-sm leading-relaxed [&_code]:bg-transparent [&_code]:p-0">
+        <code className={className} {...props}>
+          {children}
+        </code>
+      </pre>
+    </div>
+  );
+}
+
 const components: Components = {
   code: ({ className, children, ...props }) => {
     const isInline = !className;
     if (isInline) {
       return (
         <code
-          className="rounded-md bg-theme-hover px-1.5 py-0.5 font-mono text-sm text-theme-main"
+          className="rounded-md bg-theme-hover px-1.5 py-0.5 font-mono text-sm text-theme-main border border-theme-border/50"
           {...props}
         >
           {children}
@@ -117,18 +181,14 @@ const components: Components = {
       );
     }
     return (
-      <code className={className} {...props}>
+      <CodeBlock className={className} {...props}>
         {children}
-      </code>
+      </CodeBlock>
     );
   },
-  pre: ({ children }) => (
-    <pre className="mb-4 overflow-x-auto rounded-lg border border-theme-border bg-[#0d1117] p-4 text-sm [&_code]:bg-transparent [&_code]:p-0">
-      {children}
-    </pre>
-  ),
+  pre: ({ children }) => <>{children}</>,
   h1: ({ children, ...props }) => (
-    <h1 className="mb-4 text-3xl font-bold tracking-tight text-theme-main" {...props}>
+    <h1 className="mb-4 mt-2 text-3xl font-bold tracking-tight text-theme-main" {...props}>
       {children}
     </h1>
   ),
@@ -179,7 +239,7 @@ const components: Components = {
     return (
       <a
         href={isSafe ? href : undefined}
-        className="text-fluid-600 underline-offset-2 hover:text-fluid-700 hover:underline font-medium"
+        className="text-theme-accent underline-offset-2 hover:text-theme-accent-hover hover:underline font-medium transition-colors"
         target={isExternal ? '_blank' : undefined}
         rel={isExternal ? 'noopener noreferrer' : undefined}
         {...props}
@@ -197,7 +257,7 @@ const components: Components = {
       src={src}
       alt={alt || ''}
       loading="lazy"
-      className="my-4 max-w-full rounded-lg border border-theme-border"
+      className="my-4 max-w-full rounded-lg border border-theme-border shadow-sm"
       {...props}
     />
   ),
@@ -205,7 +265,7 @@ const components: Components = {
     if (className?.includes('wiki-link-unresolved')) {
       return (
         <span
-          className="inline-flex items-center gap-1 text-theme-muted italic bg-theme-hover rounded px-1.5 py-0.5 text-sm cursor-not-allowed"
+          className="inline-flex items-center gap-1 text-theme-muted italic bg-theme-hover rounded px-1.5 py-0.5 text-sm cursor-not-allowed border border-theme-border/50"
           aria-label={`Page not found: ${children}`}
         >
           {children}
@@ -216,7 +276,7 @@ const components: Components = {
   },
   blockquote: ({ children, ...props }) => (
     <blockquote
-      className="mb-4 border-l-4 border-fluid-200 dark:border-fluid-700 bg-fluid-50 dark:bg-fluid-950/20 py-2 pl-4 italic text-theme-subtle"
+      className="mb-4 border-l-4 border-theme-accent/40 bg-theme-accent/5 py-2 pl-4 italic text-theme-subtle rounded-r-lg"
       {...props}
     >
       {children}
@@ -224,7 +284,7 @@ const components: Components = {
   ),
   hr: (props) => <hr className="my-8 border-theme-border" {...props} />,
   table: ({ children, ...props }) => (
-    <div className="mb-4 overflow-x-auto">
+    <div className="mb-4 overflow-x-auto rounded-lg border border-theme-border">
       <table className="w-full border-collapse text-sm" {...props}>
         {children}
       </table>
@@ -232,7 +292,7 @@ const components: Components = {
   ),
   th: ({ children, ...props }) => (
     <th
-      className="border border-theme-border bg-theme-hover px-3 py-2 text-left font-medium text-theme-subtle"
+      className="border border-theme-border bg-theme-hover px-3 py-2.5 text-left font-semibold text-theme-main"
       {...props}
     >
       {children}
@@ -252,6 +312,15 @@ const components: Components = {
     <em className="italic text-theme-main" {...props}>
       {children}
     </em>
+  ),
+  input: ({ checked, ...props }) => (
+    <input
+      type="checkbox"
+      checked={checked}
+      readOnly
+      className="mr-2 h-4 w-4 rounded border-theme-border accent-theme-accent"
+      {...props}
+    />
   ),
 };
 

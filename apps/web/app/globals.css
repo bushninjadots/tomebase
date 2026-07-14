@@ -483,6 +483,192 @@ body {
   animation: skeleton 1.5s ease-in-out infinite;
 }
 
+/* ===== CodeMirror Editor Theme Integration ===== */
+
+.cm-editor {
+  height: 100%;
+  background: transparent;
+  font-family: var(--font-mono), 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.cm-editor .cm-scroller {
+  overflow: auto;
+  font-family: inherit;
+}
+
+.cm-editor .cm-content {
+  padding-left: 4px;
+}
+
+.cm-editor.cm-focused {
+  outline: none;
+}
+
+.cm-editor .cm-line {
+  padding: 0 4px;
+}
+
+/* CodeMirror scrollbars */
+.cm-editor .cm-scroller::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.cm-editor .cm-scroller::-webkit-scrollbar-track {
+  background: transparent;
+}
+.cm-editor .cm-scroller::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+}
+.cm-editor .cm-scroller::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* CodeMirror fold gutter */
+.cm-editor .cm-foldGutter .cm-gutterElement {
+  padding: 0 4px;
+  cursor: pointer;
+  color: var(--text-muted);
+  opacity: 0.5;
+  transition: opacity 150ms ease-out;
+}
+.cm-editor .cm-foldGutter .cm-gutterElement:hover {
+  opacity: 1;
+  color: var(--accent);
+}
+
+/* CodeMirror line numbers */
+.cm-editor .cm-lineNumbers .cm-gutterElement {
+  padding: 0 8px 0 4px;
+  font-size: 12px;
+  min-width: 32px;
+  text-align: right;
+}
+
+/* CodeMirror active line highlight */
+.cm-editor .cm-activeLine {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+  border-radius: 2px;
+}
+
+/* CodeMirror selection in dark mode */
+.cm-editor.cm-focused .cm-selectionBackground {
+  background: rgba(229, 165, 11, 0.15) !important;
+}
+
+/* ===== Code Block Copy Button Group ===== */
+.group:hover .opacity-0 {
+  opacity: 1;
+}
+
+/* ===== Checklist Styling ===== */
+.markdown-body input[type="checkbox"] {
+  accent-color: var(--accent);
+  margin-right: 6px;
+}
+
+/* ===== Table Improvements ===== */
+table {
+  border-spacing: 0;
+}
+
+th {
+  user-select: none;
+}
+
+/* ===== Highlight.js Theme Overrides ===== */
+/* Override github-dark.css to use theme variables for code blocks */
+pre code.hljs {
+  background: var(--bg-card) !important;
+  color: var(--text-main) !important;
+}
+
+pre {
+  background: var(--bg-card) !important;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: var(--text-muted) !important;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-addition {
+  color: #a78bfa !important;
+}
+
+.hljs-number,
+.hljs-string,
+.hljs-meta .hljs-meta-string,
+.hljs-literal,
+.hljs-doctag,
+.hljs-regexp {
+  color: #34d399 !important;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class {
+  color: #60a5fa !important;
+}
+
+.hljs-attribute,
+.hljs-attr,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-class .hljs-title,
+.hljs-type {
+  color: var(--text-main) !important;
+}
+
+.hljs-symbol,
+.hljs-bullet,
+.hljs-subst,
+.hljs-meta,
+.hljs-meta .hljs-keyword,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-link {
+  color: #f59e0b !important;
+}
+
+.hljs-built_in,
+.hljs-deletion {
+  color: #ef4444 !important;
+}
+
+.hljs-formula {
+  background: var(--bg-hover) !important;
+}
+
+.hljs-emphasis {
+  font-style: italic !important;
+}
+
+.hljs-strong {
+  font-weight: bold !important;
+}
+
+/* ===== Smooth Editor Transitions ===== */
+.cm-editor {
+  transition: background-color 200ms ease-out;
+}
+
+/* ===== Responsive Adjustments ===== */
+@media (max-width: 640px) {
+  .cm-editor .cm-lineNumbers .cm-gutterElement {
+    display: none;
+  }
+
+  .cm-editor .cm-content {
+    padding-left: 8px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
