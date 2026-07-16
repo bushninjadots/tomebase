@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { useState, useCallback, useMemo, useRef, useEffect, lazy, Suspense } from 'react';
 import { extractTags } from '@/lib/wiki';
-import { SearchOverlay } from '@/components/search';
+import { CommandPalette } from '@/components/command-palette';
 import { templates } from '@/lib/templates';
 
 const GraphButtonWithHealth = lazy(() =>
@@ -461,7 +461,11 @@ export function DocSidebar({ project }: { project: Project }) {
       <div className="flex-1 overflow-y-auto px-2 py-2.5">
         {/* Search */}
         <div className="mb-2.5">
-          <SearchOverlay projectId={project.id} pages={project.pages} />
+          <CommandPalette
+            pages={project.pages.map((p) => ({ ...p, projectName: project.name, projectId: project.id }))}
+            projects={[{ id: project.id, name: project.name }]}
+            currentProjectId={project.id}
+          />
         </div>
 
         {/* Nav links */}

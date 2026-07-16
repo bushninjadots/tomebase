@@ -6,6 +6,7 @@ import { Markdown } from '@/components/markdown';
 import { ViewTracker } from '@/components/view-tracker';
 import { extractTags } from '@/lib/wiki';
 import { extractHeadings } from '@/lib/content';
+import { Breadcrumbs } from '@/components/breadcrumbs';
 import type { Metadata } from 'next';
 
 interface PageProps {
@@ -155,19 +156,14 @@ export default async function PublicDocPage({ params }: PageProps) {
   return (
     <div className="mx-auto max-w-[760px] px-6 py-10 sm:py-14">
       {/* Breadcrumbs */}
-      <nav aria-label="Breadcrumb" className="mb-6">
-        <ol className="flex items-center gap-1.5 text-xs text-theme-muted">
-          <li>
-            <Link href={`/p/${projectId}`} className="hover:text-theme-main transition-colors">
-              {project.name}
-            </Link>
-          </li>
-          <li aria-hidden="true" className="text-theme-muted/50">/</li>
-          <li aria-current="page" className="font-medium text-theme-subtle truncate max-w-[300px]">
-            {page.title}
-          </li>
-        </ol>
-      </nav>
+      <div className="mb-6">
+        <Breadcrumbs
+          items={[
+            { label: project.name, href: `/p/${projectId}` },
+            { label: page.title },
+          ]}
+        />
+      </div>
 
       {/* Centered hero header */}
       <header className="mb-10 text-center">

@@ -2,7 +2,6 @@ import { auth } from '@/lib/auth';
 import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@fluid/database';
 import { Container } from '@fluid/ui';
-import Link from 'next/link';
 import { Download, Github } from 'lucide-react';
 import { ProjectSettingsForm } from './form';
 import { ApiKeyManager } from './api-keys';
@@ -10,6 +9,7 @@ import { WebhookSettings } from '@/components/webhook-settings';
 import { GitSync } from '@/components/git-sync';
 import { ExportProjectSection } from './export-section';
 import { ProjectDangerZone } from './danger-zone';
+import { Breadcrumbs } from '@/components/breadcrumbs';
 
 interface PageProps {
   params: Promise<{ project: string }>;
@@ -31,12 +31,13 @@ export default async function ProjectSettingsPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-theme-page">
       <Container className="py-8">
-        <div className="mb-6 flex items-center gap-2 text-sm text-theme-muted">
-          <Link href="/dashboard" className="hover:text-theme-main transition-colors">Dashboard</Link>
-          <span>/</span>
-          <Link href={`/docs/${project.id}`} className="hover:text-theme-main transition-colors">{project.name}</Link>
-          <span>/</span>
-          <span className="text-theme-subtle">Settings</span>
+        <div className="mb-6">
+          <Breadcrumbs
+            items={[
+              { label: project.name, href: `/docs/${project.id}` },
+              { label: 'Settings' },
+            ]}
+          />
         </div>
 
         <div className="mx-auto max-w-2xl">

@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { prisma } from '@fluid/database';
 import { getOrCreatePersonalTeam } from '@/lib/team';
+import { DashboardCommandPalette } from './command-palette-wrapper';
 import {
   LayoutDashboard,
   Settings,
@@ -22,6 +23,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const session = await auth();
   if (!session?.user?.id) redirect('/login');
 
+  // Check if user needs onboarding
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { onboarded: true },
+  });
+  if (user && !user.onboarded) redirect('/onboarding');
+
   const [team, firstProject] = await Promise.all([
     getOrCreatePersonalTeam(session.user.id),
     prisma.project.findFirst({
@@ -39,6 +47,20 @@ export default async function DashboardLayout({ children }: { children: React.Re
   });
 
   const firstProjectId = firstProject?.id || projects[0]?.id;
+
+  // Fetch pages for command palette
+  const pages = await prisma.docPage.findMany({
+    where: { project: { teamId: team.id } },
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      projectId: true,
+      project: { select: { name: true } },
+    },
+    orderBy: { updatedAt: 'desc' },
+    take: 100,
+  });
 
   return (
     <div className="flex min-h-screen bg-theme-page">
@@ -59,6 +81,22 @@ export default async function DashboardLayout({ children }: { children: React.Re
             </svg>
             <span className="text-sm font-bold text-theme-main">TomeBase</span>
           </Link>
+        </div>
+
+        {/* Search / Command Palette */}
+        <div className="px-3 py-2.5">
+          <DashboardCommandPalette
+            pages={pages.map((p) => ({
+              id: p.id,
+              title: p.title,
+              slug: p.slug,
+              projectId: p.projectId,
+              projectName: p.project.name,
+              content: '',
+            }))}
+            projects={projects}
+            currentProjectId={firstProjectId}
+          />
         </div>
 
         {/* Nav links */}

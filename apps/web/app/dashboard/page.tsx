@@ -23,6 +23,7 @@ import { TIERS } from '@/lib/limits';
 import { ProjectCard } from '@/components/project-card';
 import { UpgradeBanner } from '@/components/upgrade-banner';
 import { UpgradePrompt } from '@/components/upgrade-prompt';
+import { Breadcrumbs } from '@/components/breadcrumbs';
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -137,6 +138,10 @@ export default async function DashboardPage() {
           <UpgradePrompt />
         </div>
       )}
+
+      <div className="mb-6">
+        <Breadcrumbs items={[]} />
+      </div>
 
       {/* Welcome Section */}
       <div className="mb-8">

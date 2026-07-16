@@ -110,12 +110,12 @@ export default async function LoginPage() {
           )}
         </div>
 
-        <p className="mt-6 text-center text-xs text-theme-muted">
-          By continuing, you agree to our{' '}
-          <Link href="/terms" className="underline underline-offset-2 hover:text-theme-subtle transition-colors">Terms</Link>
-          {' '}and{' '}
-          <Link href="/privacy" className="underline underline-offset-2 hover:text-theme-subtle transition-colors">Privacy Policy</Link>.
-        </p>
+          <p className="mt-6 text-center text-xs text-theme-muted">
+            Don&apos;t have an account?{' '}
+            <Link href="/signup" className="font-medium text-theme-accent hover:text-theme-accent-hover transition-colors">
+              Sign up
+            </Link>
+          </p>
       </div>
     </div>
   );

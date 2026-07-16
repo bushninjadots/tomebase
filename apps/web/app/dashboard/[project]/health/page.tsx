@@ -12,6 +12,7 @@ import {
 import { analyzePages, getHealthColor, getHealthLabel, getScoreRingColor, type CategorySummary } from '@/lib/health';
 import { formatDistanceToNow } from 'date-fns';
 import { HealthScanButton } from '@/components/health-scan-button';
+import { Breadcrumbs } from '@/components/breadcrumbs';
 
 interface PageProps {
   params: Promise<{ project: string }>;
@@ -136,12 +137,13 @@ export default async function ProjectHealthPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-theme-page">
       <Container className="py-8">
-        <div className="mb-6 flex items-center gap-2 text-sm text-theme-muted">
-          <Link href="/dashboard" className="hover:text-theme-main transition-colors">Dashboard</Link>
-          <span>/</span>
-          <Link href={`/docs/${project.id}`} className="hover:text-theme-main transition-colors">{project.name}</Link>
-          <span>/</span>
-          <span className="text-theme-subtle">Health</span>
+        <div className="mb-6">
+          <Breadcrumbs
+            items={[
+              { label: project.name, href: `/docs/${project.id}` },
+              { label: 'Health' },
+            ]}
+          />
         </div>
 
         <div className="mx-auto max-w-5xl">
