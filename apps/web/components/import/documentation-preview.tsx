@@ -1,13 +1,39 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { FileText, ExternalLink, Loader2 } from 'lucide-react';
-import Link from 'next/link';
+import { FileText } from 'lucide-react';
 import { Markdown } from '@/components/markdown';
 
 interface DocumentationPreviewProps {
   projectId: string;
   slug: string | null;
+}
+
+function PreviewSkeleton() {
+  return (
+    <div className="space-y-4 animate-pulse">
+      <div className="h-7 w-48 bg-theme-hover rounded-lg" />
+      <div className="space-y-2">
+        <div className="h-4 w-full bg-theme-hover rounded" />
+        <div className="h-4 w-5/6 bg-theme-hover rounded" />
+        <div className="h-4 w-4/6 bg-theme-hover rounded" />
+      </div>
+      <div className="h-px bg-theme-border my-4" />
+      <div className="space-y-2">
+        <div className="h-4 w-full bg-theme-hover rounded" />
+        <div className="h-4 w-3/4 bg-theme-hover rounded" />
+      </div>
+      <div className="rounded-lg bg-theme-hover/50 border border-theme-border p-3 space-y-2">
+        <div className="h-3 w-24 bg-theme-hover rounded" />
+        <div className="h-3 w-3/4 bg-theme-hover rounded" />
+        <div className="h-3 w-1/2 bg-theme-hover rounded" />
+      </div>
+      <div className="space-y-2">
+        <div className="h-4 w-full bg-theme-hover rounded" />
+        <div className="h-4 w-5/6 bg-theme-hover rounded" />
+      </div>
+    </div>
+  );
 }
 
 export function DocumentationPreview({ projectId, slug }: DocumentationPreviewProps) {
@@ -16,6 +42,7 @@ export function DocumentationPreview({ projectId, slug }: DocumentationPreviewPr
   const [displayedSlug, setDisplayedSlug] = useState<string | null>(null);
   const [fading, setFading] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (!slug) {
@@ -28,21 +55,33 @@ export function DocumentationPreview({ projectId, slug }: DocumentationPreviewPr
 
     setFading(true);
     if (timerRef.current) clearTimeout(timerRef.current);
+    abortRef.current?.abort();
 
     timerRef.current = setTimeout(() => {
       setLoading(true);
-      fetch(`/api/pages?projectId=${projectId}&slug=${slug}`)
+      const controller = new AbortController();
+      abortRef.current = controller;
+
+      fetch(`/api/pages?projectId=${projectId}&slug=${slug}`, { signal: controller.signal })
         .then((res) => res.json())
         .then((data) => {
-          setContent(data.pages?.[0]?.content ?? '');
+          if (Array.isArray(data)) {
+            setContent(data[0]?.content ?? '');
+          } else {
+            setContent(data.pages?.[0]?.content ?? data.content ?? '');
+          }
           setDisplayedSlug(slug);
         })
-        .catch(() => setContent('# Error\n\nFailed to load page content.'))
+        .catch((err) => {
+          if (err?.name !== 'AbortError') {
+            setContent('# Error\n\nFailed to load page content.');
+          }
+        })
         .finally(() => {
           setLoading(false);
           setFading(false);
         });
-    }, 150);
+    }, 100);
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
@@ -51,40 +90,28 @@ export function DocumentationPreview({ projectId, slug }: DocumentationPreviewPr
 
   if (!slug && !displayedSlug) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-theme-muted">
-        <FileText className="h-10 w-10 mb-3 opacity-30" />
-        <p className="text-sm">Select a page to preview</p>
+      <div className="flex flex-col items-center justify-center h-full min-h-[300px] text-theme-muted">
+        <div className="w-12 h-12 rounded-xl bg-theme-hover flex items-center justify-center mb-3">
+          <FileText className="h-5 w-5 opacity-40" />
+        </div>
+        <p className="text-sm font-medium">Select a page to preview</p>
+        <p className="text-xs text-theme-muted/60 mt-1">Click any page in the list</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between mb-4 pb-3 border-b border-theme-border">
-        <h3 className="text-xs font-semibold text-theme-muted uppercase tracking-wider">
-          Live Preview
-        </h3>
-        <Link
-          href={`/docs/${projectId}/${slug ?? displayedSlug}`}
-          target="_blank"
-          className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium text-theme-muted hover:text-theme-main hover:bg-theme-hover transition-colors"
-        >
-          <ExternalLink className="h-3 w-3" />
-          Open
-        </Link>
-      </div>
-
-      <div className={`flex-1 overflow-y-auto transition-opacity duration-150 ${fading ? 'opacity-0' : 'opacity-100'}`}>
-        {loading ? (
-          <div className="flex items-center justify-center h-full">
-            <Loader2 className="h-6 w-6 text-theme-muted animate-spin" />
-          </div>
-        ) : content ? (
-          <Markdown content={content} />
-        ) : (
-          <p className="text-theme-muted text-sm italic">No content</p>
-        )}
-      </div>
+    <div className={`transition-opacity duration-150 ${fading ? 'opacity-40' : 'opacity-100'}`}>
+      {loading ? (
+        <PreviewSkeleton />
+      ) : content ? (
+        <Markdown content={content} />
+      ) : (
+        <div className="flex flex-col items-center justify-center min-h-[200px] text-theme-muted">
+          <FileText className="h-8 w-8 mb-2 opacity-30" />
+          <p className="text-sm">No content</p>
+        </div>
+      )}
     </div>
   );
 }

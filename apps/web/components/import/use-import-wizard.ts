@@ -26,6 +26,9 @@ export interface GenerationResult {
   total: number;
   stats: GenerationStats;
   warnings: string[];
+  importType: 'code' | 'openapi';
+  specTitle?: string;
+  endpointsCount?: number;
 }
 
 export interface GenerationStats {
@@ -158,7 +161,7 @@ export function useImportWizard({ projectId, onToast }: UseImportWizardOptions) 
         };
 
         if (pages.length === 0 && skipped.length > 0) {
-          setResult({ pages: [], skipped, total: skipped.length, stats, warnings });
+          setResult({ pages: [], skipped, total: skipped.length, stats, warnings, importType: 'code' });
           setState('conflicts');
           onToast('info', `${skipped.length} page(s) already exist`);
           return;
@@ -170,9 +173,102 @@ export function useImportWizard({ projectId, onToast }: UseImportWizardOptions) 
           return;
         }
 
-        setResult({ pages, skipped, total: data.total ?? pages.length, stats, warnings });
+        setResult({ pages, skipped, total: data.total ?? pages.length, stats, warnings, importType: 'code' });
         setState('success');
         onToast('success', `Generated ${pages.length} documentation page${pages.length === 1 ? '' : 's'}`);
+      } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') return;
+        setError('Something went wrong. Please try again.');
+        setState('error');
+        onToast('error', 'Something went wrong. Please try again.');
+      } finally {
+        setSteps((prev) => prev.map((s) => ({ ...s, status: 'done' })));
+      }
+    },
+    [projectId, simulateProgress, onToast],
+  );
+
+  const importOpenApi = useCallback(
+    async (specOrUrl: { spec?: string; url?: string }) => {
+      setState('validating');
+      setError(null);
+      setResult(null);
+      setSteps(PROGRESS_STEPS.map((s) => ({ ...s, status: 'pending' })));
+
+      await new Promise((r) => setTimeout(r, 400));
+
+      setState('generating');
+      const startTime = Date.now();
+      const progressPromise = simulateProgress(startTime);
+
+      try {
+        abortRef.current = new AbortController();
+        const body: Record<string, string> = { projectId };
+        if (specOrUrl.spec) body.spec = specOrUrl.spec;
+        if (specOrUrl.url) body.url = specOrUrl.url;
+
+        const res = await fetch('/api/import/openapi', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+          signal: abortRef.current.signal,
+        });
+
+        const data = await res.json();
+
+        await progressPromise;
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, 600 - elapsed);
+        if (remaining > 0) await new Promise((r) => setTimeout(r, remaining));
+
+        if (!res.ok) {
+          setError(data.error ?? 'Failed to import OpenAPI spec');
+          setState('error');
+          onToast('error', data.error ?? 'Failed to import OpenAPI spec');
+          return;
+        }
+
+        const pages: GeneratedPage[] = (data.pages ?? []).map((p: Record<string, string>) => ({
+          id: p.id,
+          title: p.title,
+          slug: p.slug,
+          kind: 'function' as ExportKind,
+          description: p.description || p.title,
+          wordCount: (p.content ?? '').split(/\s+/).filter(Boolean).length,
+        }));
+
+        const stats: GenerationStats = {
+          functions: pages.length,
+          interfaces: 0,
+          types: 0,
+          classes: 0,
+          enums: 0,
+          namespaces: 0,
+          wikiLinks: 0,
+          tags: 0,
+          backlinks: 0,
+          generationTimeMs: elapsed,
+        };
+
+        if (pages.length === 0) {
+          setError(data.error ?? 'No endpoints found in the spec');
+          setState('error');
+          onToast('error', 'No endpoints found in the spec');
+          return;
+        }
+
+        setResult({
+          pages,
+          skipped: [],
+          total: data.total ?? pages.length,
+          stats,
+          warnings: data.errors ?? [],
+          importType: 'openapi',
+          specTitle: data.specTitle,
+          endpointsCount: data.total,
+        });
+        setState('success');
+        onToast('success', `Imported ${pages.length} API endpoint${pages.length === 1 ? '' : 's'}`);
       } catch (err) {
         if (err instanceof DOMException && err.name === 'AbortError') return;
         setError('Something went wrong. Please try again.');
@@ -203,6 +299,7 @@ export function useImportWizard({ projectId, onToast }: UseImportWizardOptions) 
     language,
     setLanguage,
     generate,
+    importOpenApi,
     reset,
   };
 }

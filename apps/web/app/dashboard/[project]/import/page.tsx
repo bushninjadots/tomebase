@@ -1,9 +1,7 @@
 import { auth } from '@/lib/auth';
 import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@fluid/database';
-import { Container } from '@fluid/ui';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
 import { ImportWizard } from '@/components/import/import-wizard';
 
 interface PageProps {
@@ -24,7 +22,8 @@ export default async function ImportPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-theme-page">
-      <Container className="py-8">
+      <div className="mx-auto max-w-5xl px-6 py-8">
+        {/* Breadcrumb */}
         <div className="mb-6 flex items-center gap-2 text-sm text-theme-muted">
           <Link href="/dashboard" className="hover:text-theme-main transition-colors">Dashboard</Link>
           <span>/</span>
@@ -33,19 +32,17 @@ export default async function ImportPage({ params }: PageProps) {
           <span className="text-theme-subtle">Import</span>
         </div>
 
-        <div className="mx-auto max-w-6xl">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-2xl font-bold text-theme-main">Import</h1>
-              <p className="mt-1 text-sm text-theme-muted">
-                Auto-generate documentation from source code or OpenAPI specs.
-              </p>
-            </div>
-          </div>
-
-          <ImportWizard projectId={project.id} projectName={project.name} />
+        {/* Page Header */}
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-theme-main tracking-tight">Import Documentation</h1>
+          <p className="mt-1.5 text-sm text-theme-muted">
+            Auto-generate documentation from source code or OpenAPI specifications.
+          </p>
         </div>
-      </Container>
+
+        {/* Import Wizard */}
+        <ImportWizard projectId={project.id} projectName={project.name} />
+      </div>
     </div>
   );
 }

@@ -95,6 +95,7 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const projectId = searchParams.get('projectId');
+    const slug = searchParams.get('slug');
 
     if (!projectId) {
       return NextResponse.json({ error: 'projectId is required' }, { status: 400 });
@@ -110,8 +111,13 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
     }
 
+    const where: Record<string, unknown> = { projectId };
+    if (slug) {
+      where.slug = slug;
+    }
+
     const pages = await prisma.docPage.findMany({
-      where: { projectId },
+      where,
       orderBy: { order: 'asc' },
     });
     return NextResponse.json(pages);
