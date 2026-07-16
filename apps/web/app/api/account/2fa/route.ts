@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@fluid/database';
-import { generateSecret, generate, verify, generateURI } from 'otplib';
+import { generateSecret, verify, generateURI } from 'otplib';
 import QRCode from 'qrcode';
 
 // GET - Generate new 2FA secret and QR code
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Secret and token are required' }, { status: 400 });
   }
 
-  const isValid = verify({ token, secret });
+  const isValid = await verify({ token, secret });
 
   if (!isValid) {
     return NextResponse.json({ error: 'Invalid verification code' }, { status: 400 });
