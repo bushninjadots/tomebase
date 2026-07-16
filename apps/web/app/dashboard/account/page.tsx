@@ -1,9 +1,17 @@
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { prisma } from '@fluid/database';
-import { Container } from '@fluid/ui';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import { ProfileSection } from '@/components/account/profile-section';
+import { SecuritySection } from '@/components/account/security-section';
+import { AppearanceSection } from '@/components/account/appearance-section';
+import { UsageSection } from '@/components/account/usage-section';
+import { ConnectedAccountsSection } from '@/components/account/connected-accounts-section';
+import { NotificationsSection } from '@/components/account/notifications-section';
+import { ApiAccessSection } from '@/components/account/api-access-section';
+import { ActivitySection } from '@/components/account/activity-section';
+import { ExportSection } from '@/components/account/export-section';
 import { AccountDangerZone } from '@/components/account-danger-zone';
 
 export default async function AccountSettingsPage() {
@@ -17,21 +25,24 @@ export default async function AccountSettingsPage() {
       name: true,
       email: true,
       image: true,
+      password: true,
       createdAt: true,
-      _count: {
-        select: {
-          projects: true,
-          teams: true,
-        },
-      },
     },
   });
 
   if (!user) redirect('/login');
 
+  const accounts = await prisma.account.findMany({
+    where: { userId: session.user.id },
+    select: { provider: true },
+  });
+
+  const connectedProviders = accounts.map((a) => a.provider);
+
   return (
     <div className="min-h-screen bg-theme-page">
-      <Container className="py-8">
+      <div className="mx-auto max-w-2xl px-6 py-8">
+        {/* Breadcrumb */}
         <Link
           href="/dashboard"
           className="mb-6 inline-flex items-center gap-1 text-sm text-theme-muted hover:text-theme-main transition-colors"
@@ -40,45 +51,61 @@ export default async function AccountSettingsPage() {
           Back to Dashboard
         </Link>
 
-        <div className="mx-auto max-w-2xl">
-          <h1 className="text-3xl font-bold text-theme-main">Account Settings</h1>
-          <p className="mt-2 text-sm text-theme-subtle">
-            Manage your account profile and preferences.
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-theme-main tracking-tight">Account Settings</h1>
+          <p className="mt-1.5 text-sm text-theme-muted">
+            Manage your profile, security, and preferences.
           </p>
-
-          <div className="mt-8 space-y-8">
-            <div className="rounded-2xl border border-theme-border bg-theme-card p-6">
-              <h2 className="text-lg font-semibold text-theme-main">Profile</h2>
-              <div className="mt-4 space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#E5A50B] to-[#ca8a04] flex items-center justify-center text-lg font-bold text-gray-900 shrink-0">
-                    {user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-theme-main">{user.name || 'Unnamed User'}</div>
-                    <div className="text-xs text-theme-muted">{user.email}</div>
-                    <div className="text-xs text-theme-muted mt-0.5">
-                      Member since {user.createdAt.toLocaleDateString()}
-                    </div>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="rounded-xl border border-theme-border bg-theme-page p-4">
-                    <div className="text-2xl font-bold text-theme-main">{user._count.projects}</div>
-                    <div className="text-xs text-theme-muted">Projects</div>
-                  </div>
-                  <div className="rounded-xl border border-theme-border bg-theme-page p-4">
-                    <div className="text-2xl font-bold text-theme-main">{user._count.teams}</div>
-                    <div className="text-xs text-theme-muted">Teams</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <AccountDangerZone userId={user.id} />
-          </div>
         </div>
-      </Container>
+
+        {/* Sections */}
+        <div className="space-y-6">
+          {/* Profile — Who am I? */}
+          <ProfileSection
+            user={{
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              image: user.image,
+              createdAt: user.createdAt,
+              hasPassword: !!user.password,
+              connectedProviders,
+            }}
+          />
+
+          {/* Security — How do I secure my account? */}
+          <SecuritySection
+            hasPassword={!!user.password}
+            connectedProviders={connectedProviders}
+            hasOAuth={connectedProviders.length > 0}
+          />
+
+          {/* Appearance — How do I personalize? */}
+          <AppearanceSection />
+
+          {/* Usage Summary */}
+          <UsageSection userId={user.id} />
+
+          {/* Connected Accounts */}
+          <ConnectedAccountsSection userId={user.id} />
+
+          {/* Notifications */}
+          <NotificationsSection />
+
+          {/* Recent Activity */}
+          <ActivitySection />
+
+          {/* API Access */}
+          <ApiAccessSection />
+
+          {/* Export Data */}
+          <ExportSection />
+
+          {/* Danger Zone */}
+          <AccountDangerZone userId={user.id} />
+        </div>
+      </div>
     </div>
   );
 }
