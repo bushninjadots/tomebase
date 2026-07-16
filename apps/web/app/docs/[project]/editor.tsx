@@ -49,6 +49,7 @@ export function DocEditor({ project }: { project: Project }) {
   const splitRef = useRef<HTMLDivElement>(null);
   const splitDividerRef = useRef<HTMLDivElement>(null);
   const actionsRef = useRef<HTMLDivElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   // Core state
   const [selectedPage, setSelectedPage] = useState<Page | null>(null);
@@ -59,6 +60,7 @@ export function DocEditor({ project }: { project: Project }) {
 
   // UI state
   const [zenMode, setZenMode] = useState(false);
+  const [typewriterMode, setTypewriterMode] = useState(false);
   const [sidebarTab, setSidebarTab] = useState<SidebarTab | null>(null);
   const [showActions, setShowActions] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -70,12 +72,21 @@ export function DocEditor({ project }: { project: Project }) {
   const [slashQuery, setSlashQuery] = useState('');
   const [slashPosition, setSlashPosition] = useState({ top: 0, left: 0 });
 
+  // Link dialog
+  const [showLinkDialog, setShowLinkDialog] = useState(false);
+  const [linkText, setLinkText] = useState('');
+  const [linkUrl, setLinkUrl] = useState('');
+  const linkSelectionRef = useRef<{ from: number; to: number }>({ from: 0, to: 0 });
+
   // Autosave
   const [autoSaveStatus, setAutoSaveStatus] = useState<'saved' | 'unsaved' | 'saving'>('saved');
   const [saving, setSaving] = useState(false);
   const [draftAvailable, setDraftAvailable] = useState(false);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const savedVersionRef = useRef({ title: '', content: '' });
+
+  // Cursor position
+  const [cursorPos, setCursorPos] = useState({ line: 1, col: 1 });
 
   // Team
   const [teamMembers, setTeamMembers] = useState<{ id: string; name: string | null; email: string | null; image: string | null }[]>([]);
@@ -165,10 +176,45 @@ export function DocEditor({ project }: { project: Project }) {
     [selectedPage]
   );
 
+  // Active heading for outline sync
+  const [activeHeadingId, setActiveHeadingId] = useState<string | null>(null);
+
   const tags = useMemo(
     () => (selectedPage ? extractTags(selectedPage.content) : []),
     [selectedPage]
   );
+
+  // Active heading observer for outline sync
+  useEffect(() => {
+    if (!selectedPage) return;
+    const headingIds = headings.map((h) => h.id);
+    if (headingIds.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setActiveHeadingId(entry.target.id);
+            break;
+          }
+        }
+      },
+      { rootMargin: '-80px 0px -70% 0px', threshold: 0 }
+    );
+
+    // Small delay to let DOM render
+    const timer = setTimeout(() => {
+      for (const id of headingIds) {
+        const el = document.getElementById(id);
+        if (el) observer.observe(el);
+      }
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, [selectedPage?.id, headings]);
 
   // Save logic
   const doSave = useCallback(async (t: string, c: string) => {
@@ -247,6 +293,10 @@ export function DocEditor({ project }: { project: Project }) {
       if (isMeta && e.key === '\\') {
         e.preventDefault();
         setZenMode((v) => !v);
+      }
+      if (isMeta && e.shiftKey && e.key === 'T') {
+        e.preventDefault();
+        setTypewriterMode((v) => !v);
       }
     }
     document.addEventListener('keydown', handleKeyDown);
@@ -458,7 +508,15 @@ export function DocEditor({ project }: { project: Project }) {
       case 'italic': wrap('*', '*'); break;
       case 'strikethrough': wrap('~~', '~~'); break;
       case 'code': wrap('`', '`'); break;
-      case 'link': wrap('[', '](url)'); break;
+      case 'link': {
+        const { from, to } = view.state.selection.main;
+        const sel = view.state.sliceDoc(from, to);
+        linkSelectionRef.current = { from, to };
+        setLinkText(sel || '');
+        setLinkUrl('');
+        setShowLinkDialog(true);
+        break;
+      }
       case 'h1': insert('# '); break;
       case 'h2': insert('## '); break;
       case 'h3': insert('### '); break;
@@ -471,7 +529,7 @@ export function DocEditor({ project }: { project: Project }) {
       case 'mermaid': insert('```mermaid\ngraph TD\n    A[Start] --> B[End]\n```'); break;
       case 'table': insert('\n| Header | Header |\n|--------|--------|\n| Cell   | Cell   |\n'); break;
       case 'callout': insert('> [!NOTE]\n> '); break;
-      case 'image': insert('![alt text](url)'); break;
+      case 'image': imageInputRef.current?.click(); break;
       case 'columns': insert('\n| Left | Right |\n|------|-------|\n|      |       |\n'); break;
       case 'undo': editorRef.current?.undo(); break;
       case 'redo': editorRef.current?.redo(); break;
@@ -693,6 +751,17 @@ export function DocEditor({ project }: { project: Project }) {
                   <Maximize2 className="w-4 h-4" />
                 </button>
 
+                {/* Typewriter mode */}
+                <button
+                  onClick={() => setTypewriterMode((v) => !v)}
+                  className={`p-1.5 rounded-lg transition-colors duration-150 ${
+                    typewriterMode ? 'bg-theme-accent/10 text-theme-accent' : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
+                  }`}
+                  title="Typewriter mode (⌘⇧T)"
+                >
+                  <Type className="w-4 h-4" />
+                </button>
+
                 {/* More actions */}
                 <div className="relative" ref={actionsRef}>
                   <button
@@ -786,6 +855,8 @@ export function DocEditor({ project }: { project: Project }) {
                   onChange={setContent}
                   className="min-h-[calc(100vh-280px)]"
                   placeholder="Start writing... Type / for commands"
+                  typewriterMode={typewriterMode}
+                  onCursorChange={setCursorPos}
                   onSlashCommand={handleSlashCommand}
                   onSlashCommandClose={() => setShowSlashCommands(false)}
                 />
@@ -828,6 +899,8 @@ export function DocEditor({ project }: { project: Project }) {
                       onChange={setContent}
                       className="min-h-[calc(100vh-280px)]"
                       placeholder="Start writing..."
+                      typewriterMode={typewriterMode}
+                      onCursorChange={setCursorPos}
                       onSlashCommand={handleSlashCommand}
                       onSlashCommandClose={() => setShowSlashCommands(false)}
                     />
@@ -860,6 +933,7 @@ export function DocEditor({ project }: { project: Project }) {
         {!zenMode && (
           <div className="shrink-0 flex items-center justify-between border-t border-theme-border px-4 sm:px-6 py-1.5 text-[11px] text-theme-muted">
             <div className="flex items-center gap-4">
+              <span>Ln {cursorPos.line}, Col {cursorPos.col}</span>
               <span>{charCount} chars</span>
               <span>{wordCount} words</span>
               <span>{readingTime} min read</span>
@@ -916,7 +990,7 @@ export function DocEditor({ project }: { project: Project }) {
 
           {/* Tab content */}
           <div className="flex-1 overflow-y-auto p-3">
-            {sidebarTab === 'outline' && <DocumentOutline content={content} />}
+            {sidebarTab === 'outline' && <DocumentOutline content={content} activeHeadingId={activeHeadingId} />}
             {sidebarTab === 'team' && <TeamPresence members={teamMembers} />}
             {sidebarTab === 'comments' && <Comments pageId={selectedPage.id} teamMembers={teamMembers} />}
           </div>
@@ -932,6 +1006,112 @@ export function DocEditor({ project }: { project: Project }) {
         >
           <Minimize2 className="w-4 h-4" />
         </button>
+      )}
+
+      {/* ===== HIDDEN FILE INPUT FOR IMAGE UPLOAD ===== */}
+      <input
+        ref={imageInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={async (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+          setIsUploading(true);
+          const url = await uploadImage(file);
+          if (url && editorRef.current) {
+            editorRef.current.insertText(`![${file.name}](${url})`);
+          }
+          setIsUploading(false);
+          e.target.value = '';
+        }}
+      />
+
+      {/* ===== LINK DIALOG ===== */}
+      {showLinkDialog && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowLinkDialog(false); }}
+        >
+          <div className="w-full max-w-sm rounded-2xl border border-theme-border bg-theme-card p-5 shadow-2xl">
+            <h3 className="text-sm font-semibold text-theme-main mb-4">Insert link</h3>
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-medium text-theme-muted mb-1 block">Text</label>
+                <input
+                  type="text"
+                  value={linkText}
+                  onChange={(e) => setLinkText(e.target.value)}
+                  placeholder="Link text"
+                  autoFocus
+                  className="w-full rounded-lg border border-theme-border bg-theme-page px-3 py-2 text-sm text-theme-main placeholder:text-theme-muted/50 focus:border-theme-accent focus:outline-none focus:ring-1 focus:ring-theme-accent/30"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      const { from, to } = linkSelectionRef.current;
+                      const display = linkText || 'link';
+                      const markdown = `[${display}](${linkUrl || 'url'})`;
+                      const view = editorRef.current?.view;
+                      if (view) {
+                        view.dispatch({ changes: { from, to, insert: markdown } });
+                        view.focus();
+                      }
+                      setShowLinkDialog(false);
+                    }
+                  }}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-theme-muted mb-1 block">URL</label>
+                <input
+                  type="url"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  placeholder="https://..."
+                  className="w-full rounded-lg border border-theme-border bg-theme-page px-3 py-2 text-sm text-theme-main placeholder:text-theme-muted/50 focus:border-theme-accent focus:outline-none focus:ring-1 focus:ring-theme-accent/30"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      const { from, to } = linkSelectionRef.current;
+                      const display = linkText || 'link';
+                      const markdown = `[${display}](${linkUrl || 'url'})`;
+                      const view = editorRef.current?.view;
+                      if (view) {
+                        view.dispatch({ changes: { from, to, insert: markdown } });
+                        view.focus();
+                      }
+                      setShowLinkDialog(false);
+                    }
+                  }}
+                />
+              </div>
+            </div>
+            <div className="flex gap-2 justify-end mt-5">
+              <button
+                onClick={() => setShowLinkDialog(false)}
+                className="rounded-lg border border-theme-border px-4 py-2 text-sm font-medium text-theme-subtle hover:bg-theme-hover transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  const { from, to } = linkSelectionRef.current;
+                  const display = linkText || 'link';
+                  const markdown = `[${display}](${linkUrl || 'url'})`;
+                  const view = editorRef.current?.view;
+                  if (view) {
+                    view.dispatch({ changes: { from, to, insert: markdown } });
+                    view.focus();
+                  }
+                  setShowLinkDialog(false);
+                }}
+                className="rounded-lg bg-theme-accent px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors"
+              >
+                Insert
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* ===== DELETE MODAL ===== */}

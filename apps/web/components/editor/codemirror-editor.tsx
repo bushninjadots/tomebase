@@ -29,15 +29,17 @@ interface CodeMirrorEditorProps {
   className?: string;
   placeholder?: string;
   readOnly?: boolean;
+  typewriterMode?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
+  onCursorChange?: (pos: { line: number; col: number }) => void;
   onSlashCommand?: (query: string) => void;
   onSlashCommandClose?: () => void;
 }
 
 export const CodeMirrorEditor = forwardRef<CodeMirrorEditorRef, CodeMirrorEditorProps>(
   function CodeMirrorEditor(
-    { value, onChange, className, placeholder, readOnly, onFocus, onBlur, onSlashCommand, onSlashCommandClose },
+    { value, onChange, className, placeholder, readOnly, typewriterMode, onFocus, onBlur, onCursorChange, onSlashCommand, onSlashCommandClose },
     ref
   ) {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -48,9 +50,11 @@ export const CodeMirrorEditor = forwardRef<CodeMirrorEditorRef, CodeMirrorEditor
     const slashQueryRef = useRef('');
     const inSlashCommand = useRef(false);
     const readOnlyCompartment = useRef(new Compartment());
+    const typewriterModeRef = useRef(typewriterMode);
 
     onChangeRef.current = onChange;
     valueRef.current = value;
+    typewriterModeRef.current = typewriterMode;
 
     useImperativeHandle(ref, () => ({
       focus: () => viewRef.current?.focus(),
@@ -154,6 +158,56 @@ export const CodeMirrorEditor = forwardRef<CodeMirrorEditorRef, CodeMirrorEditor
         },
       ]);
 
+      function wrapSelection(view: EditorView, prefix: string, suffix: string) {
+        const { from, to } = view.state.selection.main;
+        const selected = view.state.sliceDoc(from, to);
+        const replacement = selected ? `${prefix}${selected}${suffix}` : `${prefix}text${suffix}`;
+        view.dispatch({ changes: { from, to, insert: replacement } });
+        view.focus();
+      }
+
+      const typewriterExtension = EditorView.updateListener.of((update) => {
+        if (!typewriterModeRef.current) return;
+        if (update.selectionSet || update.docChanged) {
+          requestAnimationFrame(() => {
+            const view = viewRef.current;
+            if (!view) return;
+            const { head } = view.state.selection.main;
+            view.dispatch({ effects: EditorView.scrollIntoView(head, { y: 'center', yMargin: 50 }) });
+          });
+        }
+      });
+
+      const markdownKeymap = keymap.of([
+        {
+          key: 'Mod-b',
+          run: (view) => { wrapSelection(view, '**', '**'); return true; },
+        },
+        {
+          key: 'Mod-i',
+          run: (view) => { wrapSelection(view, '*', '*'); return true; },
+        },
+        {
+          key: 'Mod-Shift-x',
+          run: (view) => { wrapSelection(view, '~~', '~~'); return true; },
+        },
+        {
+          key: 'Mod-`',
+          run: (view) => { wrapSelection(view, '`', '`'); return true; },
+        },
+        {
+          key: 'Mod-k',
+          run: (view) => {
+            const { from, to } = view.state.selection.main;
+            const selected = view.state.sliceDoc(from, to);
+            const insert = selected ? `[${selected}](url)` : '[text](url)';
+            view.dispatch({ changes: { from, to, insert } });
+            view.focus();
+            return true;
+          },
+        },
+      ]);
+
       const state = EditorState.create({
         doc: value,
         extensions: [
@@ -179,6 +233,7 @@ export const CodeMirrorEditor = forwardRef<CodeMirrorEditorRef, CodeMirrorEditor
           themeCompartment.of(tomebaseTheme),
           tomebaseSyntaxHighlighting,
           readOnlyCompartment.current.of(EditorState.readOnly.of(readOnly ?? false)),
+          markdownKeymap,
           keymap.of([
             ...closeBracketsKeymap,
             ...defaultKeymap,
@@ -198,6 +253,11 @@ export const CodeMirrorEditor = forwardRef<CodeMirrorEditorRef, CodeMirrorEditor
             if (update.docChanged && !isExternalUpdate.current) {
               onChangeRef.current(update.state.doc.toString());
             }
+            if (update.selectionSet && onCursorChange) {
+              const pos = update.state.selection.main.head;
+              const line = update.state.doc.lineAt(pos);
+              onCursorChange({ line: line.number, col: pos - line.from + 1 });
+            }
           }),
           EditorView.lineWrapping,
           EditorView.domEventHandlers({
@@ -205,6 +265,7 @@ export const CodeMirrorEditor = forwardRef<CodeMirrorEditorRef, CodeMirrorEditor
             blur: () => onBlur?.(),
           }),
           placeholder ? EditorView.contentAttributes.of({ 'aria-placeholder': placeholder }) : [],
+          typewriterExtension,
         ],
       });
 

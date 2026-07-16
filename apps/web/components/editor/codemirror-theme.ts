@@ -10,9 +10,9 @@ export const tomebaseTheme = EditorView.theme(
     },
     '.cm-content': {
       caretColor: 'var(--accent)',
-      fontFamily: "var(--font-mono), 'JetBrains Mono', 'Fira Code', monospace",
-      fontSize: '14px',
-      lineHeight: '1.7',
+      fontFamily: "var(--font-sans), 'Inter', system-ui, sans-serif",
+      fontSize: '15px',
+      lineHeight: '1.75',
       padding: '24px 0',
     },
     '.cm-cursor, .cm-dropCursor': {
@@ -140,7 +140,7 @@ export const tomebaseHighlightStyle = HighlightStyle.define([
   { tag: tags.regexp, color: '#ef4444' },
   { tag: tags.escape, color: 'var(--accent)' },
   { tag: tags.special(tags.string), color: '#22d3ee' },
-  { tag: tags.monospace, fontFamily: 'var(--font-mono)', fontSize: '0.9em', color: '#ef4444' },
+  { tag: tags.monospace, fontFamily: "var(--font-mono), 'JetBrains Mono', 'Fira Code', monospace", fontSize: '0.9em', color: '#ef4444' },
   { tag: tags.processingInstruction, color: 'var(--text-muted)' },
   { tag: tags.invalid, color: '#ef4444' },
   { tag: tags.quote, color: 'var(--text-muted)', fontStyle: 'italic' },

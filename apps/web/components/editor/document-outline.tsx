@@ -11,6 +11,7 @@ interface Heading {
 
 interface DocumentOutlineProps {
   content: string;
+  activeHeadingId?: string | null;
   onNavigate?: (id: string) => void;
 }
 
@@ -43,7 +44,7 @@ function extractHeadings(content: string): Heading[] {
   return headings;
 }
 
-export function DocumentOutline({ content, onNavigate }: DocumentOutlineProps) {
+export function DocumentOutline({ content, activeHeadingId, onNavigate }: DocumentOutlineProps) {
   const headings = useMemo(() => extractHeadings(content), [content]);
   const [collapsed, setCollapsed] = useState<Set<number>>(new Set());
 
@@ -80,7 +81,11 @@ export function DocumentOutline({ content, onNavigate }: DocumentOutlineProps) {
           <button
             key={h.id}
             onClick={() => handleClick(h)}
-            className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-left text-sm text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors duration-150"
+            className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-left text-sm transition-colors duration-150 ${
+              activeHeadingId === h.id
+                ? 'bg-theme-accent/10 text-theme-accent font-medium'
+                : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
+            }`}
             style={{ paddingLeft: `${(h.level - 1) * 12 + 8}px` }}
           >
             <span className="truncate">{h.text}</span>
@@ -106,7 +111,11 @@ export function DocumentOutline({ content, onNavigate }: DocumentOutlineProps) {
           <div key={section.id}>
             <button
               onClick={() => handleClick(section)}
-              className="w-full flex items-center gap-1.5 px-2 py-1.5 rounded-md text-left text-sm font-medium text-theme-main hover:bg-theme-hover transition-colors duration-150 group"
+              className={`w-full flex items-center gap-1.5 px-2 py-1.5 rounded-md text-left text-sm transition-colors duration-150 group ${
+                activeHeadingId === section.id
+                  ? 'font-medium text-theme-accent bg-theme-accent/10'
+                  : 'font-medium text-theme-main hover:bg-theme-hover'
+              }`}
             >
               {children.length > 0 && (
                 <span
@@ -136,7 +145,11 @@ export function DocumentOutline({ content, onNavigate }: DocumentOutlineProps) {
                   <button
                     key={child.id}
                     onClick={() => handleClick(child)}
-                    className="w-full flex items-center gap-2 px-2 py-1 rounded-md text-left text-[13px] text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors duration-150"
+                    className={`w-full flex items-center gap-2 px-2 py-1 rounded-md text-left text-[13px] transition-colors duration-150 ${
+                      activeHeadingId === child.id
+                        ? 'text-theme-accent bg-theme-accent/10 font-medium'
+                        : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
+                    }`}
                   >
                     <span className="truncate">{child.text}</span>
                   </button>
