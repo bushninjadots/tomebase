@@ -19,11 +19,12 @@ export function ProfileSection({ user }: ProfileSectionProps) {
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(user.name ?? '');
   const [email, setEmail] = useState(user.email ?? '');
+  const [imageUrl, setImageUrl] = useState(user.image ?? '');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const hasChanges = name !== (user.name ?? '') || email !== (user.email ?? '');
+  const hasChanges = name !== (user.name ?? '') || email !== (user.email ?? '') || imageUrl !== (user.image ?? '');
 
   const handleSave = useCallback(async () => {
     if (!hasChanges) return;
@@ -35,7 +36,7 @@ export function ProfileSection({ user }: ProfileSectionProps) {
       const res = await fetch('/api/account/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email }),
+        body: JSON.stringify({ name, email, image: imageUrl || null }),
       });
 
       const data = await res.json();
@@ -53,14 +54,15 @@ export function ProfileSection({ user }: ProfileSectionProps) {
     } finally {
       setSaving(false);
     }
-  }, [name, email, hasChanges]);
+  }, [name, email, imageUrl, hasChanges]);
 
   const handleCancel = useCallback(() => {
     setName(user.name ?? '');
     setEmail(user.email ?? '');
+    setImageUrl(user.image ?? '');
     setEditing(false);
     setError(null);
-  }, [user.name, user.email]);
+  }, [user.name, user.email, user.image]);
 
   const authMethod = user.connectedProviders.length > 0
     ? user.connectedProviders.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(', ')
@@ -88,9 +90,9 @@ export function ProfileSection({ user }: ProfileSectionProps) {
       <div className="flex items-start gap-4">
         {/* Avatar */}
         <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#E5A50B] to-[#ca8a04] flex items-center justify-center text-lg font-bold text-gray-900 shrink-0">
-          {user.image ? (
+          {(editing ? imageUrl : user.image) ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={user.image} alt="" className="h-16 w-16 rounded-full object-cover" />
+            <img src={editing ? imageUrl : user.image!} alt="" className="h-16 w-16 rounded-full object-cover" />
           ) : (
             user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'
           )}
@@ -119,6 +121,17 @@ export function ProfileSection({ user }: ProfileSectionProps) {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full rounded-lg border border-theme-border bg-theme-page px-3 py-2 text-sm text-theme-main placeholder:text-theme-muted focus:border-theme-accent focus:outline-none focus:ring-1 focus:ring-theme-accent"
                   placeholder="your@email.com"
+                />
+              </div>
+              <div>
+                <label htmlFor="profile-image" className="block text-xs font-medium text-theme-muted mb-1">Profile Picture URL</label>
+                <input
+                  id="profile-image"
+                  type="url"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  className="w-full rounded-lg border border-theme-border bg-theme-page px-3 py-2 text-sm text-theme-main placeholder:text-theme-muted focus:border-theme-accent focus:outline-none focus:ring-1 focus:ring-theme-accent"
+                  placeholder="https://example.com/avatar.jpg"
                 />
               </div>
 

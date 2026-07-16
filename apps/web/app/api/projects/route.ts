@@ -4,6 +4,7 @@ import { slugify } from '@fluid/utils';
 import { auth } from '@/lib/auth';
 import { projectTemplates } from '@/lib/project-templates';
 import { templates } from '@/lib/templates';
+import { logActivity } from '@/lib/activity';
 
 export async function POST(request: Request) {
   try {
@@ -78,6 +79,14 @@ export async function POST(request: Request) {
         }
       }
     }
+
+    logActivity({
+      userId: session.user.id,
+      action: 'project.created',
+      entity: 'project',
+      entityId: project.id,
+      details: { name: project.name },
+    });
 
     return NextResponse.json(project, { status: 201 });
   } catch (error) {

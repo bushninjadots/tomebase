@@ -10,7 +10,7 @@ export async function PATCH(request: Request) {
     }
 
     const body = await request.json();
-    const { name, email } = body;
+    const { name, email, image } = body;
 
     if (name !== undefined) {
       if (typeof name !== 'string') {
@@ -34,9 +34,19 @@ export async function PATCH(request: Request) {
       }
     }
 
-    const updateData: Record<string, string> = {};
+    if (image !== undefined) {
+      if (image !== null && typeof image !== 'string') {
+        return NextResponse.json({ error: 'Image must be a URL string or null' }, { status: 400 });
+      }
+      if (typeof image === 'string' && image.length > 2000) {
+        return NextResponse.json({ error: 'Image URL must be 2000 characters or less' }, { status: 400 });
+      }
+    }
+
+    const updateData: Record<string, string | null> = {};
     if (name !== undefined) updateData.name = name;
     if (email !== undefined) updateData.email = email;
+    if (image !== undefined) updateData.image = image;
 
     if (Object.keys(updateData).length === 0) {
       return NextResponse.json({ error: 'No changes provided' }, { status: 400 });

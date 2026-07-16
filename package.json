@@ -34,6 +34,7 @@
   },
   "packageManager": "npm@11.18.0",
   "dependencies": {
+    "@plausible-analytics/tracker": "^0.4.5",
     "bcryptjs": "^3.0.3",
     "otplib": "^13.4.1",
     "qrcode": "^1.5.4"

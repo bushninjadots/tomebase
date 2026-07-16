@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { slugify } from '@fluid/utils';
 import { auth } from '@/lib/auth';
 import { triggerWebhooks } from '@/lib/webhooks';
+import { logActivity } from '@/lib/activity';
 
 export async function POST(request: Request) {
   try {
@@ -77,6 +78,14 @@ export async function POST(request: Request) {
       pageId: page.id,
       title: page.title,
       slug: page.slug,
+    });
+
+    logActivity({
+      userId: session.user.id,
+      action: 'page.created',
+      entity: 'page',
+      entityId: page.id,
+      details: { title: page.title, projectId },
     });
 
     return NextResponse.json(page, { status: 201 });

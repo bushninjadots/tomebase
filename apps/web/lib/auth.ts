@@ -56,6 +56,13 @@ const result: ReturnType<typeof NextAuth> = NextAuth({
     signIn: '/login',
   },
   callbacks: {
+    async signIn({ user }) {
+      if (user?.id) {
+        const { logActivity } = await import('@/lib/activity');
+        await logActivity({ userId: user.id, action: 'user.login' });
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;

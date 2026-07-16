@@ -34,6 +34,7 @@ model User {
   comments  Comment[]
   bookmarks Bookmark[]
   personalAccessTokens PersonalAccessToken[]
+  activityEvents ActivityEvent[]
 }
 
 model Account {
@@ -312,4 +313,19 @@ model PersonalAccessToken {
 
   @@index([userId])
   @@index([hash])
+}
+
+model ActivityEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String   // e.g. page.created, page.updated, project.created, login, api_key.created
+  entity    String?  // e.g. "page", "project", "api_key"
+  entityId  String?  // ID of the related entity
+  details   String?  // JSON string with extra info (page title, project name, etc.)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([action])
 }

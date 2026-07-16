@@ -2,6 +2,7 @@ import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { generateApiKey, hashApiKey, extractPrefix } from '@/lib/api-auth';
+import { logActivity } from '@/lib/activity';
 
 export async function GET(
   _request: Request,
@@ -83,6 +84,14 @@ export async function POST(
           : null,
       },
       select: { id: true, name: true, prefix: true, createdAt: true, expiresAt: true },
+    });
+
+    logActivity({
+      userId: session.user.id,
+      action: 'api_key.created',
+      entity: 'api_key',
+      entityId: apiKey.id,
+      details: { name: apiKey.name, projectId: id },
     });
 
     return NextResponse.json({ ...apiKey, key: rawKey }, { status: 201 });

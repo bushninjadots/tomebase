@@ -2,6 +2,7 @@ import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { triggerWebhooks } from '@/lib/webhooks';
+import { logActivity } from '@/lib/activity';
 
 export async function PATCH(
   request: Request,
@@ -43,11 +44,25 @@ export async function PATCH(
         title: updated.title,
         slug: updated.slug,
       });
+      logActivity({
+        userId: session.user.id,
+        action: 'page.published',
+        entity: 'page',
+        entityId: updated.id,
+        details: { title: updated.title, projectId: page.projectId },
+      });
     } else {
       triggerWebhooks(page.projectId, 'page.updated', {
         pageId: updated.id,
         title: updated.title,
         slug: updated.slug,
+      });
+      logActivity({
+        userId: session.user.id,
+        action: 'page.updated',
+        entity: 'page',
+        entityId: updated.id,
+        details: { title: updated.title, projectId: page.projectId },
       });
     }
 

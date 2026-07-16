@@ -27,7 +27,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // Check if user needs onboarding
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { onboarded: true },
+    select: { onboarded: true, image: true },
   });
   if (user && !user.onboarded) redirect('/onboarding');
 
@@ -183,9 +183,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
         {/* User */}
         <div className="border-t border-theme-border p-3">
           <div className="flex items-center gap-2.5 px-3 py-2">
-            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#E5A50B] to-[#ca8a04] flex items-center justify-center text-[11px] font-bold text-gray-900 shrink-0">
-              {session.user.name?.[0]?.toUpperCase() || session.user.email?.[0]?.toUpperCase() || 'U'}
-            </div>
+            {user?.image ? (
+              <img
+                src={user.image}
+                alt={session.user.name || 'User'}
+                className="h-8 w-8 rounded-full object-cover shrink-0"
+              />
+            ) : (
+              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#E5A50B] to-[#ca8a04] flex items-center justify-center text-[11px] font-bold text-gray-900 shrink-0">
+                {session.user.name?.[0]?.toUpperCase() || session.user.email?.[0]?.toUpperCase() || 'U'}
+              </div>
+            )}
             <div className="min-w-0 flex-1">
               <p className="text-[13px] font-medium text-theme-main truncate">{session.user.name || 'User'}</p>
               <p className="text-[11px] text-theme-muted truncate">{session.user.email}</p>
