@@ -17,6 +17,7 @@ import {
   BarChart3,
   Users,
   User,
+  Plug,
 } from 'lucide-react';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -149,6 +150,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
           {/* Account */}
           <div className="sidebar-label">Account</div>
+          <Link
+            href="/dashboard/integrations"
+            className="sidebar-link"
+          >
+            <Plug />
+            Integrations
+          </Link>
           <Link
             href="/dashboard/settings"
             className="sidebar-link"
