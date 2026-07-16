@@ -26,6 +26,7 @@ export default async function AccountSettingsPage() {
       email: true,
       image: true,
       password: true,
+      twoFactorEnabled: true,
       createdAt: true,
     },
   });
@@ -79,6 +80,7 @@ export default async function AccountSettingsPage() {
             hasPassword={!!user.password}
             connectedProviders={connectedProviders}
             hasOAuth={connectedProviders.length > 0}
+            twoFactorEnabled={user.twoFactorEnabled}
           />
 
           {/* Appearance — How do I personalize? */}

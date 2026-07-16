@@ -16,6 +16,14 @@ model User {
   image     String?
   password  String?
   onboarded Boolean  @default(false)
+  
+  // Notification preferences (JSON)
+  notificationPreferences String? @default("{}")
+  
+  // Two-Factor Authentication
+  twoFactorEnabled Boolean   @default(false)
+  twoFactorSecret  String?
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -25,6 +33,7 @@ model User {
   accounts  Account[]
   comments  Comment[]
   bookmarks Bookmark[]
+  personalAccessTokens PersonalAccessToken[]
 }
 
 model Account {
@@ -287,4 +296,20 @@ model HealthReport {
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId, createdAt])
+}
+
+model PersonalAccessToken {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  prefix    String   // First 12 chars for display
+  hash      String   // SHA-256 hash of the token
+  expiresAt DateTime?
+  lastUsedAt DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([hash])
 }

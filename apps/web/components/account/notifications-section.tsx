@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Bell, Mail, FileText, Shield, AlertTriangle, Calendar } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Bell, Mail, FileText, Shield, Calendar, Loader2, Check } from 'lucide-react';
 
 interface NotificationPreference {
   id: string;
@@ -23,9 +23,42 @@ export function NotificationsSection() {
   const [prefs, setPrefs] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(PREFERENCES.map((p) => [p.id, p.defaultEnabled]))
   );
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/account/notifications')
+      .then((r) => r.json())
+      .then((data) => {
+        if (data && typeof data === 'object') {
+          setPrefs((prev) => ({ ...prev, ...data }));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const save = useCallback(async (newPrefs: Record<string, boolean>) => {
+    setSaving(true);
+    setSaved(false);
+    try {
+      await fetch('/api/account/notifications', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newPrefs),
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch {
+      // ignore
+    } finally {
+      setSaving(false);
+    }
+  }, []);
 
   const toggle = (id: string) => {
-    setPrefs((prev) => ({ ...prev, [id]: !prev[id] }));
+    const newPrefs = { ...prefs, [id]: !prefs[id] };
+    setPrefs(newPrefs);
+    save(newPrefs);
   };
 
   return (
@@ -35,15 +68,20 @@ export function NotificationsSection() {
           <Bell className="h-4 w-4 text-theme-muted" />
           <h2 className="text-sm font-semibold text-theme-main">Notifications</h2>
         </div>
-        <span className="text-[10px] text-theme-muted bg-theme-hover px-2 py-0.5 rounded-full border border-theme-border">
-          Coming Soon
-        </span>
+        {saving && <Loader2 className="h-3.5 w-3.5 text-theme-muted animate-spin" />}
+        {saved && (
+          <div className="flex items-center gap-1 text-green-400">
+            <Check className="h-3.5 w-3.5" />
+            <span className="text-[10px] font-medium">Saved</span>
+          </div>
+        )}
       </div>
 
-      <div className="space-y-1 opacity-60 pointer-events-none">
+      <div className="space-y-1">
         {PREFERENCES.map((pref) => {
           const Icon = pref.icon;
           const enabled = prefs[pref.id];
+          const isSecurity = pref.id === 'security_alerts';
 
           return (
             <div key={pref.id} className="flex items-center justify-between py-2.5">
@@ -55,10 +93,12 @@ export function NotificationsSection() {
                 </div>
               </div>
               <button
-                onClick={() => toggle(pref.id)}
+                onClick={() => !isSecurity && toggle(pref.id)}
+                disabled={isSecurity}
                 className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors ${
                   enabled ? 'bg-theme-accent' : 'bg-theme-hover border border-theme-border'
-                }`}
+                } ${isSecurity ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
+                aria-label={`Toggle ${pref.label}`}
               >
                 <span
                   className={`inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform ${
@@ -72,12 +112,9 @@ export function NotificationsSection() {
       </div>
 
       <div className="mt-4 pt-3 border-t border-theme-border">
-        <div className="flex items-start gap-2">
-          <AlertTriangle className="h-3.5 w-3.5 text-theme-muted mt-0.5 shrink-0" />
-          <p className="text-[11px] text-theme-muted">
-            Notification preferences will be saved once backend support is implemented. Security alerts are always enabled.
-          </p>
-        </div>
+        <p className="text-[11px] text-theme-muted">
+          Security alerts are always enabled for your protection.
+        </p>
       </div>
     </div>
   );
