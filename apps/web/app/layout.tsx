@@ -1,8 +1,4 @@
-Here's your `layout.tsx` with **only the necessary changes** to include your Plausible analytics script. I've added the `Script` import and inserted your two scripts just before the Vercel Analytics components.
-
-```tsx
 import type { Metadata } from 'next';
-import Script from 'next/script';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -41,7 +37,10 @@ export const metadata: Metadata = {
     description:
     'Write once, publish anywhere. Markdown-powered docs with wiki links, version history, and public hosting.',
   },
-  robots: { index: true, follow: true },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
@@ -57,6 +56,21 @@ export default function RootLayout({
     >
     <head>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    {/* Plausible Analytics */}
+    <script
+    async
+    src="https://plausible.io/js/pa-THNbXstWVS4nKhF-BNemW.js"
+    ></script>
+
+    <script
+    dangerouslySetInnerHTML={{
+      __html: `
+      window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+      plausible.init();
+      `,
+    }}
+    />
     </head>
 
     <body className="min-h-screen bg-theme-page font-sans text-theme-main antialiased">
@@ -71,31 +85,9 @@ export default function RootLayout({
     {children}
     </Providers>
 
-    {/* Plausible Analytics */}
-    <Script
-    src="https://plausible.io/js/pa-THNbXstWVS4nKhF-BNemW.js"
-    strategy="afterInteractive"
-    />
-
-    <Script id="plausible-init" strategy="afterInteractive">
-    {`
-      window.plausible = window.plausible || function() {
-        (plausible.q = plausible.q || []).push(arguments);
-      };
-      plausible.init = plausible.init || function(i) {
-        plausible.o = i || {};
-      };
-      plausible.init();
-      `}
-      </Script>
-
-      {/* Vercel Analytics */}
-      <Analytics />
-      <SpeedInsights />
-      </body>
-      </html>
+    <Analytics />
+    <SpeedInsights />
+    </body>
+    </html>
   );
 }
-```
-
-This follows Next.js best practices by using the built-in `Script` component while preserving the behavior of the snippet Plausible provided.
