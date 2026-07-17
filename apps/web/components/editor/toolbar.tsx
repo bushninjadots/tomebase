@@ -6,13 +6,14 @@ import {
   Link as LinkIcon, Code, List, ListOrdered, Quote,
   CheckSquare, Minus, Table, Image as ImageIcon, Code2,
   GitBranch, Columns, FileText, Undo2, Redo2, ChevronDown,
-  Type,
+  Type, Sparkles,
 } from 'lucide-react';
 
 interface EditorToolbarProps {
   onAction: (action: string) => void;
   canUndo?: boolean;
   canRedo?: boolean;
+  hasSelection?: boolean;
 }
 
 interface ButtonDef {
@@ -98,7 +99,7 @@ function Divider() {
   return <div className="w-px h-4 bg-theme-border mx-0.5" />;
 }
 
-export function EditorToolbar({ onAction, canUndo = true, canRedo = true }: EditorToolbarProps) {
+export function EditorToolbar({ onAction, canUndo = true, canRedo = true, hasSelection = false }: EditorToolbarProps) {
   const [showMore, setShowMore] = useState(false);
 
   return (
@@ -163,6 +164,32 @@ export function EditorToolbar({ onAction, canUndo = true, canRedo = true }: Edit
 
       {/* Spacer */}
       <div className="flex-1" />
+
+      {/* AI Actions */}
+      <div className="flex items-center gap-0.5">
+        <ToolbarButton
+          icon={Sparkles}
+          label="AI Chat"
+          shortcut="⌘⇧A"
+          onClick={() => onAction('ai-chat')}
+        />
+        {hasSelection && (
+          <>
+            <ToolbarButton
+              icon={Sparkles}
+              label="AI Improve"
+              onClick={() => onAction('ai-improve')}
+            />
+            <ToolbarButton
+              icon={Sparkles}
+              label="AI Rewrite"
+              onClick={() => onAction('ai-rewrite')}
+            />
+          </>
+        )}
+      </div>
+
+      <Divider />
 
       {/* Undo/Redo */}
       <div className="flex items-center gap-0.5">

@@ -7,7 +7,7 @@ import {
   Copy, Trash2, Layers, BookOpen, Clock, Type, AlertTriangle,
   X, Maximize2, Minimize2, Users, ListOrdered, MessageSquare,
   MoreHorizontal, Search, SplitSquareHorizontal, Image as ImageIcon,
-  Menu,
+  Menu, Sparkles,
 } from 'lucide-react';
 import { Markdown } from '@/components/markdown';
 import { ShortcutsModal } from '@/components/shortcuts';
@@ -21,6 +21,7 @@ import { SchedulePublish } from '@/components/schedule-publish';
 import { CodeMirrorEditor, type CodeMirrorEditorRef } from '@/components/editor/codemirror-editor';
 import { SlashCommandMenu, type SlashCommand } from '@/components/editor/slash-commands';
 import { EditorToolbar } from '@/components/editor/toolbar';
+import { AIPanel } from '@/components/editor/ai-panel';
 import { DocumentOutline } from '@/components/editor/document-outline';
 import { TeamPresence } from '@/components/editor/team-presence';
 import Link from 'next/link';
@@ -65,6 +66,7 @@ export function DocEditor({ project }: { project: Project }) {
   const [sidebarTab, setSidebarTab] = useState<SidebarTab | null>(null);
   const [showActions, setShowActions] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showAIPanel, setShowAIPanel] = useState(false);
 
   // Overlays
   const [isDragOver, setIsDragOver] = useState(false);
@@ -299,6 +301,10 @@ export function DocEditor({ project }: { project: Project }) {
         e.preventDefault();
         setTypewriterMode((v) => !v);
       }
+      if (isMeta && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        setShowAIPanel((v) => !v);
+      }
     }
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
@@ -489,6 +495,17 @@ export function DocEditor({ project }: { project: Project }) {
   // Toolbar action handler
   const handleToolbarAction = useCallback((action: string) => {
     const view = editorRef.current?.view;
+
+    // AI actions — handled via state
+    if (action === 'ai-chat') {
+      setShowAIPanel(true);
+      return;
+    }
+    if (action === 'ai-improve' || action === 'ai-rewrite') {
+      setShowAIPanel(true);
+      return;
+    }
+
     if (!view) return;
     const { from, to } = view.state.selection.main;
     const selected = view.state.sliceDoc(from, to);
@@ -772,6 +789,17 @@ export function DocEditor({ project }: { project: Project }) {
                   <Type className="w-4 h-4" />
                 </button>
 
+                {/* AI Panel */}
+                <button
+                  onClick={() => setShowAIPanel((v) => !v)}
+                  className={`p-1.5 rounded-lg transition-colors duration-150 ${
+                    showAIPanel ? 'bg-theme-accent/10 text-theme-accent' : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
+                  }`}
+                  title="AI Assistant (⌘⇧A)"
+                >
+                  <Sparkles className="w-4 h-4" />
+                </button>
+
                 {/* More actions */}
                 <div className="relative" ref={actionsRef}>
                   <button
@@ -818,7 +846,10 @@ export function DocEditor({ project }: { project: Project }) {
 
         {/* ===== TOOLBAR ===== */}
         {viewMode !== 'preview' && !zenMode && (
-          <EditorToolbar onAction={handleToolbarAction} />
+          <EditorToolbar
+            onAction={handleToolbarAction}
+            hasSelection={false}
+          />
         )}
 
         {/* ===== EDITOR CONTENT ===== */}
@@ -1004,6 +1035,18 @@ export function DocEditor({ project }: { project: Project }) {
             {sidebarTab === 'team' && <TeamPresence members={teamMembers} />}
             {sidebarTab === 'comments' && <Comments pageId={selectedPage.id} teamMembers={teamMembers} />}
           </div>
+        </div>
+      )}
+
+      {/* ===== AI PANEL ===== */}
+      {showAIPanel && selectedPage && (
+        <div className="w-80 shrink-0 border-l border-theme-border bg-theme-page flex flex-col animate-in slide-in-from-right duration-200">
+          <AIPanel
+            pageId={selectedPage.id}
+            pageTitle={selectedPage.title}
+            pageContent={content}
+            onClose={() => setShowAIPanel(false)}
+          />
         </div>
       )}
 

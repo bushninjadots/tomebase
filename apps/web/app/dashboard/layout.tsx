@@ -20,6 +20,7 @@ import {
   Users,
   User,
   Plug,
+  Sparkles,
 } from 'lucide-react';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -158,6 +159,16 @@ export default async function DashboardLayout({ children }: { children: React.Re
               </Link>
             </>
           )}
+
+          {/* AI */}
+          <div className="sidebar-label">AI</div>
+          <Link
+            href="/dashboard/account/ai"
+            className="sidebar-link"
+          >
+            <Sparkles />
+            AI Providers
+          </Link>
 
           {/* Account */}
           <div className="sidebar-label">Account</div>
