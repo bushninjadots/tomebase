@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@fluid/database';
 import { requireAuth } from '@/lib/authorization';
 import { createProvider } from '@/lib/ai-provider/factory';
+import { buildAIContext, contextToString } from '@/lib/ai-context';
 import type { AIProviderType, AIChatMessage, AIRequest } from '@/lib/ai-provider/types';
 import type { Diagnostic } from '@fluid/types';
 
@@ -13,8 +14,9 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { pageId, messages, operation, content, selectedText, diagnostic } = body as {
+    const { pageId, projectId, messages, operation, content, selectedText, diagnostic } = body as {
       pageId?: string;
+      projectId?: string;
       messages?: AIChatMessage[];
       operation?: string;
       content?: string;
@@ -47,31 +49,72 @@ export async function POST(request: NextRequest) {
       model: config.model || undefined,
     });
 
-    let pageTitle: string | undefined;
-    let pageSlug: string | undefined;
-
-    if (pageId) {
+    // Build rich context if pageId and projectId are provided
+    let contextString = '';
+    if (pageId && projectId) {
+      try {
+        const ctx = await buildAIContext({
+          projectId,
+          pageId,
+          content: content || undefined,
+        });
+        contextString = contextToString(ctx);
+      } catch {
+        // Fallback to basic context
+        contextString = content || '';
+      }
+    } else if (pageId) {
+      // Try to find project from page
       const page = await prisma.docPage.findUnique({
         where: { id: pageId },
-        select: { title: true, slug: true },
+        select: { projectId: true, title: true, content: true },
       });
       if (page) {
-        pageTitle = page.title;
-        pageSlug = page.slug;
+        try {
+          const ctx = await buildAIContext({
+            projectId: page.projectId,
+            pageId,
+            content: content || undefined,
+          });
+          contextString = contextToString(ctx);
+        } catch {
+          contextString = content || '';
+        }
+      } else {
+        contextString = content || '';
       }
+    } else {
+      contextString = content || '';
     }
 
-    const aiRequest = {
-      content: content || '',
-      pageTitle,
-      pageSlug,
+    const aiRequest: AIRequest = {
+      content: contextString || content || '',
+      pageTitle: undefined,
+      pageSlug: undefined,
       selectedText,
       diagnostic,
     };
 
+    // If we have context, override the content for non-chat operations
+    if (contextString && operation !== 'chat') {
+      aiRequest.content = contextString;
+      if (selectedText) {
+        aiRequest.selectedText = selectedText;
+      }
+    }
+
     const chatRequest = {
-      messages,
-      context: content,
+      messages: messages.map((m) => {
+        // Inject context into the first system or user message if it doesn't already have context
+        if (contextString && m.role === 'user' && messages.indexOf(m) === 0) {
+          return {
+            role: m.role as 'user' | 'assistant' | 'system',
+            content: `${contextString}\n\n---\n\n${m.content}`,
+          };
+        }
+        return { role: m.role as 'user' | 'assistant' | 'system', content: m.content };
+      }),
+      context: contextString || content,
     };
 
     let result;

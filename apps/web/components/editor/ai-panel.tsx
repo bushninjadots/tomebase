@@ -11,12 +11,13 @@ interface Message {
 
 interface AIPanelProps {
   pageId?: string;
+  projectId?: string;
   pageTitle?: string;
   pageContent?: string;
   onClose?: () => void;
 }
 
-export function AIPanel({ pageId, pageTitle, pageContent, onClose }: AIPanelProps) {
+export function AIPanel({ pageId, projectId, pageTitle, pageContent, onClose }: AIPanelProps) {
   const { activeProvider, chat } = useAI();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -59,6 +60,7 @@ export function AIPanel({ pageId, pageTitle, pageContent, onClose }: AIPanelProp
             { role: 'user', content: question },
           ],
           pageId,
+          projectId,
         }),
       });
 

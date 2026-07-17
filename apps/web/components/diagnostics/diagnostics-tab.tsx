@@ -174,6 +174,7 @@ export function DiagnosticsTab({ projectId, pages, healthScore }: DiagnosticsTab
           operation: 'review',
           content: `Documentation Health Issues:\n${topIssues}`,
           pageTitle: 'Documentation Health Review',
+          projectId,
         }),
       });
       if (!response.ok) {
@@ -264,6 +265,7 @@ export function DiagnosticsTab({ projectId, pages, healthScore }: DiagnosticsTab
           pageContent={aiActionContent}
           pageTitle={aiActionPageTitle}
           pageId={aiActionDiagnostic.pageId}
+          projectId={projectId}
           onComplete={() => {}}
           onApply={(newContent) => {
             const page = pages.find((p) => p.id === aiActionDiagnostic.pageId);

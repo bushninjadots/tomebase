@@ -16,3 +16,10 @@ schema.generated.prisma
 .vercel
 .env*
 public/uploads/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

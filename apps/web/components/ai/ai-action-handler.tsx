@@ -28,6 +28,7 @@ interface AIActionHandlerProps {
   pageContent?: string;
   pageTitle?: string;
   pageId?: string;
+  projectId?: string;
   onComplete?: (result: AIActionResult) => void;
   onApply?: (newContent: string) => void;
 }
@@ -38,6 +39,7 @@ export function AIActionHandler({
   pageContent,
   pageTitle,
   pageId,
+  projectId,
   onComplete,
   onApply,
 }: AIActionHandlerProps) {
@@ -62,6 +64,7 @@ export function AIActionHandler({
           selectedText: diagnostic?.content,
           pageTitle: pageTitle || diagnostic?.pageTitle,
           pageId,
+          projectId,
           diagnostic: diagnostic
             ? { title: diagnostic.title, description: diagnostic.description, rule: diagnostic.rule }
             : undefined,

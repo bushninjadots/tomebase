@@ -21,7 +21,9 @@
     "test": "turbo test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^26.1.1",
     "@types/qrcode": "^1.5.6",
     "eslint": "^9.39.4",
     "eslint-config-next": "^15.5.20",
