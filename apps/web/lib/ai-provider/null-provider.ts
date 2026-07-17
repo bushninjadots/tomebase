@@ -1,20 +1,19 @@
 import type {
   AIProvider,
   AIProviderCapabilities,
-  AIExplainRequest,
+  AIProviderConfig,
+  AIProviderType,
+  AIRequest,
   AIExplainResponse,
-  AIFixRequest,
   AIFixResponse,
-  AIRewriteRequest,
   AIRewriteResponse,
-  AIGenerateRequest,
   AIGenerateResponse,
-  AIReviewRequest,
   AIReviewResponse,
-  AISummarizeRequest,
   AISummarizeResponse,
-  AIImproveRequest,
   AIImproveResponse,
+  AIChatRequest,
+  AIChatResponse,
+  AIStreamRequest,
 } from './types';
 
 const UNAVAILABLE_MESSAGE = 'No AI provider configured. Connect an AI provider to enable this feature.';
@@ -38,39 +37,53 @@ const FULL_CAPABILITIES: AIProviderCapabilities = {
   canReview: false,
   canSummarize: false,
   canImprove: false,
+  canChat: false,
 };
 
 export class NullAIProvider implements AIProvider {
-  readonly type = 'null' as const;
+  readonly type: AIProviderType = 'null';
   readonly capabilities = FULL_CAPABILITIES;
   readonly isAvailable = false;
+  readonly config: AIProviderConfig = { provider: 'null' };
 
-  async explain(_request: AIExplainRequest): Promise<AIExplainResponse> {
+  async explain(_request: AIRequest): Promise<AIExplainResponse> {
     unavailable();
   }
 
-  async fix(_request: AIFixRequest): Promise<AIFixResponse> {
+  async fix(_request: AIRequest): Promise<AIFixResponse> {
     unavailable();
   }
 
-  async rewrite(_request: AIRewriteRequest): Promise<AIRewriteResponse> {
+  async rewrite(_request: AIRequest): Promise<AIRewriteResponse> {
     unavailable();
   }
 
-  async generate(_request: AIGenerateRequest): Promise<AIGenerateResponse> {
+  async generate(_request: AIRequest): Promise<AIGenerateResponse> {
     unavailable();
   }
 
-  async review(_request: AIReviewRequest): Promise<AIReviewResponse> {
+  async review(_request: AIRequest): Promise<AIReviewResponse> {
     unavailable();
   }
 
-  async summarize(_request: AISummarizeRequest): Promise<AISummarizeResponse> {
+  async summarize(_request: AIRequest): Promise<AISummarizeResponse> {
     unavailable();
   }
 
-  async improve(_request: AIImproveRequest): Promise<AIImproveResponse> {
+  async improve(_request: AIRequest): Promise<AIImproveResponse> {
     unavailable();
+  }
+
+  async chat(_request: AIChatRequest): Promise<AIChatResponse> {
+    unavailable();
+  }
+
+  async *streamChat(_request: AIStreamRequest): AsyncGenerator<string> {
+    unavailable();
+  }
+
+  async testConnection(): Promise<{ success: boolean; message: string; model?: string }> {
+    return { success: false, message: UNAVAILABLE_MESSAGE };
   }
 }
 

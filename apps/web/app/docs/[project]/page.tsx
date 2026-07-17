@@ -1,8 +1,7 @@
 import { auth } from '@/lib/auth';
 import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@fluid/database';
-import { DocSidebar } from './sidebar';
-import { DocEditor } from './editor';
+import { DocEditorWithAI } from './doc-editor-with-ai';
 
 interface PageProps {
   params: Promise<{ project: string }>;
@@ -23,12 +22,5 @@ export default async function ProjectDocsPage({ params }: PageProps) {
 
   if (!project || project.userId !== session.user.id) notFound();
 
-  return (
-    <div className="flex h-screen overflow-hidden bg-theme-page">
-      <DocSidebar project={project} />
-      <main className="flex flex-1 flex-col min-w-0 overflow-hidden">
-        <DocEditor project={project} />
-      </main>
-    </div>
-  );
+  return <DocEditorWithAI project={project} />;
 }

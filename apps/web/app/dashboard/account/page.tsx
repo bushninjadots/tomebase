@@ -13,6 +13,7 @@ import { ApiAccessSection } from '@/components/account/api-access-section';
 import { ActivitySection } from '@/components/account/activity-section';
 import { ExportSection } from '@/components/account/export-section';
 import { AccountDangerZone } from '@/components/account-danger-zone';
+import { Bot } from 'lucide-react';
 
 export default async function AccountSettingsPage() {
   const session = await auth();
@@ -97,6 +98,22 @@ export default async function AccountSettingsPage() {
 
           {/* Recent Activity */}
           <ActivitySection />
+
+          {/* AI Providers */}
+          <Link href="/dashboard/account/ai" className="block rounded-2xl border border-theme-border bg-theme-card p-6 hover:border-theme-accent/25 hover:shadow-md transition-all">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Bot className="h-4 w-4 text-theme-muted" />
+                <h2 className="text-sm font-semibold text-theme-main">AI Providers</h2>
+              </div>
+              <span className="text-xs text-theme-muted hover:text-theme-accent transition-colors">
+                Configure &rarr;
+              </span>
+            </div>
+            <p className="mt-1.5 text-xs text-theme-muted">
+              Connect your own API keys for OpenAI, Anthropic, Gemini, Ollama, and more.
+            </p>
+          </Link>
 
           {/* API Access */}
           <ApiAccessSection />

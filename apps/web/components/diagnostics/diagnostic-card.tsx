@@ -209,34 +209,28 @@ export function DiagnosticCard({
 
             <button
               onClick={() => onAIAction(diagnostic, 'explain')}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-theme-border bg-theme-card px-3 py-1.5 text-xs font-medium text-theme-muted hover:bg-theme-hover transition-all opacity-60"
-              title="No AI provider configured"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-theme-border bg-theme-card px-3 py-1.5 text-xs font-medium text-theme-subtle hover:bg-theme-hover transition-all"
             >
               <Sparkles className="h-3 w-3" />
               AI Explain
-              <span className="text-[10px] text-theme-muted">(Soon)</span>
             </button>
 
             {diagnostic.canAutoFix && (
               <button
                 onClick={() => onAIAction(diagnostic, 'improve')}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-theme-border bg-theme-card px-3 py-1.5 text-xs font-medium text-theme-muted hover:bg-theme-hover transition-all opacity-60"
-                title="No AI provider configured"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-theme-border bg-theme-card px-3 py-1.5 text-xs font-medium text-theme-subtle hover:bg-theme-hover transition-all"
               >
                 <Sparkles className="h-3 w-3" />
                 AI Improve
-                <span className="text-[10px] text-theme-muted">(Soon)</span>
               </button>
             )}
 
             <button
               onClick={() => onAIAction(diagnostic, 'rewrite')}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-theme-border bg-theme-card px-3 py-1.5 text-xs font-medium text-theme-muted hover:bg-theme-hover transition-all opacity-60"
-              title="No AI provider configured"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-theme-border bg-theme-card px-3 py-1.5 text-xs font-medium text-theme-subtle hover:bg-theme-hover transition-all"
             >
               <Sparkles className="h-3 w-3" />
               AI Rewrite
-              <span className="text-[10px] text-theme-muted">(Soon)</span>
             </button>
           </div>
         </div>

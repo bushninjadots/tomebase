@@ -3,20 +3,24 @@ export type {
   AIProviderType,
   AIProviderConfig,
   AIProviderCapabilities,
-  AIExplainRequest,
+  AIProviderMeta,
+  AIModelInfo,
+  AIRequest,
+  AIStreamRequest,
+  AIResponse,
   AIExplainResponse,
-  AIFixRequest,
   AIFixResponse,
-  AIRewriteRequest,
   AIRewriteResponse,
-  AIGenerateRequest,
   AIGenerateResponse,
-  AIReviewRequest,
   AIReviewResponse,
-  AISummarizeRequest,
   AISummarizeResponse,
-  AIImproveRequest,
   AIImproveResponse,
+  AIChatMessage,
+  AIChatRequest,
+  AIChatResponse,
+  StoredAIProviderConfig,
 } from './types';
 
+export { AI_PROVIDERS, getProviderMeta, getLocalProviders, getCloudProviders } from './types';
 export { NullAIProvider, createNullProvider, AIUnavailableError } from './null-provider';
+export { createProvider } from './factory';
