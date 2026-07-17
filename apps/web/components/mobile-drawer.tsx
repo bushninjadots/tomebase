@@ -7,6 +7,7 @@ import {
   LayoutDashboard, Settings, FileText, HeartPulse, HelpCircle,
   LogOut, FolderOpen, Upload, BarChart3, User, Plug, X, Menu,
 } from 'lucide-react';
+import { signOutAction } from '@/app/dashboard/sign-out-action';
 
 interface MobileDrawerProps {
   projects: Array<{ id: string; name: string }>;
@@ -174,13 +175,7 @@ export function MobileDrawer({ projects, firstProjectId, userName, userEmail, us
               <p className="text-[11px] text-theme-muted truncate">{userEmail}</p>
             </div>
           </div>
-          <form
-            action={async () => {
-              'use server';
-              const { signOut } = await import('@/lib/auth');
-              await signOut();
-            }}
-          >
+          <form action={signOutAction}>
             <button type="submit" className="sidebar-link w-full">
               <LogOut />
               Sign out
