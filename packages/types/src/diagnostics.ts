@@ -23,7 +23,31 @@ export type DiagnosticCategory =
   | 'missing_code_block_language'
   | 'stale_docs'
   | 'missing_toc'
-  | 'deprecated_syntax';
+  | 'deprecated_syntax'
+  | 'missing_blank_line_before_heading'
+  | 'missing_blank_line_after_heading'
+  | 'inconsistent_list_markers'
+  | 'multiple_spaces'
+  | 'missing_newline_eof'
+  | 'missing_alt_text'
+  | 'inconsistent_emphasis'
+  | 'space_before_punctuation'
+  | 'double_punctuation'
+  | 'html_entities'
+  | 'missing_space_after_punctuation'
+  | 'trailing_punctuation_in_heading'
+  | 'blank_line_in_blockquote'
+  | 'missing_closing_backtick'
+  | 'unspaced_blockquote'
+  | 'repeated_words'
+  | 'missing_space_around_inline_code'
+  | 'heading_ends_with_colon'
+  | 'inconsistent_link_style'
+  | 'hardcoded_urls'
+  | 'horizontal_rule_formatting'
+  | 'missing_link_text'
+  | 'empty_link_target'
+  | 'frontmatter_over_usage';
 
 export interface DiagnosticPage {
   id: string;
