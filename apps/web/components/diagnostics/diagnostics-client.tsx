@@ -65,6 +65,18 @@ export function DiagnosticsClient({
     setPreviewDiagnostic(diagnostic);
   }, []);
 
+  const persistFix = useCallback(
+    async (pageId: string, fixedContent: string) => {
+      const res = await fetch(`/api/projects/${projectId}/diagnostics/fix`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pageId, fixedContent }),
+      });
+      return res.ok;
+    },
+    [projectId],
+  );
+
   const handleFix = useCallback(
     (diagnostic: Diagnostic) => {
       if (!isFixable(diagnostic)) return;
@@ -72,14 +84,18 @@ export function DiagnosticsClient({
       const page = pages.find((p) => p.id === diagnostic.pageId);
       if (!page) return;
 
-      const result = applyFix(diagnostic as import('@/lib/diagnostics/fixes').FixableDiagnostic, page.content);
+      const fixable = diagnostic as import('@/lib/diagnostics/fixes').FixableDiagnostic;
+      const result = applyFix(fixable, page.content);
       if (result.success) {
+        persistFix(page.id, result.fixedContent);
         setScannedDiagnostics((prev) =>
           prev.filter((d) => !result.diagnosticsResolved.includes(d.id)),
         );
+        // Update local page content reference
+        page.content = result.fixedContent;
       }
     },
-    [pages],
+    [pages, persistFix],
   );
 
   const handleIgnore = useCallback((diagnostic: Diagnostic) => {
@@ -97,15 +113,18 @@ export function DiagnosticsClient({
       const page = pages.find((p) => p.id === diagnostic.pageId);
       if (!page) return;
 
-      const result = applyFix(diagnostic as any, page.content);
-      if (result.success) {
-        setScannedDiagnostics((prev) =>
-          prev.filter((d) => !result.diagnosticsResolved.includes(d.id)),
-        );
-        setPreviewDiagnostic(null);
-      }
+      persistFix(page.id, fixedContent);
+      setScannedDiagnostics((prev) =>
+        prev.filter((d) => d.pageId !== page.id || d.id === diagnostic.id ? true : true),
+      );
+      // Remove all diagnostics for this page since content changed
+      setScannedDiagnostics((prev) =>
+        prev.filter((d) => d.pageId !== page.id),
+      );
+      page.content = fixedContent;
+      setPreviewDiagnostic(null);
     },
-    [pages],
+    [pages, persistFix],
   );
 
   const handleFixAll = useCallback(async () => {
@@ -119,6 +138,8 @@ export function DiagnosticsClient({
 
         const result = applyFix(diagnostic, page.content);
         if (result.success) {
+          await persistFix(page.id, result.fixedContent);
+          page.content = result.fixedContent;
           setScannedDiagnostics((prev) =>
             prev.filter((d) => !result.diagnosticsResolved.includes(d.id)),
           );
@@ -127,7 +148,7 @@ export function DiagnosticsClient({
     } finally {
       setFixing(false);
     }
-  }, [scannedDiagnostics, pages]);
+  }, [scannedDiagnostics, pages, persistFix]);
 
   const handleIgnoreAll = useCallback(() => {
     setScannedDiagnostics((prev) =>

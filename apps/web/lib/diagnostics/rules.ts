@@ -194,7 +194,7 @@ const missingDescriptionRule: DiagnosticRule = {
   title: 'Missing Description in Frontmatter',
   description: 'Frontmatter exists but does not include a description field.',
   severity: 'warning',
-  canAutoFix: false,
+  canAutoFix: true,
   detect(page) {
     const content = page.content;
     const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
@@ -204,6 +204,12 @@ const missingDescriptionRule: DiagnosticRule = {
     if (!/^description\s*:/m.test(frontmatter)) {
       const frontmatterEnd = content.indexOf('---', content.indexOf('---') + 3);
       const line = content.substring(0, frontmatterEnd).split('\n').length;
+      // Insert description after title line in frontmatter
+      const descriptionLine = 'description: ""';
+      const updatedContent = content.replace(
+        /^(---\n(?:title:.*\n)?)/m,
+        `$1${descriptionLine}\n`,
+      );
       return [
         makeDiagnostic(
           this.id,
@@ -215,7 +221,13 @@ const missingDescriptionRule: DiagnosticRule = {
           page,
           line,
           null,
-          false,
+          true,
+          {
+            originalContent: content,
+            fixedContent: updatedContent,
+            description: 'Add empty description field to frontmatter.',
+            confidence: 'high',
+          },
         ),
       ];
     }
@@ -230,7 +242,7 @@ const missingOwnerRule: DiagnosticRule = {
   title: 'Missing Owner',
   description: 'No owner or author is specified for this page.',
   severity: 'info',
-  canAutoFix: false,
+  canAutoFix: true,
   detect(page) {
     const content = page.content;
     const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
@@ -239,6 +251,10 @@ const missingOwnerRule: DiagnosticRule = {
     const frontmatter = frontmatterMatch[1]!;
     const hasOwner = /^owner\s*:/m.test(frontmatter) || /^author\s*:/m.test(frontmatter);
     if (!hasOwner) {
+      const updatedContent = content.replace(
+        /^(---\n[\s\S]*?)(\n---)/m,
+        '$1\nowner: ""$2',
+      );
       return [
         makeDiagnostic(
           this.id,
@@ -250,7 +266,13 @@ const missingOwnerRule: DiagnosticRule = {
           page,
           1,
           null,
-          false,
+          true,
+          {
+            originalContent: content,
+            fixedContent: updatedContent,
+            description: 'Add empty owner field to frontmatter.',
+            confidence: 'high',
+          },
         ),
       ];
     }
@@ -265,7 +287,7 @@ const missingTagsRule: DiagnosticRule = {
   title: 'Missing Tags',
   description: 'No tags are specified for this page.',
   severity: 'info',
-  canAutoFix: false,
+  canAutoFix: true,
   detect(page) {
     const content = page.content;
     const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
@@ -274,6 +296,10 @@ const missingTagsRule: DiagnosticRule = {
     const frontmatter = frontmatterMatch[1]!;
     const hasTags = /^tags\s*:/m.test(frontmatter) || /^categories\s*:/m.test(frontmatter);
     if (!hasTags) {
+      const updatedContent = content.replace(
+        /^(---\n[\s\S]*?)(\n---)/m,
+        '$1\ntags: []$2',
+      );
       return [
         makeDiagnostic(
           this.id,
@@ -285,7 +311,13 @@ const missingTagsRule: DiagnosticRule = {
           page,
           1,
           null,
-          false,
+          true,
+          {
+            originalContent: content,
+            fixedContent: updatedContent,
+            description: 'Add empty tags array to frontmatter.',
+            confidence: 'high',
+          },
         ),
       ];
     }
@@ -410,6 +442,11 @@ const brokenMermaidRule: DiagnosticRule = {
       // Basic validation: diagram should have at least one node/arrow
       const hasContent = /\w/.test(diagram);
       if (!hasContent) {
+        const placeholder = 'graph TD\n    A[Start] --> B[End]';
+        const fixedContent = page.content.replace(
+          match[0],
+          '```mermaid\n' + placeholder + '\n```',
+        );
         diagnostics.push(
           makeDiagnostic(
             this.id,
@@ -420,6 +457,14 @@ const brokenMermaidRule: DiagnosticRule = {
             'Mermaid diagrams need at least one node. Add diagram content between the ```mermaid fences.',
             page,
             line,
+            null,
+            true,
+            {
+              originalContent: page.content,
+              fixedContent,
+              description: 'Replace empty diagram with a placeholder flowchart.',
+              confidence: 'medium',
+            },
           ),
         );
         continue;
@@ -648,17 +693,23 @@ const headingHierarchyRule: DiagnosticRule = {
   title: 'Heading Hierarchy Skipped',
   description: 'Heading levels are skipped (e.g., H1 to H3).',
   severity: 'warning',
-  canAutoFix: false,
+  canAutoFix: true,
   detect(page) {
     const diagnostics: Diagnostic[] = [];
     const lines = page.content.split('\n');
     let lastLevel = 0;
+    let needsFix = false;
+    const fixedLines = [...lines];
 
     for (let i = 0; i < lines.length; i++) {
-      const match = lines[i]!.match(/^(#{1,6})\s+/);
+      const match = lines[i]!.match(/^(#{1,6})\s+(.*)/);
       if (match) {
         const level = match[1]!.length;
         if (lastLevel > 0 && level > lastLevel + 1) {
+          needsFix = true;
+          // Downgrade heading to correct level
+          const newLevel = lastLevel + 1;
+          fixedLines[i] = '#'.repeat(newLevel) + ' ' + match[2];
           diagnostics.push(
             makeDiagnostic(
               this.id,
@@ -669,12 +720,21 @@ const headingHierarchyRule: DiagnosticRule = {
               `Heading hierarchy should be sequential (H1 > H2 > H3). Use H${lastLevel + 1} instead of H${level}.`,
               page,
               i + 1,
+              null,
+              true,
+              {
+                originalContent: page.content,
+                fixedContent: fixedLines.join('\n'),
+                description: `Downgrade H${level} to H${newLevel} for correct hierarchy.`,
+                confidence: 'high',
+              },
             ),
           );
         }
         lastLevel = level;
       }
     }
+    if (!needsFix) return [];
     return diagnostics;
   },
 };
@@ -686,7 +746,7 @@ const multipleH1Rule: DiagnosticRule = {
   title: 'Multiple H1 Headings',
   description: 'The page has more than one H1 heading.',
   severity: 'warning',
-  canAutoFix: false,
+  canAutoFix: true,
   detect(page) {
     const h1Matches = page.content.match(/^#\s+.+$/gm) || [];
     if (h1Matches.length > 1) {
@@ -694,6 +754,12 @@ const multipleH1Rule: DiagnosticRule = {
       const h1Lines = lines
         .map((line, i) => ({ line, index: i }))
         .filter(({ line }) => /^#\s+/.test(line));
+
+      // Convert extra H1s to H2s
+      const fixedLines = [...lines];
+      for (const { index } of h1Lines.slice(1)) {
+        fixedLines[index] = fixedLines[index]!.replace(/^#/, '##');
+      }
 
       return h1Lines.slice(1).map(({ index }) =>
         makeDiagnostic(
@@ -705,6 +771,14 @@ const multipleH1Rule: DiagnosticRule = {
           'H1 headings represent the page title. Use H2 and below for section headings within the page.',
           page,
           index + 1,
+          null,
+          true,
+          {
+            originalContent: page.content,
+            fixedContent: fixedLines.join('\n'),
+            description: 'Convert extra H1 headings to H2.',
+            confidence: 'high',
+          },
         ),
       );
     }
@@ -874,17 +948,21 @@ const missingCodeBlockLanguageRule: DiagnosticRule = {
   title: 'Code Block Missing Language',
   description: 'A fenced code block does not specify a language.',
   severity: 'warning',
-  canAutoFix: false,
+  canAutoFix: true,
   detect(page) {
     const diagnostics: Diagnostic[] = [];
     const lines = page.content.split('\n');
     let inCodeBlock = false;
+    const fixedLines = [...lines];
+    let needsFix = false;
 
     for (let i = 0; i < lines.length; i++) {
       if (lines[i]!.trimStart().startsWith('```')) {
         if (!inCodeBlock) {
           const fence = lines[i]!.trimStart();
           if (fence === '```' || fence === '``` ') {
+            needsFix = true;
+            fixedLines[i] = fixedLines[i]!.replace(/```(\s*)$/, '```text$1');
             diagnostics.push(
               makeDiagnostic(
                 this.id,
@@ -895,6 +973,14 @@ const missingCodeBlockLanguageRule: DiagnosticRule = {
                 'Specifying a language enables syntax highlighting and helps readers understand the code. Add a language tag like ```javascript or ```python.',
                 page,
                 i + 1,
+                null,
+                true,
+                {
+                  originalContent: page.content,
+                  fixedContent: fixedLines.join('\n'),
+                  description: 'Add "text" as default language tag.',
+                  confidence: 'high',
+                },
               ),
             );
           }
@@ -959,7 +1045,7 @@ const missingTocRule: DiagnosticRule = {
   title: 'Missing Table of Contents',
   description: 'A long page with multiple headings lacks a table of contents.',
   severity: 'info',
-  canAutoFix: false,
+  canAutoFix: true,
   detect(page) {
     const headings = page.content.match(/^#{2,3}\s+.+$/gm) || [];
     const wordCount = page.content.split(/\s+/).filter(Boolean).length;
@@ -976,6 +1062,11 @@ const missingTocRule: DiagnosticRule = {
           ? page.content.split('\n').findIndex((l) => l === firstHeading[0]) + 1
           : 1;
 
+        // Insert [TOC] before the first heading
+        const firstHeadingIndex = page.content.split('\n').findIndex((l) => /^#{2,3}\s+/.test(l));
+        const contentLines = page.content.split('\n');
+        contentLines.splice(Math.max(0, firstHeadingIndex), 0, '[TOC]', '');
+
         return [
           makeDiagnostic(
             this.id,
@@ -986,6 +1077,14 @@ const missingTocRule: DiagnosticRule = {
             'A table of contents helps readers navigate long pages. Add [TOC] or a ## Table of Contents section near the top.',
             page,
             line,
+            null,
+            true,
+            {
+              originalContent: page.content,
+              fixedContent: contentLines.join('\n'),
+              description: 'Insert [TOC] marker before the first section heading.',
+              confidence: 'high',
+            },
           ),
         ];
       }
