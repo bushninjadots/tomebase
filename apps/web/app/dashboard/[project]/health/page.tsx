@@ -311,27 +311,52 @@ export default async function ProjectHealthPage({ params, searchParams }: PagePr
                   </h2>
                   <p className="mt-1 text-sm text-theme-subtle mb-3">Pages with the lowest health scores — prioritize these first.</p>
                   <div className="rounded-xl border border-theme-border bg-theme-card overflow-hidden">
-                    <div className="grid grid-cols-[1fr_80px_80px_80px_60px] gap-4 px-4 py-2 text-xs font-medium text-theme-muted border-b border-theme-border bg-theme-page/50">
+                    {/* Desktop table header */}
+                    <div className="hidden sm:grid grid-cols-[1fr_80px_80px_80px_60px] gap-4 px-4 py-2 text-xs font-medium text-theme-muted border-b border-theme-border bg-theme-page/50">
                       <span>Page</span><span className="text-center">Score</span><span className="text-center">Words</span><span className="text-center">Views</span><span className="text-center">Issues</span>
                     </div>
                     {worstPages.map((page) => (
-                      <div key={page.id} className="grid grid-cols-[1fr_80px_80px_80px_60px] gap-4 px-4 py-3 text-sm border-b border-theme-border last:border-0 hover:bg-theme-hover transition-colors">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <PageLink projectId={project.id} slug={page.slug} className="font-medium text-theme-main truncate hover:text-theme-accent">
-                            {page.title}
-                          </PageLink>
-                          {!page.published && <span className="shrink-0 rounded bg-theme-hover px-1.5 py-0.5 text-[10px] text-theme-muted">draft</span>}
+                      <div key={page.id}>
+                        {/* Desktop row */}
+                        <div className="hidden sm:grid grid-cols-[1fr_80px_80px_80px_60px] gap-4 px-4 py-3 text-sm border-b border-theme-border last:border-0 hover:bg-theme-hover transition-colors">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <PageLink projectId={project.id} slug={page.slug} className="font-medium text-theme-main truncate hover:text-theme-accent">
+                              {page.title}
+                            </PageLink>
+                            {!page.published && <span className="shrink-0 rounded bg-theme-hover px-1.5 py-0.5 text-[10px] text-theme-muted">draft</span>}
+                          </div>
+                          <div className="flex items-center justify-center">
+                            <span className={`inline-flex items-center justify-center w-10 h-6 rounded text-xs font-bold ${
+                              page.score >= 80 ? 'bg-green-500/10 text-green-400' :
+                              page.score >= 60 ? 'bg-amber-500/10 text-amber-400' :
+                              'bg-red-500/10 text-red-400'
+                            }`}>{page.score}</span>
+                          </div>
+                          <div className="flex items-center justify-center text-theme-muted text-xs">{page.wordCount.toLocaleString()}</div>
+                          <div className="flex items-center justify-center text-theme-muted text-xs">{page.viewCount}</div>
+                          <div className="flex items-center justify-center text-theme-muted text-xs">{page.issues.length}</div>
                         </div>
-                        <div className="flex items-center justify-center">
-                          <span className={`inline-flex items-center justify-center w-10 h-6 rounded text-xs font-bold ${
-                            page.score >= 80 ? 'bg-green-500/10 text-green-400' :
-                            page.score >= 60 ? 'bg-amber-500/10 text-amber-400' :
-                            'bg-red-500/10 text-red-400'
-                          }`}>{page.score}</span>
+                        {/* Mobile card */}
+                        <div className="sm:hidden px-4 py-3 border-b border-theme-border last:border-0 hover:bg-theme-hover transition-colors">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2 min-w-0 flex-1">
+                              <PageLink projectId={project.id} slug={page.slug} className="font-medium text-theme-main truncate hover:text-theme-accent">
+                                {page.title}
+                              </PageLink>
+                              {!page.published && <span className="shrink-0 rounded bg-theme-hover px-1.5 py-0.5 text-[10px] text-theme-muted">draft</span>}
+                            </div>
+                            <span className={`inline-flex items-center justify-center w-10 h-6 rounded text-xs font-bold shrink-0 ml-2 ${
+                              page.score >= 80 ? 'bg-green-500/10 text-green-400' :
+                              page.score >= 60 ? 'bg-amber-500/10 text-amber-400' :
+                              'bg-red-500/10 text-red-400'
+                            }`}>{page.score}</span>
+                          </div>
+                          <div className="flex items-center gap-4 text-xs text-theme-muted">
+                            <span>{page.wordCount.toLocaleString()} words</span>
+                            <span>{page.viewCount} views</span>
+                            <span>{page.issues.length} issues</span>
+                          </div>
                         </div>
-                        <div className="flex items-center justify-center text-theme-muted text-xs">{page.wordCount.toLocaleString()}</div>
-                        <div className="flex items-center justify-center text-theme-muted text-xs">{page.viewCount}</div>
-                        <div className="flex items-center justify-center text-theme-muted text-xs">{page.issues.length}</div>
                       </div>
                     ))}
                   </div>

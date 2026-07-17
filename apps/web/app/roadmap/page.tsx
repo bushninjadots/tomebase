@@ -117,7 +117,7 @@ export default function RoadmapPage() {
           </div>
 
           {/* Stats */}
-          <div className="mx-auto mt-12 grid max-w-2xl grid-cols-3 gap-6 text-center">
+          <div className="mx-auto mt-12 grid max-w-2xl grid-cols-2 sm:grid-cols-3 gap-6 text-center">
             <div className="rounded-2xl border border-theme-border bg-theme-card p-5">
               <div className="text-2xl font-bold text-theme-main">30+</div>
               <div className="mt-0.5 text-xs text-theme-muted">API routes</div>

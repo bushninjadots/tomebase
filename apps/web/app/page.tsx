@@ -143,12 +143,12 @@ export default function Home() {
                 and publish to the web — no build steps, no separate hosting.
               </p>
 
-              <div className="mt-10 flex items-center justify-center gap-4">
-                <a href="#try-tomebase" className="inline-flex items-center gap-2.5 rounded-xl bg-theme-accent px-8 py-3.5 text-base font-bold text-white shadow-[0_4px_20px_rgba(229,165,11,0.45)] transition-all hover:bg-theme-accent-hover hover:shadow-[0_6px_28px_rgba(229,165,11,0.55)]">
+              <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4 sm:px-0">
+                <a href="#try-tomebase" className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-theme-accent px-8 py-3.5 text-base font-bold text-white shadow-[0_4px_20px_rgba(229,165,11,0.45)] transition-all hover:bg-theme-accent-hover hover:shadow-[0_6px_28px_rgba(229,165,11,0.55)] w-full sm:w-auto min-h-[48px]">
                   Try it now
                   <ArrowRight className="h-5 w-5" />
                 </a>
-                <Link href="/docs" className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-8 py-3.5 text-base font-semibold text-white transition-all hover:bg-white/15">
+                <Link href="/docs" className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/20 bg-white/10 px-8 py-3.5 text-base font-semibold text-white transition-all hover:bg-white/15 w-full sm:w-auto min-h-[48px]">
                   View Docs
                 </Link>
               </div>
@@ -159,10 +159,10 @@ export default function Home() {
             </div>
 
             {/* App preview card */}
-            <div className="mx-auto max-w-3xl mb-4">
+            <div className="mx-auto max-w-3xl mb-4 px-4 sm:px-0">
               <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-1 shadow-[0_32px_80px_rgba(0,0,0,0.5)]">
-                <div className="rounded-xl bg-[#16181D] p-5 flex gap-4">
-                  {/* Mini sidebar */}
+                <div className="rounded-xl bg-[#16181D] p-3 sm:p-5 flex gap-4">
+                  {/* Mini sidebar - hidden on mobile, visible on sm+ */}
                   <div className="w-40 shrink-0 hidden sm:block">
                     {['Overview', 'Getting Started', 'Troubleshooting', 'calculateTotal', 'User', 'SubscriptionTier'].map((p, i) => (
                       <div
@@ -179,12 +179,12 @@ export default function Home() {
                     ))}
                   </div>
                   {/* Mini doc */}
-                  <div className="flex-1 border-l border-white/[0.08] pl-5 hidden sm:block">
-                    <div className="font-mono text-base font-bold text-[#E2E8F0] mb-2">Overview</div>
-                    <div className="text-[11.5px] text-[#5A6070] mb-3">
+                  <div className="flex-1 border-l border-white/[0.08] pl-3 sm:pl-5">
+                    <div className="font-mono text-sm sm:text-base font-bold text-[#E2E8F0] mb-2">Overview</div>
+                    <div className="text-[11px] sm:text-[11.5px] text-[#5A6070] mb-3">
                       Product overview · Score: <span className="text-amber-400 font-semibold">81</span>
                     </div>
-                    <div className="rounded-lg bg-[#0D1117] p-3 font-mono text-[11px] leading-relaxed">
+                    <div className="rounded-lg bg-[#0D1117] p-3 font-mono text-[10px] sm:text-[11px] leading-relaxed overflow-x-auto">
                       <div className="text-[#8b949e]">{`/**`}</div>
                       <div className="text-[#8b949e]">{` * TomeBase API Reference`}</div>
                       <div className="text-[#8b949e]">{` */`}</div>
@@ -372,7 +372,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mt-12 flex items-center justify-center gap-4">
+            <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4 sm:px-0">
               <a href="#try-tomebase" className="inline-flex items-center gap-2 rounded-xl bg-theme-accent px-7 py-3 text-sm font-bold text-white shadow-[0_2px_12px_rgba(229,165,11,0.3)] transition-all hover:bg-theme-accent-hover">
                 Try import now
                 <ArrowRight className="h-4 w-4" />
@@ -486,17 +486,17 @@ export default function Home() {
               <p className="mt-4 text-theme-subtle">
                 Join hundreds of developer teams who ship better docs faster.
               </p>
-              <div className="mt-8 flex items-center justify-center gap-4">
+              <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4 sm:px-0">
                 <Link
                   href="/login"
-                  className="inline-flex items-center gap-2.5 rounded-xl bg-theme-accent px-8 py-3.5 text-base font-bold text-white shadow-[0_4px_20px_rgba(229,165,11,0.4)] transition-all hover:bg-theme-accent-hover hover:shadow-[0_6px_28px_rgba(229,165,11,0.5)]"
+                  className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-theme-accent px-8 py-3.5 text-base font-bold text-white shadow-[0_4px_20px_rgba(229,165,11,0.4)] transition-all hover:bg-theme-accent-hover hover:shadow-[0_6px_28px_rgba(229,165,11,0.5)] w-full sm:w-auto min-h-[48px]"
                 >
                   Get Started Free
                   <ArrowRight className="h-5 w-5" />
                 </Link>
                 <Link
                   href="/docs"
-                  className="inline-flex items-center gap-2 rounded-xl border border-theme-border px-8 py-3.5 text-base font-semibold text-theme-main transition-all hover:bg-theme-hover"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-theme-border px-8 py-3.5 text-base font-semibold text-theme-main transition-all hover:bg-theme-hover w-full sm:w-auto min-h-[48px]"
                 >
                   View live demo
                 </Link>
@@ -524,7 +524,7 @@ export default function Home() {
               <span className="font-semibold text-theme-subtle">TomeBase</span>
               <span className="text-theme-muted">© {new Date().getFullYear()}</span>
             </div>
-            <div className="flex items-center gap-6 text-sm text-theme-muted">
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-theme-muted">
               <Link href="/features" className="hover:text-theme-main transition-colors">Features</Link>
               <Link href="/pricing" className="hover:text-theme-main transition-colors">Pricing</Link>
               <Link href="/roadmap" className="hover:text-theme-main transition-colors">Roadmap</Link>

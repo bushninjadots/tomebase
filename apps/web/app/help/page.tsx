@@ -429,20 +429,38 @@ const features: FeatureSection[] = [
 
 function SectionNav() {
   return (
-    <nav className="sticky top-20 hidden h-fit w-48 shrink-0 xl:block">
-      <div className="space-y-1">
-        {features.map((f) => (
-          <a
-            key={f.id}
-            href={`#${f.id}`}
-            className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm text-theme-muted hover:bg-theme-hover hover:text-theme-main transition-colors"
-          >
-            <f.icon className="h-3.5 w-3.5 shrink-0" />
-            {f.title}
-          </a>
-        ))}
-      </div>
-    </nav>
+    <>
+      {/* Desktop: sticky sidebar */}
+      <nav className="sticky top-20 hidden h-fit w-48 shrink-0 xl:block">
+        <div className="space-y-1">
+          {features.map((f) => (
+            <a
+              key={f.id}
+              href={`#${f.id}`}
+              className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm text-theme-muted hover:bg-theme-hover hover:text-theme-main transition-colors"
+            >
+              <f.icon className="h-3.5 w-3.5 shrink-0" />
+              {f.title}
+            </a>
+          ))}
+        </div>
+      </nav>
+      {/* Mobile: horizontal scrollable */}
+      <nav className="xl:hidden -mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto touch-scroll-x pb-2 mb-4 border-b border-theme-border">
+        <div className="flex gap-2 min-w-max">
+          {features.map((f) => (
+            <a
+              key={f.id}
+              href={`#${f.id}`}
+              className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-theme-muted bg-theme-card border border-theme-border hover:bg-theme-hover hover:text-theme-main transition-colors whitespace-nowrap shrink-0"
+            >
+              <f.icon className="h-3 w-3" />
+              {f.title}
+            </a>
+          ))}
+        </div>
+      </nav>
+    </>
   );
 }
 

@@ -297,7 +297,30 @@ export function DocSidebar({ project }: { project: Project }) {
   const [newTemplate, setNewTemplate] = useState('blank');
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const titleInputRef = useRef<HTMLInputElement>(null);
+
+  // Listen for mobile sidebar toggle
+  useEffect(() => {
+    const handler = () => setMobileOpen((prev) => !prev);
+    window.addEventListener('toggle-sidebar', handler);
+    return () => window.removeEventListener('toggle-sidebar', handler);
+  }, []);
+
+  // Close mobile sidebar on route change
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  // Lock body scroll when mobile sidebar is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileOpen]);
 
   useEffect(() => {
     if (isCreating && titleInputRef.current) {
@@ -427,8 +450,16 @@ export function DocSidebar({ project }: { project: Project }) {
   }
 
   return (
-    <aside className="flex w-64 flex-col border-r border-theme-border/60 bg-theme-page">
-      {/* Header */}
+    <>
+      {/* Mobile backdrop */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+      <aside className={`sidebar-aside flex w-64 flex-col border-r border-theme-border/60 bg-theme-page ${mobileOpen ? 'open' : ''}`}>
+        {/* Header */}
       <div className="flex items-center gap-2.5 border-b border-theme-border/40 px-4 py-3">
         <Link
           href="/dashboard"
@@ -680,5 +711,6 @@ export function DocSidebar({ project }: { project: Project }) {
         />
       )}
     </aside>
+    </>
   );
 }

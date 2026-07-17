@@ -7,6 +7,7 @@ import {
   Copy, Trash2, Layers, BookOpen, Clock, Type, AlertTriangle,
   X, Maximize2, Minimize2, Users, ListOrdered, MessageSquare,
   MoreHorizontal, Search, SplitSquareHorizontal, Image as ImageIcon,
+  Menu,
 } from 'lucide-react';
 import { Markdown } from '@/components/markdown';
 import { ShortcutsModal } from '@/components/shortcuts';
@@ -552,7 +553,7 @@ export function DocEditor({ project }: { project: Project }) {
             <kbd className="px-1.5 py-0.5 rounded bg-theme-hover border border-theme-border text-[11px] font-mono">/</kbd>
             {' '}for quick formatting commands.
           </p>
-          <div className="mt-8 grid grid-cols-3 gap-3 text-left">
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
             <Link
               href={`/dashboard/${project.id}/import`}
               className="group rounded-xl border border-theme-border bg-theme-card p-4 transition-all duration-200 hover:border-theme-accent/30 hover:shadow-sm hover:shadow-theme-accent/5"
@@ -650,6 +651,15 @@ export function DocEditor({ project }: { project: Project }) {
           <div className="shrink-0 border-b border-theme-border">
             {/* Top row: Title + actions */}
             <div className="flex items-center gap-3 px-4 sm:px-6 py-3">
+              {/* Mobile menu button */}
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('toggle-sidebar'))}
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-theme-muted hover:text-theme-main hover:bg-theme-hover transition-colors md:hidden shrink-0"
+                aria-label="Toggle sidebar"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+
               {/* Breadcrumbs */}
               {breadcrumbs.length > 0 && (
                 <div className="hidden sm:flex items-center gap-1 text-xs text-theme-muted">

@@ -458,8 +458,8 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
     >
       <div className="relative flex flex-col rounded-2xl border border-theme-border bg-theme-page shadow-2xl w-[880px] max-w-[95vw] max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-theme-border px-5 py-3 shrink-0">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 border-b border-theme-border px-3 sm:px-5 py-2.5 sm:py-3 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             {/* View mode */}
             <div className="flex rounded-lg border border-theme-border p-0.5 bg-theme-card">
               <button
@@ -561,7 +561,7 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
                 Health
               </button>
             </div>
-            <div className="relative">
+            <div className="relative hidden sm:block">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-theme-muted" />
               <input
                 type="text"

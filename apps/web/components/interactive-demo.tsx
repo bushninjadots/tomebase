@@ -501,7 +501,7 @@ export function InteractiveDemo() {
             </div>
             <div className="flex items-center gap-2">
               {/* Language selector */}
-              <div className="flex rounded-lg border border-theme-border bg-theme-page p-0.5">
+              <div className="flex rounded-lg border border-theme-border bg-theme-page p-0.5 overflow-x-auto touch-scroll-x">
                 {languages.map((lang) => (
                   <button
                     key={lang.value}

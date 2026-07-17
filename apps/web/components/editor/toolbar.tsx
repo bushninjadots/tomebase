@@ -72,7 +72,7 @@ function ToolbarButton({
     <div className="relative" onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
       <button
         onClick={onClick}
-        className={`p-1.5 rounded-md transition-all duration-150 ${
+        className={`p-2 sm:p-1.5 rounded-md transition-all duration-150 min-w-[36px] min-h-[36px] sm:min-w-0 sm:min-h-0 ${
           active
             ? 'bg-theme-accent/15 text-theme-accent'
             : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
@@ -102,7 +102,7 @@ export function EditorToolbar({ onAction, canUndo = true, canRedo = true }: Edit
   const [showMore, setShowMore] = useState(false);
 
   return (
-    <div className="flex items-center gap-1 px-3 sm:px-4 py-1.5 border-b border-theme-border bg-theme-page/50">
+    <div className="flex items-center gap-1 px-3 sm:px-4 py-1.5 border-b border-theme-border bg-theme-page/50 mobile-toolbar-scroll">
       {/* Text formatting */}
       <div className="flex items-center gap-0.5">
         {TEXT_BUTTONS.map((btn) => (

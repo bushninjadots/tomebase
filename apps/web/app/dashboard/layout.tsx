@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@fluid/database';
 import { getOrCreatePersonalTeam } from '@/lib/team';
 import { DashboardCommandPalette } from './command-palette-wrapper';
+import { MobileDrawer } from '@/components/mobile-drawer';
 import {
   LayoutDashboard,
   Settings,
@@ -65,7 +66,16 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="flex min-h-screen bg-theme-page">
-      {/* Sidebar */}
+      {/* Mobile Drawer */}
+      <MobileDrawer
+        projects={projects}
+        firstProjectId={firstProjectId ?? null}
+        userName={session.user.name ?? null}
+        userEmail={session.user.email ?? null}
+        userImage={user?.image ?? null}
+      />
+
+      {/* Desktop Sidebar */}
       <aside className="hidden md:flex w-56 shrink-0 flex-col border-r border-theme-border bg-theme-card/30">
         {/* Logo */}
         <div className="flex h-14 items-center gap-2 border-b border-theme-border px-4">
