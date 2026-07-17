@@ -18,6 +18,7 @@ import {
   Users,
   User,
   Plug,
+  Zap,
 } from 'lucide-react';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -144,6 +145,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
               >
                 <BarChart3 />
                 Health
+              </Link>
+              <Link
+                href={`/dashboard/${firstProjectId}/diagnostics`}
+                className="sidebar-link"
+              >
+                <Zap />
+                Diagnostics
               </Link>
             </>
           )}
