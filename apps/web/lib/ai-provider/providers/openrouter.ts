@@ -36,7 +36,7 @@ export class OpenRouterProvider extends BaseAIProvider {
     return createOpenAICompatible({
       name: 'openrouter',
       apiKey: this.config.apiKey,
-      baseURL: 'https://openrouter.ai/api/v1',
+      baseURL: this.config.baseUrl || 'https://openrouter.ai/api/v1',
     });
   }
 

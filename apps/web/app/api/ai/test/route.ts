@@ -28,13 +28,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Invalid provider. Allowed: ${ALLOWED_PROVIDERS.join(', ')}` }, { status: 400 });
     }
 
-    if (!apiKey || typeof apiKey !== 'string') {
-      return NextResponse.json({ error: 'API key is required' }, { status: 400 });
+    const providerMeta = AI_PROVIDERS.find((p) => p.type === provider);
+    if (providerMeta?.requiresApiKey && (!apiKey || typeof apiKey !== 'string')) {
+      return NextResponse.json({ error: 'API key is required for this provider' }, { status: 400 });
     }
 
     const aiProvider = createProvider({
       provider: provider as AIProviderType,
-      apiKey,
+      apiKey: apiKey || undefined,
       baseUrl,
       model,
     });
