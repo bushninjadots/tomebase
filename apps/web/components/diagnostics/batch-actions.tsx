@@ -17,6 +17,7 @@ interface BatchActionsProps {
   onAIReview: () => void;
   onExport: () => void;
   fixing: boolean;
+  aiReviewLoading?: boolean;
 }
 
 export function BatchActions({
@@ -26,6 +27,7 @@ export function BatchActions({
   onAIReview,
   onExport,
   fixing,
+  aiReviewLoading = false,
 }: BatchActionsProps) {
   const fixableCount = diagnostics.filter(isFixable).length;
   const hasFixable = fixableCount > 0;
@@ -49,12 +51,15 @@ export function BatchActions({
 
       <button
         onClick={onAIReview}
-        className="inline-flex items-center gap-1.5 rounded-lg border border-theme-border bg-theme-card px-3 py-2 text-xs font-medium text-theme-muted opacity-60 cursor-not-allowed"
-        disabled
-        title="No AI provider configured"
+        disabled={aiReviewLoading}
+        className="inline-flex items-center gap-1.5 rounded-lg border border-theme-border bg-theme-card px-3 py-2 text-xs font-medium text-theme-subtle hover:bg-theme-hover transition-all disabled:opacity-50"
       >
-        <Sparkles className="h-3 w-3" />
-        AI Review (Soon)
+        {aiReviewLoading ? (
+          <Loader2 className="h-3 w-3 animate-spin" />
+        ) : (
+          <Sparkles className="h-3 w-3" />
+        )}
+        {aiReviewLoading ? 'Reviewing...' : 'AI Review'}
       </button>
 
       <button
