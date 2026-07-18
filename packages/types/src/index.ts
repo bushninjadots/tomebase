@@ -185,6 +185,26 @@ export * from './diagnostics';
 
 // ─── Repository Index Types ──────────────────────────────────────────
 
+// ─── AI Context Types (folded from @fluid/ai) ─────────────────────────
+
+export interface AIContextEntry {
+  key: string;
+  value: string;
+  priority: number;
+}
+
+export function buildContextString(entries: AIContextEntry[]): string {
+  return entries
+    .sort((a, b) => b.priority - a.priority)
+    .map((e) => `${e.key}: ${e.value}`)
+    .join('\n');
+}
+
+export const AI_MAX_CONTEXT_ENTRIES = 50;
+export const AI_MAX_SELECTED_TEXT_LENGTH = 4000;
+
+// ─── Repository Index Types ──────────────────────────────────────────
+
 export type RepositoryIndexSymbolType =
   | 'function' | 'class' | 'interface' | 'type' | 'variable'
   | 'page' | 'section' | 'code_block' | 'mermaid_diagram' | 'table' | 'heading';

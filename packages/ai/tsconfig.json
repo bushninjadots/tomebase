@@ -1,7 +1,0 @@
-{
-  "extends": "@fluid/config/tsconfig/react-library",
-  "compilerOptions": {
-    "outDir": "dist"
-  },
-  "include": ["src"]
-}

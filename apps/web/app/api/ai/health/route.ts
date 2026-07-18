@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@fluid/database';
 import { requireAuth } from '@/lib/authorization';
-import { createProvider } from '@/lib/ai-provider/factory';
-import type { AIProviderType } from '@/lib/ai-provider/types';
+import { getActiveProviderConfig, createProviderFromConfig } from '@/lib/workspace';
 
 interface HealthPage {
   id: string;
@@ -43,11 +42,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
-    const config = await prisma.aIProviderConfig.findFirst({
-      where: { userId: session.user.id, enabled: true },
-      orderBy: { updatedAt: 'desc' },
-    });
-
+    const config = await getActiveProviderConfig(session.user.id);
     if (!config) {
       return NextResponse.json(
         { error: 'No AI provider configured. Go to Settings > AI Providers to add your API key.' },
@@ -55,12 +50,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const provider = createProvider({
-      provider: config.provider as AIProviderType,
-      apiKey: config.apiKey || undefined,
-      baseUrl: config.baseUrl || undefined,
-      model: config.model || undefined,
-    });
+    const provider = createProviderFromConfig(config);
 
     const combinedContent = pages
       .map((p) => `## ${p.title}\n\n${p.content}`)

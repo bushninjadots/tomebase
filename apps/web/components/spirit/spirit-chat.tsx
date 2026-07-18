@@ -96,46 +96,19 @@ export function SpiritChat({ projectId, pageId }: SpiritChatProps) {
           ],
           projectId,
           pageId,
-          stream: true,
+          operation: 'chat',
         }),
         signal: abortRef.current.signal,
       });
 
-      if (!res.ok) throw new Error('AI request failed');
-
-      const reader = res.body?.getReader();
-      if (!reader) throw new Error('No response body');
-
-      const decoder = new TextDecoder();
-      let accumulated = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split('\n');
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-            if (data === '[DONE]') break;
-            try {
-              const parsed = JSON.parse(data);
-              const content = parsed.content || parsed.text || '';
-              if (content) {
-                accumulated += content;
-                updateLastMessage(accumulated);
-              }
-            } catch {
-              if (data) {
-                accumulated += data;
-                updateLastMessage(accumulated);
-              }
-            }
-          }
-        }
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({}));
+        throw new Error((errBody as { error?: string }).error || 'AI request failed');
       }
 
+      const data = await res.json();
+      const content = (data as { content?: string }).content || (data as { message?: string }).message || '';
+      updateLastMessage(content);
       setAIState('idle');
     } catch (err) {
       if ((err as Error).name === 'AbortError') {

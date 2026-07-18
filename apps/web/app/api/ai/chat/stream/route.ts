@@ -1,10 +1,7 @@
 import { NextRequest } from 'next/server';
-import { prisma } from '@fluid/database';
 import { requireAuth } from '@/lib/authorization';
-import { createProvider } from '@/lib/ai-provider/factory';
-import { buildAIContext, contextToString } from '@/lib/ai-context';
-import { getContextForQuery } from '@/lib/repository-index/query';
-import type { AIProviderType, AIStreamRequest } from '@/lib/ai-provider/types';
+import { getActiveProviderConfig, createProviderFromConfig, buildContextForPrompt } from '@/lib/workspace';
+import type { AIStreamRequest } from '@/lib/ai-provider/types';
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,11 +30,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const config = await prisma.aIProviderConfig.findFirst({
-      where: { userId: session.user.id, enabled: true },
-      orderBy: { updatedAt: 'desc' },
-    });
-
+    const config = await getActiveProviderConfig(session.user.id);
     if (!config) {
       return new Response(JSON.stringify({ error: 'No AI provider configured' }), {
         status: 400,
@@ -45,31 +38,13 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const provider = createProvider({
-      provider: config.provider as AIProviderType,
-      apiKey: config.apiKey || undefined,
-      baseUrl: config.baseUrl || undefined,
-      model: config.model || undefined,
-    });
+    const provider = createProviderFromConfig(config);
 
-    // Build context string
-    let contextString = '';
-    if (pageId && projectId) {
-      try {
-        const ctx = await buildAIContext({ projectId, pageId });
-        contextString = contextToString(ctx);
-        try {
-          const indexContext = await getContextForQuery(projectId, pageId, content);
-          if (indexContext) contextString += `\n\nREPOSITORY INDEX:\n${indexContext}`;
-        } catch {
-          // Index may not exist
-        }
-      } catch {
-        contextString = content;
-      }
-    } else {
-      contextString = content;
-    }
+    const contextString = await buildContextForPrompt({
+      pageId,
+      projectId,
+      content,
+    });
 
     const streamRequest: AIStreamRequest = {
       content: contextString,
