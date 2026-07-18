@@ -5,7 +5,6 @@ import { prisma } from '@fluid/database';
 import { getOrCreatePersonalTeam } from '@/lib/team';
 import { DashboardCommandPalette } from './command-palette-wrapper';
 import { MobileDrawer } from '@/components/mobile-drawer';
-import { AIProviderProvider } from '@/components/ai/ai-provider-context';
 import {
   LayoutDashboard,
   Settings,
@@ -241,9 +240,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
       {/* Main content */}
       <main className="flex-1 min-w-0">
-        <AIProviderProvider>
-          {children}
-        </AIProviderProvider>
+        {children}
       </main>
     </div>
   );

@@ -3,60 +3,21 @@
 import type { HealthScore } from '@fluid/types';
 import { getGradeColor } from '@/lib/diagnostics/health-score';
 import { CheckCircle, AlertTriangle, Wand2, Sparkles } from 'lucide-react';
+import { ScoreRing } from '@/components/score-ring';
 
 interface HealthScoreCardProps {
   healthScore: HealthScore;
-}
-
-function ScoreRing({ score, grade, size = 120 }: { score: number; grade: string; size?: number }) {
-  const radius = (size - 12) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (score / 100) * circumference;
-
-  let color = '#22c55e';
-  if (score < 60) color = '#ef4444';
-  else if (score < 80) color = '#f59e0b';
-
-  return (
-    <div className="relative" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="-rotate-90">
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="6"
-          className="text-theme-border"
-        />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke={color}
-          strokeWidth="6"
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          className="transition-all duration-1000 ease-out"
-        />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-2xl font-bold text-theme-main">{score}</span>
-        <span className={`text-xs font-semibold ${getGradeColor(grade as any)}`}>
-          {grade}
-        </span>
-      </div>
-    </div>
-  );
 }
 
 export function HealthScoreCard({ healthScore }: HealthScoreCardProps) {
   return (
     <div className="rounded-xl border border-theme-border bg-theme-card p-5">
       <div className="flex items-center gap-6">
-        <ScoreRing score={healthScore.score} grade={healthScore.grade} />
+        <ScoreRing
+          score={healthScore.score}
+          grade={healthScore.grade}
+          gradeColor={getGradeColor(healthScore.grade as any)}
+        />
 
         <div className="flex-1 space-y-3">
           <div>

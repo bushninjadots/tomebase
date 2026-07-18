@@ -9,13 +9,14 @@ import {
   AlignLeft, List, BookOpen, Heading, GitBranch, FileX, Activity,
   ArrowUpRight, ArrowDownRight, Minus, Zap, Link as LinkIcon,
 } from 'lucide-react';
-import { getHealthColor, getHealthLabel, getScoreRingColor } from '@/lib/health';
+import { getHealthColor, getHealthLabel } from '@/lib/health';
 import { scanPages } from '@/lib/diagnostics/engine';
 import { formatDistanceToNow } from 'date-fns';
 import { HealthScanButton } from '@/components/health-scan-button';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { DiagnosticsTab } from '@/components/diagnostics/diagnostics-tab';
 import { HealthAIInsights } from '@/components/health-ai-insights';
+import { ScoreRing } from '@/components/score-ring';
 import type { DiagnosticPage, Diagnostic, DiagnosticCategory, CategoryBreakdown } from '@fluid/types';
 
 interface PageProps {
@@ -99,26 +100,6 @@ function computePageScores(pages: ReturnType<typeof mapPages>, diagnostics: Diag
 
     return { ...page, score, wordCount, readingTimeMin, issues: pageIssues };
   });
-}
-
-function ScoreRing({ score, size = 160 }: { score: number; size?: number }) {
-  const radius = (size - 16) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (score / 100) * circumference;
-  const color = getScoreRingColor(score);
-
-  return (
-    <div className="relative" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="currentColor" strokeWidth="8" className="text-theme-border" />
-        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke={color} strokeWidth="8" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} className="transition-all duration-1000 ease-out" />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-4xl font-bold text-theme-main">{score}</span>
-        <span className="text-xs text-theme-muted mt-1">out of 100</span>
-      </div>
-    </div>
-  );
 }
 
 function ScoreTrend({ current, previous }: { current: number; previous: number | null }) {
@@ -321,7 +302,7 @@ export default async function ProjectHealthPage({ params, searchParams }: PagePr
               {/* Hero Score */}
               <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="md:col-span-1 rounded-xl border border-theme-border bg-theme-card p-6 flex flex-col items-center justify-center">
-                  <ScoreRing score={healthScore.score} />
+                  <ScoreRing score={healthScore.score} size={160} label="out of 100" />
                   <div className="mt-4 text-center">
                     <div className="text-sm font-medium text-theme-main">{healthScore.label}</div>
                     <ScoreTrend current={healthScore.score} previous={previousReport?.score ?? null} />

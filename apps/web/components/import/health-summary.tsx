@@ -21,6 +21,7 @@ import {
   ExternalLink,
   Shield,
 } from 'lucide-react';
+import { ScoreRing } from '@/components/score-ring';
 
 interface HealthSummaryProps {
   projectId: string;
@@ -60,25 +61,6 @@ const CHECK_ICONS: Record<string, typeof CheckCircle> = {
   missing_language_tag: Code,
   low_engagement: FileText,
 };
-
-function ScoreRing({ score, size = 56 }: { score: number; size?: number }) {
-  const radius = (size - 8) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (score / 100) * circumference;
-  const color = score >= 80 ? '#22c55e' : score >= 60 ? '#f59e0b' : score >= 40 ? '#f97316' : '#ef4444';
-
-  return (
-    <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="currentColor" strokeWidth="3" className="text-theme-border" />
-        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke={color} strokeWidth="3" strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round" className="transition-all duration-700 ease-out" />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-base font-bold text-theme-main">{score}</span>
-      </div>
-    </div>
-  );
-}
 
 export function HealthSummary({ projectId }: HealthSummaryProps) {
   const [health, setHealth] = useState<HealthData | null>(null);

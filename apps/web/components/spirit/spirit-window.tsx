@@ -9,7 +9,7 @@ const WINDOW_WIDTH = 400;
 const WINDOW_HEIGHT = 540;
 
 export function SpiritWindow() {
-  const { isOpen, close, mode } = useSpiritStore();
+  const { isOpen, close, mode, context } = useSpiritStore();
 
   const show = isOpen && mode === 'floating';
 
@@ -28,7 +28,10 @@ export function SpiritWindow() {
           }}
           className="absolute bottom-0 right-0 mb-2 rounded-2xl border border-theme-border bg-theme-card shadow-2xl overflow-hidden flex flex-col"
         >
-          <SpiritChat />
+          <SpiritChat
+            projectId={undefined}
+            pageId={context.currentPage?.id}
+          />
         </motion.div>
       )}
     </AnimatePresence>

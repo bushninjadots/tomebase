@@ -31,7 +31,3 @@ export function createProvider(config: AIProviderConfig): AIProvider {
       return new NullAIProvider();
   }
 }
-
-export function createNullProvider(): NullAIProvider {
-  return new NullAIProvider();
-}

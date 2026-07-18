@@ -4,7 +4,6 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { AIProviderSettings } from '@/components/account/ai-provider-settings';
-import { AIProviderProvider } from '@/components/ai/ai-provider-context';
 
 export const metadata: Metadata = {
   title: 'AI Settings — TomeBase',
@@ -33,9 +32,7 @@ export default async function AIProviderSettingsPage() {
           </p>
         </div>
 
-        <AIProviderProvider>
-          <AIProviderSettings />
-        </AIProviderProvider>
+        <AIProviderSettings />
       </div>
     </div>
   );

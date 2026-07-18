@@ -6,7 +6,7 @@ import { useSpiritStore } from '@fluid/spirit';
 import { SpiritChat } from './spirit-chat';
 
 export function SpiritDock() {
-  const { isOpen, mode, close, preferences } = useSpiritStore();
+  const { isOpen, mode, close, preferences, context } = useSpiritStore();
 
   const show = mode === 'docked' && isOpen;
   const width = preferences.dockWidth;
@@ -43,7 +43,7 @@ export function SpiritDock() {
 
           {/* Chat */}
           <div className="flex-1 overflow-hidden">
-            <SpiritChat />
+            <SpiritChat pageId={context.currentPage?.id} />
           </div>
         </motion.aside>
       )}
