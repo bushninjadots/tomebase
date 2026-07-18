@@ -347,6 +347,7 @@ export function SpiritChat({ projectId, pageId }: SpiritChatProps) {
             placeholder={activeProvider ? 'Ask the Spirit...' : 'Configure AI provider to chat'}
             rows={1}
             disabled={!activeProvider}
+            data-spirit-input="true"
             className="flex-1 bg-theme-hover rounded-xl px-3.5 py-2.5 text-sm text-theme-main placeholder-theme-muted outline-none resize-none border border-theme-border focus:border-theme-accent/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ minHeight: 38, maxHeight: 120 }}
             onInput={(e) => {

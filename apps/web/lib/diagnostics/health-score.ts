@@ -6,7 +6,7 @@ import type {
   CategoryBreakdown,
 } from '@fluid/types';
 
-const CATEGORY_LABELS: Record<DiagnosticCategory, string> = {
+export const CATEGORY_LABELS: Record<DiagnosticCategory, string> = {
   broken_link: 'Broken Links',
   missing_frontmatter: 'Missing Frontmatter',
   missing_title: 'Missing Title',
@@ -69,10 +69,25 @@ const CATEGORY_LABELS: Record<DiagnosticCategory, string> = {
   content_distribution: 'Content Distribution',
 };
 
+// Severity weights — how many points each issue type costs
+// Using diminishing returns: first N issues cost full weight, extras cost less
 const SEVERITY_WEIGHTS: Record<DiagnosticSeverity, number> = {
-  error: 15,
-  warning: 8,
-  info: 3,
+  error: 12,
+  warning: 6,
+  info: 2,
+};
+
+// Category-specific criticality multipliers
+const CATEGORY_MULTIPLIER: Partial<Record<DiagnosticCategory, number>> = {
+  broken_link: 1.5,
+  broken_image: 1.5,
+  empty_page: 1.3,
+  orphan_page: 1.1,
+  missing_frontmatter: 1.2,
+  missing_title: 1.2,
+  invalid_markdown: 1.1,
+  stale_docs: 0.9,
+  large_page: 0.8,
 };
 
 export function calculateHealthScore(diagnostics: Diagnostic[]): HealthScore {
@@ -82,11 +97,36 @@ export function calculateHealthScore(diagnostics: Diagnostic[]): HealthScore {
   const totalIssues = diagnostics.length;
   const fixableCount = diagnostics.filter((d) => d.canAutoFix).length;
 
+  // Score starts at 100, subtract points for each diagnostic
+  // Use diminishing returns: count issues per severity, apply logarithmic scaling
   let score = 100;
+
+  const severityCounts: Record<DiagnosticSeverity, number> = { error: 0, warning: 0, info: 0 };
   for (const d of diagnostics) {
-    score -= SEVERITY_WEIGHTS[d.severity];
+    severityCounts[d.severity]++;
   }
-  score = Math.max(0, Math.min(100, score));
+
+  // Apply diminishing returns per severity level
+  for (const severity of ['error', 'warning', 'info'] as DiagnosticSeverity[]) {
+    const count = severityCounts[severity];
+    const baseWeight = SEVERITY_WEIGHTS[severity];
+    for (let i = 0; i < count; i++) {
+      // Diminishing returns: each subsequent issue of same severity costs 15% less (min 25%)
+      const diminishingFactor = Math.max(0.25, 1 - i * 0.15);
+      score -= baseWeight * diminishingFactor;
+    }
+  }
+
+  // Apply category multipliers for critical categories
+  for (const d of diagnostics) {
+    const multiplier = CATEGORY_MULTIPLIER[d.category] ?? 1;
+    if (multiplier !== 1) {
+      const baseCost = SEVERITY_WEIGHTS[d.severity] * 0.3; // 30% of base weight as category penalty
+      score -= baseCost * (multiplier - 1);
+    }
+  }
+
+  score = Math.max(0, Math.min(100, Math.round(score)));
 
   const categoryBreakdown = calculateCategoryBreakdown(diagnostics);
 
@@ -112,6 +152,11 @@ function calculateCategoryBreakdown(diagnostics: Diagnostic[]): CategoryBreakdow
     if (existing) {
       existing.count++;
       if (d.canAutoFix) existing.fixable++;
+      // Track highest severity seen in this category
+      const severityOrder = { error: 0, warning: 1, info: 2 };
+      if (severityOrder[d.severity] < severityOrder[existing.severity]) {
+        existing.severity = d.severity;
+      }
     } else {
       counts.set(d.category, {
         count: 1,
@@ -124,7 +169,7 @@ function calculateCategoryBreakdown(diagnostics: Diagnostic[]): CategoryBreakdow
   return Array.from(counts.entries())
     .map(([category, data]) => ({
       category,
-      label: CATEGORY_LABELS[category],
+      label: CATEGORY_LABELS[category] || category,
       count: data.count,
       severity: data.severity,
       fixable: data.fixable,

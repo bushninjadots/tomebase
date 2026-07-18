@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@fluid/database';
 import { requireAuth } from '@/lib/authorization';
 import { scanPages } from '@/lib/diagnostics/engine';
-import { createProvider } from '@/lib/ai-provider/factory';
+import { getActiveProviderConfig, createProviderFromConfig } from '@/lib/workspace';
 import type { DiagnosticPage } from '@fluid/types';
-import type { AIProviderType } from '@/lib/ai-provider/types';
 
 export async function GET(request: NextRequest) {
   try {
@@ -83,19 +82,11 @@ export async function GET(request: NextRequest) {
 
     // Try AI insights if a provider is configured
     let aiInsights: Array<{ type: string; message: string; priority: string }> = [];
-    const config = await prisma.aIProviderConfig.findFirst({
-      where: { userId: session.user.id, enabled: true },
-      orderBy: { updatedAt: 'desc' },
-    });
+    const config = await getActiveProviderConfig(session.user.id);
 
     if (config && allPages.length > 0) {
       try {
-        const provider = createProvider({
-          provider: config.provider as AIProviderType,
-          apiKey: config.apiKey || undefined,
-          baseUrl: config.baseUrl || undefined,
-          model: config.model || undefined,
-        });
+        const provider = createProviderFromConfig(config);
 
         const staleSummary = allPages
           .slice(0, 5)

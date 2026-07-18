@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { Diagnostic } from '@fluid/types';
+import { CATEGORY_LABELS } from '@/lib/diagnostics/health-score';
 import {
   AlertTriangle,
   AlertCircle,
@@ -50,32 +51,6 @@ const SEVERITY_CONFIG = {
     hoverBorder: 'hover:border-blue-500/30',
     dot: 'bg-blue-500',
   },
-};
-
-const CATEGORY_LABELS: Record<string, string> = {
-  broken_link: 'Broken Link',
-  missing_frontmatter: 'Missing Frontmatter',
-  missing_title: 'Missing Title',
-  missing_description: 'Missing Description',
-  missing_owner: 'Missing Owner',
-  missing_tags: 'Missing Tags',
-  duplicate_title: 'Duplicate Title',
-  invalid_markdown: 'Invalid Markdown',
-  broken_mermaid: 'Broken Mermaid',
-  broken_image: 'Broken Image',
-  empty_page: 'Empty Page',
-  orphan_page: 'Orphan Page',
-  unlinked_page: 'Unlinked Page',
-  large_page: 'Large Page',
-  heading_hierarchy: 'Heading Hierarchy',
-  multiple_h1: 'Multiple H1',
-  duplicate_blank_lines: 'Duplicate Blank Lines',
-  trailing_whitespace: 'Trailing Whitespace',
-  markdown_formatting: 'Formatting',
-  missing_code_block_language: 'Missing Language',
-  stale_docs: 'Stale Docs',
-  missing_toc: 'Missing TOC',
-  deprecated_syntax: 'Deprecated Syntax',
 };
 
 export function DiagnosticCard({

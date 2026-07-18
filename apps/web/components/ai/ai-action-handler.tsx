@@ -55,9 +55,10 @@ export function AIActionHandler({
     setError(null);
 
     try {
+      const promptContent = pageContent || diagnostic?.content || '';
       const data = await chat({
         operation: action,
-        content: pageContent || diagnostic?.content || '',
+        content: promptContent,
         selectedText: diagnostic?.content,
         pageTitle: pageTitle || diagnostic?.pageTitle,
         pageId,
@@ -65,6 +66,7 @@ export function AIActionHandler({
         diagnostic: diagnostic
           ? { title: diagnostic.title, description: diagnostic.description, rule: diagnostic.rule }
           : undefined,
+        messages: [{ role: 'user', content: promptContent }],
       });
       setResult(data);
       onComplete?.(data);

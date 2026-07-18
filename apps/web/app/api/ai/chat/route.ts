@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { pageId, projectId, messages, operation, content, selectedText, diagnostic } = body as {
+    const { pageId, projectId, operation, content, selectedText, diagnostic } = body as {
       pageId?: string;
       projectId?: string;
       messages?: AIChatMessage[];
@@ -22,8 +22,14 @@ export async function POST(request: NextRequest) {
       diagnostic?: Diagnostic;
     };
 
+    // Auto-construct messages from content field when not provided
+    let messages = body.messages as AIChatMessage[] | undefined;
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      return NextResponse.json({ error: 'Messages array is required and must not be empty' }, { status: 400 });
+      const singleContent = content || selectedText || '';
+      if (!singleContent) {
+        return NextResponse.json({ error: 'Messages array or content field is required' }, { status: 400 });
+      }
+      messages = [{ role: 'user', content: singleContent }];
     }
 
     const config = await getActiveProviderConfig(session.user.id);

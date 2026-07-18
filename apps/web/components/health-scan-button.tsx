@@ -3,7 +3,12 @@
 import { useState } from 'react';
 import { Scan, CheckCircle, AlertTriangle, Loader2 } from 'lucide-react';
 
-export function HealthScanButton({ projectId }: { projectId: string }) {
+interface HealthScanButtonProps {
+  projectId: string;
+  onScanComplete?: (result: { score: number; reportId: string }) => void;
+}
+
+export function HealthScanButton({ projectId, onScanComplete }: HealthScanButtonProps) {
   const [scanning, setScanning] = useState(false);
   const [result, setResult] = useState<{ score: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +28,7 @@ export function HealthScanButton({ projectId }: { projectId: string }) {
       }
       const data = await res.json();
       setResult(data);
-      setTimeout(() => window.location.reload(), 800);
+      onScanComplete?.(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Scan failed');
     } finally {

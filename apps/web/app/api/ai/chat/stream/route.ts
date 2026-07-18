@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { requireAuth } from '@/lib/authorization';
 import { getActiveProviderConfig, createProviderFromConfig, buildContextForPrompt } from '@/lib/workspace';
-import type { AIStreamRequest } from '@/lib/ai-provider/types';
+import type { AIStreamRequest, AIChatMessage } from '@/lib/ai-provider/types';
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,11 +14,12 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { pageId, projectId, content, selectedText, temperature, maxTokens } = body as {
+    const { pageId, projectId, content, selectedText, messages, temperature, maxTokens } = body as {
       pageId?: string;
       projectId?: string;
       content?: string;
       selectedText?: string;
+      messages?: AIChatMessage[];
       temperature?: number;
       maxTokens?: number;
     };
@@ -46,15 +47,30 @@ export async function POST(request: NextRequest) {
       content,
     });
 
-    const streamRequest: AIStreamRequest = {
-      content: contextString,
-      selectedText,
-      systemPrompt: `You are an expert technical writer and documentation assistant for TomeBase. You help developers write, improve, and maintain high-quality technical documentation.
+    // Build conversation history for multi-turn streaming
+    const historyParts: string[] = [];
+    if (messages && messages.length > 1) {
+      for (const msg of messages.slice(0, -1)) {
+        historyParts.push(`${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`);
+      }
+    }
 
-Context:
+    const lastUserMessage = messages && messages.length > 0
+      ? messages[messages.length - 1]!.content
+      : content;
+
+    const systemPrompt = `You are an expert technical writer and documentation assistant for TomeBase. You help developers write, improve, and maintain high-quality technical documentation.
+
+Documentation Context:
 ${contextString}
+${historyParts.length > 0 ? `\nConversation History:\n${historyParts.join('\n')}` : ''}
 
-User query: ${content}`,
+Respond to the user's latest message using the documentation context above.`;
+
+    const streamRequest: AIStreamRequest = {
+      content: contextString ? `${contextString}\n\n---\n\n${lastUserMessage}` : lastUserMessage,
+      selectedText,
+      systemPrompt,
       temperature,
       maxTokens,
     };
