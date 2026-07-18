@@ -1,0 +1,20 @@
+export { useSpiritStore } from './store';
+export type {
+  SpiritMode,
+  SpiritAIState,
+  SpiritGhostSize,
+  SpiritMessage,
+  SpiritCitation,
+  SpiritToolCall,
+  SpiritConversation,
+  SpiritSuggestion,
+  SpiritShortcut,
+  SpiritContext,
+  SpiritPreferences,
+  SpiritStore,
+} from './types';
+export {
+  DEFAULT_POSITION,
+  DEFAULT_PREFERENCES,
+  DEFAULT_CONTEXT,
+} from './types';
