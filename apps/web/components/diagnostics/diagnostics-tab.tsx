@@ -14,6 +14,7 @@ import { DiagnosticFilters } from '@/components/diagnostics/diagnostic-filters';
 import { DiagnosticPreview } from '@/components/diagnostics/diagnostic-preview';
 import { BatchActions } from '@/components/diagnostics/batch-actions';
 import { AIActionHandler } from '@/components/ai/ai-action-handler';
+import { useAI } from '@/components/ai/use-ai';
 import {
   Sparkles,
   Zap,
@@ -32,9 +33,12 @@ interface DiagnosticsTabProps {
   projectId: string;
   pages: DiagnosticPage[];
   healthScore: HealthScore;
+  initialDiagnostics?: Diagnostic[];
 }
 
-export function DiagnosticsTab({ projectId, pages, healthScore }: DiagnosticsTabProps) {
+export function DiagnosticsTab({ projectId, pages, healthScore, initialDiagnostics }: DiagnosticsTabProps) {
+  const { activeProvider, chat } = useAI();
+
   const [filter, setFilter] = useState<DiagnosticFilter>({
     severity: 'all',
     category: 'all',
@@ -46,6 +50,7 @@ export function DiagnosticsTab({ projectId, pages, healthScore }: DiagnosticsTab
   const [fixing, setFixing] = useState(false);
   const [previewDiagnostic, setPreviewDiagnostic] = useState<Diagnostic | null>(null);
   const [scannedDiagnostics, setScannedDiagnostics] = useState<Diagnostic[]>(() => {
+    if (initialDiagnostics) return initialDiagnostics;
     const result = scanPages(pages);
     return result.diagnostics;
   });
@@ -163,32 +168,24 @@ export function DiagnosticsTab({ projectId, pages, healthScore }: DiagnosticsTab
   }, [filter]);
 
   const handleAIReview = useCallback(async () => {
+    if (!activeProvider) return;
     setAiReviewLoading(true);
     setAiReviewResult(null);
     try {
       const topIssues = scannedDiagnostics.slice(0, 10).map((d) => `- [${d.severity}] ${d.title}: ${d.description}`).join('\n');
-      const response = await fetch('/api/ai/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          operation: 'review',
-          content: `Documentation Health Issues:\n${topIssues}`,
-          pageTitle: 'Documentation Health Review',
-          projectId,
-        }),
+      const data = await chat({
+        operation: 'review',
+        content: `Documentation Health Issues:\n${topIssues}`,
+        pageTitle: 'Documentation Health Review',
+        projectId,
       });
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error || 'AI review failed');
-      }
-      const data = await response.json();
       setAiReviewResult(data.content || data.explanation || 'Review complete');
     } catch (err) {
       setAiReviewResult(`Error: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setAiReviewLoading(false);
     }
-  }, [scannedDiagnostics]);
+  }, [scannedDiagnostics, activeProvider, chat, projectId]);
 
   const handleExport = useCallback(() => {
     const report = {

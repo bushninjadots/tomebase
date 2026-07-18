@@ -73,6 +73,7 @@ export default async function DiagnosticsPage({ params }: PageProps) {
         projectId={projectId}
         pages={diagnosticPages}
         initialHealthScore={scanResult.healthScore}
+        initialDiagnostics={scanResult.diagnostics}
       />
     </div>
   );

@@ -29,12 +29,14 @@ interface DiagnosticsClientProps {
   projectId: string;
   pages: DiagnosticPage[];
   initialHealthScore: HealthScore;
+  initialDiagnostics?: Diagnostic[];
 }
 
 export function DiagnosticsClient({
   projectId,
   pages,
   initialHealthScore,
+  initialDiagnostics,
 }: DiagnosticsClientProps) {
   const [filter, setFilter] = useState<DiagnosticFilter>({
     severity: 'all',
@@ -47,6 +49,7 @@ export function DiagnosticsClient({
   const [fixing, setFixing] = useState(false);
   const [previewDiagnostic, setPreviewDiagnostic] = useState<Diagnostic | null>(null);
   const [scannedDiagnostics, setScannedDiagnostics] = useState<Diagnostic[]>(() => {
+    if (initialDiagnostics) return initialDiagnostics;
     const result = scanPages(pages);
     return result.diagnostics;
   });

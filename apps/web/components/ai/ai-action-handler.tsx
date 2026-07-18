@@ -55,28 +55,17 @@ export function AIActionHandler({
     setError(null);
 
     try {
-      const response = await fetch('/api/ai/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          operation: action,
-          content: pageContent || diagnostic?.content || '',
-          selectedText: diagnostic?.content,
-          pageTitle: pageTitle || diagnostic?.pageTitle,
-          pageId,
-          projectId,
-          diagnostic: diagnostic
-            ? { title: diagnostic.title, description: diagnostic.description, rule: diagnostic.rule }
-            : undefined,
-        }),
+      const data = await chat({
+        operation: action,
+        content: pageContent || diagnostic?.content || '',
+        selectedText: diagnostic?.content,
+        pageTitle: pageTitle || diagnostic?.pageTitle,
+        pageId,
+        projectId,
+        diagnostic: diagnostic
+          ? { title: diagnostic.title, description: diagnostic.description, rule: diagnostic.rule }
+          : undefined,
       });
-
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error || 'AI request failed');
-      }
-
-      const data = await response.json();
       setResult(data);
       onComplete?.(data);
     } catch (err) {
