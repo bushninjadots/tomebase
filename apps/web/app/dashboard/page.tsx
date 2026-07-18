@@ -24,6 +24,7 @@ import { ProjectCard } from '@/components/project-card';
 import { UpgradeBanner } from '@/components/upgrade-banner';
 import { UpgradePrompt } from '@/components/upgrade-prompt';
 import { Breadcrumbs } from '@/components/breadcrumbs';
+import { DashboardInsights } from '@/components/dashboard-insights';
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -308,6 +309,11 @@ export default async function DashboardPage() {
           </div>
         </div>
       )}
+
+      {/* AI Insights */}
+      <div className="mb-8">
+        <DashboardInsights />
+      </div>
 
       {/* Bottom Row */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">

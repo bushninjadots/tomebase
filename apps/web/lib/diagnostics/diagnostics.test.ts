@@ -379,7 +379,7 @@ describe('Diagnostics Engine', () => {
     it('returns all rules', () => {
       const rules = getAvailableRules();
       expect(rules.length).toBe(ALL_RULES.length);
-      expect(rules.length).toBe(50);
+      expect(rules.length).toBe(59);
     });
 
     it('each rule has required fields', () => {

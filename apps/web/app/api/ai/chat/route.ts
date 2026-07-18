@@ -3,6 +3,8 @@ import { prisma } from '@fluid/database';
 import { requireAuth } from '@/lib/authorization';
 import { createProvider } from '@/lib/ai-provider/factory';
 import { buildAIContext, contextToString } from '@/lib/ai-context';
+import { queryIndex, getContextForQuery } from '@/lib/repository-index/query';
+import { buildIndexForProject } from '@/lib/repository-index/builder';
 import type { AIProviderType, AIChatMessage, AIRequest } from '@/lib/ai-provider/types';
 import type { Diagnostic } from '@fluid/types';
 
@@ -59,6 +61,17 @@ export async function POST(request: NextRequest) {
           content: content || undefined,
         });
         contextString = contextToString(ctx);
+
+        // Enrich with repository index context
+        try {
+          const userMessage = messages?.find((m) => m.role === 'user')?.content || '';
+          const indexContext = await getContextForQuery(projectId, pageId, userMessage);
+          if (indexContext) {
+            contextString += `\n\nREPOSITORY INDEX:\n${indexContext}`;
+          }
+        } catch {
+          // Index may not exist yet
+        }
       } catch {
         // Fallback to basic context
         contextString = content || '';
@@ -77,6 +90,16 @@ export async function POST(request: NextRequest) {
             content: content || undefined,
           });
           contextString = contextToString(ctx);
+
+          try {
+            const userMessage = messages?.find((m) => m.role === 'user')?.content || '';
+            const indexContext = await getContextForQuery(page.projectId, pageId, userMessage);
+            if (indexContext) {
+              contextString += `\n\nREPOSITORY INDEX:\n${indexContext}`;
+            }
+          } catch {
+            // Index may not exist
+          }
         } catch {
           contextString = content || '';
         }

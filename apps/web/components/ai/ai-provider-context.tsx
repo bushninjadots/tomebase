@@ -33,6 +33,9 @@ export interface AIProviderContextType {
     operation?: string;
     pageId?: string;
     projectId?: string;
+    pageTitle?: string;
+    selectedText?: string;
+    diagnostic?: unknown;
     messages?: Array<{ role: string; content: string }>;
   }) => Promise<any>;
 }
@@ -151,6 +154,9 @@ export function AIProviderProvider({ children }: { children: React.ReactNode }) 
       operation?: string;
       pageId?: string;
       projectId?: string;
+      pageTitle?: string;
+      selectedText?: string;
+      diagnostic?: unknown;
       messages?: Array<{ role: string; content: string }>;
     }) => {
       const res = await fetch('/api/ai/chat', {

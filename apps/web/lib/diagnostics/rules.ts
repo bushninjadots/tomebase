@@ -2413,6 +2413,325 @@ const frontmatterOverUsageRule: DiagnosticRule = {
   },
 };
 
+// Rule 51: Table Missing Header Row
+const tableMissingHeaderRule: DiagnosticRule = {
+  id: 'table-missing-header',
+  category: 'table_missing_header',
+  title: 'Table Missing Header',
+  description: 'A table does not have a proper header row.',
+  severity: 'warning',
+  canAutoFix: false,
+  detect(page) {
+    const diagnostics: Diagnostic[] = [];
+    const lines = page.content.split('\n');
+
+    for (let i = 0; i < lines.length - 1; i++) {
+      const isTableLine = lines[i]!.startsWith('|') && lines[i]!.endsWith('|');
+      if (!isTableLine) continue;
+
+      const nextLine = lines[i + 1]!;
+      const isSeparator = /^\|[\s:-]+\|/.test(nextLine);
+
+      // Check if the first row after separator has content
+      if (!isSeparator) continue;
+
+      const cells = lines[i]!.split('|').filter((c) => c.trim().length > 0);
+      const allEmpty = cells.every((c) => c.trim().length === 0);
+      if (allEmpty || cells.length === 0) {
+        diagnostics.push(
+          makeDiagnostic(
+            this.id,
+            this.category,
+            this.severity,
+            'Table missing header content',
+            `Line ${i + 1}: A table's header row is empty or missing.`,
+            'Tables should have descriptive header rows for clarity and accessibility.',
+            page,
+            i + 1,
+          ),
+        );
+      }
+    }
+    return diagnostics;
+  },
+};
+
+// Rule 52: Table Inconsistent Columns
+const tableInconsistentColumnsRule: DiagnosticRule = {
+  id: 'table-inconsistent-columns',
+  category: 'table_inconsistent_columns',
+  title: 'Table Has Inconsistent Columns',
+  description: 'A table has rows with different numbers of columns.',
+  severity: 'warning',
+  canAutoFix: false,
+  detect(page) {
+    const diagnostics: Diagnostic[] = [];
+    const lines = page.content.split('\n');
+    let inTable = false;
+    let expectedColumns = 0;
+    let tableStart = 0;
+
+    for (let i = 0; i < lines.length; i++) {
+      const isTableLine = lines[i]!.startsWith('|') && lines[i]!.endsWith('|');
+      const isSeparator = /^\|[\s:-]+\|/.test(lines[i]!);
+
+      if (isTableLine && !isSeparator) {
+        if (!inTable) {
+          inTable = true;
+          tableStart = i;
+          expectedColumns = lines[i]!.split('|').filter((c) => c.trim().length > 0).length;
+        } else {
+          const cols = lines[i]!.split('|').filter((c) => c.trim().length > 0).length;
+          if (cols !== expectedColumns && !isSeparator) {
+            diagnostics.push(
+              makeDiagnostic(
+                this.id,
+                this.category,
+                this.severity,
+                `Inconsistent columns: expected ${expectedColumns}, got ${cols}`,
+                `Line ${i + 1} has ${cols} columns but the table started with ${expectedColumns} columns.`,
+                'All rows in a table should have the same number of columns.',
+                page,
+                i + 1,
+              ),
+            );
+          }
+        }
+      } else if (inTable && !isTableLine) {
+        inTable = false;
+      }
+    }
+    return diagnostics;
+  },
+};
+
+// Rule 53: Low Link Density
+const lowLinkDensityRule: DiagnosticRule = {
+  id: 'low-link-density',
+  category: 'low_link_density',
+  title: 'Low Internal Link Density',
+  description: 'Page has very few internal links relative to its length.',
+  severity: 'info',
+  canAutoFix: false,
+  detect(page) {
+    const wordCount = page.content.split(/\s+/).filter(Boolean).length;
+    if (wordCount < 200) return [];
+
+    const wikiLinks = (page.content.match(/\[\[[^\]]+\]\]/g) || []).length;
+    const mdLinks = (page.content.match(/\[([^\]]+)\]\(([^)]+)\)/g) || []).length;
+    const totalLinks = wikiLinks + mdLinks;
+
+    const linkDensity = totalLinks / (wordCount / 100);
+
+    if (linkDensity < 0.5 && wordCount > 500) {
+      return [
+        makeDiagnostic(
+          this.id,
+          this.category,
+          this.severity,
+          `Low link density: ${linkDensity.toFixed(1)} links per 100 words`,
+          `Page has ${totalLinks} link(s) across ${wordCount} words. Consider adding cross-references.`,
+          'Internal links help readers navigate related content and improve documentation structure.',
+          page,
+        ),
+      ];
+    }
+    return [];
+  },
+};
+
+// Rule 54: High Link Density
+const highLinkDensityRule: DiagnosticRule = {
+  id: 'high-link-density',
+  category: 'high_link_density',
+  title: 'Very High Link Density',
+  description: 'Page has an unusually high number of links.',
+  severity: 'info',
+  canAutoFix: false,
+  detect(page) {
+    const wordCount = page.content.split(/\s+/).filter(Boolean).length;
+    if (wordCount < 100) return [];
+
+    const wikiLinks = (page.content.match(/\[\[[^\]]+\]\]/g) || []).length;
+    const mdLinks = (page.content.match(/\[([^\]]+)\]\(([^)]+)\)/g) || []).length;
+    const totalLinks = wikiLinks + mdLinks;
+
+    const linkDensity = totalLinks / (wordCount / 100);
+
+    if (linkDensity > 20) {
+      return [
+        makeDiagnostic(
+          this.id,
+          this.category,
+          this.severity,
+          `Very high link density: ${linkDensity.toFixed(1)} links per 100 words`,
+          `Page has ${totalLinks} links across ${wordCount} words (${linkDensity.toFixed(1)} per 100 words).`,
+          'Too many links can distract readers. Consider grouping related links in a "See also" section.',
+          page,
+        ),
+      ];
+    }
+    return [];
+  },
+};
+
+// Rule 55: Missing Code Examples
+const missingCodeExamplesRule: DiagnosticRule = {
+  id: 'missing-code-examples',
+  category: 'missing_code_examples',
+  title: 'Missing Code Examples',
+  description: 'Technical page lacks code examples.',
+  severity: 'info',
+  canAutoFix: false,
+  detect(page) {
+    const wordCount = page.content.split(/\s+/).filter(Boolean).length;
+    if (wordCount < 300) return [];
+
+    const hasCodeTerms = /\b(function|class|interface|type|api|endpoint|method|sdk|library|import|export|config)\b/i.test(page.content);
+    const codeBlocks = (page.content.match(/```\w*/g) || []).length;
+    const hasExamples = codeBlocks >= 2;
+
+    if (hasCodeTerms && !hasExamples) {
+      return [
+        makeDiagnostic(
+          this.id,
+          this.category,
+          this.severity,
+          'Technical content without code examples',
+          `Page mentions code concepts but has no code examples.`,
+          'Code examples make technical documentation more useful. Add practical examples showing usage.',
+          page,
+        ),
+      ];
+    }
+    return [];
+  },
+};
+
+// Rule 56: Too Many Mermaid Diagrams
+const tooManyDiagramsRule: DiagnosticRule = {
+  id: 'too-many-diagrams',
+  category: 'too_many_diagrams',
+  title: 'Many Mermaid Diagrams',
+  description: 'Page has an excessive number of diagrams.',
+  severity: 'info',
+  canAutoFix: false,
+  detect(page) {
+    const mermaidCount = (page.content.match(/```mermaid\n/g) || []).length;
+    if (mermaidCount > 5) {
+      return [
+        makeDiagnostic(
+          this.id,
+          this.category,
+          this.severity,
+          `${mermaidCount} mermaid diagrams on this page`,
+          `This page has ${mermaidCount} mermaid diagrams, which may impact loading time.`,
+          'Consider splitting diagrams across multiple pages if there are more than 5.',
+          page,
+        ),
+      ];
+    }
+    return [];
+  },
+};
+
+// Rule 57: Code Language Diversity
+const codeLanguageDiversityRule: DiagnosticRule = {
+  id: 'code-language-diversity',
+  category: 'code_language_diversity',
+  title: 'Low Code Language Diversity',
+  description: 'Multiple code blocks all use the same language in a multi-language project.',
+  severity: 'info',
+  canAutoFix: false,
+  detect(page) {
+    const langRegex = /```(\w+)/g;
+    const languages = new Set<string>();
+    let match;
+    while ((match = langRegex.exec(page.content)) !== null) {
+      if (match[1] && match[1] !== 'mermaid' && match[1] !== 'text') {
+        languages.add(match[1]!);
+      }
+    }
+
+    if (languages.size === 1) {
+      // Only flag if there are 3+ code blocks all in the same language
+      const codeBlockCount = (page.content.match(/```/g) || []).length / 2;
+      if (codeBlockCount >= 3) {
+        return [
+          makeDiagnostic(
+            this.id,
+            this.category,
+            this.severity,
+            `All ${codeBlockCount} code blocks use ${[...languages][0]}`,
+            `This page has ${codeBlockCount} code blocks, all in ${[...languages][0]}. Consider showing examples in other languages.`,
+            'Showing code examples in multiple languages improves accessibility for diverse audiences.',
+            page,
+          ),
+        ];
+      }
+    }
+    return [];
+  },
+};
+
+// Rule 58: Structure Depth
+const structureDepthRule: DiagnosticRule = {
+  id: 'structure-depth',
+  category: 'structure_depth',
+  title: 'Deep Heading Structure',
+  description: 'Page has more heading levels than recommended.',
+  severity: 'info',
+  canAutoFix: false,
+  detect(page) {
+    const headings = page.content.match(/^#+/gm) || [];
+    const maxLevel = Math.max(...headings.map((h) => h.length));
+    if (maxLevel >= 5) {
+      return [
+        makeDiagnostic(
+          this.id,
+          this.category,
+          this.severity,
+          `Deep heading structure (H${maxLevel})`,
+          `Page goes down to heading level ${maxLevel}. Recommended maximum is H4.`,
+          'Very deep heading levels suggest content could be restructured or split into sub-pages.',
+          page,
+        ),
+      ];
+    }
+    return [];
+  },
+};
+
+// Rule 59: Missing Related Pages
+const missingRelatedPagesRule: DiagnosticRule = {
+  id: 'missing-related-pages',
+  category: 'missing_related_pages',
+  title: 'No Related Pages Section',
+  description: 'A longer page with multiple sections lacks a "See also" or related pages section.',
+  severity: 'info',
+  canAutoFix: false,
+  detect(page, allPages) {
+    const wordCount = page.content.split(/\s+/).filter(Boolean).length;
+    if (wordCount < 500 || allPages.length < 3) return [];
+
+    const hasSeeAlso = /\b(See also|Related|Further reading|Next steps|Learn more)\b/i.test(page.content);
+    if (!hasSeeAlso) {
+      return [
+        makeDiagnostic(
+          this.id,
+          this.category,
+          this.severity,
+          'No "See also" section',
+          `Long page (${wordCount} words) with no related pages section.`,
+          'Adding a "See also" section at the bottom helps readers discover related content.',
+          page,
+        ),
+      ];
+    }
+    return [];
+  },
+};
+
 export const ALL_RULES: DiagnosticRule[] = [
   brokenLinkRule,
   missingFrontmatterRule,
@@ -2464,6 +2783,15 @@ export const ALL_RULES: DiagnosticRule[] = [
   longLineLengthRule,
   emptyLinkTargetRule,
   frontmatterOverUsageRule,
+  tableMissingHeaderRule,
+  tableInconsistentColumnsRule,
+  lowLinkDensityRule,
+  highLinkDensityRule,
+  missingCodeExamplesRule,
+  tooManyDiagramsRule,
+  codeLanguageDiversityRule,
+  structureDepthRule,
+  missingRelatedPagesRule,
 ];
 
 export function getRuleById(id: string): DiagnosticRule | undefined {

@@ -182,3 +182,50 @@ export interface HealthReport {
 }
 
 export * from './diagnostics';
+
+// ─── Repository Index Types ──────────────────────────────────────────
+
+export type RepositoryIndexSymbolType =
+  | 'function' | 'class' | 'interface' | 'type' | 'variable'
+  | 'page' | 'section' | 'code_block' | 'mermaid_diagram' | 'table' | 'heading';
+
+export type RepositoryIndexKind =
+  | 'page_definition' | 'code_symbol' | 'section' | 'import' | 'heading';
+
+export interface RepositoryIndexEntry {
+  id: string;
+  projectId: string;
+  pageId: string | null;
+  symbolName: string;
+  symbolType: RepositoryIndexSymbolType;
+  kind: RepositoryIndexKind;
+  content: string;
+  filePath: string | null;
+  language: string | null;
+  metadata: Record<string, unknown>;
+  relationships: Array<{ targetSymbol: string; targetKind: string; type: string }>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface RepositoryIndexQuery {
+  projectId: string;
+  query?: string;
+  symbolType?: RepositoryIndexSymbolType | 'all';
+  kind?: RepositoryIndexKind | 'all';
+  pageId?: string;
+  limit?: number;
+}
+
+export interface RepositoryIndexQueryResult {
+  entries: RepositoryIndexEntry[];
+  totalCount: number;
+  queryTime: number;
+}
+
+export interface RepositoryIndexBuildResult {
+  projectId: string;
+  entriesCreated: number;
+  entriesUpdated: number;
+  duration: number;
+}

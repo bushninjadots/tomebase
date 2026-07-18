@@ -97,6 +97,7 @@ model Project {
   healthReports HealthReport[]
   teamId    String?
   team      Team?      @relation(fields: [teamId], references: [id])
+  repositoryIndexEntries RepositoryIndexEntry[]
 
   @@index([teamId])
   @@index([customDomain])
@@ -125,6 +126,7 @@ model DocPage {
   bookmarks         Bookmark[]
   scheduledPublish  ScheduledPublish?
   viewEvents        ViewEvent[]
+  repositoryIndexEntries RepositoryIndexEntry[]
 
   @@index([projectId])
   @@index([projectId, published])
@@ -347,4 +349,28 @@ model ActivityEvent {
 
   @@index([userId, createdAt])
   @@index([action])
+}
+
+model RepositoryIndexEntry {
+  id         String   @id @default(cuid())
+  projectId  String
+  pageId     String?
+  symbolName String
+  symbolType String   // 'function' | 'class' | 'interface' | 'type' | 'variable' | 'page' | 'section' | 'code_block' | 'mermaid_diagram' | 'table' | 'heading'
+  kind       String   @default("page") // 'page_definition' | 'code_symbol' | 'section' | 'import'
+  content    String
+  filePath   String?
+  language   String?
+  metadata   Json     @default("{}")
+  relationships Json  @default("[]")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  page    DocPage? @relation(fields: [pageId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+  @@index([projectId, symbolType])
+  @@index([projectId, kind])
+  @@index([projectId, symbolName])
 }

@@ -2,7 +2,8 @@ import { prisma } from '@fluid/database';
 import { scanPages } from '@/lib/diagnostics/engine';
 import { findBacklinks } from '@/lib/wiki';
 import { extractHeadings, extractDescription } from '@/lib/content';
-import type { DiagnosticPage, HealthScore } from '@fluid/types';
+import { findRelatedEntries, findSymbols, getProjectStructure } from '@/lib/repository-index/query';
+import type { DiagnosticPage, HealthScore, RepositoryIndexEntry } from '@fluid/types';
 
 export interface AIContext {
   project: {
@@ -39,6 +40,14 @@ export interface AIContext {
     totalIssues: number;
   };
   projectStructure: string;
+  repositoryIndex: {
+    relatedEntries: Array<{ symbolName: string; symbolType: string; contentPreview: string }>;
+    codeSymbols: Array<{ symbolName: string; symbolType: string; language: string; pageTitle: string }>;
+    sections: Array<{ heading: string; level: number }>;
+    mermaidDiagrams: number;
+    tables: number;
+    codeBlocks: number;
+  };
 }
 
 function extractWikiLinks(content: string): string[] {
@@ -168,11 +177,60 @@ export async function buildAIContext(params: {
       category: d.category,
     }));
 
-  // Build project structure summary
-  const projectStructure = allProjectPages
+  // Query repository index for rich context
+  let projectStructure = allProjectPages
     .slice(0, 30)
     .map((p) => `- ${p.title} (/docs/${p.slug})`)
     .join('\n');
+  let relatedEntries: Array<{ symbolName: string; symbolType: string; contentPreview: string }> = [];
+  let codeSymbols: Array<{ symbolName: string; symbolType: string; language: string; pageTitle: string }> = [];
+  let sections: Array<{ heading: string; level: number }> = [];
+  let mermaidCount = 0;
+  let tableCount = 0;
+  let codeBlockCount = 0;
+
+  try {
+    const [related, symbols, structure] = await Promise.all([
+      findRelatedEntries(projectId, pageId, 5).catch(() => [] as RepositoryIndexEntry[]),
+      findSymbols(projectId, '', 10).catch(() => [] as RepositoryIndexEntry[]),
+      getProjectStructure(projectId).catch(() => ''),
+    ]);
+
+    relatedEntries = related.map((r) => ({
+      symbolName: r.symbolName,
+      symbolType: r.symbolType,
+      contentPreview: r.content.slice(0, 200),
+    }));
+    codeSymbols = symbols.map((s) => ({
+      symbolName: s.symbolName,
+      symbolType: s.symbolType,
+      language: s.language || '',
+      pageTitle: (s.metadata as Record<string, unknown>)?.parent as string || '',
+    }));
+    projectStructure = structure;
+
+    // Count sections, mermaid, tables, code blocks from index
+    const indexEntries = (await import('@/lib/repository-index/query')).queryIndex({
+      projectId,
+      limit: 1000,
+    }).catch(() => null);
+
+    if (indexEntries) {
+      const result = await indexEntries;
+      if (!result) throw new Error('No result');
+      sections = result.entries
+        .filter((e) => e.kind === 'heading')
+        .map((e) => ({
+          heading: e.symbolName,
+          level: (e.metadata as Record<string, unknown>)?.level as number || 1,
+        }));
+      mermaidCount = result.entries.filter((e) => e.symbolType === 'mermaid_diagram').length;
+      tableCount = result.entries.filter((e) => e.symbolType === 'table').length;
+      codeBlockCount = result.entries.filter((e) => e.symbolType === 'code_block').length;
+    }
+  } catch {
+    // Index may not exist — use defaults
+  }
 
   return {
     project: {
@@ -203,6 +261,14 @@ export async function buildAIContext(params: {
       totalIssues: scanResult.diagnostics.length,
     },
     projectStructure,
+    repositoryIndex: {
+      relatedEntries,
+      codeSymbols,
+      sections,
+      mermaidDiagrams: mermaidCount,
+      tables: tableCount,
+      codeBlocks: codeBlockCount,
+    },
   };
 }
 
@@ -240,10 +306,42 @@ export function contextToString(ctx: AIContext): string {
     parts.push(`\nDIAGNOSTICS: No issues (score: ${ctx.diagnostics.score}/100)`);
   }
 
+  if (ctx.repositoryIndex.sections.length > 0) {
+    parts.push(`\nDOCUMENT SECTIONS:`);
+    for (const s of ctx.repositoryIndex.sections) {
+      parts.push(`${'  '.repeat(s.level - 1)}- ${s.heading} (H${s.level})`);
+    }
+  }
+
+  if (ctx.repositoryIndex.relatedEntries.length > 0) {
+    parts.push(`\nRELATED PAGES (from index):`);
+    for (const r of ctx.repositoryIndex.relatedEntries) {
+      parts.push(`- ${r.symbolName}`);
+      if (r.contentPreview) parts.push(`  Content: ${r.contentPreview.slice(0, 100)}...`);
+    }
+  }
+
+  if (ctx.repositoryIndex.codeSymbols.length > 0) {
+    parts.push(`\nCODE SYMBOLS IN PROJECT:`);
+    for (const s of ctx.repositoryIndex.codeSymbols.slice(0, 15)) {
+      parts.push(`- ${s.symbolName} (${s.symbolType}) [${s.language}] in "${s.pageTitle}"`);
+    }
+  }
+
+  if (ctx.repositoryIndex.mermaidDiagrams > 0 || ctx.repositoryIndex.tables > 0 || ctx.repositoryIndex.codeBlocks > 0) {
+    parts.push(`\nCONTENT BREAKDOWN:`);
+    parts.push(`- ${ctx.repositoryIndex.codeBlocks} code blocks`);
+    parts.push(`- ${ctx.repositoryIndex.mermaidDiagrams} mermaid diagrams`);
+    parts.push(`- ${ctx.repositoryIndex.tables} tables`);
+  }
+
   if (ctx.siblingPages.length > 0) {
     parts.push(`\nOTHER PAGES IN PROJECT (${ctx.siblingPages.length}):`);
-    for (const sp of ctx.siblingPages.slice(0, 15)) {
+    for (const sp of ctx.siblingPages.slice(0, 10)) {
       parts.push(`- ${sp.title}`);
+    }
+    if (ctx.siblingPages.length > 10) {
+      parts.push(`  ... and ${ctx.siblingPages.length - 10} more`);
     }
   }
 

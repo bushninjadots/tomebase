@@ -54,6 +54,19 @@ const CATEGORY_LABELS: Record<DiagnosticCategory, string> = {
   missing_link_text: 'Missing Link Text',
   empty_link_target: 'Empty Link Target',
   frontmatter_over_usage: 'Excessive Frontmatter',
+  table_missing_header: 'Table Missing Header',
+  table_inconsistent_columns: 'Inconsistent Table Columns',
+  mermaid_syntax: 'Mermaid Syntax Issues',
+  low_link_density: 'Low Link Density',
+  high_link_density: 'High Link Density',
+  imported_code_stale: 'Stale Imported Code',
+  code_language_diversity: 'Code Language Diversity',
+  orphan_section: 'Orphan Section',
+  structure_depth: 'Deep Structure',
+  missing_code_examples: 'Missing Code Examples',
+  too_many_diagrams: 'Too Many Diagrams',
+  missing_related_pages: 'Missing Related Pages',
+  content_distribution: 'Content Distribution',
 };
 
 const SEVERITY_WEIGHTS: Record<DiagnosticSeverity, number> = {

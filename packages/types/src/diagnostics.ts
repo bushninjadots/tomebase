@@ -47,7 +47,20 @@ export type DiagnosticCategory =
   | 'horizontal_rule_formatting'
   | 'missing_link_text'
   | 'empty_link_target'
-  | 'frontmatter_over_usage';
+  | 'frontmatter_over_usage'
+  | 'table_missing_header'
+  | 'table_inconsistent_columns'
+  | 'mermaid_syntax'
+  | 'low_link_density'
+  | 'high_link_density'
+  | 'imported_code_stale'
+  | 'code_language_diversity'
+  | 'orphan_section'
+  | 'structure_depth'
+  | 'missing_code_examples'
+  | 'too_many_diagrams'
+  | 'missing_related_pages'
+  | 'content_distribution';
 
 export interface DiagnosticPage {
   id: string;
