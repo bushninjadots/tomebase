@@ -88,11 +88,12 @@ export function DiagnosticCard({
             <div className="mt-2 flex items-center gap-3 text-[11px] text-theme-muted">
               {projectId && (
                 <Link
-                  href={`/docs/${projectId}/${diagnostic.pageSlug}`}
+                  href={`/docs/${projectId}/${diagnostic.pageSlug}${diagnostic.line ? `?line=${diagnostic.line}` : ''}`}
                   className="flex items-center gap-1 hover:text-theme-accent transition-colors"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {diagnostic.pageTitle}
+                  {diagnostic.line && <span className="text-theme-accent font-medium">L{diagnostic.line}</span>}
                   <ExternalLink className="h-2.5 w-2.5" />
                 </Link>
               )}

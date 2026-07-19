@@ -5,13 +5,15 @@ import { DocEditorWithAI } from './doc-editor-with-ai';
 
 interface PageProps {
   params: Promise<{ project: string }>;
+  searchParams: Promise<{ line?: string; page?: string }>;
 }
 
-export default async function ProjectDocsPage({ params }: PageProps) {
+export default async function ProjectDocsPage({ params, searchParams }: PageProps) {
   const session = await auth();
   if (!session?.user?.id) redirect('/login');
 
   const { project: projectId } = await params;
+  const { line, page } = await searchParams;
 
   const project = await prisma.project.findUnique({
     where: { id: projectId },
@@ -22,5 +24,5 @@ export default async function ProjectDocsPage({ params }: PageProps) {
 
   if (!project || project.userId !== session.user.id) notFound();
 
-  return <DocEditorWithAI project={project} />;
+  return <DocEditorWithAI project={project} initialLine={line ? parseInt(line, 10) : undefined} initialPageSlug={page} />;
 }

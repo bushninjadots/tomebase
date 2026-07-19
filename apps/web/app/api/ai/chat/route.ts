@@ -5,6 +5,10 @@ import type { AIChatMessage, AIRequest } from '@/lib/ai-provider/types';
 import type { Diagnostic } from '@fluid/types';
 
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
+  let providerType = 'unknown';
+  let model = 'unknown';
+
   try {
     const session = await requireAuth();
     if (!session?.user?.id) {
@@ -22,7 +26,6 @@ export async function POST(request: NextRequest) {
       diagnostic?: Diagnostic;
     };
 
-    // Auto-construct messages from content field when not provided
     let messages = body.messages as AIChatMessage[] | undefined;
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       const singleContent = content || selectedText || '';
@@ -41,6 +44,8 @@ export async function POST(request: NextRequest) {
     }
 
     const provider = createProviderFromConfig(config);
+    providerType = config.provider;
+    model = config.model || 'default';
 
     const userMessage = messages.find((m) => m.role === 'user')?.content || '';
     const contextString = await buildContextForPrompt({
@@ -107,9 +112,13 @@ export async function POST(request: NextRequest) {
         break;
     }
 
+    const latency = Date.now() - startTime;
+    console.log(`[AI] ${providerType}/${model} operation=${operation || 'chat'} latency=${latency}ms promptLen=${(contextString || content || '').length}`);
+
     return NextResponse.json(result);
   } catch (error) {
-    console.error('AI chat error:', error);
+    const latency = Date.now() - startTime;
+    console.error(`[AI] ${providerType}/${model} ERROR latency=${latency}ms:`, error);
     return NextResponse.json(
       { error: `AI request failed: ${error instanceof Error ? error.message : 'Unknown error'}` },
       { status: 500 },

@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
     '@fluid/database',
     '@fluid/types',
     '@fluid/codegen',
+    '@fluid/spirit',
   ],
   experimental: {
     optimizePackageImports: ['lucide-react'],

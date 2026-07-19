@@ -20,6 +20,7 @@ export interface CodeMirrorEditorRef {
   getContent: () => string;
   getCursorPos: () => number;
   setCursorPos: (pos: number) => void;
+  scrollToLine: (line: number) => void;
   view: EditorView | null;
 }
 
@@ -89,6 +90,18 @@ export const CodeMirrorEditor = forwardRef<CodeMirrorEditorRef, CodeMirrorEditor
         const view = viewRef.current;
         if (!view) return;
         view.dispatch({ selection: { anchor: pos } });
+      },
+      scrollToLine: (line: number) => {
+        const view = viewRef.current;
+        if (!view) return;
+        const lineCount = view.state.doc.lines;
+        const targetLine = Math.max(1, Math.min(line, lineCount));
+        const lineObj = view.state.doc.line(targetLine);
+        view.dispatch({
+          selection: { anchor: lineObj.from },
+          effects: EditorView.scrollIntoView(lineObj.from, { y: 'center', yMargin: 80 }),
+        });
+        view.focus();
       },
       view: viewRef.current,
     }));

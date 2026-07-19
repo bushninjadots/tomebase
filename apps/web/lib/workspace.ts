@@ -32,7 +32,7 @@ export function createProviderFromConfig(config: {
 
 /**
  * Build enriched context string for AI prompts — shared by chat and stream routes.
- * Returns the context string, or raw content as fallback.
+ * Supports page-level, project-level, and raw content modes.
  */
 export async function buildContextForPrompt(params: {
   pageId?: string;
@@ -63,6 +63,29 @@ export async function buildContextForPrompt(params: {
     }
   }
 
+  if (!pageId && projectId) {
+    try {
+      const project = await prisma.project.findUnique({
+        where: { id: projectId },
+        select: {
+          name: true,
+          pages: {
+            select: { id: true, title: true, slug: true, description: true, published: true },
+            orderBy: { title: 'asc' },
+          },
+        },
+      });
+      if (project) {
+        const pageList = project.pages
+          .map((p) => `- ${p.title} (${p.published ? 'published' : 'draft'}): ${p.description || 'No description'}`)
+          .join('\n');
+        return `Project: ${project.name}\nPages (${project.pages.length}):\n${pageList}\n\n${content || ''}`;
+      }
+    } catch {
+      // Fallback
+    }
+  }
+
   if (pageId && !projectId) {
     try {
       const page = await prisma.docPage.findUnique({
@@ -80,7 +103,7 @@ export async function buildContextForPrompt(params: {
             contextString += `\n\nREPOSITORY INDEX:\n${indexContext}`;
           }
         } catch {
-          // Index may not exist
+          // Index may not exist yet
         }
 
         return contextString;

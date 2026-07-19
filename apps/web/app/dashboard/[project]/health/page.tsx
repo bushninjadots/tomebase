@@ -8,6 +8,7 @@ import {
   Activity, Zap, BarChart3, ArrowRight,
 } from 'lucide-react';
 import { scanPages } from '@/lib/diagnostics/engine';
+import { calculateHealthScore } from '@/lib/diagnostics/health-score';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { HealthScanButton } from '@/components/health-scan-button';
 import { HealthScoreCard } from '@/components/health-score-card';
@@ -54,14 +55,7 @@ function computePageScores(pages: ReturnType<typeof mapPages>, diagnostics: Diag
     const pageIssues = diagnostics.filter((d) => d.pageId === page.id);
     const wordCount = (page.content || '').split(/\s+/).filter(Boolean).length;
     const readingTimeMin = Math.max(1, Math.ceil(wordCount / 200));
-
-    let score = 100;
-    for (const issue of pageIssues) {
-      if (issue.severity === 'error') score -= 15;
-      else if (issue.severity === 'warning') score -= 8;
-      else score -= 3;
-    }
-    score = Math.max(0, Math.min(100, score));
+    const score = calculateHealthScore(pageIssues).score;
 
     return { ...page, score, wordCount, readingTimeMin, issues: pageIssues };
   });

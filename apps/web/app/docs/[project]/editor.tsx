@@ -46,7 +46,11 @@ interface Project {
 type ViewMode = 'edit' | 'preview' | 'split';
 type SidebarTab = 'outline' | 'team' | 'comments';
 
-export function DocEditor({ project }: { project: Project }) {
+export function DocEditor({ project, initialLine, initialPageSlug }: {
+  project: Project;
+  initialLine?: number;
+  initialPageSlug?: string;
+}) {
   const router = useRouter();
   const editorRef = useRef<CodeMirrorEditorRef>(null);
   const splitRef = useRef<HTMLDivElement>(null);
@@ -162,6 +166,22 @@ export function DocEditor({ project }: { project: Project }) {
 
   // Page list sync
   useEffect(() => { setPageList(project.pages); }, [project.pages]);
+
+  // Handle initial page + line jump from URL params (e.g. from diagnostics)
+  const hasJumpedRef = useRef(false);
+  useEffect(() => {
+    if (hasJumpedRef.current) return;
+    if (!initialPageSlug || pageList.length === 0) return;
+
+    const targetPage = pageList.find((p) => p.slug === initialPageSlug);
+    if (targetPage) {
+      hasJumpedRef.current = true;
+      selectPage(targetPage);
+      if (initialLine) {
+        setTimeout(() => editorRef.current?.scrollToLine(initialLine), 300);
+      }
+    }
+  }, [initialPageSlug, initialLine, pageList]);
 
   // Breadcrumbs
   const breadcrumbs = useMemo(() => {

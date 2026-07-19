@@ -4,6 +4,10 @@ import { getActiveProviderConfig, createProviderFromConfig, buildContextForPromp
 import type { AIStreamRequest, AIChatMessage } from '@/lib/ai-provider/types';
 
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
+  let providerType = 'unknown';
+  let model = 'unknown';
+
   try {
     const session = await requireAuth();
     if (!session?.user?.id) {
@@ -40,6 +44,8 @@ export async function POST(request: NextRequest) {
     }
 
     const provider = createProviderFromConfig(config);
+    providerType = config.provider;
+    model = config.model || 'default';
 
     const contextString = await buildContextForPrompt({
       pageId,
@@ -84,6 +90,8 @@ Respond to the user's latest message using the documentation context above.`;
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: chunk })}\n\n`));
           }
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+          const latency = Date.now() - startTime;
+          console.log(`[AI] ${providerType}/${model} stream latency=${latency}ms promptLen=${(contextString || content || '').length}`);
         } catch (error) {
           const errorMsg = error instanceof Error ? error.message : 'Stream error';
           controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: errorMsg })}\n\n`));

@@ -120,44 +120,67 @@ export function HealthAIInsights({
     setRawInsights(null);
 
     try {
+      const errors = diagnostics.filter((d) => d.severity === 'error');
+      const warnings = diagnostics.filter((d) => d.severity === 'warning');
+      const infos = diagnostics.filter((d) => d.severity === 'info');
+
+      const byCategory = diagnostics.reduce((acc, d) => {
+        acc[d.category] = (acc[d.category] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+
+      const topCategories = Object.entries(byCategory)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 8)
+        .map(([cat, count]) => `  - ${cat}: ${count} issues`)
+        .join('\n');
+
       const topIssues = diagnostics.slice(0, 15).map(
-        (d) => `- [${d.severity}] ${d.title}: ${d.description} (page: "${d.pageTitle}")`,
+        (d) => `- [${d.severity.toUpperCase()}] ${d.title}: ${d.description} (page: "${d.pageTitle}")`,
       ).join('\n');
 
       const data = await chat({
         operation: 'review',
-        content: `You are a documentation health analyst. Analyze this project's documentation health and provide a structured report.
+        content: `You are a senior documentation architect analyzing a project's documentation health. Provide a thorough, actionable analysis.
 
-Documentation Health Overview:
-Health Score: ${healthScore}/100
-Total Pages: ${totalPages}
-Total Issues: ${diagnostics.length}
-Errors: ${diagnostics.filter((d) => d.severity === 'error').length}
-Warnings: ${diagnostics.filter((d) => d.severity === 'warning').length}
+## Health Metrics
+- Health Score: ${healthScore}/100
+- Total Pages: ${totalPages}
+- Total Issues: ${diagnostics.length}
+- Errors: ${errors.length} | Warnings: ${warnings.length} | Info: ${infos.length}
 
-Issues Found:
+## Issues by Category
+${topCategories || 'No issues detected.'}
+
+## Top Issues
 ${topIssues || 'No issues detected.'}
+
+## Analysis Required
 
 Provide your analysis in this EXACT format:
 
 Executive Summary:
-[1-2 sentence overview of documentation health]
+[2-3 sentences: overall documentation quality, most critical concern, and top recommendation]
 
 Strengths:
-- [strength 1]
-- [strength 2]
+- [specific strength backed by data, e.g. "Good link integrity with only 2 broken links across 50 pages"]
+- [another strength]
+- [aim for 2-4 strengths]
 
 Weaknesses:
-- [weakness 1]
-- [weakness 2]
+- [specific weakness with impact assessment, e.g. "35% of pages missing frontmatter - hurts SEO and discoverability"]
+- [another weakness]
+- [aim for 2-4 weaknesses]
 
 Priority Actions:
-- [action 1 - most impactful]
-- [action 2]
-- [action 3]
+- [Most impactful fix: what to do, why it matters, estimated effort]
+- [Second priority with same detail]
+- [Third priority]
+- [aim for 3-5 actions, ordered by impact]
 
-Risk Level: [low/medium/high/critical]`,
-        pageTitle: 'Health Analysis',
+Risk Level: [low/medium/high/critical]
+[One sentence justifying the risk level]`,
+        pageTitle: 'Documentation Health Analysis',
         projectId,
       });
 
@@ -214,7 +237,6 @@ Risk Level: [low/medium/high/critical]`,
 
   return (
     <div className="rounded-2xl border border-theme-border bg-theme-card overflow-hidden">
-      {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-theme-border">
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-theme-accent-light">
@@ -254,7 +276,6 @@ Risk Level: [low/medium/high/critical]`,
         </div>
       </div>
 
-      {/* Content */}
       <div className="px-6 py-5">
         {!rawInsights && !loading && (
           <button
@@ -291,7 +312,6 @@ Risk Level: [low/medium/high/critical]`,
 
         {parsed && expanded && !loading && (
           <div className="space-y-5">
-            {/* Executive Summary */}
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Shield className="h-3.5 w-3.5 text-theme-accent" />
@@ -300,7 +320,6 @@ Risk Level: [low/medium/high/critical]`,
               <p className="text-sm text-theme-subtle leading-relaxed">{parsed.executiveSummary}</p>
             </div>
 
-            {/* Two-column: Strengths + Weaknesses */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {parsed.strengths.length > 0 && (
                 <div className="rounded-xl border border-green-500/20 bg-green-500/5 p-4">
@@ -337,7 +356,6 @@ Risk Level: [low/medium/high/critical]`,
               )}
             </div>
 
-            {/* Priority Actions */}
             {parsed.priorityActions.length > 0 && (
               <div>
                 <div className="flex items-center gap-2 mb-3">
@@ -360,7 +378,6 @@ Risk Level: [low/medium/high/critical]`,
               </div>
             )}
 
-            {/* Spirit Context Action */}
             <div className="pt-2 border-t border-theme-border">
               <p className="text-[11px] text-theme-muted flex items-center gap-1.5">
                 <Lightbulb className="h-3 w-3" />

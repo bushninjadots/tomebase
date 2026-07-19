@@ -62,8 +62,8 @@ export function HealthScoreCard({ healthScore }: HealthScoreCardProps) {
               {healthScore.fixableCount} auto-fixable
             </span>
             <span className="flex items-center gap-1">
-              <Sparkles className="h-3 w-3 text-theme-accent opacity-50" />
-              AI assist (Soon)
+              <Sparkles className="h-3 w-3 text-theme-accent" />
+              AI-powered analysis
             </span>
           </div>
         </div>
