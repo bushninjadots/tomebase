@@ -27,6 +27,7 @@ import { PublishDialog } from '@/components/publish';
 import Link from 'next/link';
 import { eventBus } from '@/lib/events';
 import { useSpiritStore } from '@fluid/spirit';
+import { useSpiritContext } from '@/components/spirit/use-spirit-context';
 
 interface Page {
   id: string;
@@ -100,6 +101,7 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
 
   // Cursor position
   const [cursorPos, setCursorPos] = useState({ line: 1, col: 1 });
+  const [selectedText, setSelectedText] = useState('');
 
   // Team
   const [teamMembers, setTeamMembers] = useState<{ id: string; name: string | null; email: string | null; image: string | null }[]>([]);
@@ -167,6 +169,19 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
 
   // Page list sync
   useEffect(() => { setPageList(project.pages); }, [project.pages]);
+
+  // Spirit context awareness
+  useSpiritContext({
+    projectId: project.id,
+    projectName: project.name,
+    pageId: selectedPage?.id ?? null,
+    pageTitle: title,
+    pageSlug: selectedPage?.slug ?? '',
+    content,
+    selection: selectedText,
+    cursorLine: cursorPos.line,
+    pages: pageList,
+  });
 
   // Handle initial page + line jump from URL params (e.g. from diagnostics)
   const hasJumpedRef = useRef(false);
@@ -270,6 +285,20 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
     savedVersionRef.current = { title: selectedPage.title, content: selectedPage.content };
     setAutoSaveStatus('saved');
   }, [selectedPage?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Listen for proposal acceptances to refresh editor content
+  useEffect(() => {
+    const unsub = eventBus.on('ai:proposalAccepted', (data) => {
+      if (selectedPage && data.pageId === selectedPage.id && data.content) {
+        setContent(data.content);
+        savedVersionRef.current = { title, content: data.content };
+        setPageList((prev) =>
+          prev.map((p) => (p.id === selectedPage.id ? { ...p, content: data.content } : p))
+        );
+      }
+    });
+    return unsub;
+  }, [selectedPage?.id, title]);
 
   useEffect(() => {
     if (!selectedPage) return;
@@ -935,6 +964,7 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
                   placeholder="Start writing... Type / for commands"
                   typewriterMode={typewriterMode}
                   onCursorChange={setCursorPos}
+                  onSelectionChange={setSelectedText}
                   onSlashCommand={handleSlashCommand}
                   onSlashCommandClose={() => setShowSlashCommands(false)}
                 />
@@ -979,6 +1009,7 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
                       placeholder="Start writing..."
                       typewriterMode={typewriterMode}
                       onCursorChange={setCursorPos}
+                      onSelectionChange={setSelectedText}
                       onSlashCommand={handleSlashCommand}
                       onSlashCommandClose={() => setShowSlashCommands(false)}
                     />

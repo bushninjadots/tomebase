@@ -10,7 +10,11 @@ const BUBBLE_SIZE = 56;
 const MARGIN = 20;
 const DRAG_THRESHOLD = 5;
 
-export function SpiritBubble() {
+interface SpiritBubbleProps {
+  projectId?: string;
+}
+
+export function SpiritBubble({ projectId }: SpiritBubbleProps) {
   const { position, setPosition, aiState, toggle } = useSpiritStore();
   const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -148,6 +152,7 @@ export function SpiritBubble() {
         position={position}
         bubbleSize={BUBBLE_SIZE}
         showLeft={showLeft}
+        projectId={projectId}
       />
     </>
   );

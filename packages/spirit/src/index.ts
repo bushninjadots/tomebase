@@ -4,6 +4,7 @@ export type {
   SpiritAIState,
   SpiritGhostSize,
   SpiritMessage,
+  SpiritProposal,
   SpiritCitation,
   SpiritToolCall,
   SpiritConversation,

@@ -167,6 +167,7 @@ export interface AiProposalCreatedEvent {
 export interface AiProposalAcceptedEvent {
   proposalId: string
   pageId: string
+  content: string
 }
 
 export interface AiProposalRejectedEvent {

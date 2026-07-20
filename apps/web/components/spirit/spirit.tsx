@@ -6,6 +6,7 @@ import { SpiritBubble } from './spirit-bubble';
 import { SpiritDock } from './spirit-dock';
 import { SpiritSuggestions } from './spirit-suggestions';
 import { SpiritContextActions } from './spirit-context-actions';
+import { useSpiritSuggestions } from './use-spirit-suggestions';
 
 function useSpiritKeyboard() {
   const toggle = useSpiritStore((s) => s.toggle);
@@ -57,16 +58,18 @@ function useSpiritKeyboard() {
 export function Spirit() {
   const mode = useSpiritStore((s) => s.mode);
   const enabled = useSpiritStore((s) => s.preferences.enabled);
+  const projectId = useSpiritStore((s) => s.context.projectId);
 
   useSpiritKeyboard();
+  useSpiritSuggestions();
 
   if (!enabled || mode === 'hidden') return null;
 
   return (
     <>
-      {mode === 'floating' && <SpiritBubble />}
-      {mode === 'docked' && <SpiritDock />}
-      {mode === 'minimized' && <SpiritBubble />}
+      {mode === 'floating' && <SpiritBubble projectId={projectId ?? undefined} />}
+      {mode === 'docked' && <SpiritDock projectId={projectId ?? undefined} />}
+      {mode === 'minimized' && <SpiritBubble projectId={projectId ?? undefined} />}
       <SpiritContextActions />
       <SpiritSuggestions />
     </>

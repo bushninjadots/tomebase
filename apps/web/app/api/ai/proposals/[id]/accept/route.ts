@@ -84,6 +84,7 @@ export async function POST(
     eventBus.emit('ai:proposalAccepted', {
       proposalId: id,
       pageId: proposal.pageId,
+      content: newContent,
     });
 
     eventBus.emit('document:saved', {

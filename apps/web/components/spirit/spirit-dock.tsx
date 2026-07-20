@@ -5,7 +5,11 @@ import { PanelRightClose, GripVertical } from 'lucide-react';
 import { useSpiritStore } from '@fluid/spirit';
 import { SpiritChat } from './spirit-chat';
 
-export function SpiritDock() {
+interface SpiritDockProps {
+  projectId?: string;
+}
+
+export function SpiritDock({ projectId }: SpiritDockProps) {
   const { isOpen, mode, close, preferences, context } = useSpiritStore();
 
   const show = mode === 'docked' && isOpen;
@@ -43,7 +47,7 @@ export function SpiritDock() {
 
           {/* Chat */}
           <div className="flex-1 overflow-hidden">
-            <SpiritChat pageId={context.currentPage?.id} />
+            <SpiritChat projectId={projectId} pageId={context.currentPage?.id} />
           </div>
         </motion.aside>
       )}

@@ -13,9 +13,10 @@ interface SpiritWindowProps {
   position: { x: number; y: number };
   bubbleSize: number;
   showLeft: boolean;
+  projectId?: string;
 }
 
-export function SpiritWindow({ position, bubbleSize, showLeft }: SpiritWindowProps) {
+export function SpiritWindow({ position, bubbleSize, showLeft, projectId }: SpiritWindowProps) {
   const { isOpen, close, mode, context } = useSpiritStore();
   const show = isOpen && mode === 'floating';
 
@@ -66,7 +67,7 @@ export function SpiritWindow({ position, bubbleSize, showLeft }: SpiritWindowPro
           </button>
 
           <SpiritChat
-            projectId={undefined}
+            projectId={projectId}
             pageId={context.currentPage?.id}
           />
         </motion.div>

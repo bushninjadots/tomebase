@@ -12,17 +12,23 @@ import {
   Sparkles,
   Trash2,
   StopCircle,
-  ChevronDown,
   Wifi,
   WifiOff,
 } from 'lucide-react';
 import { useSpiritStore } from '@fluid/spirit';
 import type { SpiritMessage } from '@fluid/spirit';
 import { useAI } from '@/components/ai/use-ai';
+import { SpiritProposalCard } from './spirit-proposal-card';
 
 interface SpiritChatProps {
   projectId?: string;
   pageId?: string;
+}
+
+const PROPOSAL_KEYWORDS = /\b(fix|rewrite|improve|update|correct|repair|clean up|refactor|optimize|fix this|fix it|make (it|this) better)\b/i;
+
+function isProposalIntent(text: string): boolean {
+  return PROPOSAL_KEYWORDS.test(text);
 }
 
 export function SpiritChat({ projectId, pageId }: SpiritChatProps) {
@@ -48,7 +54,6 @@ export function SpiritChat({ projectId, pageId }: SpiritChatProps) {
   const activeConversation = conversations.find((c) => c.id === activeConversationId);
   const messages = useMemo(() => activeConversation?.messages ?? [], [activeConversation?.messages]);
 
-  // Resolve context: prefer explicit props, fall back to store context
   const resolvedPageId = pageId || context.currentPage?.id || undefined;
   const resolvedProjectId = projectId || undefined;
 
@@ -56,12 +61,75 @@ export function SpiritChat({ projectId, pageId }: SpiritChatProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [activeConversation?.messages.length]);
 
-  // Auto-create conversation
   useEffect(() => {
     if (!activeConversationId && conversations.length === 0) {
       createConversation();
     }
   }, [activeConversationId, conversations.length, createConversation]);
+
+  const handleProposalRequest = useCallback(async (text: string) => {
+    if (!resolvedPageId) {
+      addMessage({
+        id: `msg-${Date.now()}-err`,
+        role: 'assistant',
+        content: 'I need an open page to propose changes. Select a page first.',
+        timestamp: Date.now(),
+      });
+      setAIState('idle');
+      return;
+    }
+
+    setAIState('thinking');
+    try {
+      const res = await fetch('/api/ai/propose', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pageId: resolvedPageId,
+          instruction: text,
+          selectedText: context.currentSelection || undefined,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const proposal = data.proposal;
+        const assistantId = `msg-${Date.now()}-proposal`;
+        addMessage({
+          id: assistantId,
+          role: 'assistant',
+          content: `Here's a suggested change for this page:`,
+          timestamp: Date.now(),
+          proposal: {
+            id: proposal.id,
+            changeType: proposal.changeType,
+            originalContent: proposal.originalContent,
+            proposedContent: proposal.proposedContent,
+            explanation: proposal.explanation,
+            confidence: proposal.confidence,
+            status: 'pending',
+          },
+        });
+      } else {
+        const err = await res.json();
+        addMessage({
+          id: `msg-${Date.now()}-err`,
+          role: 'assistant',
+          content: `I couldn't generate a proposal: ${err.error || 'Unknown error'}`,
+          timestamp: Date.now(),
+        });
+      }
+    } catch (e) {
+      addMessage({
+        id: `msg-${Date.now()}-err`,
+        role: 'assistant',
+        content: `Error creating proposal: ${(e as Error).message}`,
+        timestamp: Date.now(),
+      });
+    } finally {
+      setAIState('idle');
+    }
+  }, [resolvedPageId, context.currentSelection, addMessage, setAIState]);
 
   const handleSend = useCallback(async () => {
     const text = input.trim();
@@ -73,18 +141,6 @@ export function SpiritChat({ projectId, pageId }: SpiritChatProps) {
       convId = createConversation();
     }
 
-    // Build context-enriched message
-    const contextParts: string[] = [];
-    if (context.currentPage) {
-      contextParts.push(`Page: "${context.currentPage.title}" (slug: ${context.currentPage.slug})`);
-    }
-    if (context.currentSelection) {
-      contextParts.push(`Selected text: "${context.currentSelection}"`);
-    }
-    if (context.currentFolder) {
-      contextParts.push(`Folder: ${context.currentFolder}`);
-    }
-
     const userMessage: SpiritMessage = {
       id: `msg-${Date.now()}`,
       role: 'user',
@@ -92,6 +148,12 @@ export function SpiritChat({ projectId, pageId }: SpiritChatProps) {
       timestamp: Date.now(),
     };
     addMessage(userMessage);
+
+    // Detect proposal intent (has page context + fix/improve keywords)
+    if (isProposalIntent(text) && resolvedPageId) {
+      handleProposalRequest(text);
+      return;
+    }
 
     const assistantId = `msg-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`;
     const placeholder: SpiritMessage = {
@@ -107,13 +169,11 @@ export function SpiritChat({ projectId, pageId }: SpiritChatProps) {
     abortRef.current = new AbortController();
 
     try {
-      // Build message history for multi-turn context
       const messageHistory = [
         ...messages.map((m) => ({ role: m.role, content: m.content })),
         { role: 'user' as const, content: text },
       ];
 
-      // Try streaming first for premium feel
       const streamRes = await fetch('/api/ai/chat/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -166,7 +226,6 @@ export function SpiritChat({ projectId, pageId }: SpiritChatProps) {
         }
       }
 
-      // Fallback to non-streaming via centralized chat()
       setAIState('thinking');
       const data = await chat({
         content: text,
@@ -192,6 +251,7 @@ export function SpiritChat({ projectId, pageId }: SpiritChatProps) {
   }, [
     input, activeConversationId, createConversation, addMessage, updateLastMessage,
     setAIState, chat, messages, context, resolvedPageId, resolvedProjectId,
+    handleProposalRequest,
   ]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -260,6 +320,11 @@ export function SpiritChat({ projectId, pageId }: SpiritChatProps) {
             <p className="text-sm text-theme-muted max-w-[200px]">
               Ask me anything about your documentation.
             </p>
+            {resolvedPageId && (
+              <p className="text-[11px] text-theme-muted/60 mt-2 max-w-[220px]">
+                I can see this page. Say <span className="font-medium text-theme-accent/70">&quot;fix this&quot;</span> or <span className="font-medium text-theme-accent/70">&quot;improve&quot;</span> to get a change proposal.
+              </p>
+            )}
             {!activeProvider && (
               <a
                 href="/dashboard/account/ai"
@@ -279,57 +344,65 @@ export function SpiritChat({ projectId, pageId }: SpiritChatProps) {
               animate={{ opacity: 1, y: 0 }}
               className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <div
-                className={`max-w-[85%] rounded-xl px-3.5 py-2.5 text-sm leading-relaxed ${
-                  msg.role === 'user'
-                    ? 'bg-theme-accent text-gray-900'
-                    : 'bg-theme-hover text-theme-main'
-                }`}
-              >
-                {msg.role === 'assistant' ? (
-                  <div className="prose prose-sm dark:prose-invert max-w-none">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {msg.content || (msg.isStreaming ? '...' : '')}
-                    </ReactMarkdown>
-                  </div>
-                ) : (
-                  <p className="whitespace-pre-wrap">{msg.content}</p>
-                )}
+              {msg.proposal ? (
+                <div className="max-w-[95%] w-full">
+                  {msg.content && (
+                    <p className="text-xs text-theme-subtle mb-2 px-1">{msg.content}</p>
+                  )}
+                  <SpiritProposalCard proposal={msg.proposal} />
+                </div>
+              ) : (
+                <div
+                  className={`max-w-[85%] rounded-xl px-3.5 py-2.5 text-sm leading-relaxed ${
+                    msg.role === 'user'
+                      ? 'bg-theme-accent text-gray-900'
+                      : 'bg-theme-hover text-theme-main'
+                  }`}
+                >
+                  {msg.role === 'assistant' ? (
+                    <div className="prose prose-sm dark:prose-invert max-w-none">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {msg.content || (msg.isStreaming ? '...' : '')}
+                      </ReactMarkdown>
+                    </div>
+                  ) : (
+                    <p className="whitespace-pre-wrap">{msg.content}</p>
+                  )}
 
-                {/* Copy button */}
-                {msg.role === 'assistant' && msg.content && !msg.isStreaming && (
-                  <button
-                    onClick={() => handleCopy(msg.content, msg.id)}
-                    className="mt-2 inline-flex items-center gap-1 text-[10px] text-theme-muted hover:text-theme-main transition-colors"
-                  >
-                    {copiedId === msg.id ? (
-                      <><Check className="h-3 w-3 text-green-500" /> Copied</>
-                    ) : (
-                      <><Copy className="h-3 w-3" /> Copy</>
-                    )}
-                  </button>
-                )}
+                  {msg.role === 'assistant' && msg.content && !msg.isStreaming && (
+                    <button
+                      onClick={() => handleCopy(msg.content, msg.id)}
+                      className="mt-2 inline-flex items-center gap-1 text-[10px] text-theme-muted hover:text-theme-main transition-colors"
+                    >
+                      {copiedId === msg.id ? (
+                        <><Check className="h-3 w-3 text-green-500" /> Copied</>
+                      ) : (
+                        <><Copy className="h-3 w-3" /> Copy</>
+                      )}
+                    </button>
+                  )}
 
-                {msg.isStreaming && !msg.content && (
-                  <div className="flex items-center gap-1.5 py-1">
-                    <motion.span
-                      className="w-1.5 h-1.5 rounded-full bg-theme-accent"
-                      animate={{ opacity: [0.3, 1, 0.3] }}
-                      transition={{ duration: 1.2, repeat: Infinity }}
-                    />
-                    <motion.span
-                      className="w-1.5 h-1.5 rounded-full bg-theme-accent"
-                      animate={{ opacity: [0.3, 1, 0.3] }}
-                      transition={{ duration: 1.2, delay: 0.2, repeat: Infinity }}
-                    />
-                    <motion.span
-                      className="w-1.5 h-1.5 rounded-full bg-theme-accent"
-                      animate={{ opacity: [0.3, 1, 0.3] }}
-                      transition={{ duration: 1.2, delay: 0.4, repeat: Infinity }}
-                    />
-                  </div>
-                )}
-              </div>
+                  {msg.isStreaming && !msg.content && (
+                    <div className="flex items-center gap-1.5 py-1">
+                      <motion.span
+                        className="w-1.5 h-1.5 rounded-full bg-theme-accent"
+                        animate={{ opacity: [0.3, 1, 0.3] }}
+                        transition={{ duration: 1.2, repeat: Infinity }}
+                      />
+                      <motion.span
+                        className="w-1.5 h-1.5 rounded-full bg-theme-accent"
+                        animate={{ opacity: [0.3, 1, 0.3] }}
+                        transition={{ duration: 1.2, delay: 0.2, repeat: Infinity }}
+                      />
+                      <motion.span
+                        className="w-1.5 h-1.5 rounded-full bg-theme-accent"
+                        animate={{ opacity: [0.3, 1, 0.3] }}
+                        transition={{ duration: 1.2, delay: 0.4, repeat: Infinity }}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
             </motion.div>
           ))}
         </AnimatePresence>
@@ -344,7 +417,7 @@ export function SpiritChat({ projectId, pageId }: SpiritChatProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={activeProvider ? 'Ask the Spirit...' : 'Configure AI provider to chat'}
+            placeholder={activeProvider ? (resolvedPageId ? 'Ask or say "fix this"...' : 'Ask the Spirit...') : 'Configure AI provider to chat'}
             rows={1}
             disabled={!activeProvider}
             data-spirit-input="true"

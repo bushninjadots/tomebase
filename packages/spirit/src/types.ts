@@ -13,6 +13,16 @@ export type SpiritAIState =
 
 export type SpiritGhostSize = 'small' | 'medium' | 'large';
 
+export interface SpiritProposal {
+  id: string;
+  changeType: 'replace' | 'insert' | 'delete';
+  originalContent: string;
+  proposedContent: string;
+  explanation: string;
+  confidence: number;
+  status: 'pending' | 'accepted' | 'rejected';
+}
+
 export interface SpiritMessage {
   id: string;
   role: 'user' | 'assistant' | 'system';
@@ -21,6 +31,7 @@ export interface SpiritMessage {
   citations?: SpiritCitation[];
   toolCalls?: SpiritToolCall[];
   isStreaming?: boolean;
+  proposal?: SpiritProposal;
 }
 
 export interface SpiritCitation {
@@ -61,6 +72,7 @@ export interface SpiritShortcut {
 }
 
 export interface SpiritContext {
+  projectId: string | null;
   currentPage: { title: string; slug: string; id: string } | null;
   currentSelection: string;
   currentLanguage: string;
@@ -136,6 +148,7 @@ export const DEFAULT_PREFERENCES: SpiritPreferences = {
 };
 
 export const DEFAULT_CONTEXT: SpiritContext = {
+  projectId: null,
   currentPage: null,
   currentSelection: '',
   currentLanguage: '',

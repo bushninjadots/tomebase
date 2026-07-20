@@ -34,13 +34,14 @@ interface CodeMirrorEditorProps {
   onFocus?: () => void;
   onBlur?: () => void;
   onCursorChange?: (pos: { line: number; col: number }) => void;
+  onSelectionChange?: (text: string) => void;
   onSlashCommand?: (query: string) => void;
   onSlashCommandClose?: () => void;
 }
 
 export const CodeMirrorEditor = forwardRef<CodeMirrorEditorRef, CodeMirrorEditorProps>(
   function CodeMirrorEditor(
-    { value, onChange, className, placeholder, readOnly, typewriterMode, onFocus, onBlur, onCursorChange, onSlashCommand, onSlashCommandClose },
+    { value, onChange, className, placeholder, readOnly, typewriterMode, onFocus, onBlur, onCursorChange, onSelectionChange, onSlashCommand, onSlashCommandClose },
     ref
   ) {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -266,10 +267,17 @@ export const CodeMirrorEditor = forwardRef<CodeMirrorEditorRef, CodeMirrorEditor
             if (update.docChanged && !isExternalUpdate.current) {
               onChangeRef.current(update.state.doc.toString());
             }
-            if (update.selectionSet && onCursorChange) {
-              const pos = update.state.selection.main.head;
-              const line = update.state.doc.lineAt(pos);
-              onCursorChange({ line: line.number, col: pos - line.from + 1 });
+            if (update.selectionSet) {
+              if (onCursorChange) {
+                const pos = update.state.selection.main.head;
+                const line = update.state.doc.lineAt(pos);
+                onCursorChange({ line: line.number, col: pos - line.from + 1 });
+              }
+              if (onSelectionChange) {
+                const { from, to } = update.state.selection.main;
+                const selected = from !== to ? update.state.sliceDoc(from, to) : '';
+                onSelectionChange(selected);
+              }
             }
           }),
           EditorView.lineWrapping,
