@@ -58,8 +58,6 @@ export function Spirit() {
   const mode = useSpiritStore((s) => s.mode);
   const enabled = useSpiritStore((s) => s.preferences.enabled);
 
-  console.log('[Spirit] Rendering:', { mode, enabled });
-
   useSpiritKeyboard();
 
   if (!enabled || mode === 'hidden') return null;

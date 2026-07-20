@@ -1,83 +1,123 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useSpiritStore } from '@fluid/spirit';
 import { SpiritGhost } from './spirit-ghost';
 import { SpiritWindow } from './spirit-window';
 
+const BUBBLE_SIZE = 56;
+const MARGIN = 20;
+const DRAG_THRESHOLD = 5;
+
 export function SpiritBubble() {
-  const { position, setPosition, aiState, toggle, preferences } = useSpiritStore();
+  const { position, setPosition, aiState, toggle } = useSpiritStore();
+  const [isHovered, setIsHovered] = useState(false);
+  const dragStart = useRef<{ x: number; y: number } | null>(null);
+  const didDrag = useRef(false);
+
+  // Clamp position to viewport on resize
+  useEffect(() => {
+    function clamp() {
+      const maxX = window.innerWidth - BUBBLE_SIZE - MARGIN;
+      const maxY = window.innerHeight - BUBBLE_SIZE - MARGIN;
+      const { x, y } = useSpiritStore.getState().position;
+      const clampedX = Math.max(MARGIN, Math.min(x, maxX));
+      const clampedY = Math.max(MARGIN, Math.min(y, maxY));
+      if (clampedX !== x || clampedY !== y) {
+        setPosition({ x: clampedX, y: clampedY });
+      }
+    }
+    clamp();
+    window.addEventListener('resize', clamp);
+    return () => window.removeEventListener('resize', clamp);
+  }, [setPosition]);
+
+  const handleDragStart = useCallback(() => {
+    dragStart.current = { x: position.x, y: position.y };
+    didDrag.current = false;
+  }, [position.x, position.y]);
 
   const handleDragEnd = useCallback(
     (_: unknown, info: { point: { x: number; y: number } }) => {
       const { x, y } = info.point;
-      const snapMargin = 16;
-      const maxX = window.innerWidth - 80;
-      const maxY = window.innerHeight - 100;
-      setPosition({
-        x: Math.max(snapMargin, Math.min(x, maxX)),
-        y: Math.max(snapMargin, Math.min(y, maxY)),
-      });
+      const maxX = window.innerWidth - BUBBLE_SIZE - MARGIN;
+      const maxY = window.innerHeight - BUBBLE_SIZE - MARGIN;
+      const newX = Math.max(MARGIN, Math.min(x - BUBBLE_SIZE / 2, maxX));
+      const newY = Math.max(MARGIN, Math.min(y - BUBBLE_SIZE / 2, maxY));
+
+      if (dragStart.current) {
+        const dx = newX - dragStart.current.x;
+        const dy = newY - dragStart.current.y;
+        didDrag.current = Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD;
+      }
+
+      dragStart.current = null;
+      setPosition({ x: newX, y: newY });
     },
     [setPosition],
   );
 
-  const opacity = preferences.opacity / 100;
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (!didDrag.current) toggle();
+    },
+    [toggle],
+  );
+
   const windowWidth = 400;
-  const showRight = position.x < windowWidth + 32;
+  const showLeft = position.x + BUBBLE_SIZE + windowWidth + MARGIN < window.innerWidth;
 
   return (
     <>
-      <div className="fixed inset-0 pointer-events-none z-[9998]" />
-
       <motion.div
         drag
-        dragMomentum
-        dragElastic={0.1}
+        dragMomentum={false}
+        dragElastic={0}
+        onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         initial={{ scale: 0, opacity: 0 }}
         animate={{
-          x: position.x,
-          y: position.y,
-          opacity,
-          scale: 1,
+          scale: isHovered ? 1.12 : 1,
+          opacity: 1,
         }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-        style={{ position: 'fixed', zIndex: 9999, cursor: 'grab' }}
-        className="select-none"
-        onClick={toggle}
-      >
-        {/* Floating idle animation */}
-        <motion.div
-          animate={{ y: [0, -4, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-theme-card border-2 border-theme-accent/30 shadow-lg hover:shadow-xl hover:border-theme-accent/50 transition-all">
-            <SpiritGhost state={aiState} size="medium" />
-            {aiState === 'thinking' && (
-              <motion.span
-                className="absolute inset-0 rounded-2xl border-2 border-theme-accent/40"
-                animate={{ scale: [1, 1.2, 1], opacity: [0.6, 0, 0.6] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              />
-            )}
-          </div>
-        </motion.div>
-      </motion.div>
-
-      <div
+        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
         style={{
           position: 'fixed',
           zIndex: 9999,
-          [showRight ? 'left' : 'right']: showRight ? position.x + 72 : window.innerWidth - position.x + 8,
-          bottom: window.innerHeight - position.y - 12,
+          cursor: 'grab',
+          left: position.x,
+          top: position.y,
         }}
+        className="select-none"
+        onPointerDown={(e) => {
+          e.stopPropagation();
+        }}
+        onClick={handleClick}
+        onHoverStart={() => setIsHovered(true)}
+        onHoverEnd={() => setIsHovered(false)}
       >
-        <SpiritWindow />
-      </div>
+        <div className="spirit-float">
+          <div
+            className={`relative flex items-center justify-center rounded-2xl bg-theme-card shadow-lg transition-all duration-300 ${
+              isHovered ? 'shadow-xl border-theme-accent/50' : 'border-theme-accent/20'
+            } border-2`}
+            style={{ width: BUBBLE_SIZE, height: BUBBLE_SIZE }}
+          >
+            <SpiritGhost state={aiState} size="medium" />
+            {aiState === 'thinking' && (
+              <div className="absolute inset-0 rounded-2xl spirit-pulse-ring" />
+            )}
+          </div>
+        </div>
+      </motion.div>
+
+      <SpiritWindow
+        position={position}
+        bubbleSize={BUBBLE_SIZE}
+        showLeft={showLeft}
+      />
     </>
   );
 }
