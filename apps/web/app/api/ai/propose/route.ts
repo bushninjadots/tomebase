@@ -86,10 +86,19 @@ export async function POST(request: Request) {
 
     const config = await getActiveProviderConfig(session.user.id);
     if (!config) {
-      return NextResponse.json({ error: 'No AI provider configured' }, { status: 400 });
+      return NextResponse.json({ error: 'No AI provider configured. Go to Settings > AI to add one.' }, { status: 400 });
     }
 
-    const provider = createProviderFromConfig(config);
+    let provider;
+    try {
+      provider = createProviderFromConfig(config);
+    } catch (e) {
+      console.error('Failed to create AI provider:', e);
+      return NextResponse.json(
+        { error: `Failed to initialize AI provider: ${e instanceof Error ? e.message : 'Unknown error'}` },
+        { status: 500 },
+      );
+    }
 
     const systemPrompt = `You are a documentation improvement assistant. You MUST respond with a single JSON object (no other text) in this exact format:
 
@@ -109,12 +118,17 @@ Rules:
 - Preserve markdown formatting
 - confidence reflects how sure you are this is an improvement`;
 
+    // Truncate content to fit within model context windows
+    const MAX_CONTENT = 15000;
+    const truncatedContent = page.content.length > MAX_CONTENT
+      ? page.content.slice(0, MAX_CONTENT) + '\n\n[... content truncated for AI processing]'
+      : page.content;
+
     const userMessage = selectedText
-      ? `Page content:\n${page.content}\n\nSelected text to improve:\n${selectedText}\n\nInstruction: ${instruction}`
-      : `Page content:\n${page.content}\n\nInstruction: ${instruction}`;
+      ? `${systemPrompt}\n\nPage content:\n${truncatedContent}\n\nSelected text to improve:\n${selectedText}\n\nInstruction: ${instruction}`
+      : `${systemPrompt}\n\nPage content:\n${truncatedContent}\n\nInstruction: ${instruction}`;
 
     const messages = [
-      { role: 'system' as const, content: systemPrompt },
       { role: 'user' as const, content: userMessage },
     ];
 
@@ -197,8 +211,9 @@ Rules:
     return NextResponse.json({ proposal }, { status: 201 });
   } catch (error) {
     console.error('Failed to create AI proposal:', error);
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: 'Failed to generate AI proposal' },
+      { error: `Failed to generate AI proposal: ${message}` },
       { status: 500 },
     );
   }
