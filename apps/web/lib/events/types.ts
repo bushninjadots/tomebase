@@ -157,6 +157,23 @@ export interface AiStreamingDoneEvent {
   operation: string
 }
 
+export interface AiProposalCreatedEvent {
+  proposalId: string
+  pageId: string
+  changeType: string
+  source: string
+}
+
+export interface AiProposalAcceptedEvent {
+  proposalId: string
+  pageId: string
+}
+
+export interface AiProposalRejectedEvent {
+  proposalId: string
+  pageId: string
+}
+
 export interface EventBusEvents {
   'page:created': PageCreatedEvent
   'page:updated': PageUpdatedEvent
@@ -194,6 +211,9 @@ export interface EventBusEvents {
   'ai:streamingStarted': AiStreamingStartedEvent
   'ai:streamingChunk': AiStreamingChunkEvent
   'ai:streamingDone': AiStreamingDoneEvent
+  'ai:proposalCreated': AiProposalCreatedEvent
+  'ai:proposalAccepted': AiProposalAcceptedEvent
+  'ai:proposalRejected': AiProposalRejectedEvent
 }
 
 export type EventName = keyof EventBusEvents

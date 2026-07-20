@@ -36,6 +36,7 @@ model User {
   personalAccessTokens PersonalAccessToken[]
   activityEvents ActivityEvent[]
   aiProviders AIProviderConfig[]
+  aiChangeProposals AIChangeProposal[]
 }
 
 model Account {
@@ -127,6 +128,7 @@ model DocPage {
   scheduledPublish  ScheduledPublish?
   viewEvents        ViewEvent[]
   repositoryIndexEntries RepositoryIndexEntry[]
+  aiChangeProposals AIChangeProposal[]
 
   @@index([projectId])
   @@index([projectId, published])
@@ -137,6 +139,7 @@ model PageSnapshot {
   pageId    String
   title     String
   content   String
+  reason    String?  @default("save")
   createdAt DateTime @default(now())
 
   page DocPage @relation(fields: [pageId], references: [id], onDelete: Cascade)
@@ -373,4 +376,28 @@ model RepositoryIndexEntry {
   @@index([projectId, symbolType])
   @@index([projectId, kind])
   @@index([projectId, symbolName])
+}
+
+model AIChangeProposal {
+  id              String   @id @default(cuid())
+  pageId          String
+  userId          String
+  changeType      String   // "replace" | "insert" | "delete"
+  originalContent String
+  proposedContent String
+  explanation     String
+  confidence      Float    @default(0.8)
+  status          String   @default("pending") // "pending" | "accepted" | "rejected"
+  source          String   @default("ai") // "ai" | "health" | "manual"
+  sourceRuleId    String?  // diagnostic rule ID if generated from health
+  createdAt       DateTime @default(now())
+  acceptedAt      DateTime?
+  rejectedAt      DateTime?
+
+  page DocPage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  user User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([pageId, status])
+  @@index([userId, createdAt])
+  @@index([status])
 }

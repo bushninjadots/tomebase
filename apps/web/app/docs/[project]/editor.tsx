@@ -7,12 +7,12 @@ import {
   Copy, Trash2, Layers, BookOpen, Clock, Type, AlertTriangle,
   X, Maximize2, Minimize2, Users, ListOrdered, MessageSquare,
   MoreHorizontal, Search, SplitSquareHorizontal, Image as ImageIcon,
-  Menu, Sparkles, Globe,
+  Menu, Sparkles, Globe, Lightbulb,
 } from 'lucide-react';
 import { Markdown } from '@/components/markdown';
 import { ShortcutsModal } from '@/components/shortcuts';
 import { GraphModalOpener } from '@/components/graph';
-import { HistoryButton } from '@/components/history';
+import { HistoryModal } from '@/components/history';
 import { findBacklinks, extractTags } from '@/lib/wiki';
 import { extractDescription, extractHeadings } from '@/lib/content';
 import { Comments } from '@/components/comments';
@@ -25,6 +25,7 @@ import { AIPanel } from '@/components/editor/ai-panel';
 import { InlineAIResult } from '@/components/editor/inline-ai-result';
 import { DocumentOutline } from '@/components/editor/document-outline';
 import { TeamPresence } from '@/components/editor/team-presence';
+import { AIProposalPanel } from '@/components/editor/ai-proposal-panel';
 import { PublishDialog } from '@/components/publish';
 import Link from 'next/link';
 import { eventBus } from '@/lib/events';
@@ -47,7 +48,7 @@ interface Project {
 }
 
 type ViewMode = 'edit' | 'preview' | 'split';
-type SidebarTab = 'outline' | 'team' | 'comments';
+type SidebarTab = 'outline' | 'team' | 'comments' | 'ai';
 
 export function DocEditor({ project, initialLine, initialPageSlug }: {
   project: Project;
@@ -77,6 +78,7 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showAIPanel, setShowAIPanel] = useState(false);
   const [showPublishDialog, setShowPublishDialog] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   // Overlays
   const [isDragOver, setIsDragOver] = useState(false);
@@ -864,7 +866,7 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
                     <div className="absolute right-0 top-full mt-1 z-50 w-52 rounded-xl border border-theme-border bg-theme-card shadow-xl py-1 animate-in fade-in slide-in-from-top-1 duration-150">
                       <DropdownItem icon={Copy} label="Copy link" onClick={handleCopyLink} />
                       <DropdownItem icon={Layers} label="Duplicate page" onClick={handleDuplicatePage} />
-                      <DropdownItem icon={Clock} label="Page history" onClick={() => {}} />
+                      <DropdownItem icon={Clock} label="Page history" onClick={() => { setShowHistory(true); setShowActions(false); }} />
                       <div className="h-px bg-theme-border my-1" />
                       <div className="px-3 py-2">
                         <SchedulePublish pageId={selectedPage.id} />
@@ -1087,6 +1089,7 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
           <div className="flex items-center border-b border-theme-border">
             {([
               { id: 'outline' as SidebarTab, label: 'Outline', icon: ListOrdered },
+              { id: 'ai' as SidebarTab, label: 'AI', icon: Lightbulb },
               { id: 'team' as SidebarTab, label: 'Team', icon: Users },
               { id: 'comments' as SidebarTab, label: 'Comments', icon: MessageSquare },
             ]).map(({ id, label, icon: Icon }) => (
@@ -1112,10 +1115,20 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
           </div>
 
           {/* Tab content */}
-          <div className="flex-1 overflow-y-auto p-3">
-            {sidebarTab === 'outline' && <DocumentOutline content={content} activeHeadingId={activeHeadingId} />}
-            {sidebarTab === 'team' && <TeamPresence members={teamMembers} />}
-            {sidebarTab === 'comments' && <Comments pageId={selectedPage.id} teamMembers={teamMembers} />}
+          <div className="flex-1 overflow-y-auto">
+            {sidebarTab === 'outline' && <div className="p-3"><DocumentOutline content={content} activeHeadingId={activeHeadingId} /></div>}
+            {sidebarTab === 'ai' && (
+              <AIProposalPanel
+                pageId={selectedPage.id}
+                pageTitle={selectedPage.title}
+                onContentUpdate={(newContent) => {
+                  setContent(newContent);
+                  setPageList((prev) => prev.map((p) => (p.id === selectedPage.id ? { ...p, content: newContent } : p)));
+                }}
+              />
+            )}
+            {sidebarTab === 'team' && <div className="p-3"><TeamPresence members={teamMembers} /></div>}
+            {sidebarTab === 'comments' && <div className="p-3"><Comments pageId={selectedPage.id} teamMembers={teamMembers} /></div>}
           </div>
         </div>
       )}
@@ -1305,6 +1318,11 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
           }}
           onClose={() => setShowPublishDialog(false)}
         />
+      )}
+
+      {/* ===== HISTORY MODAL ===== */}
+      {showHistory && selectedPage && (
+        <HistoryModal pageId={selectedPage.id} onClose={() => setShowHistory(false)} />
       )}
     </div>
   );

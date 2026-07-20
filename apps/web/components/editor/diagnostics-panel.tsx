@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import type { Diagnostic } from '@fluid/types';
 import {
   AlertCircle, AlertTriangle, Info, X, Wrench, Eye,
-  ChevronRight, Loader2,
+  ChevronRight, Loader2, Sparkles,
 } from 'lucide-react';
 import { getHealthService } from '@/lib/health/health-service';
 
@@ -16,6 +16,7 @@ interface DiagnosticsPanelProps {
   onFix?: (diagnostic: Diagnostic, fixedContent: string) => void;
   onDismiss?: (diagnosticId: string) => void;
   content?: string;
+  onGenerateAIFix?: (diagnostic: Diagnostic) => void;
 }
 
 type SeverityTab = 'all' | 'error' | 'warning' | 'info';
@@ -34,6 +35,7 @@ export function DiagnosticsPanel({
   onFix,
   onDismiss,
   content,
+  onGenerateAIFix,
 }: DiagnosticsPanelProps) {
   const [activeTab, setActiveTab] = useState<SeverityTab>('all');
   const [fixingId, setFixingId] = useState<string | null>(null);
@@ -160,6 +162,15 @@ export function DiagnosticsPanel({
                       <Eye className="h-2.5 w-2.5" />
                       Ignore
                     </button>
+                    {onGenerateAIFix && (
+                      <button
+                        onClick={() => onGenerateAIFix(d)}
+                        className="text-[10px] font-medium text-theme-accent hover:underline flex items-center gap-0.5"
+                      >
+                        <Sparkles className="h-2.5 w-2.5" />
+                        AI Fix
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
