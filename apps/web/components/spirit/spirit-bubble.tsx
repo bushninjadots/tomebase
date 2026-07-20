@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { useSpiritStore } from '@fluid/spirit';
+import { useSpiritStore, DEFAULT_POSITION } from '@fluid/spirit';
 import { SpiritGhost } from './spirit-ghost';
 import { SpiritWindow } from './spirit-window';
 
@@ -13,8 +13,26 @@ const DRAG_THRESHOLD = 5;
 export function SpiritBubble() {
   const { position, setPosition, aiState, toggle } = useSpiritStore();
   const [isHovered, setIsHovered] = useState(false);
-  const dragStart = useRef<{ x: number; y: number } | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartRef = useRef<{ x: number; y: number; posX: number; posY: number } | null>(null);
   const didDrag = useRef(false);
+  const initialized = useRef(false);
+  const bubbleRef = useRef<HTMLDivElement>(null);
+
+  // On first mount: if position is still the static default, recompute to bottom-right
+  useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
+    if (
+      position.x === DEFAULT_POSITION.x &&
+      position.y === DEFAULT_POSITION.y
+    ) {
+      setPosition({
+        x: window.innerWidth - BUBBLE_SIZE - MARGIN,
+        y: window.innerHeight - BUBBLE_SIZE - MARGIN,
+      });
+    }
+  }, [position.x, position.y, setPosition]);
 
   // Clamp position to viewport on resize
   useEffect(() => {
@@ -33,50 +51,61 @@ export function SpiritBubble() {
     return () => window.removeEventListener('resize', clamp);
   }, [setPosition]);
 
-  const handleDragStart = useCallback(() => {
-    dragStart.current = { x: position.x, y: position.y };
+  // Manual pointer-based drag — no framer-motion transform conflicts
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const el = bubbleRef.current;
+    if (!el) return;
+    el.setPointerCapture(e.pointerId);
+
+    dragStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      posX: useSpiritStore.getState().position.x,
+      posY: useSpiritStore.getState().position.y,
+    };
     didDrag.current = false;
-  }, [position.x, position.y]);
+    setIsDragging(true);
+  }, []);
 
-  const handleDragEnd = useCallback(
-    (_: unknown, info: { point: { x: number; y: number } }) => {
-      const { x, y } = info.point;
-      const maxX = window.innerWidth - BUBBLE_SIZE - MARGIN;
-      const maxY = window.innerHeight - BUBBLE_SIZE - MARGIN;
-      const newX = Math.max(MARGIN, Math.min(x - BUBBLE_SIZE / 2, maxX));
-      const newY = Math.max(MARGIN, Math.min(y - BUBBLE_SIZE / 2, maxY));
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    if (!dragStartRef.current) return;
+    const { x: startX, y: startY, posX, posY } = dragStartRef.current;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
 
-      if (dragStart.current) {
-        const dx = newX - dragStart.current.x;
-        const dy = newY - dragStart.current.y;
-        didDrag.current = Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD;
-      }
+    if (!didDrag.current && Math.sqrt(dx * dx + dy * dy) <= DRAG_THRESHOLD) return;
+    didDrag.current = true;
 
-      dragStart.current = null;
-      setPosition({ x: newX, y: newY });
-    },
-    [setPosition],
-  );
+    const maxX = window.innerWidth - BUBBLE_SIZE - MARGIN;
+    const maxY = window.innerHeight - BUBBLE_SIZE - MARGIN;
+    setPosition({
+      x: Math.max(MARGIN, Math.min(posX + dx, maxX)),
+      y: Math.max(MARGIN, Math.min(posY + dy, maxY)),
+    });
+  }, [setPosition]);
 
-  const handleClick = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation();
-      if (!didDrag.current) toggle();
-    },
-    [toggle],
-  );
+  const onPointerUp = useCallback((e: React.PointerEvent) => {
+    const el = bubbleRef.current;
+    if (el) el.releasePointerCapture(e.pointerId);
+    dragStartRef.current = null;
+    setIsDragging(false);
+  }, []);
+
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!didDrag.current) toggle();
+  }, [toggle]);
 
   const windowWidth = 400;
-  const showLeft = position.x + BUBBLE_SIZE + windowWidth + MARGIN < window.innerWidth;
+  const showLeft =
+    position.x + BUBBLE_SIZE + windowWidth + MARGIN < window.innerWidth;
 
   return (
     <>
       <motion.div
-        drag
-        dragMomentum={false}
-        dragElastic={0}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
+        ref={bubbleRef}
         initial={{ scale: 0, opacity: 0 }}
         animate={{
           scale: isHovered ? 1.12 : 1,
@@ -86,14 +115,14 @@ export function SpiritBubble() {
         style={{
           position: 'fixed',
           zIndex: 9999,
-          cursor: 'grab',
+          cursor: isDragging ? 'grabbing' : 'grab',
           left: position.x,
           top: position.y,
         }}
         className="select-none"
-        onPointerDown={(e) => {
-          e.stopPropagation();
-        }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
         onClick={handleClick}
         onHoverStart={() => setIsHovered(true)}
         onHoverEnd={() => setIsHovered(false)}
@@ -101,7 +130,9 @@ export function SpiritBubble() {
         <div className="spirit-float">
           <div
             className={`relative flex items-center justify-center rounded-2xl bg-theme-card shadow-lg transition-all duration-300 ${
-              isHovered ? 'shadow-xl border-theme-accent/50' : 'border-theme-accent/20'
+              isHovered
+                ? 'shadow-xl border-theme-accent/50'
+                : 'border-theme-accent/20'
             } border-2`}
             style={{ width: BUBBLE_SIZE, height: BUBBLE_SIZE }}
           >
