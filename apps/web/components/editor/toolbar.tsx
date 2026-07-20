@@ -6,7 +6,7 @@ import {
   Link as LinkIcon, Code, List, ListOrdered, Quote,
   CheckSquare, Minus, Table, Image as ImageIcon, Code2,
   GitBranch, Columns, FileText, Undo2, Redo2, ChevronDown,
-  Type, Sparkles,
+  Type,
 } from 'lucide-react';
 
 interface EditorToolbarProps {
@@ -163,16 +163,6 @@ export function EditorToolbar({ onAction, canUndo = true, canRedo = true }: Edit
 
       {/* Spacer */}
       <div className="flex-1" />
-
-      {/* AI Actions */}
-      <div className="flex items-center gap-0.5">
-        <ToolbarButton
-          icon={Sparkles}
-          label="AI Assistant"
-          shortcut="⌘⇧A"
-          onClick={() => onAction('ai-chat')}
-        />
-      </div>
 
       <Divider />
 

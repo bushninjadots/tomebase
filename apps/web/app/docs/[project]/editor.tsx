@@ -22,7 +22,6 @@ import { CodeMirrorEditor, type CodeMirrorEditorRef } from '@/components/editor/
 import { SlashCommandMenu, type SlashCommand } from '@/components/editor/slash-commands';
 import { EditorToolbar } from '@/components/editor/toolbar';
 import { AIPanel } from '@/components/editor/ai-panel';
-import { InlineAIResult } from '@/components/editor/inline-ai-result';
 import { DocumentOutline } from '@/components/editor/document-outline';
 import { TeamPresence } from '@/components/editor/team-presence';
 import { PublishDialog } from '@/components/publish';
@@ -91,9 +90,6 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
   const [linkText, setLinkText] = useState('');
   const [linkUrl, setLinkUrl] = useState('');
 
-  // Inline AI result
-  const [inlineAIAction, setInlineAIAction] = useState<'improve' | 'rewrite' | null>(null);
-  const [inlineAISelectedText, setInlineAISelectedText] = useState('');
   const linkSelectionRef = useRef<{ from: number; to: number }>({ from: 0, to: 0 });
 
   // Autosave
@@ -535,14 +531,6 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
       setShowAIPanel(true);
       return;
     }
-    if (action === 'ai-improve' || action === 'ai-rewrite') {
-      const from = view?.state.selection.main.from ?? 0;
-      const to = view?.state.selection.main.to ?? 0;
-      const selected = view ? view.state.sliceDoc(from, to) : '';
-      setInlineAISelectedText(selected);
-      setInlineAIAction(action === 'ai-improve' ? 'improve' : 'rewrite');
-      return;
-    }
 
     if (!view) return;
     const { from, to } = view.state.selection.main;
@@ -942,21 +930,6 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
                     onClose={() => setShowSlashCommands(false)}
                   />
                 )}
-                {inlineAIAction && (
-                  <InlineAIResult
-                    action={inlineAIAction}
-                    pageContent={content}
-                    selectedText={inlineAISelectedText || undefined}
-                    pageTitle={title}
-                    pageId={selectedPage?.id}
-                    projectId={project.id}
-                    onAccept={(newContent) => {
-                      setContent(newContent);
-                      setInlineAIAction(null);
-                    }}
-                    onDismiss={() => setInlineAIAction(null)}
-                  />
-                )}
                 <CodeMirrorEditor
                   ref={editorRef}
                   value={content}
@@ -999,21 +972,6 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
                         position={slashPosition}
                         onSelect={handleSlashCommandSelect}
                         onClose={() => setShowSlashCommands(false)}
-                      />
-                    )}
-                    {inlineAIAction && (
-                      <InlineAIResult
-                        action={inlineAIAction}
-                        pageContent={content}
-                        selectedText={inlineAISelectedText || undefined}
-                        pageTitle={title}
-                        pageId={selectedPage?.id}
-                        projectId={project.id}
-                        onAccept={(newContent) => {
-                          setContent(newContent);
-                          setInlineAIAction(null);
-                        }}
-                        onDismiss={() => setInlineAIAction(null)}
                       />
                     )}
                     <CodeMirrorEditor
