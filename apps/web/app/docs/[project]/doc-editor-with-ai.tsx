@@ -14,6 +14,7 @@ interface Project {
     description: string | null;
     order: number;
     parentId: string | null;
+    published: boolean;
   }[];
 }
 

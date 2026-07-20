@@ -11,7 +11,7 @@ import {
 import { useState, useCallback, useMemo, useRef, useEffect, lazy, Suspense } from 'react';
 import { extractTags } from '@/lib/wiki';
 import { CommandPalette } from '@/components/command-palette';
-import { templates } from '@/lib/templates';
+import { templateService } from '@/lib/templates';
 
 const GraphButtonWithHealth = lazy(() =>
   import('@/components/graph-button-with-health').then((m) => ({ default: m.GraphButtonWithHealth }))
@@ -24,6 +24,7 @@ interface Page {
   content: string;
   order: number;
   parentId: string | null;
+  published: boolean;
 }
 
 interface Project {
@@ -225,7 +226,7 @@ function TemplateModal({
           Start with a pre-built structure or begin from scratch.
         </p>
         <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto">
-          {templates.map((t) => (
+          {templateService.getAllPageTemplates().map((t) => (
             <button
               key={t.id}
               onClick={() => {
@@ -358,12 +359,10 @@ export function DocSidebar({ project }: { project: Project }) {
 
     setIsCreating(true);
 
-    const template = templates.find((t) => t.id === newTemplate);
-    const content = template
-      ? template.content
-          .replace(/\{\{title\}\}/g, newTitle)
-          .replace(/\{\{date\}\}/g, new Date().toISOString().split('T')[0]!)
-      : '';
+    const content = templateService.resolveContent(newTemplate, {
+      title: newTitle,
+      date: new Date().toISOString().split('T')[0]!,
+    });
 
     const res = await fetch('/api/pages', {
       method: 'POST',

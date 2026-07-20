@@ -7,7 +7,7 @@ import {
   Copy, Trash2, Layers, BookOpen, Clock, Type, AlertTriangle,
   X, Maximize2, Minimize2, Users, ListOrdered, MessageSquare,
   MoreHorizontal, Search, SplitSquareHorizontal, Image as ImageIcon,
-  Menu, Sparkles,
+  Menu, Sparkles, Globe,
 } from 'lucide-react';
 import { Markdown } from '@/components/markdown';
 import { ShortcutsModal } from '@/components/shortcuts';
@@ -25,6 +25,7 @@ import { AIPanel } from '@/components/editor/ai-panel';
 import { InlineAIResult } from '@/components/editor/inline-ai-result';
 import { DocumentOutline } from '@/components/editor/document-outline';
 import { TeamPresence } from '@/components/editor/team-presence';
+import { PublishDialog } from '@/components/publish';
 import Link from 'next/link';
 import { eventBus } from '@/lib/events';
 
@@ -36,6 +37,7 @@ interface Page {
   description: string | null;
   order: number;
   parentId: string | null;
+  published: boolean;
 }
 
 interface Project {
@@ -65,6 +67,7 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
   const [content, setContent] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('edit');
   const [pageList, setPageList] = useState<Page[]>(project.pages);
+  const [pagePublished, setPagePublished] = useState(false);
 
   // UI state
   const [zenMode, setZenMode] = useState(false);
@@ -73,6 +76,7 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
   const [showActions, setShowActions] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showAIPanel, setShowAIPanel] = useState(false);
+  const [showPublishDialog, setShowPublishDialog] = useState(false);
 
   // Overlays
   const [isDragOver, setIsDragOver] = useState(false);
@@ -474,6 +478,7 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
     setSelectedPage(page);
     setTitle(page.title);
     setContent(page.content);
+    setPagePublished(page.published);
     setViewMode('edit');
   }
 
@@ -764,6 +769,21 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
                   >
                     <Save className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">{saving ? 'Saving...' : 'Save'}</span>
+                  </button>
+                )}
+
+                {/* Publish button */}
+                {selectedPage && (
+                  <button
+                    onClick={() => setShowPublishDialog(true)}
+                    className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+                      pagePublished
+                        ? 'bg-green-500/10 text-green-600 dark:text-green-400 hover:bg-green-500/20 border border-green-500/20'
+                        : 'bg-theme-accent text-white hover:bg-theme-accent-hover'
+                    }`}
+                  >
+                    <Globe className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">{pagePublished ? 'Published' : 'Publish'}</span>
                   </button>
                 )}
 
@@ -1265,6 +1285,26 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
             </div>
           </div>
         </div>
+      )}
+
+      {/* ===== PUBLISH DIALOG ===== */}
+      {showPublishDialog && selectedPage && (
+        <PublishDialog
+          pageId={selectedPage.id}
+          pageTitle={selectedPage.title}
+          pageSlug={selectedPage.slug}
+          projectId={project.id}
+          isPublished={pagePublished}
+          onPublish={() => {
+            setPagePublished(true);
+            setPageList((prev) => prev.map((p) => (p.id === selectedPage.id ? { ...p, published: true } : p)));
+          }}
+          onUnpublish={() => {
+            setPagePublished(false);
+            setPageList((prev) => prev.map((p) => (p.id === selectedPage.id ? { ...p, published: false } : p)));
+          }}
+          onClose={() => setShowPublishDialog(false)}
+        />
       )}
     </div>
   );
