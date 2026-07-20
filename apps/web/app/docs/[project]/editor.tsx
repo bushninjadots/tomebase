@@ -7,7 +7,7 @@ import {
   Copy, Trash2, Layers, BookOpen, Clock, Type, AlertTriangle,
   X, Maximize2, Minimize2, Users, ListOrdered, MessageSquare,
   MoreHorizontal, Search, SplitSquareHorizontal, Image as ImageIcon,
-  Menu, Sparkles, Globe, Lightbulb,
+  Menu, Sparkles, Globe,
 } from 'lucide-react';
 import { Markdown } from '@/components/markdown';
 import { ShortcutsModal } from '@/components/shortcuts';
@@ -25,7 +25,6 @@ import { AIPanel } from '@/components/editor/ai-panel';
 import { InlineAIResult } from '@/components/editor/inline-ai-result';
 import { DocumentOutline } from '@/components/editor/document-outline';
 import { TeamPresence } from '@/components/editor/team-presence';
-import { AIProposalPanel } from '@/components/editor/ai-proposal-panel';
 import { PublishDialog } from '@/components/publish';
 import Link from 'next/link';
 import { eventBus } from '@/lib/events';
@@ -48,7 +47,7 @@ interface Project {
 }
 
 type ViewMode = 'edit' | 'preview' | 'split';
-type SidebarTab = 'outline' | 'team' | 'comments' | 'ai';
+type SidebarTab = 'outline' | 'team' | 'comments';
 
 export function DocEditor({ project, initialLine, initialPageSlug }: {
   project: Project;
@@ -902,7 +901,6 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
         {viewMode !== 'preview' && !zenMode && (
           <EditorToolbar
             onAction={handleToolbarAction}
-            hasSelection={false}
           />
         )}
 
@@ -1089,7 +1087,6 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
           <div className="flex items-center border-b border-theme-border">
             {([
               { id: 'outline' as SidebarTab, label: 'Outline', icon: ListOrdered },
-              { id: 'ai' as SidebarTab, label: 'AI', icon: Lightbulb },
               { id: 'team' as SidebarTab, label: 'Team', icon: Users },
               { id: 'comments' as SidebarTab, label: 'Comments', icon: MessageSquare },
             ]).map(({ id, label, icon: Icon }) => (
@@ -1115,20 +1112,10 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
           </div>
 
           {/* Tab content */}
-          <div className="flex-1 overflow-y-auto">
-            {sidebarTab === 'outline' && <div className="p-3"><DocumentOutline content={content} activeHeadingId={activeHeadingId} /></div>}
-            {sidebarTab === 'ai' && (
-              <AIProposalPanel
-                pageId={selectedPage.id}
-                pageTitle={selectedPage.title}
-                onContentUpdate={(newContent) => {
-                  setContent(newContent);
-                  setPageList((prev) => prev.map((p) => (p.id === selectedPage.id ? { ...p, content: newContent } : p)));
-                }}
-              />
-            )}
-            {sidebarTab === 'team' && <div className="p-3"><TeamPresence members={teamMembers} /></div>}
-            {sidebarTab === 'comments' && <div className="p-3"><Comments pageId={selectedPage.id} teamMembers={teamMembers} /></div>}
+          <div className="flex-1 overflow-y-auto p-3">
+            {sidebarTab === 'outline' && <DocumentOutline content={content} activeHeadingId={activeHeadingId} />}
+            {sidebarTab === 'team' && <TeamPresence members={teamMembers} />}
+            {sidebarTab === 'comments' && <Comments pageId={selectedPage.id} teamMembers={teamMembers} />}
           </div>
         </div>
       )}
@@ -1142,6 +1129,10 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
             pageTitle={selectedPage.title}
             pageContent={content}
             onClose={() => setShowAIPanel(false)}
+            onContentUpdate={(newContent) => {
+              setContent(newContent);
+              setPageList((prev) => prev.map((p) => (p.id === selectedPage.id ? { ...p, content: newContent } : p)));
+            }}
           />
         </div>
       )}

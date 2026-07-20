@@ -13,7 +13,6 @@ interface EditorToolbarProps {
   onAction: (action: string) => void;
   canUndo?: boolean;
   canRedo?: boolean;
-  hasSelection?: boolean;
 }
 
 interface ButtonDef {
@@ -99,7 +98,7 @@ function Divider() {
   return <div className="w-px h-4 bg-theme-border mx-0.5" />;
 }
 
-export function EditorToolbar({ onAction, canUndo = true, canRedo = true, hasSelection = false }: EditorToolbarProps) {
+export function EditorToolbar({ onAction, canUndo = true, canRedo = true }: EditorToolbarProps) {
   const [showMore, setShowMore] = useState(false);
 
   return (
@@ -169,24 +168,10 @@ export function EditorToolbar({ onAction, canUndo = true, canRedo = true, hasSel
       <div className="flex items-center gap-0.5">
         <ToolbarButton
           icon={Sparkles}
-          label="AI Chat"
+          label="AI Assistant"
           shortcut="⌘⇧A"
           onClick={() => onAction('ai-chat')}
         />
-        {hasSelection && (
-          <>
-            <ToolbarButton
-              icon={Sparkles}
-              label="AI Improve"
-              onClick={() => onAction('ai-improve')}
-            />
-            <ToolbarButton
-              icon={Sparkles}
-              label="AI Rewrite"
-              onClick={() => onAction('ai-rewrite')}
-            />
-          </>
-        )}
       </div>
 
       <Divider />
