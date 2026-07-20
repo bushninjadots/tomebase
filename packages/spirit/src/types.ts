@@ -98,6 +98,11 @@ export interface SpiritPreferences {
   shortcut: SpiritShortcut;
 }
 
+export interface SpiritLandingComment {
+  id: string;
+  text: string;
+}
+
 export interface SpiritStore {
   mode: SpiritMode;
   aiState: SpiritAIState;
@@ -107,6 +112,7 @@ export interface SpiritStore {
   conversations: SpiritConversation[];
   activeConversationId: string | null;
   suggestions: SpiritSuggestion[];
+  landingComment: SpiritLandingComment | null;
   context: SpiritContext;
   preferences: SpiritPreferences;
 
@@ -125,6 +131,8 @@ export interface SpiritStore {
   createConversation: () => string;
   addSuggestion: (suggestion: SpiritSuggestion) => void;
   dismissSuggestion: (id: string) => void;
+  setLandingComment: (text: string) => void;
+  clearLandingComment: () => void;
   updatePreferences: (prefs: Partial<SpiritPreferences>) => void;
   resetPosition: () => void;
 }

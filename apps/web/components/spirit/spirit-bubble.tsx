@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { useSpiritStore, DEFAULT_POSITION } from '@fluid/spirit';
 import { SpiritGhost } from './spirit-ghost';
 import { SpiritWindow } from './spirit-window';
+import { SpiritBubbleComment } from './spirit-bubble-comment';
 
 const BUBBLE_SIZE = 56;
 const MARGIN = 20;
@@ -154,6 +155,7 @@ export function SpiritBubble({ projectId }: SpiritBubbleProps) {
         showLeft={showLeft}
         projectId={projectId}
       />
+      <SpiritBubbleComment />
     </>
   );
 }

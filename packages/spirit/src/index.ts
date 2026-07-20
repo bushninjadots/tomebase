@@ -12,6 +12,7 @@ export type {
   SpiritShortcut,
   SpiritContext,
   SpiritPreferences,
+  SpiritLandingComment,
   SpiritStore,
 } from './types';
 export {

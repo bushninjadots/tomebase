@@ -27,6 +27,7 @@ export const useSpiritStore = create<SpiritStore>()(
       conversations: [],
       activeConversationId: null,
       suggestions: [],
+      landingComment: null,
       context: { ...DEFAULT_CONTEXT },
       preferences: { ...DEFAULT_PREFERENCES },
 
@@ -120,6 +121,11 @@ export const useSpiritStore = create<SpiritStore>()(
         set((state) => ({
           suggestions: state.suggestions.filter((s) => s.id !== id),
         })),
+
+      setLandingComment: (text) =>
+        set({ landingComment: { id: generateId(), text } }),
+
+      clearLandingComment: () => set({ landingComment: null }),
 
       updatePreferences: (prefs) =>
         set((state) => ({
