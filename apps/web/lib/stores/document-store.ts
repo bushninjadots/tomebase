@@ -15,6 +15,7 @@ export interface DocumentSnapshot {
   pageId: string
   title: string
   content: string
+  reason: string | null
   createdAt: string
 }
 

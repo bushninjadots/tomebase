@@ -13,7 +13,7 @@ export async function POST(
     }
 
     const { id } = await params;
-    const { title, content } = await request.json();
+    const { title, content, reason } = await request.json();
 
     const page = await prisma.docPage.findFirst({
       where: {
@@ -48,6 +48,7 @@ export async function POST(
         pageId: id,
         title: page.title,
         content: page.content,
+        reason: typeof reason === 'string' ? reason : 'save',
       },
     });
 

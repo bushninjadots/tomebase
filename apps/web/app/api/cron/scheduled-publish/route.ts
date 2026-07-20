@@ -29,6 +29,16 @@ export async function GET(request: Request) {
     });
 
     for (const schedule of toPublish) {
+      // Create snapshot before scheduled publish (version safety net)
+      await prisma.pageSnapshot.create({
+        data: {
+          pageId: schedule.pageId,
+          title: schedule.page.title,
+          content: schedule.page.content,
+          reason: 'pre-scheduled-publish',
+        },
+      });
+
       await prisma.docPage.update({
         where: { id: schedule.pageId },
         data: { published: true },
@@ -53,6 +63,16 @@ export async function GET(request: Request) {
     });
 
     for (const schedule of toUnpublish) {
+      // Create snapshot before scheduled unpublish (version safety net)
+      await prisma.pageSnapshot.create({
+        data: {
+          pageId: schedule.pageId,
+          title: schedule.page.title,
+          content: schedule.page.content,
+          reason: 'pre-scheduled-unpublish',
+        },
+      });
+
       await prisma.docPage.update({
         where: { id: schedule.pageId },
         data: { published: false },

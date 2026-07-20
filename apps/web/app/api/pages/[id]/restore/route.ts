@@ -2,6 +2,7 @@ import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { eventBus } from '@/lib/events';
+import { logActivity } from '@/lib/activity';
 
 export async function POST(
   request: Request,
@@ -37,6 +38,22 @@ export async function POST(
       return NextResponse.json({ error: 'Snapshot not found' }, { status: 404 });
     }
 
+    // Create snapshot of current state before restoring (safety net)
+    const contentChanged = !await prisma.pageSnapshot.findFirst({
+      where: { pageId: id, content: page.content },
+      orderBy: { createdAt: 'desc' },
+    });
+    if (contentChanged) {
+      await prisma.pageSnapshot.create({
+        data: {
+          pageId: id,
+          title: page.title,
+          content: page.content,
+          reason: 'pre-restore',
+        },
+      });
+    }
+
     const updated = await prisma.docPage.update({
       where: { id },
       data: {
@@ -49,6 +66,14 @@ export async function POST(
       pageId: id,
       snapshotId,
       previousContent: page.content,
+    });
+
+    logActivity({
+      userId: session.user.id,
+      action: 'page.restored',
+      entity: 'page',
+      entityId: id,
+      details: { snapshotId, title: snapshot.title },
     });
 
     return NextResponse.json(updated);

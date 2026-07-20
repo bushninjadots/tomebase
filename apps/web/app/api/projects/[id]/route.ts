@@ -2,6 +2,8 @@ import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { addDomain, isVercelConfigured } from '@/lib/vercel';
+import { eventBus } from '@/lib/events';
+import { triggerWebhooks } from '@/lib/webhooks';
 
 export async function PATCH(
   request: Request,
@@ -88,6 +90,13 @@ export async function PATCH(
       where: { id },
       data: updateData,
     });
+
+    // Emit events + webhooks when project publish state changes
+    if (typeof body.published === 'boolean' && body.published !== project.published) {
+      const event = body.published ? 'project:published' : 'project:unpublished';
+      eventBus.emit(event, { projectId: id });
+      triggerWebhooks(id, event, { projectId: id, name: updated.name });
+    }
 
     return NextResponse.json(updated);
   } catch (error) {

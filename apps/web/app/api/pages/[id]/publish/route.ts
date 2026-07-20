@@ -3,6 +3,8 @@ import { prisma } from '@fluid/database';
 import { auth } from '@/lib/auth';
 import { eventBus } from '@/lib/events';
 import { scanPages, filterDiagnostics } from '@/lib/diagnostics/engine';
+import { triggerWebhooks } from '@/lib/webhooks';
+import { logActivity } from '@/lib/activity';
 import type { DiagnosticPage } from '@fluid/types';
 
 export async function POST(
@@ -55,6 +57,7 @@ export async function POST(
           pageId: id,
           title: page.title,
           content: page.content,
+          reason: 'pre-publish',
         },
       });
     }
@@ -90,6 +93,20 @@ export async function POST(
     });
 
     eventBus.emit('page:published', { pageId: id, projectId: page.projectId });
+
+    triggerWebhooks(page.projectId, 'page.published', {
+      pageId: id,
+      title: page.title,
+      slug: page.slug,
+    });
+
+    logActivity({
+      userId: session.user.id,
+      action: 'page.published',
+      entity: 'page',
+      entityId: id,
+      details: { title: page.title },
+    });
 
     return NextResponse.json({
       success: true,

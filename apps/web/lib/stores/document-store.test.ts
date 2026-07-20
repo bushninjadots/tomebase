@@ -26,6 +26,7 @@ function makeSnapshot(overrides: Partial<DocumentSnapshot> = {}): DocumentSnapsh
     pageId: 'page-1',
     title: 'Snapshot Title',
     content: '# Snapshot',
+    reason: 'save',
     createdAt: new Date().toISOString(),
     ...overrides,
   }

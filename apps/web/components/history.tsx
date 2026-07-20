@@ -10,6 +10,7 @@ interface Snapshot {
   pageId: string;
   title: string;
   content: string;
+  reason: string | null;
   createdAt: string;
 }
 
@@ -29,7 +30,7 @@ export function HistoryButton({ pageId }: { pageId: string }) {
   );
 }
 
-function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void }) {
+export function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void }) {
   const router = useRouter();
   const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
   const [loading, setLoading] = useState(true);
@@ -213,6 +214,11 @@ function HistoryModal({ pageId, onClose }: { pageId: string; onClose: () => void
                         minute: '2-digit',
                       })}
                     </span>
+                    {snap.reason && snap.reason !== 'save' && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-theme-accent/10 text-theme-accent font-medium">
+                        {snap.reason.replace('pre-', '')}
+                      </span>
+                    )}
                   </div>
                   <p className="mt-0.5 text-sm font-medium text-theme-subtle truncate">
                     {snap.title}

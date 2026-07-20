@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@fluid/database';
 import { auth } from '@/lib/auth';
 import { eventBus } from '@/lib/events';
+import { triggerWebhooks } from '@/lib/webhooks';
+import { logActivity } from '@/lib/activity';
 
 export async function POST(
   _request: Request,
@@ -39,6 +41,7 @@ export async function POST(
         pageId: id,
         title: page.title,
         content: page.content,
+        reason: 'pre-unpublish',
       },
     });
 
@@ -49,6 +52,20 @@ export async function POST(
     });
 
     eventBus.emit('page:unpublished', { pageId: id, projectId: page.project.id });
+
+    triggerWebhooks(page.project.id, 'page.unpublished', {
+      pageId: id,
+      title: page.title,
+      slug: page.slug,
+    });
+
+    logActivity({
+      userId: session.user.id,
+      action: 'page.unpublished',
+      entity: 'page',
+      entityId: id,
+      details: { title: page.title },
+    });
 
     return NextResponse.json({
       success: true,
