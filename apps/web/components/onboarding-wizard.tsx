@@ -3,17 +3,17 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { BookOpen, FileText, Rocket, ArrowRight, ArrowLeft, Check, Zap, Code, ClipboardList } from 'lucide-react';
+import { templateService } from '@/lib/templates';
 
 interface OnboardingWizardProps {
   userName: string;
 }
 
-const templates = [
-  { id: 'blank', name: 'Blank', description: 'Start from scratch', icon: FileText },
-  { id: 'api', name: 'API Reference', description: 'REST API documentation', icon: Code },
-  { id: 'product', name: 'Product Docs', description: 'User guides and tutorials', icon: BookOpen },
-  { id: 'runbook', name: 'Runbook', description: 'Operational procedures', icon: ClipboardList },
-];
+const iconMap: Record<string, React.ElementType> = {
+  FileText, Code, BookOpen, ClipboardList,
+};
+
+const onboardingTemplates = templateService.getAllProjectTemplates();
 
 export function OnboardingWizard({ userName }: OnboardingWizardProps) {
   const router = useRouter();
@@ -120,21 +120,24 @@ export function OnboardingWizard({ userName }: OnboardingWizardProps) {
                 Pick a starting point, or start blank.
               </p>
               <div className="mt-6 grid grid-cols-2 gap-3">
-                {templates.map((t) => (
-                  <button
-                    key={t.id}
-                    onClick={() => setSelectedTemplate(t.id)}
-                    className={`flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-center transition-all ${
-                      selectedTemplate === t.id
-                        ? 'border-theme-accent bg-theme-accent/5'
-                        : 'border-theme-border hover:border-theme-accent/30'
-                    }`}
-                  >
-                    <t.icon className={`h-6 w-6 ${selectedTemplate === t.id ? 'text-theme-accent' : 'text-theme-muted'}`} />
-                    <span className="text-sm font-medium text-theme-main">{t.name}</span>
-                    <span className="text-xs text-theme-muted">{t.description}</span>
-                  </button>
-                ))}
+                {onboardingTemplates.map((t) => {
+                  const Icon = iconMap[t.icon] || FileText;
+                  return (
+                    <button
+                      key={t.id}
+                      onClick={() => setSelectedTemplate(t.id)}
+                      className={`flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-center transition-all ${
+                        selectedTemplate === t.id
+                          ? 'border-theme-accent bg-theme-accent/5'
+                          : 'border-theme-border hover:border-theme-accent/30'
+                      }`}
+                    >
+                      <Icon className={`h-6 w-6 ${selectedTemplate === t.id ? 'text-theme-accent' : 'text-theme-muted'}`} />
+                      <span className="text-sm font-medium text-theme-main">{t.name}</span>
+                      <span className="text-xs text-theme-muted">{t.description}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}

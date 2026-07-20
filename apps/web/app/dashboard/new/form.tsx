@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Input, Button } from '@fluid/ui';
 import { useState } from 'react';
 import { FileText, Code2, Users, BookOpen } from 'lucide-react';
-import { projectTemplates, type ProjectTemplate } from '@/lib/project-templates';
+import { templateService, type ProjectTemplate } from '@/lib/templates';
 
 const iconMap: Record<string, React.ElementType> = {
   FileText, Code2, Users, BookOpen,
@@ -70,7 +70,7 @@ export function CreateProjectForm({ userId }: { userId: string }) {
           Project Template
         </label>
         <div className="grid gap-3">
-          {projectTemplates.map((tpl) => {
+          {templateService.getAllProjectTemplates().map((tpl) => {
             const Icon = iconMap[tpl.icon] || FileText;
             const isSelected = selectedTemplate === tpl.id;
             return (

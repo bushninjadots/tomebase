@@ -1,16 +1,15 @@
-export interface PageTemplate {
-  id: string;
-  name: string;
-  description: string;
-  content: string;
-}
+import type { PageTemplate, ProjectTemplate } from './types';
 
-export const templates: PageTemplate[] = [
+export const pageTemplates: PageTemplate[] = [
   {
     id: 'blank',
     name: 'Blank Page',
     description: 'Start from scratch',
     content: '',
+    category: 'getting-started',
+    icon: 'FileText',
+    placeholders: [],
+    tags: ['empty', 'scratch'],
   },
   {
     id: 'getting-started',
@@ -40,6 +39,10 @@ console.log(result);
 - [[Configuration]] — customize to your needs
 - [[API Reference]] — explore the full API
 `,
+    category: 'getting-started',
+    icon: 'Rocket',
+    placeholders: ['title'],
+    tags: ['setup', 'install', 'quickstart', 'intro'],
   },
   {
     id: 'api-reference',
@@ -89,6 +92,10 @@ curl -X GET https://api.example.com/v1/resource \\
 | \`401\` | Unauthorized — missing or invalid API key |
 | \`404\` | Not found — resource does not exist |
 `,
+    category: 'api',
+    icon: 'Code2',
+    placeholders: ['title'],
+    tags: ['endpoints', 'rest', 'http', 'methods'],
   },
   {
     id: 'troubleshooting',
@@ -123,6 +130,10 @@ If you continue to experience issues, reach out to our support team with:
 - Relevant error logs
 - Your environment details
 `,
+    category: 'operations',
+    icon: 'AlertTriangle',
+    placeholders: ['title'],
+    tags: ['issues', 'errors', 'debug', 'fix', 'help'],
   },
   {
     id: 'release-notes',
@@ -152,6 +163,10 @@ If you continue to experience issues, reach out to our support team with:
 
 - Features that are deprecated and will be removed in a future version
 `,
+    category: 'process',
+    icon: 'Tag',
+    placeholders: ['title', 'date'],
+    tags: ['changelog', 'version', 'release', 'shipping'],
   },
   {
     id: 'architecture',
@@ -177,6 +192,10 @@ The system follows a modular monolith architecture with clear separation of conc
 - [[Authentication]] — auth flow and security
 - [[Database]] — schema and migrations
 `,
+    category: 'reference',
+    icon: 'Layers',
+    placeholders: ['title'],
+    tags: ['system', 'design', 'structure', 'overview'],
   },
   {
     id: 'configuration',
@@ -199,6 +218,10 @@ Runtime configuration lives in \`packages/config/\`, which exports typed configu
 - [[Getting Started]] — quick start guide
 - [[Database]] — database connection configuration
 `,
+    category: 'reference',
+    icon: 'Settings',
+    placeholders: ['title'],
+    tags: ['env', 'settings', 'config', 'environment'],
   },
   {
     id: 'database',
@@ -220,6 +243,10 @@ Schema changes are managed through Prisma Migrations. After editing the schema f
 - [[API Reference]] — data access patterns
 - [[Architecture Overview]] — data layer design
 `,
+    category: 'reference',
+    icon: 'Database',
+    placeholders: ['title'],
+    tags: ['schema', 'migrations', 'orm', 'prisma', 'sql'],
   },
   {
     id: 'authentication',
@@ -241,6 +268,10 @@ Sessions are managed via JWT tokens stored in HTTP-only cookies. The session is 
 - [[Configuration]] — OAuth credentials and environment setup
 - [[Architecture Overview]] — security architecture
 `,
+    category: 'reference',
+    icon: 'Shield',
+    placeholders: ['title'],
+    tags: ['auth', 'security', 'oauth', 'sessions', 'jwt'],
   },
   {
     id: 'changelog',
@@ -279,6 +310,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Added
 - Initial release
 `,
+    category: 'process',
+    icon: 'ScrollText',
+    placeholders: ['title', 'date'],
+    tags: ['changes', 'versions', 'history', 'log'],
   },
   {
     id: 'runbook',
@@ -336,6 +371,10 @@ kubectl logs -f deployment/{{title}} -n production --tail=100
 - **On-call**: Check PagerDuty rotation
 - **Slack**: #ops channel
 `,
+    category: 'operations',
+    icon: 'ClipboardList',
+    placeholders: ['title'],
+    tags: ['ops', 'incident', ' procedures', 'oncall'],
   },
   {
     id: 'rfc',
@@ -382,6 +421,10 @@ How do we transition from the current state to the new state?
 - [[Architecture Overview]]
 - [[API Reference]]
 `,
+    category: 'planning',
+    icon: 'FileCheck',
+    placeholders: ['title', 'date'],
+    tags: ['design', 'proposal', 'rfc', 'adr', 'decision'],
   },
   {
     id: 'meeting-notes',
@@ -424,6 +467,10 @@ Notes here...
 - Date: <!-- next meeting date -->
 - Agenda items: <!-- topics to discuss -->
 `,
+    category: 'process',
+    icon: 'Calendar',
+    placeholders: ['title', 'date'],
+    tags: ['meeting', 'notes', 'minutes', 'agenda'],
   },
   {
     id: 'tutorial',
@@ -483,6 +530,10 @@ You've completed the tutorial. Next steps:
 - [[Getting Started]] — dive deeper
 - [[API Reference]] — explore the full API
 `,
+    category: 'getting-started',
+    icon: 'GraduationCap',
+    placeholders: ['title'],
+    tags: ['learning', 'guide', 'walkthrough', 'lesson'],
   },
   {
     id: 'postmortem',
@@ -537,6 +588,10 @@ What caused the incident?
 
 Key takeaways for the team.
 `,
+    category: 'operations',
+    icon: 'FileWarning',
+    placeholders: ['title', 'date'],
+    tags: ['incident', 'blameless', 'review', 'retrospective'],
   },
   {
     id: 'sdk-reference',
@@ -612,6 +667,10 @@ try {
 - [[API Reference]] — REST API docs
 - [[Configuration]] — environment setup
 `,
+    category: 'api',
+    icon: 'Package',
+    placeholders: ['title'],
+    tags: ['sdk', 'library', 'client', 'package'],
   },
   {
     id: 'glossary',
@@ -641,5 +700,66 @@ try {
 - [[Getting Started]] — common terms in context
 - [[Configuration]] — configuration-specific terms
 `,
+    category: 'reference',
+    icon: 'BookOpen',
+    placeholders: ['title'],
+    tags: ['terms', 'definitions', 'vocabulary', 'acronyms'],
+  },
+];
+
+export const projectTemplates: ProjectTemplate[] = [
+  {
+    id: 'blank',
+    name: 'Blank Project',
+    description: 'Start from scratch with no pages',
+    icon: 'FileText',
+    category: 'getting-started',
+    pages: [],
+  },
+  {
+    id: 'api-docs',
+    name: 'API Documentation',
+    description: 'Getting Started + API Reference pages',
+    icon: 'Code2',
+    category: 'api',
+    pages: [
+      { title: 'Getting Started', templateId: 'getting-started', description: 'Quick start guide' },
+      { title: 'API Reference', templateId: 'api-reference', description: 'Available endpoints and methods' },
+    ],
+  },
+  {
+    id: 'internal-wiki',
+    name: 'Internal Wiki',
+    description: 'Home page + Getting Started for team knowledge base',
+    icon: 'Users',
+    category: 'getting-started',
+    pages: [
+      { title: 'Home', templateId: 'blank', description: 'Welcome to the team wiki' },
+      { title: 'Getting Started', templateId: 'getting-started', description: 'How to contribute' },
+    ],
+  },
+  {
+    id: 'product-docs',
+    name: 'Product Documentation',
+    description: 'Overview, Getting Started, and Troubleshooting',
+    icon: 'BookOpen',
+    category: 'getting-started',
+    pages: [
+      { title: 'Overview', templateId: 'blank', description: 'Product overview' },
+      { title: 'Getting Started', templateId: 'getting-started', description: 'Quick start guide' },
+      { title: 'Troubleshooting', templateId: 'troubleshooting', description: 'Common issues and solutions' },
+    ],
+  },
+  {
+    id: 'runbook-project',
+    name: 'Runbook Collection',
+    description: 'Incident response, deployment, and rollback procedures',
+    icon: 'ClipboardList',
+    category: 'operations',
+    pages: [
+      { title: 'Incident Response', templateId: 'runbook', description: 'How to handle incidents' },
+      { title: 'Deployment', templateId: 'runbook', description: 'Deployment procedures' },
+      { title: 'Rollback', templateId: 'runbook', description: 'Rollback procedures' },
+    ],
   },
 ];

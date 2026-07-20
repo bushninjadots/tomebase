@@ -2,8 +2,7 @@ import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
 import { slugify } from '@fluid/utils';
 import { auth } from '@/lib/auth';
-import { projectTemplates } from '@/lib/project-templates';
-import { templates } from '@/lib/templates';
+import { templateService } from '@/lib/templates';
 import { logActivity } from '@/lib/activity';
 
 export async function POST(request: Request) {
@@ -56,27 +55,23 @@ export async function POST(request: Request) {
     });
 
     if (templateId && templateId !== 'blank') {
-      const projectTemplate = projectTemplates.find((t) => t.id === templateId);
-      if (projectTemplate) {
-        let order = 0;
-        for (const pageDef of projectTemplate.pages) {
-          const pageTemplate = templates.find((t) => t.id === pageDef.templateId);
-          const content = pageTemplate?.content
-            ? pageTemplate.content.replace(/{{title}}/g, pageDef.title).replace(/{{date}}/g, new Date().toLocaleDateString())
-            : '';
-          await prisma.docPage.create({
-            data: {
-              title: pageDef.title,
-              slug: slugify(pageDef.title),
-              content,
-              description: pageDef.description || null,
-              projectId: project.id,
-              order,
-              published: true,
-            },
-          });
-          order++;
-        }
+      const pages = templateService.resolveProjectTemplate(templateId, {
+        date: new Date().toLocaleDateString(),
+      });
+      let order = 0;
+      for (const page of pages) {
+        await prisma.docPage.create({
+          data: {
+            title: page.title,
+            slug: slugify(page.title),
+            content: page.content,
+            description: page.description,
+            projectId: project.id,
+            order,
+            published: true,
+          },
+        });
+        order++;
       }
     }
 

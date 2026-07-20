@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@fluid/database';
+import { slugify } from '@fluid/utils';
 import { getOrCreatePersonalTeam } from '@/lib/team';
+import { templateService } from '@/lib/templates';
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -28,45 +30,34 @@ export async function POST(req: Request) {
 
   // Create initial project based on template
   const team = await getOrCreatePersonalTeam(session.user.id);
-  const projectName = template === 'blank' ? 'My Documentation' : 
-    template === 'api' ? 'API Reference' :
-    template === 'product' ? 'Product Docs' : 'Runbook';
-
-  const slug = projectName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const projectTemplate = templateService.getProjectTemplate(template);
+  const projectName = projectTemplate?.name ?? 'My Documentation';
+  const projectSlug = slugify(projectName);
 
   const project = await prisma.project.create({
     data: {
       name: projectName,
-      slug,
+      slug: projectSlug,
       teamId: team.id,
       userId: session.user.id,
     },
   });
 
-  // Create template pages for non-blank templates
-  if (template === 'api') {
+  // Create template pages
+  const pages = templateService.resolveProjectTemplate(template, {
+    date: new Date().toLocaleDateString(),
+  });
+
+  if (pages.length > 0) {
     await prisma.docPage.createMany({
-      data: [
-        { projectId: project.id, title: 'Getting Started', slug: 'getting-started', content: '# Getting Started\n\nWelcome to the API reference documentation.', order: 0 },
-        { projectId: project.id, title: 'Authentication', slug: 'authentication', content: '# Authentication\n\nLearn how to authenticate with the API.', order: 1 },
-        { projectId: project.id, title: 'Endpoints', slug: 'endpoints', content: '# Endpoints\n\nAPI endpoint reference.', order: 2 },
-      ],
-    });
-  } else if (template === 'product') {
-    await prisma.docPage.createMany({
-      data: [
-        { projectId: project.id, title: 'Welcome', slug: 'welcome', content: '# Welcome\n\nUser guide and tutorials.', order: 0 },
-        { projectId: project.id, title: 'Features', slug: 'features', content: '# Features\n\nExplore what you can do.', order: 1 },
-        { projectId: project.id, title: 'FAQ', slug: 'faq', content: '# FAQ\n\nFrequently asked questions.', order: 2 },
-      ],
-    });
-  } else if (template === 'runbook') {
-    await prisma.docPage.createMany({
-      data: [
-        { projectId: project.id, title: 'Incident Response', slug: 'incident-response', content: '# Incident Response\n\nHow to handle incidents.', order: 0 },
-        { projectId: project.id, title: 'Deployment', slug: 'deployment', content: '# Deployment\n\nDeployment procedures.', order: 1 },
-        { projectId: project.id, title: 'Rollback', slug: 'rollback', content: '# Rollback\n\nRollback procedures.', order: 2 },
-      ],
+      data: pages.map((page, i) => ({
+        projectId: project.id,
+        title: page.title,
+        slug: slugify(page.title),
+        content: page.content,
+        description: page.description,
+        order: i,
+      })),
     });
   }
 
