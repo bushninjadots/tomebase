@@ -88,7 +88,7 @@ export function SpiritGhost({ state, size = 'medium', className = '' }: SpiritGh
             C${viewBox * 0.12} ${viewBox * 0.88} ${viewBox * 0.08} ${viewBox * 0.75} ${viewBox * 0.08} ${viewBox * 0.55}
             C${viewBox * 0.08} ${viewBox * 0.28} ${viewBox * 0.25} ${viewBox * 0.08} ${viewBox * 0.5} ${viewBox * 0.08}Z`}
         fill="url(#ghost-grad)"
-        className="text-theme-main"
+        className="text-theme-accent"
       />
 
       {/* Eyes */}

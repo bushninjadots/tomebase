@@ -21,12 +21,12 @@ import { SchedulePublish } from '@/components/schedule-publish';
 import { CodeMirrorEditor, type CodeMirrorEditorRef } from '@/components/editor/codemirror-editor';
 import { SlashCommandMenu, type SlashCommand } from '@/components/editor/slash-commands';
 import { EditorToolbar } from '@/components/editor/toolbar';
-import { AIPanel } from '@/components/editor/ai-panel';
 import { DocumentOutline } from '@/components/editor/document-outline';
 import { TeamPresence } from '@/components/editor/team-presence';
 import { PublishDialog } from '@/components/publish';
 import Link from 'next/link';
 import { eventBus } from '@/lib/events';
+import { useSpiritStore } from '@fluid/spirit';
 
 interface Page {
   id: string;
@@ -74,7 +74,6 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
   const [sidebarTab, setSidebarTab] = useState<SidebarTab | null>(null);
   const [showActions, setShowActions] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showAIPanel, setShowAIPanel] = useState(false);
   const [showPublishDialog, setShowPublishDialog] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
 
@@ -332,7 +331,7 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
       }
       if (isMeta && e.shiftKey && e.key === 'A') {
         e.preventDefault();
-        setShowAIPanel((v) => !v);
+        useSpiritStore.getState().toggle();
       }
     }
     document.addEventListener('keydown', handleKeyDown);
@@ -526,9 +525,9 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
   const handleToolbarAction = useCallback((action: string) => {
     const view = editorRef.current?.view;
 
-    // AI actions — handled via state
+    // AI actions — toggle Spirit
     if (action === 'ai-chat') {
-      setShowAIPanel(true);
+      useSpiritStore.getState().toggle();
       return;
     }
 
@@ -830,12 +829,10 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
                   <Type className="w-4 h-4" />
                 </button>
 
-                {/* AI Panel */}
+                {/* AI Assistant (Spirit) */}
                 <button
-                  onClick={() => setShowAIPanel((v) => !v)}
-                  className={`p-1.5 rounded-lg transition-colors duration-150 ${
-                    showAIPanel ? 'bg-theme-accent/10 text-theme-accent' : 'text-theme-muted hover:bg-theme-hover hover:text-theme-subtle'
-                  }`}
+                  onClick={() => useSpiritStore.getState().toggle()}
+                  className="p-1.5 rounded-lg text-theme-muted hover:bg-theme-hover hover:text-theme-subtle transition-colors duration-150"
                   title="AI Assistant (⌘⇧A)"
                 >
                   <Sparkles className="w-4 h-4" />
@@ -1075,23 +1072,6 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
             {sidebarTab === 'team' && <TeamPresence members={teamMembers} />}
             {sidebarTab === 'comments' && <Comments pageId={selectedPage.id} teamMembers={teamMembers} />}
           </div>
-        </div>
-      )}
-
-      {/* ===== AI PANEL ===== */}
-      {showAIPanel && selectedPage && (
-        <div className="w-80 shrink-0 border-l border-theme-border bg-theme-page flex flex-col animate-in slide-in-from-right duration-200">
-          <AIPanel
-            pageId={selectedPage.id}
-            projectId={project.id}
-            pageTitle={selectedPage.title}
-            pageContent={content}
-            onClose={() => setShowAIPanel(false)}
-            onContentUpdate={(newContent) => {
-              setContent(newContent);
-              setPageList((prev) => prev.map((p) => (p.id === selectedPage.id ? { ...p, content: newContent } : p)));
-            }}
-          />
         </div>
       )}
 

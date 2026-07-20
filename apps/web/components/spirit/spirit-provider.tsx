@@ -18,8 +18,8 @@ class SpiritErrorBoundary extends Component<
     return { hasError: true };
   }
 
-  override componentDidCatch(error: Error) {
-    console.error('[Spirit] Failed to render:', error.message);
+  static componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('[Spirit] Failed to render:', error.message, errorInfo.componentStack);
   }
 
   override render() {
