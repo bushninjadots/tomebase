@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@fluid/database';
 import { requireAuth, requireTeamMember } from '@/lib/authorization';
+import { eventBus } from '@/lib/events';
 
 export async function POST(
   request: NextRequest,
@@ -55,6 +56,12 @@ export async function POST(
     await prisma.docPage.update({
       where: { id: pageId },
       data: { content: fixedContent },
+    });
+
+    eventBus.emit('diagnostic:fixed', {
+      projectId,
+      pageId,
+      diagnosticId: body.diagnosticId ?? '',
     });
 
     return NextResponse.json({

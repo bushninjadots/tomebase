@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { triggerWebhooks } from '@/lib/webhooks';
 import { logActivity } from '@/lib/activity';
+import { eventBus } from '@/lib/events';
 
 export async function PATCH(
   request: Request,
@@ -51,6 +52,7 @@ export async function PATCH(
         entityId: updated.id,
         details: { title: updated.title, projectId: page.projectId },
       });
+      eventBus.emit('page:published', { pageId: updated.id, projectId: page.projectId });
     } else {
       triggerWebhooks(page.projectId, 'page.updated', {
         pageId: updated.id,
@@ -64,6 +66,9 @@ export async function PATCH(
         entityId: updated.id,
         details: { title: updated.title, projectId: page.projectId },
       });
+      if (wasPublished && !isNowPublished) {
+        eventBus.emit('page:unpublished', { pageId: updated.id, projectId: page.projectId });
+      }
     }
 
     return NextResponse.json(updated);

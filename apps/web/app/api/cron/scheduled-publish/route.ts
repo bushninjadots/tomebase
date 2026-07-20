@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@fluid/database';
 import { triggerWebhooks } from '@/lib/webhooks';
+import { eventBus } from '@/lib/events';
 
 export async function GET(request: Request) {
   const authHeader = request.headers.get('authorization');
@@ -39,6 +40,8 @@ export async function GET(request: Request) {
         slug: schedule.page.slug,
       });
 
+      eventBus.emit('page:published', { pageId: schedule.page.id, projectId: schedule.page.projectId });
+
       await prisma.scheduledPublish.delete({ where: { id: schedule.id } });
     }
 
@@ -60,6 +63,8 @@ export async function GET(request: Request) {
         title: schedule.page.title,
         slug: schedule.page.slug,
       });
+
+      eventBus.emit('page:unpublished', { pageId: schedule.page.id, projectId: schedule.page.projectId });
 
       await prisma.scheduledPublish.delete({ where: { id: schedule.id } });
     }

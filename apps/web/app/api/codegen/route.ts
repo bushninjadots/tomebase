@@ -4,6 +4,7 @@ import { slugify } from '@fluid/utils';
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { checkRateLimit, rateLimitResponse, rateLimitHeaders } from '@/lib/rate-limit';
+import { eventBus } from '@/lib/events';
 import type { SupportedLanguage } from '@fluid/codegen';
 import type { ParsedExport } from '@fluid/codegen';
 
@@ -173,6 +174,10 @@ export async function POST(request: Request) {
       backlinks: 0,
       generationTimeMs: elapsed,
     };
+
+    if (createdPages.length > 0) {
+      eventBus.emit('import:completed', { projectId, type: 'code', pagesCreated: createdPages.length });
+    }
 
     return NextResponse.json({
       message: `Generated ${createdPages.length} documentation page${createdPages.length === 1 ? '' : 's'}`,

@@ -26,6 +26,7 @@ import { InlineAIResult } from '@/components/editor/inline-ai-result';
 import { DocumentOutline } from '@/components/editor/document-outline';
 import { TeamPresence } from '@/components/editor/team-presence';
 import Link from 'next/link';
+import { eventBus } from '@/lib/events';
 
 interface Page {
   id: string;
@@ -258,6 +259,7 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
       savedVersionRef.current = { title: t, content: c };
       setAutoSaveStatus('saved');
       setPageList((prev) => prev.map((p) => (p.id === selectedPage.id ? { ...p, title: t, content: c } : p)));
+      eventBus.emit('document:saved', { pageId: selectedPage.id, content: c, snapshotId: '' });
     } else {
       setAutoSaveStatus('unsaved');
     }
@@ -304,6 +306,7 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, content }),
       }).catch(() => {});
+      eventBus.emit('document:saved', { pageId: selectedPage.id, content, snapshotId: '' });
     }
     setSaving(false);
     router.refresh();

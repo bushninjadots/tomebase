@@ -1,6 +1,7 @@
 import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
+import { eventBus } from '@/lib/events';
 
 export async function POST(
   request: Request,
@@ -42,6 +43,12 @@ export async function POST(
         title: snapshot.title,
         content: snapshot.content,
       },
+    });
+
+    eventBus.emit('document:restored', {
+      pageId: id,
+      snapshotId,
+      previousContent: page.content,
     });
 
     return NextResponse.json(updated);

@@ -3,6 +3,7 @@ import { slugify } from '@fluid/utils';
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { parseOpenApiSpec, endpointsToMarkdown } from '@/lib/openapi';
+import { eventBus } from '@/lib/events';
 
 export async function POST(request: Request) {
   try {
@@ -180,6 +181,10 @@ export async function POST(request: Request) {
       });
 
       createdPages.push(page);
+    }
+
+    if (createdPages.length > 0) {
+      eventBus.emit('import:completed', { projectId, type: 'openapi', pagesCreated: createdPages.length });
     }
 
     return NextResponse.json({
