@@ -5,52 +5,33 @@ import { useRouter } from 'next/navigation';
 import {
   Save, Eye, Edit3, FileText, ChevronRight, Cloud, CloudOff,
   Copy, Trash2, Layers, BookOpen, Clock, Type, AlertTriangle,
-  X, Maximize2, Minimize2, Users, ListOrdered, MessageSquare,
+  Maximize2, Minimize2, ListOrdered, MessageSquare,
   MoreHorizontal, Search, SplitSquareHorizontal, Image as ImageIcon,
   Menu, Sparkles, Globe,
 } from 'lucide-react';
 import { Markdown } from '@/components/markdown';
-import { ShortcutsModal } from '@/components/shortcuts';
-import { GraphModalOpener } from '@/components/graph';
 import { HistoryModal } from '@/components/history';
-import { findBacklinks, extractTags } from '@/lib/wiki';
-import { extractDescription, extractHeadings } from '@/lib/content';
-import { Comments } from '@/components/comments';
-import { BookmarkButton } from '@/components/bookmark-button';
+import { extractTags } from '@/lib/wiki';
+import { extractHeadings } from '@/lib/content';
 import { SchedulePublish } from '@/components/schedule-publish';
 import { CodeMirrorEditor, type CodeMirrorEditorRef } from '@/components/editor/codemirror-editor';
 import { SlashCommandMenu, type SlashCommand } from '@/components/editor/slash-commands';
 import { EditorToolbar } from '@/components/editor/toolbar';
-import { DocumentOutline } from '@/components/editor/document-outline';
-import { TeamPresence } from '@/components/editor/team-presence';
 import { PublishDialog } from '@/components/publish';
 import Link from 'next/link';
-import { eventBus } from '@/lib/events';
 import { useSpiritStore } from '@fluid/spirit';
 import { useSpiritContext } from '@/components/spirit/use-spirit-context';
-
-interface Page {
-  id: string;
-  title: string;
-  slug: string;
-  content: string;
-  description: string | null;
-  order: number;
-  parentId: string | null;
-  published: boolean;
-}
-
-interface Project {
-  id: string;
-  name: string;
-  pages: Page[];
-}
-
-type ViewMode = 'edit' | 'preview' | 'split';
-type SidebarTab = 'outline' | 'team' | 'comments';
+import type { ProjectWithPages, DocPage } from '@fluid/types';
+import { useAutosave } from '@/components/editor/hooks/use-autosave';
+import { useImageUpload } from '@/components/editor/hooks/use-image-upload';
+import { useKeyboardShortcuts } from '@/components/editor/hooks/use-keyboard-shortcuts';
+import { useSplitResize } from '@/components/editor/hooks/use-split-resize';
+import { StatusBar } from '@/components/editor/status-bar';
+import { EditorSidebar } from '@/components/editor/editor-sidebar';
+import type { ViewMode, SidebarTab } from '@/components/editor/editor-types';
 
 export function DocEditor({ project, initialLine, initialPageSlug }: {
-  project: Project;
+  project: ProjectWithPages;
   initialLine?: number;
   initialPageSlug?: string;
 }) {
@@ -59,14 +40,13 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
   const splitRef = useRef<HTMLDivElement>(null);
   const splitDividerRef = useRef<HTMLDivElement>(null);
   const actionsRef = useRef<HTMLDivElement>(null);
-  const imageInputRef = useRef<HTMLInputElement>(null);
 
   // Core state
-  const [selectedPage, setSelectedPage] = useState<Page | null>(null);
+  const [selectedPage, setSelectedPage] = useState<DocPage | null>(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('edit');
-  const [pageList, setPageList] = useState<Page[]>(project.pages);
+  const [pageList, setPageList] = useState<DocPage[]>(project.pages);
   const [pagePublished, setPagePublished] = useState(false);
 
   // UI state
@@ -79,8 +59,6 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
   const [showHistory, setShowHistory] = useState(false);
 
   // Overlays
-  const [isDragOver, setIsDragOver] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
   const [showSlashCommands, setShowSlashCommands] = useState(false);
   const [slashQuery, setSlashQuery] = useState('');
   const [slashPosition, setSlashPosition] = useState({ top: 0, left: 0 });
@@ -92,13 +70,6 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
 
   const linkSelectionRef = useRef<{ from: number; to: number }>({ from: 0, to: 0 });
 
-  // Autosave
-  const [autoSaveStatus, setAutoSaveStatus] = useState<'saved' | 'unsaved' | 'saving'>('saved');
-  const [saving, setSaving] = useState(false);
-  const [draftAvailable, setDraftAvailable] = useState(false);
-  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const savedVersionRef = useRef({ title: '', content: '' });
-
   // Cursor position
   const [cursorPos, setCursorPos] = useState({ line: 1, col: 1 });
   const [selectedText, setSelectedText] = useState('');
@@ -106,58 +77,36 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
   // Team
   const [teamMembers, setTeamMembers] = useState<{ id: string; name: string | null; email: string | null; image: string | null }[]>([]);
 
-  // Split view
-  const [splitPosition, setSplitPosition] = useState(50);
-  const splitPositionRef = useRef(splitPosition);
-  splitPositionRef.current = splitPosition;
+  // ===== HOOKS =====
+  const {
+    autoSaveStatus, saving, draftAvailable, doSave, handleSave, clearDraft, restoreDraft, savedVersionRef,
+  } = useAutosave({
+    projectId: project.id,
+    selectedPage,
+    title,
+    content,
+    setTitle,
+    setContent,
+    setPageList,
+    editorRef,
+    router,
+  });
 
-  const DRAFT_KEY = useMemo(
-    () => (selectedPage ? `fluid_draft_${selectedPage.id}` : null),
-    [selectedPage]
-  );
+  const {
+    isDragOver, setIsDragOver, isUploading, setIsUploading, imageInputRef, handleDrop, uploadImage,
+  } = useImageUpload({ editorRef, viewMode });
 
-  // Draft management
-  useEffect(() => {
-    if (!DRAFT_KEY) return;
-    try {
-      const draft = localStorage.getItem(DRAFT_KEY);
-      if (draft) {
-        const parsed = JSON.parse(draft);
-        if (parsed && parsed.content !== selectedPage?.content) setDraftAvailable(true);
-      }
-    } catch { /* ignore */ }
-  }, [DRAFT_KEY, selectedPage]);
+  const { splitPosition, splitPositionRef } = useSplitResize(splitRef, splitDividerRef, viewMode);
 
-  useEffect(() => {
-    if (!DRAFT_KEY || !selectedPage) return;
-    try {
-      const saved = savedVersionRef.current;
-      const isDirty = title !== saved.title || content !== saved.content;
-      if (isDirty) {
-        localStorage.setItem(DRAFT_KEY, JSON.stringify({ title, content, updatedAt: Date.now() }));
-      }
-    } catch { /* ignore */ }
-  }, [title, content, DRAFT_KEY, selectedPage]);
-
-  const clearDraft = useCallback(() => {
-    if (DRAFT_KEY) {
-      try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
-      setDraftAvailable(false);
-    }
-  }, [DRAFT_KEY]);
-
-  function restoreDraft() {
-    if (!DRAFT_KEY) return;
-    try {
-      const draft = localStorage.getItem(DRAFT_KEY);
-      if (draft) {
-        const parsed = JSON.parse(draft);
-        setTitle(parsed.title || title);
-        setContent(parsed.content || content);
-        setDraftAvailable(false);
-      }
-    } catch { /* ignore */ }
-  }
+  useKeyboardShortcuts({
+    handleSave,
+    viewMode,
+    setViewMode,
+    zenMode,
+    setZenMode,
+    typewriterMode,
+    setTypewriterMode,
+  });
 
   // Team members
   useEffect(() => {
@@ -183,7 +132,7 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
     pages: pageList,
   });
 
-  // Handle initial page + line jump from URL params (e.g. from diagnostics)
+  // Handle initial page + line jump from URL params
   const hasJumpedRef = useRef(false);
   useEffect(() => {
     if (hasJumpedRef.current) return;
@@ -202,7 +151,7 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
   // Breadcrumbs
   const breadcrumbs = useMemo(() => {
     if (!selectedPage) return [];
-    const crumbs: Page[] = [];
+    const crumbs: DocPage[] = [];
     let current = selectedPage;
     let safety = 0;
     while (current.parentId && safety < 10) {
@@ -246,7 +195,6 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
       { rootMargin: '-80px 0px -70% 0px', threshold: 0 }
     );
 
-    // Small delay to let DOM render
     const timer = setTimeout(() => {
       for (const id of headingIds) {
         const el = document.getElementById(id);
@@ -260,113 +208,6 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
     };
   }, [selectedPage?.id, headings]);
 
-  // Save logic
-  const doSave = useCallback(async (t: string, c: string) => {
-    if (!selectedPage) return;
-    setAutoSaveStatus('saving');
-    const description = extractDescription(c);
-    const res = await fetch(`/api/pages/${selectedPage.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: t, content: c, description }),
-    });
-    if (res.ok) {
-      savedVersionRef.current = { title: t, content: c };
-      setAutoSaveStatus('saved');
-      setPageList((prev) => prev.map((p) => (p.id === selectedPage.id ? { ...p, title: t, content: c } : p)));
-      eventBus.emit('document:saved', { pageId: selectedPage.id, content: c, snapshotId: '' });
-    } else {
-      setAutoSaveStatus('unsaved');
-    }
-  }, [selectedPage]);
-
-  useEffect(() => {
-    if (!selectedPage) return;
-    savedVersionRef.current = { title: selectedPage.title, content: selectedPage.content };
-    setAutoSaveStatus('saved');
-  }, [selectedPage?.id]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Listen for proposal acceptances to refresh editor content
-  useEffect(() => {
-    const unsub = eventBus.on('ai:proposalAccepted', (data) => {
-      if (selectedPage && data.pageId === selectedPage.id && data.content) {
-        setContent(data.content);
-        savedVersionRef.current = { title, content: data.content };
-        setPageList((prev) =>
-          prev.map((p) => (p.id === selectedPage.id ? { ...p, content: data.content } : p))
-        );
-      }
-    });
-    return unsub;
-  }, [selectedPage?.id, title]);
-
-  useEffect(() => {
-    if (!selectedPage) return;
-    const saved = savedVersionRef.current;
-    const isDirty = title !== saved.title || content !== saved.content;
-
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-
-    if (isDirty) {
-      setAutoSaveStatus('unsaved');
-      saveTimerRef.current = setTimeout(() => doSave(title, content), 2000);
-    }
-
-    return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
-  }, [title, content, selectedPage, doSave]);
-
-  const handleSaveRef = useRef(async () => {});
-  handleSaveRef.current = async () => {
-    if (!selectedPage) return;
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    setSaving(true);
-    const res = await fetch(`/api/pages/${selectedPage.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, content }),
-    });
-    if (res.ok) {
-      savedVersionRef.current = { title, content };
-      setAutoSaveStatus('saved');
-      clearDraft();
-      setPageList((prev) => prev.map((p) => (p.id === selectedPage.id ? { ...p, title, content } : p)));
-      fetch(`/api/pages/${selectedPage.id}/snapshots`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, content }),
-      }).catch(() => {});
-      eventBus.emit('document:saved', { pageId: selectedPage.id, content, snapshotId: '' });
-    }
-    setSaving(false);
-    router.refresh();
-  };
-
-  // Global keyboard shortcuts
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      const isMeta = e.metaKey || e.ctrlKey;
-      if (isMeta && e.key === 's') { e.preventDefault(); handleSaveRef.current(); }
-      if (isMeta && e.shiftKey && e.key === 'P') {
-        e.preventDefault();
-        setViewMode((v) => v === 'edit' ? 'preview' : v === 'preview' ? 'split' : 'edit');
-      }
-      if (isMeta && e.key === '\\') {
-        e.preventDefault();
-        setZenMode((v) => !v);
-      }
-      if (isMeta && e.shiftKey && e.key === 'T') {
-        e.preventDefault();
-        setTypewriterMode((v) => !v);
-      }
-      if (isMeta && e.shiftKey && e.key === 'A') {
-        e.preventDefault();
-        useSpiritStore.getState().toggle();
-      }
-    }
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
   // Click outside
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -375,96 +216,6 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
-
-  // Split view drag
-  useEffect(() => {
-    const divider = splitDividerRef.current;
-    if (!divider || viewMode !== 'split') return;
-    let startX = 0;
-    let startPct = 0;
-
-    function onMouseDown(e: MouseEvent) {
-      e.preventDefault();
-      startX = e.clientX;
-      startPct = splitPositionRef.current;
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
-      document.body.style.cursor = 'col-resize';
-      document.body.style.userSelect = 'none';
-    }
-
-    function onMouseMove(e: MouseEvent) {
-      const container = splitRef.current;
-      if (!container) return;
-      const rect = container.getBoundingClientRect();
-      const pct = startPct + ((e.clientX - startX) / rect.width) * 100;
-      setSplitPosition(Math.min(Math.max(pct, 25), 75));
-    }
-
-    function onMouseUp() {
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-      document.body.style.cursor = '';
-      document.body.style.userSelect = '';
-    }
-
-    divider.addEventListener('mousedown', onMouseDown);
-    return () => divider.removeEventListener('mousedown', onMouseDown);
-  }, [viewMode]);
-
-  // Image upload
-  const uploadImage = useCallback(async (file: File): Promise<string | null> => {
-    const formData = new FormData();
-    formData.append('file', file);
-    try {
-      const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      if (res.ok) {
-        const data = await res.json();
-        return data.url;
-      }
-    } catch { /* ignore */ }
-    return null;
-  }, []);
-
-  // Image paste
-  useEffect(() => {
-    function handlePaste(e: ClipboardEvent) {
-      if (viewMode === 'preview') return;
-      const items = e.clipboardData?.items;
-      if (!items) return;
-      for (const item of items) {
-        if (item.type.startsWith('image/')) {
-          e.preventDefault();
-          const file = item.getAsFile();
-          if (file) {
-            setIsUploading(true);
-            uploadImage(file).then((url) => {
-              if (url && editorRef.current) editorRef.current.insertText(`![image](${url})`);
-              setIsUploading(false);
-            });
-          }
-          break;
-        }
-      }
-    }
-    document.addEventListener('paste', handlePaste);
-    return () => document.removeEventListener('paste', handlePaste);
-  }, [viewMode, uploadImage]);
-
-  // Image drag-and-drop
-  const handleDrop = useCallback(async (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragOver(false);
-    for (const file of e.dataTransfer.files) {
-      if (file.type.startsWith('image/')) {
-        setIsUploading(true);
-        const url = await uploadImage(file);
-        if (url && editorRef.current) editorRef.current.insertText(`![${file.name}](${url})`);
-        setIsUploading(false);
-      }
-    }
-  }, [uploadImage]);
 
   // Slash commands
   const handleSlashCommand = useCallback((query: string) => {
@@ -499,7 +250,7 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
   }, []);
 
   // Page operations
-  function selectPage(page: Page) {
+  function selectPage(page: DocPage) {
     setSelectedPage(page);
     setTitle(page.title);
     setContent(page.content);
@@ -554,7 +305,6 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
   const handleToolbarAction = useCallback((action: string) => {
     const view = editorRef.current?.view;
 
-    // AI actions — toggle Spirit
     if (action === 'ai-chat') {
       useSpiritStore.getState().toggle();
       return;
@@ -780,7 +530,7 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
                 {/* Save button */}
                 {isDirty && (
                   <button
-                    onClick={() => handleSaveRef.current()}
+                    onClick={handleSave}
                     disabled={saving}
                     className="inline-flex items-center gap-1.5 rounded-lg bg-theme-accent px-3 py-1.5 text-xs font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors disabled:opacity-50"
                   >
@@ -1040,70 +790,27 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
 
         {/* ===== STATUS BAR ===== */}
         {!zenMode && (
-          <div className="shrink-0 flex items-center justify-between border-t border-theme-border px-4 sm:px-6 py-1.5 text-[11px] text-theme-muted">
-            <div className="flex items-center gap-4">
-              <span>Ln {cursorPos.line}, Col {cursorPos.col}</span>
-              <span>{charCount} chars</span>
-              <span>{wordCount} words</span>
-              <span>{readingTime} min read</span>
-            </div>
-            <div className="flex items-center gap-3">
-              {tags.length > 0 && (
-                <div className="flex items-center gap-1">
-                  {tags.slice(0, 3).map((tag) => (
-                    <span key={tag} className="px-1.5 py-0.5 rounded bg-theme-accent/10 text-theme-accent text-[10px]">
-                      {tag}
-                    </span>
-                  ))}
-                  {tags.length > 3 && <span>+{tags.length - 3}</span>}
-                </div>
-              )}
-              <span className="px-1.5 py-0.5 rounded bg-theme-hover text-[10px] uppercase tracking-wider">
-                {viewMode}
-              </span>
-            </div>
-          </div>
+          <StatusBar
+            cursorPos={cursorPos}
+            charCount={charCount}
+            wordCount={wordCount}
+            readingTime={String(readingTime)}
+            tags={tags}
+            viewMode={viewMode}
+          />
         )}
       </div>
 
       {/* ===== SIDEBAR ===== */}
       {sidebarTab && selectedPage && (
-        <div className="w-72 shrink-0 border-l border-theme-border bg-theme-page flex flex-col animate-in slide-in-from-right duration-200">
-          {/* Tabs */}
-          <div className="flex items-center border-b border-theme-border">
-            {([
-              { id: 'outline' as SidebarTab, label: 'Outline', icon: ListOrdered },
-              { id: 'team' as SidebarTab, label: 'Team', icon: Users },
-              { id: 'comments' as SidebarTab, label: 'Comments', icon: MessageSquare },
-            ]).map(({ id, label, icon: Icon }) => (
-              <button
-                key={id}
-                onClick={() => setSidebarTab(id)}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium transition-colors duration-150 border-b-2 ${
-                  sidebarTab === id
-                    ? 'text-theme-accent border-theme-accent'
-                    : 'text-theme-muted border-transparent hover:text-theme-subtle'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                {label}
-              </button>
-            ))}
-            <button
-              onClick={() => setSidebarTab(null)}
-              className="p-2 text-theme-muted hover:bg-theme-hover transition-colors"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          {/* Tab content */}
-          <div className="flex-1 overflow-y-auto p-3">
-            {sidebarTab === 'outline' && <DocumentOutline content={content} activeHeadingId={activeHeadingId} />}
-            {sidebarTab === 'team' && <TeamPresence members={teamMembers} />}
-            {sidebarTab === 'comments' && <Comments pageId={selectedPage.id} teamMembers={teamMembers} />}
-          </div>
-        </div>
+        <EditorSidebar
+          sidebarTab={sidebarTab}
+          setSidebarTab={setSidebarTab}
+          content={content}
+          activeHeadingId={activeHeadingId}
+          teamMembers={teamMembers}
+          selectedPage={selectedPage}
+        />
       )}
 
       {/* ===== ZEN MODE EXIT BUTTON ===== */}

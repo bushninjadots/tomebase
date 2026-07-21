@@ -1,6 +1,19 @@
 import { prisma } from '@fluid/database';
 import crypto from 'crypto';
 
+export function isValidWebhookUrl(urlString: string): boolean {
+  try {
+    const url = new URL(urlString);
+    if (!['http:', 'https:'].includes(url.protocol)) return false;
+    const hostname = url.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1') return false;
+    if (/^(10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|169\.254\.)/.test(hostname)) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function triggerWebhooks(
   projectId: string,
   event: string,

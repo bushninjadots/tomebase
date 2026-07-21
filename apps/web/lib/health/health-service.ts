@@ -1,7 +1,6 @@
 import type { Diagnostic, DiagnosticScanResult, HealthScore } from '@fluid/types';
 import { eventBus } from '@/lib/events';
 import type { EventName, EventBusEvents } from '@/lib/events/types';
-import { useProjectStore } from '@/lib/stores/project-store';
 
 interface PageDiagnostics {
   pageId: string;
@@ -28,6 +27,8 @@ export class HealthService {
   private debounceMs: number;
   private fetcher: FetchFn;
   private rescanInFlight = false;
+  private previousScore: number | null = null;
+  private lastScannedAt: string | null = null;
 
   constructor(config: HealthServiceConfig = {}) {
     this.debounceMs = config.debounceMs ?? 2000;
@@ -38,6 +39,8 @@ export class HealthService {
     this.detach();
     this.projectId = projectId;
     this.pageCache.clear();
+    this.previousScore = null;
+    this.lastScannedAt = null;
     this.subscribeToEvents();
   }
 
@@ -75,7 +78,7 @@ export class HealthService {
 
     this.rescanInFlight = true;
     try {
-      const prevScore = useProjectStore.getState().health?.score ?? null;
+      const prevScore = this.previousScore;
 
       const res = await this.fetcher(
         `/api/projects/${this.projectId}/diagnostics`,
@@ -85,17 +88,8 @@ export class HealthService {
       const result: DiagnosticScanResult = await res.json();
       this.rebuildCache(result);
 
-      const store = useProjectStore.getState();
-      store.setDiagnostics(result.diagnostics);
-      store.setHealth({
-        score: result.healthScore.score,
-        totalPages: result.totalPages,
-        diagnostics: result.diagnostics,
-        healthScore: result.healthScore,
-        scannedAt: result.scannedAt,
-        previousScore: prevScore,
-        previousScanAt: store.health?.scannedAt ?? null,
-      });
+      this.previousScore = result.healthScore.score;
+      this.lastScannedAt = result.scannedAt;
 
       eventBus.emit('health:scanned', {
         projectId: this.projectId,

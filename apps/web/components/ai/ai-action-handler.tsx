@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Sparkles, Loader2, X, Copy, Check, ArrowRight, Wand2 } from 'lucide-react';
+import { Sparkles, X, Copy, Check, ArrowRight, Wand2 } from 'lucide-react';
+import { Spinner } from '@fluid/ui';
 import { useAI } from '@/components/ai/use-ai';
 
 interface AIActionResult {
@@ -157,7 +158,7 @@ export function AIActionHandler({
       <div className="p-4 max-h-64 overflow-y-auto">
         {loading && (
           <div className="flex items-center gap-2 text-xs text-theme-muted">
-            <Loader2 className="w-3 h-3 animate-spin" />
+            <Spinner size="sm" />
             Running {action}...
           </div>
         )}

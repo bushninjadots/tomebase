@@ -5,21 +5,9 @@ import { useRouter } from 'next/navigation';
 import { Button, Input } from '@fluid/ui';
 import { Globe, Check, Copy } from 'lucide-react';
 import { DomainSettings } from '@/components/domain-settings';
+import type { ProjectWithCount } from '@fluid/types';
 
-interface Project {
-  id: string;
-  name: string;
-  slug: string;
-  description: string | null;
-  published: boolean;
-  customDomain: string | null;
-  logoUrl: string | null;
-  _count: {
-    pages: number;
-  };
-}
-
-export function ProjectSettingsForm({ project }: { project: Project }) {
+export function ProjectSettingsForm({ project }: { project: ProjectWithCount }) {
   const router = useRouter();
 
   const [published, setPublished] = useState(project.published);

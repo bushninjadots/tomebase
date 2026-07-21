@@ -5,7 +5,6 @@ import {
   Bot,
   Eye,
   EyeOff,
-  Loader2,
   Check,
   X,
   Trash2,
@@ -13,7 +12,7 @@ import {
   Globe,
   Server,
 } from 'lucide-react';
-import { Button, Input, Badge, Card, CardContent } from '@fluid/ui';
+import { Button, Input, Badge, Card, CardContent, Spinner } from '@fluid/ui';
 import { AI_PROVIDERS, type AIProviderType, type StoredAIProviderConfig, type AIProviderMeta } from '@/lib/ai-provider/types';
 import { useAI } from '@/components/ai/use-ai';
 
@@ -183,7 +182,7 @@ export function AIProviderSettings() {
     return (
       <div className="rounded-2xl border border-theme-border bg-theme-card p-6">
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-5 w-5 text-theme-muted animate-spin" />
+          <Spinner size="lg" className="text-theme-muted" />
           <span className="ml-2 text-sm text-theme-muted">Loading providers...</span>
         </div>
       </div>
@@ -382,7 +381,7 @@ export function AIProviderSettings() {
                       disabled={saving}
                     >
                       {saving ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        <Spinner size="sm" />
                       ) : (
                         <Check className="h-3.5 w-3.5" />
                       )}
@@ -397,7 +396,7 @@ export function AIProviderSettings() {
                         disabled={testing}
                       >
                         {testing ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          <Spinner size="sm" />
                         ) : (
                           <Zap className="h-3.5 w-3.5" />
                         )}
@@ -414,7 +413,7 @@ export function AIProviderSettings() {
                         className="text-red-400 hover:text-red-300 hover:bg-red-400/10 ml-auto"
                       >
                         {deleting ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          <Spinner size="sm" />
                         ) : (
                           <Trash2 className="h-3.5 w-3.5" />
                         )}

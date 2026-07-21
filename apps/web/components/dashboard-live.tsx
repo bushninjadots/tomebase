@@ -12,9 +12,9 @@ import {
   Network,
   GitBranch,
   ArrowUpRight,
-  Loader2,
   AlertCircle,
 } from 'lucide-react';
+import { Spinner } from '@fluid/ui';
 import { useDashboardLive } from '@/lib/hooks/use-dashboard-live';
 import { ProjectCard } from '@/components/project-card';
 import { UpgradeBanner } from '@/components/upgrade-banner';
@@ -134,7 +134,7 @@ export function DashboardLive() {
             </>
           )}
           {loading && (
-            <Loader2 className="inline h-3 w-3 ml-1.5 animate-spin text-theme-muted" />
+            <Spinner size="sm" className="inline ml-1.5 text-theme-muted" />
           )}
         </p>
         {firstProjectId && (

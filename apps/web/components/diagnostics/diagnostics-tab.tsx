@@ -16,9 +16,10 @@ import { BatchActions } from '@/components/diagnostics/batch-actions';
 import { AIActionHandler } from '@/components/ai/ai-action-handler';
 import { useAI } from '@/components/ai/use-ai';
 import {
-  Sparkles, Zap, FileText, Loader2, CheckCircle,
+  Sparkles, Zap, FileText, CheckCircle,
   AlertCircle, AlertTriangle, Info, ArrowRight, Bot,
 } from 'lucide-react';
+import { Spinner } from '@fluid/ui';
 
 interface DiagnosticsTabProps {
   projectId: string;
@@ -296,7 +297,7 @@ export function DiagnosticsTab({ projectId, pages, healthScore, initialDiagnosti
       <div className="space-y-2">
         {fixing && (
           <div className="flex items-center gap-3 rounded-2xl border border-theme-border bg-theme-card px-5 py-4 text-sm text-theme-muted">
-            <Loader2 className="h-4 w-4 animate-spin text-theme-accent" />
+            <Spinner size="md" className="text-theme-accent" />
             <span>Applying fixes across all fixable diagnostics...</span>
           </div>
         )}

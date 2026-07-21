@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import {
   Check, X, ChevronDown, ChevronUp, Sparkles,
-  AlertTriangle, Loader2, Replace, Plus, Trash2,
+  AlertTriangle, Replace, Plus, Trash2,
 } from 'lucide-react';
+import { Spinner } from '@fluid/ui';
 import { DiffViewer } from '@/components/diff-viewer';
 
 interface Proposal {
@@ -150,7 +151,7 @@ export function AIProposalCard({ proposal, onAccept, onReject }: AIProposalCardP
             disabled={loading}
             className="flex-1 flex items-center justify-center gap-1 rounded-md bg-theme-accent px-3 py-1.5 text-[11px] font-medium text-white hover:bg-theme-accent-hover disabled:opacity-50 transition-colors"
           >
-            {loading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
+            {loading ? <Spinner size="sm" /> : <Check className="w-3 h-3" />}
             Apply Fix
           </button>
           <button

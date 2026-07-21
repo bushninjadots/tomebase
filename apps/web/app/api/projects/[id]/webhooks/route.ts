@@ -1,36 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@fluid/database';
 import crypto from 'crypto';
-import { requireAuth, requireTeamMember } from '@/lib/authorization';
+import { requireTeamMember } from '@/lib/authorization';
+import { withAuth, unauthorized, notFound, badRequest } from '@/lib/api-helpers';
+import { isValidWebhookUrl } from '@/lib/webhooks';
 
-function isValidWebhookUrl(urlString: string): boolean {
-  try {
-    const url = new URL(urlString);
-    if (!['http:', 'https:'].includes(url.protocol)) return false;
-    const hostname = url.hostname;
-    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1') return false;
-    if (/^(10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|169\.254\.)/.test(hostname)) return false;
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const session = await requireAuth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
+export const GET = withAuth(async (session, _request, { params }) => {
   const { id } = await params;
 
   const project = await requireTeamMember(id, session.user.id);
-  if (!project) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 });
-  }
+  if (!project) return notFound();
 
   const webhooks = await prisma.webhook.findMany({
     where: { projectId: id },
@@ -38,33 +17,23 @@ export async function GET(
   });
 
   return NextResponse.json(webhooks);
-}
+});
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const session = await requireAuth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
+export const POST = withAuth(async (session, request, { params }) => {
   const { id } = await params;
 
   const project = await requireTeamMember(id, session.user.id);
-  if (!project) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 });
-  }
+  if (!project) return notFound();
 
   const body = await request.json();
   const { url, events } = body;
 
   if (!url || typeof url !== 'string') {
-    return NextResponse.json({ error: 'URL is required' }, { status: 400 });
+    return badRequest('URL is required');
   }
 
   if (!isValidWebhookUrl(url)) {
-    return NextResponse.json({ error: 'Invalid webhook URL' }, { status: 400 });
+    return badRequest('Invalid webhook URL');
   }
 
   const secret = crypto.randomBytes(32).toString('hex');
@@ -79,4 +48,4 @@ export async function POST(
   });
 
   return NextResponse.json(webhook);
-}
+});

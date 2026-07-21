@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Key, Plus, Trash2, Copy, Check, Eye, EyeOff, Loader2, ExternalLink } from 'lucide-react';
+import { Key, Plus, Trash2, Copy, Check, Eye, EyeOff, ExternalLink } from 'lucide-react';
+import { Spinner } from '@fluid/ui';
 
 interface Token {
   id: string;
@@ -186,7 +187,7 @@ export function ApiAccessSection() {
               disabled={saving || !name.trim()}
               className="inline-flex items-center gap-1.5 rounded-lg bg-theme-accent px-3 py-1.5 text-xs font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors disabled:opacity-40"
             >
-              {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Key className="h-3 w-3" />}
+              {saving ? <Spinner size="sm" /> : <Key className="h-3 w-3" />}
               {saving ? 'Creating...' : 'Create Token'}
             </button>
             <button
@@ -204,7 +205,7 @@ export function ApiAccessSection() {
       {/* Token list */}
       {loading ? (
         <div className="flex items-center justify-center py-6">
-          <Loader2 className="h-4 w-4 text-theme-muted animate-spin" />
+          <Spinner size="md" className="text-theme-muted" />
         </div>
       ) : tokens.length === 0 ? (
         <div className="rounded-xl border border-dashed border-theme-border py-6 text-center">

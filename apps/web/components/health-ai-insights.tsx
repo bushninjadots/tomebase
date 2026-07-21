@@ -4,10 +4,11 @@ import { useState, useCallback, useMemo } from 'react';
 import type { Diagnostic } from '@fluid/types';
 import { useAI } from '@/components/ai/use-ai';
 import {
-  Sparkles, Loader2, RefreshCw, X, AlertCircle,
+  Sparkles, RefreshCw, X, AlertCircle,
   TrendingUp, TrendingDown, AlertTriangle, Shield,
   ArrowRight, Lightbulb, CheckCircle2, Target,
 } from 'lucide-react';
+import { Spinner } from '@fluid/ui';
 
 interface HealthAIInsightsProps {
   projectId: string;
@@ -198,7 +199,7 @@ Risk Level: [low/medium/high/critical]
       <div className="rounded-2xl border border-theme-border bg-theme-card p-6">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-theme-accent-light">
-            <Loader2 className="h-5 w-5 text-theme-accent animate-spin" />
+            <Spinner size="lg" className="text-theme-accent" />
           </div>
           <div>
             <h3 className="text-sm font-semibold text-theme-main">AI Analysis</h3>
@@ -291,7 +292,7 @@ Risk Level: [low/medium/high/critical]
         {loading && (
           <div className="flex items-center gap-3 py-4">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-theme-accent-light">
-              <Loader2 className="h-4 w-4 text-theme-accent animate-spin" />
+              <Spinner size="md" className="text-theme-accent" />
             </div>
             <div>
               <p className="text-sm font-medium text-theme-main">Analyzing documentation health...</p>

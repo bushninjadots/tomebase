@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { User, Save, X, Loader2 } from 'lucide-react';
+import { User, Save, X } from 'lucide-react';
+import { Spinner } from '@fluid/ui';
 
 interface ProfileSectionProps {
   user: {
@@ -145,7 +146,7 @@ export function ProfileSection({ user }: ProfileSectionProps) {
                   disabled={saving || !hasChanges}
                   className="inline-flex items-center gap-1.5 rounded-lg bg-theme-accent px-3 py-1.5 text-xs font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors disabled:opacity-40"
                 >
-                  {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
+                  {saving ? <Spinner size="sm" /> : <Save className="h-3 w-3" />}
                   {saving ? 'Saving...' : 'Save'}
                 </button>
                 <button

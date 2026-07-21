@@ -1,223 +1,188 @@
-# Roadmap
+# TomeBase — Product Roadmap
 
-> This document tracks what's built, what's in progress, and what's planned for TomeBase.
-> Last updated: July 2026.
+## Vision
 
----
-
-## ✅ Complete
-
-### Core Platform
-
-- [x] Monorepo with Turborepo + npm workspaces
-- [x] Next.js 15 App Router with TypeScript strict mode
-- [x] Tailwind CSS v4 with 5 theme support (Dark, Light, Gruvbox, Dracula, Nord)
-- [x] Server components by default, client components for interactivity
-- [x] Prisma ORM with PostgreSQL (production) / SQLite (development)
-- [x] Email/password authentication (NextAuth v5)
-- [x] GitHub OAuth integration
-- [x] Google OAuth integration
-
-### Editor
-
-- [x] Split-pane Markdown editor with live preview
-- [x] Auto-save every 2 seconds
-- [x] Formatting toolbar (bold, italic, headings, links, code, tables, dividers, task lists)
-- [x] Wiki links — `[[Page Name]]` with autocomplete
-- [x] Wiki link aliases — `[[Page|display text]]`
-- [x] Backlinks panel (shows pages linking to current page)
-- [x] Obsidian-style callout blocks (12 types: note, tip, warning, danger, etc.)
-- [x] Tag extraction (`#tag`) with sidebar filtering
-- [x] Page templates (9 built-in: Getting Started, API Reference, Release Notes, etc.)
-- [x] Version history with snapshot browse and restore
-- [x] Revision diff — side-by-side comparison of any two snapshots
-- [x] Tab/Shift+Tab for indent/outdent
-- [x] Cmd+K for link insertion
-
-### Documentation
-
-- [x] Hierarchical page tree with reorder (move up/down, indent/outdent)
-- [x] Page descriptions (optional metadata)
-- [x] Bookmarks — save pages for quick access from dashboard
-- [x] Comments and threaded discussions on pages
-- [x] @mention support with autocomplete in comments
-- [x] Comment highlighting when mentioned
-
-### Publishing
-
-- [x] One-click publish toggle per project
-- [x] Public URL at `/p/{project}` with sidebar navigation
-- [x] Custom domains (DNS verification + SSL via Vercel API)
-- [x] SEO — dynamic sitemap, canonical URLs, Open Graph, Twitter cards
-- [x] Public search (Cmd+K on published docs)
-- [x] Scheduled publishing (future publish/unpublish dates)
-- [x] View analytics (per-page counter, dashboard stats, Most Viewed)
-
-### Importing
-
-- [x] Code import — TypeScript, JavaScript, Python, Go, Rust, C#, C++, Kotlin, Ruby
-- [x] JSDoc comment parsing into Markdown documentation
-- [x] OpenAPI spec import (JSON/YAML, URL fetch, one page per endpoint)
-
-### Search & Navigation
-
-- [x] Cmd+K search palette (full-text, title + content, snippets, keyboard nav)
-- [x] Force-directed graph view (local/global modes, drag, zoom, legend)
-- [x] Graph search filter
-- [x] Graph legend panel
-
-### Team & Collaboration
-
-- [x] Team invites with 7-day expiry links
-- [x] Admin and member roles
-- [x] Member management in Team Settings
-- [x] Team name editing
-
-### Administration
-
-- [x] Health scans — 12 check categories (broken links, orphans, stale, empty, etc.)
-- [x] Per-page health scoring
-- [x] Health report persistence and historical tracking
-- [x] Export — Markdown ZIP with YAML frontmatter, HTML
-- [x] API key generation (`tb_`-prefixed)
-- [x] Webhook configuration (page.created, page.updated, page.published)
-
-### Billing
-
-- [x] Stripe integration (Checkout + Customer Portal + webhooks)
-- [x] Two tiers: Free (€0) + Pro (€15/month)
-- [x] Cancel at period end (not immediate)
-- [x] Usage metering (projects, pages, members)
-- [x] Upgrade prompt for free users on dashboard
-- [x] Success banner after checkout
-
-### Security
-
-- [x] Rate limiting on auth, signup, codegen, and public search endpoints
-- [x] SSRF protection on OpenAPI URL imports
-- [x] Authorization checks on all API routes
-- [x] Input validation and size limits
-- [x] Security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, X-XSS-Protection, Permissions-Policy)
-- [x] CSRF protection via SameSite cookies
-- [x] bcrypt password hashing (12 rounds)
-
-### Developer Experience
-
-- [x] REST API for pages, projects, teams, search
-- [x] Full-text search API
-- [x] Code generation API (parse code → documentation pages)
-- [x] Health scan API (trigger scans, retrieve results)
-- [x] Webhook notifications for page events
-- [x] API key authentication
+One cohesive product. Not a collection of separate systems — a unified documentation platform where AI, editing, health monitoring, and personality feel like parts of a single experience.
 
 ---
 
-## 🚧 In Progress
+## Priority 1 — Refactor
 
-### Documentation Health Platform
+Don't add features until the foundation is solid.
 
-- [x] Health engine with 12 check categories
-- [x] Health report persistence via Prisma
-- [x] Health dashboard with SonarQube-style UI
-- [x] Health scan API endpoints
-- [ ] Code snippet validation (broken code blocks, missing language tags)
-- [ ] Image validation (check referenced images exist)
-- [ ] Terminology consistency checks
-- [ ] Accessibility checks (heading hierarchy, alt text, link text)
-- [ ] Scheduled health scans (cron job)
-
-### Code Import Expansion
-
-- [x] TypeScript / JavaScript parser
-- [x] Python parser
-- [x] Go parser
-- [x] Rust parser
-- [x] C# parser
-- [x] C++ parser
-- [x] Kotlin parser
-- [x] Ruby parser
-- [ ] Java parser
-- [ ] PHP parser
-- [ ] Swift parser
+- Remove duplicated components
+- Consolidate state (stores, contexts, local state)
+- Reduce API duplication
+- Improve folder structure
+- Simplify providers
+- Remove dead code
+- Standardize naming conventions
+- Improve TypeScript typings
+- Split large files
+- Reduce unnecessary rerenders
+- Improve loading states
+- Add proper error boundaries
+- Improve caching strategy
+- Improve logging
 
 ---
 
-## 📋 Planned
+## Priority 2 — TomeSpirit 2.0
 
-### Documentation Tools
+Make it memorable, alive, and delightful. This is the feature people will talk about.
 
-- [ ] **Documentation Linter** — ESLint for docs with CI/CD integration and PR checks
-- [ ] **Documentation Observatory** — Cross-platform dashboard monitoring GitHub, Mintlify, Notion, internal wikis
-- [ ] **Documentation Testing** — Validate commands, API endpoints, code compilation, example execution
-- [ ] **Global search across all projects** — Cross-project search from dashboard
+### Movement
 
-### Migration & Import
+- Smooth floating with idle wandering
+- Occasionally inspect UI elements
+- Look at the user's cursor
+- React to scrolling
+- Slight squash and stretch while moving
+- Small breathing animation
+- Momentum and easing
 
-- [ ] **Migration tool** — Import from GitBook, Mintlify, Docusaurus, MkDocs, Obsidian, Notion
-- [ ] **GitHub/GitLab sync** — Connect repos and auto-import/sync `.md` files
+### Dragging
+
+- Pick up and throw
+- Physics-based inertia
+- Bounce off screen edges
+- Spin slightly while flying
+- Recover and continue floating
+- If thrown hard:
+  - "Whoa!"
+  - "I definitely meant to do that."
+  - "10/10 landing."
+
+### Speech
+
+- Speech bubbles originate from the ghost's mouth
+- Bubble follows him while visible
+- Tail points to him
+- Fade and scale in/out
+- Never cover important UI
+- Queue messages instead of overlapping
+
+### Behaviour
+
+- Gets excited after scans complete
+- Celebrates fixes
+- Looks sad when lots of issues exist
+- Sleeps if idle
+- Wakes when mouse moves
+- Notices first-time users
+- Random ambient comments every few minutes
+
+### Design
+
+- 20-30% slimmer, slightly taller
+- Softer floating motion
+
+---
+
+## Priority 3 — AI Health
+
+Turn it into a genuinely useful documentation engineer that users trust.
+
+### Inspection
+
+Health should scan for:
+
+- Stale docs
+- Broken links
+- Orphan pages
+- Missing summaries
+- Unreadable pages
+- Duplicate content
+- Inconsistent terminology
+- Missing diagrams
+- Outdated APIs
+- Empty sections
+- Navigation problems
+- Accessibility issues
+- SEO issues
+- Performance issues
+
+### Actions
+
+Every issue should offer:
+
+- Fix Automatically
+- Review Changes
+- Explain Issue
+- Ignore
+- Create Task
+
+### Quality
+
+- Confidence scores on every finding
+- AI reasoning explaining the issue
+- Context-aware suggestions
+
+---
+
+## Priority 4 — Full Product Audit
+
+Act like a senior engineer reviewing everything.
+
+### UX
+
+- Confusing flows
+- Inconsistent spacing
+- Typography
+- Colors
+- Icons
+- Responsiveness
+- Accessibility
+- Mobile
+- Onboarding
+
+### Engineering
+
+- Security
+- Validation
+- Race conditions
+- Memory leaks
+- Event listeners
+- Performance
+- Bundle size
+- Database queries
+- Error handling
+- API consistency
 
 ### AI
 
-- [ ] **AI writing assistant** — Generate, rewrite, and improve documentation with AI
-- [ ] **AI-powered search** — Semantic search across documentation
-- [ ] **AI health suggestions** — Automatic fix suggestions for health issues
+- Prompt consistency
+- Retry logic
+- Streaming
+- Context management
+- Hallucination prevention
+- Fallback models
+- Cost optimization
 
-### Developer Experience
+### Product
 
-- [ ] **CLI tool** — Command-line interface for import, export, and management
-- [ ] **Plugin system** — Custom blocks, themes, and integrations
-- [ ] **Marketplace** — Community templates and themes
-- [ ] **SDK** — JavaScript/TypeScript SDK for API access
-
-### Collaboration
-
-- [ ] **Email notifications** — Alerts for comments, @mentions, and invite responses
-- [ ] **Read-only sharing links** — Share pages with non-members
-- [ ] **Page-level permissions** — Control who can view/edit specific pages
-
-### Self-Hosting
-
-- [ ] **Docker Compose** — One-command self-hosted deployment with PostgreSQL
-- [ ] **Docker image** — Published to Docker Hub / GHCR
-- [ ] **Helm chart** — Kubernetes deployment
-
-### Enterprise
-
-- [ ] **SSO/SAML** — Single sign-on with identity providers
-- [ ] **Audit log** — Track all changes and access for compliance
-- [ ] **SOC 2 compliance** — Enterprise security certifications
-- [ ] **Multi-region edge delivery** — Fast global docs hosting
-
-### Mobile
-
-- [ ] **Mobile-responsive editor** — Full editing experience on tablets
-- [ ] **Mobile-responsive public docs** — Optimized reading experience on phones
-
-### Analytics
-
-- [ ] **Advanced analytics** — Traffic sources, popular pages, search queries
-- [ ] **Health trend charts** — Visualize documentation quality over time
-- [ ] **Team activity feed** — See what teammates are editing
+- Duplicated features
+- Unnecessary clicks
+- Missing empty states
+- Discoverability
+- Monetization opportunities
+- Onboarding
+- Upgrade paths
 
 ---
 
-## 💡 Ideas
+## Priority 5 — Release Readiness Automation
 
-These are directions we're exploring for the future:
+Continuous quality gate before every release.
 
-- **Real-time collaboration** — Google Docs-style simultaneous editing
-- **Version branching** — Create branches of documentation for different versions
-- **A/B testing for docs** — Test different documentation layouts
-- **Voice-to-docs** — Record audio and generate documentation
-- **Screenshot automation** — Auto-capture and update screenshots in docs
-- **Code playground** — Interactive code examples that run in the browser
-- **Translation** — Multi-language documentation support
-- **RSS feeds** — Subscribe to documentation updates
-- **Embeddable widgets** — Embed documentation snippets in other apps
-- **Slack/Discord integration** — Search docs from chat
+- Linting
+- Type checking
+- Tests
+- Accessibility checks
+- Performance metrics
+- Dead code detection
+- Security validation
+- Responsive layout verification
+- UI consistency checks
 
----
-
-## Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for the full release history.
+Generates a report with any blocking issues. No manual audit needed.

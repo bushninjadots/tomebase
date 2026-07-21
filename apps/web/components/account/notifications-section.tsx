@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Bell, Mail, FileText, Shield, Calendar, Loader2, Check } from 'lucide-react';
+import { Bell, Mail, FileText, Shield, Calendar, Check } from 'lucide-react';
+import { Spinner } from '@fluid/ui';
 
 interface NotificationPreference {
   id: string;
@@ -68,7 +69,7 @@ export function NotificationsSection() {
           <Bell className="h-4 w-4 text-theme-muted" />
           <h2 className="text-sm font-semibold text-theme-main">Notifications</h2>
         </div>
-        {saving && <Loader2 className="h-3.5 w-3.5 text-theme-muted animate-spin" />}
+        {saving && <Spinner size="sm" className="text-theme-muted" />}
         {saved && (
           <div className="flex items-center gap-1 text-green-400">
             <Check className="h-3.5 w-3.5" />

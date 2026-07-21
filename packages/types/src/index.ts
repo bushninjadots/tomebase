@@ -65,6 +65,23 @@ export interface DocPage {
   updatedAt: Date;
 }
 
+export interface ProjectWithPages {
+  id: string;
+  name: string;
+  pages: DocPage[];
+}
+
+export interface ProjectWithCount {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  published: boolean;
+  customDomain: string | null;
+  logoUrl: string | null;
+  _count: { pages: number };
+}
+
 export interface PageSnapshot {
   id: string;
   pageId: string;
@@ -184,21 +201,6 @@ export interface HealthReport {
 export * from './diagnostics';
 
 // ─── Repository Index Types ──────────────────────────────────────────
-
-// ─── AI Context Types (folded from @fluid/ai) ─────────────────────────
-
-export interface AIContextEntry {
-  key: string;
-  value: string;
-  priority: number;
-}
-
-export function buildContextString(entries: AIContextEntry[]): string {
-  return entries
-    .sort((a, b) => b.priority - a.priority)
-    .map((e) => `${e.key}: ${e.value}`)
-    .join('\n');
-}
 
 export const AI_MAX_CONTEXT_ENTRIES = 50;
 export const AI_MAX_SELECTED_TEXT_LENGTH = 4000;

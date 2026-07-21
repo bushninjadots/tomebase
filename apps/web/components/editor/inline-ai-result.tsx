@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Sparkles, Loader2, X, Copy, Check, ArrowRight, Wand2 } from 'lucide-react';
+import { Sparkles, X, Copy, Check, ArrowRight, Wand2 } from 'lucide-react';
+import { Spinner } from '@fluid/ui';
 import { useAI } from '@/components/ai/use-ai';
 
 interface InlineAIResultProps {
@@ -71,7 +72,7 @@ export function InlineAIResult({
   if (loading) {
     return (
       <div className="my-2 rounded-lg border border-theme-accent/30 bg-theme-accent/5 p-3 flex items-center gap-2 text-sm text-theme-subtle animate-pulse">
-        <Loader2 className="w-4 h-4 animate-spin text-theme-accent" />
+        <Spinner size="md" className="text-theme-accent" />
         <span>AI is {action === 'improve' ? 'improving' : 'rewriting'} your content...</span>
       </div>
     );

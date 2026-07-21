@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { HealthService, getHealthService, resetHealthService } from './health-service';
 import { eventBus } from '@/lib/events';
-import { useProjectStore, selectHealth, selectHealthScore } from '@/lib/stores/project-store';
 import type { DiagnosticScanResult } from '@fluid/types';
 
 const mockScanResult: DiagnosticScanResult = {
@@ -103,7 +102,6 @@ describe('HealthService', () => {
   beforeEach(() => {
     resetHealthService();
     eventBus.removeAllListeners();
-    useProjectStore.getState().reset();
     vi.useFakeTimers();
   });
 
@@ -182,18 +180,6 @@ describe('HealthService', () => {
     // Rescan repopulates
     await vi.advanceTimersByTimeAsync(150);
     expect(service.getPageDiagnostics('page1')).toHaveLength(2);
-  });
-
-  it('updates project store with scan results', async () => {
-    service = new HealthService({ fetcher: createMockFetcher(mockScanResult) });
-    service.attach('proj1');
-
-    await service.rescan();
-
-    const state = useProjectStore.getState();
-    expect(state.health?.score).toBe(75);
-    expect(state.health?.totalPages).toBe(5);
-    expect(state.diagnostics).toHaveLength(3);
   });
 
   it('emits health:scanned event after rescan', async () => {
@@ -500,32 +486,5 @@ describe('HealthService', () => {
 
     await vi.advanceTimersByTimeAsync(150);
     expect(fetcher).toHaveBeenCalledTimes(1);
-  });
-
-  it('selector helpers work with store', () => {
-    useProjectStore.getState().setHealth({
-      score: 85,
-      totalPages: 10,
-      diagnostics: [],
-      healthScore: {
-        score: 85,
-        grade: 'B',
-        label: 'Very Good',
-        color: 'green',
-        errorCount: 0,
-        warningCount: 2,
-        infoCount: 3,
-        totalIssues: 5,
-        fixableCount: 1,
-        categoryBreakdown: [],
-      },
-      scannedAt: new Date().toISOString(),
-      previousScore: 80,
-      previousScanAt: new Date().toISOString(),
-    });
-
-    const state = useProjectStore.getState();
-    expect(selectHealth(state)?.score).toBe(85);
-    expect(selectHealthScore(state)?.grade).toBe('B');
   });
 });

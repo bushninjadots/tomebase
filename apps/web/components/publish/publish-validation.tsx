@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import {
   AlertCircle, AlertTriangle, Info, CheckCircle,
-  Unlink, FileText, Search, Loader2,
+  Unlink, FileText, Search,
 } from 'lucide-react';
+import { Spinner } from '@fluid/ui';
 
 interface ValidationDiagnostic {
   id: string;
@@ -81,7 +82,7 @@ export function PublishValidation({ pageId, onValidation }: PublishValidationPro
   if (loading) {
     return (
       <div className="flex items-center gap-2 py-3 px-4 text-xs text-theme-muted">
-        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        <Spinner size="sm" />
         Running health checks...
       </div>
     );

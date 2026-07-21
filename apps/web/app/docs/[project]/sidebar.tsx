@@ -12,33 +12,18 @@ import { useState, useCallback, useMemo, useRef, useEffect, lazy, Suspense } fro
 import { extractTags } from '@/lib/wiki';
 import { CommandPalette } from '@/components/command-palette';
 import { templateService } from '@/lib/templates';
+import type { ProjectWithPages, DocPage } from '@fluid/types';
 
 const GraphButtonWithHealth = lazy(() =>
   import('@/components/graph-button-with-health').then((m) => ({ default: m.GraphButtonWithHealth }))
 );
 
-interface Page {
-  id: string;
-  title: string;
-  slug: string;
-  content: string;
-  order: number;
-  parentId: string | null;
-  published: boolean;
-}
-
-interface Project {
-  id: string;
-  name: string;
-  pages: Page[];
-}
-
-interface TreeNode extends Page {
+interface TreeNode extends DocPage {
   children: TreeNode[];
   depth: number;
 }
 
-function buildTree(pages: Page[]): TreeNode[] {
+function buildTree(pages: DocPage[]): TreeNode[] {
   const map = new Map<string, TreeNode>();
   const roots: TreeNode[] = [];
 
@@ -287,7 +272,7 @@ function SidebarNavLink({ href, icon, label, isActive, isExternal }: SidebarNavL
   );
 }
 
-export function DocSidebar({ project }: { project: Project }) {
+export function DocSidebar({ project }: { project: ProjectWithPages }) {
   const router = useRouter();
   const pathname = usePathname();
   const currentSlug = pathname?.split('/').pop() ?? null;

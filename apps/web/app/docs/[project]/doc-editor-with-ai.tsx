@@ -2,24 +2,10 @@
 
 import { DocSidebar } from './sidebar';
 import { DocEditor } from './editor';
-
-interface Project {
-  id: string;
-  name: string;
-  pages: {
-    id: string;
-    title: string;
-    slug: string;
-    content: string;
-    description: string | null;
-    order: number;
-    parentId: string | null;
-    published: boolean;
-  }[];
-}
+import type { ProjectWithPages } from '@fluid/types';
 
 export function DocEditorWithAI({ project, initialLine, initialPageSlug }: {
-  project: Project;
+  project: ProjectWithPages;
   initialLine?: number;
   initialPageSlug?: string;
 }) {

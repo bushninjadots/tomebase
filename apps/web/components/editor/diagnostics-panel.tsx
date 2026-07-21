@@ -4,8 +4,9 @@ import { useState, useCallback } from 'react';
 import type { Diagnostic } from '@fluid/types';
 import {
   AlertCircle, AlertTriangle, Info, X, Wrench, Eye,
-  ChevronRight, Loader2, Sparkles,
+  ChevronRight, Sparkles,
 } from 'lucide-react';
+import { Spinner } from '@fluid/ui';
 import { getHealthService } from '@/lib/health/health-service';
 
 interface DiagnosticsPanelProps {
@@ -148,7 +149,7 @@ export function DiagnosticsPanel({
                         className="text-[10px] font-medium text-green-600 dark:text-green-400 hover:underline flex items-center gap-0.5 disabled:opacity-50"
                       >
                         {fixingId === d.id ? (
-                          <Loader2 className="h-2.5 w-2.5 animate-spin" />
+                          <Spinner size="xs" />
                         ) : (
                           <Wrench className="h-2.5 w-2.5" />
                         )}

@@ -2,9 +2,10 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import {
-  Send, Sparkles, Loader2, X, Bot, User, Copy, Check,
+  Send, Sparkles, X, Bot, User, Copy, Check,
   AlertTriangle, Lightbulb,
 } from 'lucide-react';
+import { Spinner } from '@fluid/ui';
 import { useAI } from '@/components/ai/use-ai';
 import { AIProposalCard } from './ai-proposal-card';
 
@@ -400,7 +401,7 @@ export function AIPanel({ pageId, projectId, pageTitle, pageContent, onClose, on
             <div className="max-w-[85%] rounded-xl bg-theme-card border border-theme-border px-3 py-2 text-xs text-theme-subtle">
               <div className="whitespace-pre-wrap break-words">{streamingContent}</div>
               <div className="mt-1 flex items-center gap-1 text-[10px] text-theme-muted">
-                <Loader2 className="w-2.5 h-2.5 animate-spin" /> Streaming...
+                <Spinner size="xs" /> Streaming...
               </div>
             </div>
           </div>
@@ -410,7 +411,7 @@ export function AIPanel({ pageId, projectId, pageTitle, pageContent, onClose, on
         {loading && !streamingContent && (
           <div className="flex gap-2.5">
             <div className="w-6 h-6 rounded-lg bg-theme-accent/10 flex items-center justify-center shrink-0">
-              <Loader2 className="w-3 h-3 text-theme-accent animate-spin" />
+              <Spinner size="sm" className="text-theme-accent" />
             </div>
             <div className="rounded-xl bg-theme-card border border-theme-border px-3 py-2 text-xs text-theme-muted">
               Thinking...
@@ -422,7 +423,7 @@ export function AIPanel({ pageId, projectId, pageTitle, pageContent, onClose, on
         {proposing && (
           <div className="flex gap-2.5">
             <div className="w-6 h-6 rounded-lg bg-theme-accent/10 flex items-center justify-center shrink-0">
-              <Loader2 className="w-3 h-3 text-theme-accent animate-spin" />
+              <Spinner size="sm" className="text-theme-accent" />
             </div>
             <div className="rounded-xl bg-theme-card border border-theme-border px-3 py-2 text-xs text-theme-muted">
               Generating proposal...

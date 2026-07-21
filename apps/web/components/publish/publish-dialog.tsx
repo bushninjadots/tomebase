@@ -3,8 +3,9 @@
 import { useState, useCallback } from 'react';
 import {
   X, Globe, AlertCircle, AlertTriangle, Eye,
-  Loader2, CheckCircle, ExternalLink,
+  CheckCircle, ExternalLink,
 } from 'lucide-react';
+import { Spinner } from '@fluid/ui';
 import { PublishValidation, type ValidationResult } from './publish-validation';
 
 interface PublishDialogProps {
@@ -239,7 +240,7 @@ export function PublishDialog({
                 disabled={publishing}
                 className="px-4 py-2 rounded-lg text-xs font-medium bg-red-500 text-white hover:bg-red-600 disabled:opacity-50 transition-colors flex items-center gap-1.5"
               >
-                {publishing && <Loader2 className="h-3 w-3 animate-spin" />}
+                {publishing && <Spinner size="sm" />}
                 Unpublish
               </button>
             ) : (
@@ -248,7 +249,7 @@ export function PublishDialog({
                 disabled={publishing || (hasErrors === true)}
                 className="px-4 py-2 rounded-lg text-xs font-medium bg-theme-accent text-white hover:bg-theme-accent-hover disabled:opacity-50 transition-colors flex items-center gap-1.5"
               >
-                {publishing && <Loader2 className="h-3 w-3 animate-spin" />}
+                {publishing && <Spinner size="sm" />}
                 {hasErrors ? 'Fix errors first' : 'Publish'}
               </button>
             )}

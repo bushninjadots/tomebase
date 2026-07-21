@@ -5,8 +5,9 @@ import type { Diagnostic } from '@fluid/types';
 import { computeDiff } from '@/lib/diff';
 import { useAI } from '@/components/ai/use-ai';
 import {
-  X, Check, Plus, Minus, Equal, Wand2, AlertTriangle, Sparkles, Loader2,
+  X, Check, Plus, Minus, Equal, Wand2, AlertTriangle, Sparkles,
 } from 'lucide-react';
+import { Spinner } from '@fluid/ui';
 
 interface DiagnosticPreviewProps {
   diagnostic: Diagnostic;
@@ -191,7 +192,7 @@ export function DiagnosticPreview({
                 className="inline-flex items-center gap-1.5 rounded-lg border border-theme-border bg-theme-card px-3 py-2 text-xs font-medium text-theme-subtle hover:bg-theme-hover hover:text-theme-main transition-all disabled:opacity-50"
               >
                 {aiFixing ? (
-                  <Loader2 className="h-3 w-3 animate-spin" />
+                  <Spinner size="sm" />
                 ) : (
                   <Sparkles className="h-3 w-3 text-theme-accent" />
                 )}

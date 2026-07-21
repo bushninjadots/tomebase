@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { Shield, Lock, Loader2, Check, Monitor, Trash2, QrCode, Copy } from 'lucide-react';
+import { Shield, Lock, Check, Monitor, Trash2, QrCode, Copy } from 'lucide-react';
+import { Spinner } from '@fluid/ui';
 
 interface SecuritySectionProps {
   hasPassword: boolean;
@@ -238,7 +239,7 @@ export function SecuritySection({ hasPassword, connectedProviders, hasOAuth, two
                   disabled={saving || !currentPassword || !newPassword}
                   className="inline-flex items-center gap-1.5 rounded-lg bg-theme-accent px-3 py-1.5 text-xs font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors disabled:opacity-40"
                 >
-                  {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Lock className="h-3 w-3" />}
+                  {saving ? <Spinner size="sm" /> : <Lock className="h-3 w-3" />}
                   {saving ? 'Updating...' : 'Update Password'}
                 </button>
                 <button
@@ -278,7 +279,7 @@ export function SecuritySection({ hasPassword, connectedProviders, hasOAuth, two
                 disabled={twoFALoading}
                 className="inline-flex items-center gap-1.5 rounded-lg bg-theme-accent px-3 py-1.5 text-xs font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors disabled:opacity-40"
               >
-                {twoFALoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <QrCode className="h-3 w-3" />}
+                {twoFALoading ? <Spinner size="sm" /> : <QrCode className="h-3 w-3" />}
                 {twoFALoading ? 'Setting up...' : 'Enable 2FA'}
               </button>
             )}
@@ -339,7 +340,7 @@ export function SecuritySection({ hasPassword, connectedProviders, hasOAuth, two
                   disabled={twoFALoading || twoFAToken.length !== 6}
                   className="inline-flex items-center gap-1.5 rounded-lg bg-theme-accent px-3 py-1.5 text-xs font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors disabled:opacity-40"
                 >
-                  {twoFALoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
+                  {twoFALoading ? <Spinner size="sm" /> : <Check className="h-3 w-3" />}
                   {twoFALoading ? 'Verifying...' : 'Verify & Enable'}
                 </button>
                 <button
@@ -365,7 +366,7 @@ export function SecuritySection({ hasPassword, connectedProviders, hasOAuth, two
 
           {sessionsLoading ? (
             <div className="flex items-center justify-center py-4">
-              <Loader2 className="h-4 w-4 text-theme-muted animate-spin" />
+              <Spinner size="md" className="text-theme-muted" />
             </div>
           ) : sessions.length === 0 ? (
             <p className="text-xs text-theme-muted py-2">No active sessions found.</p>

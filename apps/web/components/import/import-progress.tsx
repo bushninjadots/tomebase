@@ -1,6 +1,7 @@
 'use client';
 
-import { Loader2, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
+import { Spinner } from '@fluid/ui';
 import type { ProgressStep } from './use-import-wizard';
 
 interface ImportProgressProps {
@@ -12,7 +13,7 @@ export function ImportProgress({ steps }: ImportProgressProps) {
     <div className="flex flex-col items-center justify-center py-16 animate-[fadeIn_0.3s_ease-out]">
       <div className="mb-8 relative">
         <div className="w-16 h-16 rounded-2xl bg-theme-accent/10 flex items-center justify-center">
-          <Loader2 className="h-8 w-8 text-theme-accent animate-spin" />
+          <Spinner size="xl" className="text-theme-accent" />
         </div>
         <div className="absolute -inset-1 rounded-2xl bg-theme-accent/5 animate-pulse" />
       </div>

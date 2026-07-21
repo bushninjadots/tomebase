@@ -1,16 +1,13 @@
 import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
+import { slugify } from '@fluid/utils';
 import JSZip from 'jszip';
 
 type ExportFormat = 'markdown' | 'html' | 'json' | 'rst' | 'asciidoc';
 
-function slugify(str: string): string {
-  return str
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '')
-    .slice(0, 80);
+function fileSlug(str: string): string {
+  return slugify(str).slice(0, 80);
 }
 
 function escapeHtml(str: string): string {
@@ -63,7 +60,7 @@ function buildTree(pages: PageNodeBasic[], ext: string): string {
   function renderBranch(page: PageNodeBasic, depth: number): string {
     const children = map.get(page.id) || [];
     const indent = '  '.repeat(depth);
-    let result = `${indent}- [${page.title}](./${slugify(page.title)}.${ext})`;
+    let result = `${indent}- [${page.title}](./${fileSlug(page.title)}.${ext})`;
     if (page.description) {
       result += ` — ${page.description}`;
     }
@@ -192,7 +189,7 @@ export async function GET(
     });
 
     const today = new Date().toISOString().split('T')[0];
-    const projectSlug = slugify(project.name);
+    const projectSlug = fileSlug(project.name);
 
     if (format === 'json') {
       const data = generateJsonProject(project, pages);
@@ -284,7 +281,7 @@ _Exported ${today} from https://tomebase.io[TomeBase]_
 
     // Generate page files
     for (const page of pages) {
-      const filename = `${slugify(page.title)}.${ext}`;
+      const filename = `${fileSlug(page.title)}.${ext}`;
 
       if (format === 'markdown') {
         const frontmatter = generateFrontmatter(page);

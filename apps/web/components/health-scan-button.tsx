@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Scan, CheckCircle, AlertTriangle, Loader2 } from 'lucide-react';
+import { Scan, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Spinner } from '@fluid/ui';
 
 interface HealthScanButtonProps {
   projectId: string;
@@ -44,7 +45,7 @@ export function HealthScanButton({ projectId, onScanComplete }: HealthScanButton
         className="inline-flex items-center gap-2 rounded-lg border border-theme-border bg-theme-card px-4 py-2 text-sm font-medium text-theme-main hover:bg-theme-hover transition-colors disabled:opacity-50"
       >
         {scanning ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <Spinner size="md" />
         ) : (
           <Scan className="h-4 w-4" />
         )}

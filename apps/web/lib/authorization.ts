@@ -35,6 +35,6 @@ export async function getPageWithProjectAccess(pageId: string, userId: string) {
         team: { members: { some: { userId } } },
       },
     },
-    include: { project: { select: { id: true, teamId: true } } },
+    include: { project: { select: { id: true, teamId: true, published: true } } },
   });
 }

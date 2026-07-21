@@ -6,10 +6,10 @@ import {
   AlertTriangle,
   Info,
   AlertCircle,
-  Loader2,
   RefreshCw,
   Sparkles,
 } from 'lucide-react';
+import { Spinner } from '@fluid/ui';
 
 interface Insight {
   type: string;
@@ -61,7 +61,7 @@ export function DashboardInsights() {
           <h3 className="text-sm font-semibold text-theme-main">AI Insights</h3>
         </div>
         <div className="flex items-center gap-2 text-xs text-theme-muted">
-          <Loader2 className="w-3 h-3 animate-spin" /> Loading insights...
+          <Spinner size="sm" /> Loading insights...
         </div>
       </div>
     );

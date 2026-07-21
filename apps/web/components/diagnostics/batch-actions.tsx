@@ -7,8 +7,8 @@ import {
   Sparkles,
   Download,
   EyeOff,
-  Loader2,
 } from 'lucide-react';
+import { Spinner } from '@fluid/ui';
 
 interface BatchActionsProps {
   diagnostics: Diagnostic[];
@@ -41,7 +41,7 @@ export function BatchActions({
           className="inline-flex items-center gap-1.5 rounded-lg bg-green-500/10 border border-green-500/20 px-3 py-2 text-xs font-medium text-green-600 hover:bg-green-500/20 transition-all disabled:opacity-50"
         >
           {fixing ? (
-            <Loader2 className="h-3 w-3 animate-spin" />
+            <Spinner size="sm" />
           ) : (
             <Wand2 className="h-3 w-3" />
           )}
@@ -55,7 +55,7 @@ export function BatchActions({
         className="inline-flex items-center gap-1.5 rounded-lg border border-theme-border bg-theme-card px-3 py-2 text-xs font-medium text-theme-subtle hover:bg-theme-hover transition-all disabled:opacity-50"
       >
         {aiReviewLoading ? (
-          <Loader2 className="h-3 w-3 animate-spin" />
+          <Spinner size="sm" />
         ) : (
           <Sparkles className="h-3 w-3" />
         )}

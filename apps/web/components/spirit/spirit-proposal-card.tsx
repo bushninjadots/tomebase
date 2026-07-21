@@ -2,7 +2,8 @@
 
 import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Check, X, FileDiff, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
+import { Check, X, FileDiff, ChevronDown, ChevronUp } from 'lucide-react';
+import { Spinner } from '@fluid/ui';
 import type { SpiritProposal } from '@fluid/spirit';
 import { useSpiritStore } from '@fluid/spirit';
 
@@ -84,7 +85,7 @@ export function SpiritProposalCard({ proposal }: SpiritProposalCardProps) {
               disabled={loading}
               className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-md bg-green-500/10 text-green-600 hover:bg-green-500/20 disabled:opacity-50 transition-colors"
             >
-              {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
+              {loading ? <Spinner size="sm" /> : <Check className="h-3 w-3" />}
               Accept
             </button>
             <button

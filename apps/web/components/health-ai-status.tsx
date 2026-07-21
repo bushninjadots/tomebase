@@ -1,7 +1,8 @@
 'use client';
 
 import { useAI } from '@/components/ai/use-ai';
-import { CheckCircle2, AlertCircle, Loader2, Bot, Zap, Cpu } from 'lucide-react';
+import { CheckCircle2, AlertCircle, Bot, Zap, Cpu } from 'lucide-react';
+import { Spinner } from '@fluid/ui';
 
 export function HealthAIStatus() {
   const { activeProvider, loading: contextLoading } = useAI();
@@ -10,7 +11,7 @@ export function HealthAIStatus() {
     return (
       <div className="rounded-2xl border border-theme-border bg-theme-card p-4">
         <div className="flex items-center gap-3">
-          <Loader2 className="h-4 w-4 text-theme-accent animate-spin" />
+          <Spinner size="md" className="text-theme-accent" />
           <span className="text-xs text-theme-muted">Checking AI connection...</span>
         </div>
       </div>

@@ -1,29 +1,12 @@
 import type { Diagnostic } from '@fluid/types'
+import type {
+  AIProviderType,
+  AIProviderConfig,
+  StoredAIProviderConfig,
+  AIProviderMeta,
+} from '@/lib/ai-provider/types'
 
-// ─── Provider ───────────────────────────────────────────────────
-
-export type AIProviderType =
-  | 'openai' | 'anthropic' | 'gemini' | 'openrouter'
-  | 'azure' | 'ollama' | 'lmstudio' | 'custom' | 'null'
-
-export interface AIProviderConfig {
-  provider: AIProviderType
-  apiKey?: string
-  baseUrl?: string
-  model?: string
-  customHeaders?: Record<string, string>
-}
-
-export interface StoredAIProviderConfig {
-  id: string
-  provider: AIProviderType
-  apiKeyHint: string
-  model: string | null
-  baseUrl: string | null
-  enabled: boolean
-  createdAt: Date
-  updatedAt: Date
-}
+export type { AIProviderType, AIProviderConfig, StoredAIProviderConfig, AIProviderMeta }
 
 // ─── Messages ───────────────────────────────────────────────────
 
@@ -86,15 +69,3 @@ export interface AIContextContribution {
 }
 
 export type AIContextProvider = () => AIContextContribution | null | Promise<AIContextContribution | null>
-
-// ─── Provider Info ──────────────────────────────────────────────
-
-export interface AIProviderMeta {
-  name: string
-  type: AIProviderType
-  description: string
-  models: Array<{ id: string; name: string; contextWindow: number; maxOutput: number }>
-  requiresApiKey: boolean
-  requiresBaseUrl: boolean
-  isLocal: boolean
-}
