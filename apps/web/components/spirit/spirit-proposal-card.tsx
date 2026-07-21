@@ -55,7 +55,9 @@ export function SpiritProposalCard({ proposal }: SpiritProposalCardProps) {
 
   const handleReject = useCallback(() => {
     setStatus('rejected');
-    fetch(`/api/ai/proposals/${proposal.id}/reject`, { method: 'POST' }).catch(() => {});
+    fetch(`/api/ai/proposals/${proposal.id}/reject`, { method: 'POST' }).catch(() => {
+      // Proposal rejection is best-effort
+    });
     addMessage({
       id: `msg-${Date.now()}`,
       role: 'assistant',

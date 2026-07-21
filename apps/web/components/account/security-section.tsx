@@ -45,7 +45,9 @@ export function SecuritySection({ hasPassword, connectedProviders, hasOAuth, two
       .then((data) => {
         if (Array.isArray(data)) setSessions(data);
       })
-      .catch(() => {})
+      .catch(() => {
+        // Sessions load is best-effort; empty list will be shown
+      })
       .finally(() => setSessionsLoading(false));
   }, []);
 

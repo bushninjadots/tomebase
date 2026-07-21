@@ -2,9 +2,13 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@fluid/database';
 import { getStripe } from '@/lib/stripe';
+import { enforceRateLimit } from '@/lib/api-helpers';
 
 export async function POST(request: Request) {
   try {
+    const rl = enforceRateLimit(request, 'strict');
+    if (rl) return rl;
+
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

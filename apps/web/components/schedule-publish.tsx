@@ -23,7 +23,9 @@ export function SchedulePublish({ pageId }: { pageId: string }) {
       .then((data) => {
         if (data && data.id) setSchedule(data);
       })
-      .catch(() => {});
+      .catch(() => {
+        // Schedule load is best-effort; no schedule will be shown
+      });
   }, [pageId]);
 
   async function save() {

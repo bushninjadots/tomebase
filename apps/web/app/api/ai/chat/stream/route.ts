@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { requireAuth } from '@/lib/authorization';
 import { getActiveProviderConfig, createProviderFromConfig, buildContextForPrompt } from '@/lib/workspace';
+import { enforceRateLimit } from '@/lib/api-helpers';
 import type { AIStreamRequest, AIChatMessage } from '@/lib/ai-provider/types';
 
 export async function POST(request: NextRequest) {
@@ -9,6 +10,9 @@ export async function POST(request: NextRequest) {
   let model = 'unknown';
 
   try {
+    const rl = enforceRateLimit(request, 'ai');
+    if (rl) return rl;
+
     const session = await requireAuth();
     if (!session?.user?.id) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {

@@ -35,7 +35,9 @@ export function NotificationsSection() {
           setPrefs((prev) => ({ ...prev, ...data }));
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        // Notifications load is best-effort; default prefs will be used
+      });
   }, []);
 
   const save = useCallback(async (newPrefs: Record<string, boolean>) => {

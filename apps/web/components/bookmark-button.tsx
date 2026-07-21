@@ -11,7 +11,9 @@ export function BookmarkButton({ pageId }: { pageId: string }) {
     fetch(`/api/pages/${pageId}/bookmark`)
       .then((r) => r.json())
       .then((data) => setBookmarked(data.bookmarked))
-      .catch(() => {});
+      .catch(() => {
+        // Bookmark status load is best-effort
+      });
   }, [pageId]);
 
   async function toggle() {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/authorization';
 import { getActiveProviderConfig, createProviderFromConfig, buildContextForPrompt } from '@/lib/workspace';
+import { enforceRateLimit } from '@/lib/api-helpers';
 import type { AIChatMessage, AIRequest } from '@/lib/ai-provider/types';
 import type { Diagnostic } from '@fluid/types';
 
@@ -10,6 +11,9 @@ export async function POST(request: NextRequest) {
   let model = 'unknown';
 
   try {
+    const rl = enforceRateLimit(request, 'ai');
+    if (rl) return rl;
+
     const session = await requireAuth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

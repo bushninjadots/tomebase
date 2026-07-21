@@ -55,7 +55,9 @@ export function ActivitySection() {
     fetch('/api/account/activity?limit=20')
       .then((r) => r.json())
       .then((data) => setEvents(data.events ?? []))
-      .catch(() => {})
+      .catch(() => {
+        // Activity load is best-effort; empty list will be shown
+      })
       .finally(() => setLoading(false));
   }, []);
 

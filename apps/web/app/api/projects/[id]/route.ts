@@ -4,12 +4,16 @@ import { auth } from '@/lib/auth';
 import { addDomain, isVercelConfigured } from '@/lib/vercel';
 import { eventBus } from '@/lib/events';
 import { triggerWebhooks } from '@/lib/webhooks';
+import { enforceRateLimit } from '@/lib/api-helpers';
 
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const rl = enforceRateLimit(request, 'standard');
+    if (rl) return rl;
+
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -110,6 +114,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const rl = enforceRateLimit(_request, 'standard');
+    if (rl) return rl;
+
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

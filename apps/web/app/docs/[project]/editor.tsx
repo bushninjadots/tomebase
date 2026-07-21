@@ -113,7 +113,9 @@ export function DocEditor({ project, initialLine, initialPageSlug }: {
     fetch('/api/team/members')
       .then((res) => res.json())
       .then((data) => { if (Array.isArray(data)) setTeamMembers(data); })
-      .catch(() => {});
+      .catch(() => {
+        // Team members load is best-effort; presence will be omitted
+      });
   }, []);
 
   // Page list sync

@@ -27,7 +27,9 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
       .then((data) => {
         if (Array.isArray(data)) setWebhooks(data);
       })
-      .catch(() => {});
+      .catch(() => {
+        // Webhooks load is best-effort; empty list will be shown
+      });
   }, [projectId]);
 
   useEffect(() => {

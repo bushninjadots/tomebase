@@ -1,11 +1,15 @@
 import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
+import { enforceRateLimit } from '@/lib/api-helpers';
 
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const rl = enforceRateLimit(request, 'generous');
+    if (rl) return rl;
+
     const { id } = await params;
 
     const page = await prisma.docPage.findUnique({

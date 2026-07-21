@@ -161,7 +161,9 @@ export function useAutosave({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, content }),
-      }).catch(() => {});
+      }).catch(() => {
+        // Snapshot creation is best-effort after successful save
+      });
       eventBus.emit('document:saved', { pageId: selectedPage.id, content, snapshotId: '' });
     }
     setSaving(false);

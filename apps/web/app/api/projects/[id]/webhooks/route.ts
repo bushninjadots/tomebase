@@ -48,4 +48,4 @@ export const POST = withAuth(async (session, request, { params }) => {
   });
 
   return NextResponse.json(webhook);
-});
+}, { rateLimit: 'standard' });

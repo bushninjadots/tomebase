@@ -2,6 +2,7 @@ import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
 import { requireAuth, requireTeamMember } from '@/lib/authorization';
 import { scanPages } from '@/lib/diagnostics/engine';
+import { enforceRateLimit } from '@/lib/api-helpers';
 import type { DiagnosticPage } from '@fluid/types';
 
 async function loadIgnoredKeys(projectId: string): Promise<Set<string>> {
@@ -96,6 +97,9 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const rl = enforceRateLimit(_request, 'standard');
+    if (rl) return rl;
+
     const session = await requireAuth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

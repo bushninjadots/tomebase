@@ -72,7 +72,9 @@ export function HealthSummary({ projectId }: HealthSummaryProps) {
       .then((data) => {
         if (data.score !== undefined) setHealth(data);
       })
-      .catch(() => {})
+      .catch(() => {
+        // Health load is best-effort; summary will be omitted
+      })
       .finally(() => setLoading(false));
   }, [projectId]);
 

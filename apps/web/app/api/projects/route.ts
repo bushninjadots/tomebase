@@ -4,9 +4,13 @@ import { slugify } from '@fluid/utils';
 import { auth } from '@/lib/auth';
 import { templateService } from '@/lib/templates';
 import { logActivity } from '@/lib/activity';
+import { enforceRateLimit } from '@/lib/api-helpers';
 
 export async function POST(request: Request) {
   try {
+    const rl = enforceRateLimit(request, 'standard');
+    if (rl) return rl;
+
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

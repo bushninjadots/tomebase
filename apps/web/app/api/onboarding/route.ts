@@ -4,8 +4,12 @@ import { prisma } from '@fluid/database';
 import { slugify } from '@fluid/utils';
 import { getOrCreatePersonalTeam } from '@/lib/team';
 import { templateService } from '@/lib/templates';
+import { enforceRateLimit } from '@/lib/api-helpers';
 
 export async function POST(req: Request) {
+  const rl = enforceRateLimit(req, 'standard');
+  if (rl) return rl;
+
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

@@ -58,7 +58,9 @@ export function Comments({ pageId, teamMembers }: CommentsProps) {
           setCurrentUser(data.user);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        // User load is best-effort; anonymous mode will be used
+      });
   }, [fetchComments]);
 
   const handleSubmit = async () => {

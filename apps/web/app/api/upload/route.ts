@@ -3,9 +3,13 @@ import { auth } from '@/lib/auth';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { randomBytes } from 'crypto';
+import { enforceRateLimit } from '@/lib/api-helpers';
 
 export async function POST(request: NextRequest) {
   try {
+    const rl = enforceRateLimit(request, 'upload');
+    if (rl) return rl;
+
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
