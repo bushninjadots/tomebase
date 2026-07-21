@@ -18,6 +18,7 @@ import { PagesNeedingAttention as HealthPagesNeedingAttention } from '@/componen
 import { HealthAnalytics } from '@/components/health-analytics';
 import { HealthAIStatus } from '@/components/health-ai-status';
 import { HealthEmptyState } from '@/components/health-empty';
+import { HealthTrendChart } from '@/components/health-trend-chart';
 import { DiagnosticsTab } from '@/components/diagnostics/diagnostics-tab';
 import type { DiagnosticPage, Diagnostic } from '@fluid/types';
 
@@ -202,6 +203,12 @@ export default async function ProjectHealthPage({ params, searchParams }: PagePr
                     previousScore={previousReport?.score ?? null}
                     previousScanTime={previousReport?.createdAt ?? null}
                     pageCount={pages.length}
+                  />
+
+                  {/* Section 1b: Score Trend Chart */}
+                  <HealthTrendChart
+                    projectId={projectId}
+                    currentScore={healthScore.score}
                   />
 
                   {/* Section 2: Critical Issues */}

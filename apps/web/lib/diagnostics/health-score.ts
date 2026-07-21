@@ -67,6 +67,14 @@ export const CATEGORY_LABELS: Record<DiagnosticCategory, string> = {
   too_many_diagrams: 'Too Many Diagrams',
   missing_related_pages: 'Missing Related Pages',
   content_distribution: 'Content Distribution',
+  low_readability: 'Low Readability',
+  wall_of_text: 'Wall of Text',
+  missing_h1: 'Missing H1 Heading',
+  link_text_generic: 'Generic Link Text',
+  long_slug: 'Long Slug',
+  excessive_headings: 'Excessive Headings',
+  long_paragraph: 'Long Paragraph',
+  deep_nesting: 'Deep Nesting',
 };
 
 // Severity weights — how many points each issue type costs

@@ -100,11 +100,25 @@ export function DiagnosticsTab({ projectId, pages, healthScore, initialDiagnosti
     [pages, persistFix],
   );
 
-  const handleIgnore = useCallback((diagnostic: Diagnostic) => {
+  const handleIgnore = useCallback(async (diagnostic: Diagnostic) => {
+    // Optimistic update
     setScannedDiagnostics((prev) =>
       prev.map((d) => (d.id === diagnostic.id ? { ...d, ignored: true } : d)),
     );
-  }, []);
+    // Persist to DB
+    try {
+      await fetch(`/api/projects/${projectId}/diagnostics/ignore`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ruleId: diagnostic.rule, pageId: diagnostic.pageId }),
+      });
+    } catch {
+      // Revert on failure
+      setScannedDiagnostics((prev) =>
+        prev.map((d) => (d.id === diagnostic.id ? { ...d, ignored: false } : d)),
+      );
+    }
+  }, [projectId]);
 
   const handleAIAction = useCallback((diagnostic: Diagnostic, action: string) => {
     const page = pages.find((p) => p.id === diagnostic.pageId);
@@ -149,7 +163,14 @@ export function DiagnosticsTab({ projectId, pages, healthScore, initialDiagnosti
     }
   }, [scannedDiagnostics, pages, persistFix]);
 
-  const handleIgnoreAll = useCallback(() => {
+  const handleIgnoreAll = useCallback(async () => {
+    const toIgnore = scannedDiagnostics.filter((d) => {
+      if (filter.severity !== 'all' && d.severity !== filter.severity) return false;
+      if (filter.category !== 'all' && d.category !== filter.category) return false;
+      return true;
+    });
+
+    // Optimistic update
     setScannedDiagnostics((prev) =>
       prev.map((d) => {
         if (filter.severity !== 'all' && d.severity !== filter.severity) return d;
@@ -157,7 +178,23 @@ export function DiagnosticsTab({ projectId, pages, healthScore, initialDiagnosti
         return { ...d, ignored: true };
       }),
     );
-  }, [filter]);
+
+    // Persist each to DB
+    for (const d of toIgnore) {
+      try {
+        await fetch(`/api/projects/${projectId}/diagnostics/ignore`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ruleId: d.rule, pageId: d.pageId }),
+        });
+      } catch {
+        // Revert on failure
+        setScannedDiagnostics((prev) =>
+          prev.map((diag) => (diag.id === d.id ? { ...diag, ignored: false } : diag)),
+        );
+      }
+    }
+  }, [scannedDiagnostics, filter, projectId]);
 
   const handleAIReview = useCallback(async () => {
     if (!activeProvider) return;

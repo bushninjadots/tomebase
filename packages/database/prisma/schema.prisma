@@ -37,6 +37,7 @@ model User {
   activityEvents ActivityEvent[]
   aiProviders AIProviderConfig[]
   aiChangeProposals AIChangeProposal[]
+  ignoredDiagnostics IgnoredDiagnostic[]
 }
 
 model Account {
@@ -96,6 +97,7 @@ model Project {
   apiKeys   ApiKey[]
   webhooks  Webhook[]
   healthReports HealthReport[]
+  ignoredDiagnostics IgnoredDiagnostic[]
   teamId    String?
   team      Team?      @relation(fields: [teamId], references: [id])
   repositoryIndexEntries RepositoryIndexEntry[]
@@ -129,6 +131,7 @@ model DocPage {
   viewEvents        ViewEvent[]
   repositoryIndexEntries RepositoryIndexEntry[]
   aiChangeProposals AIChangeProposal[]
+  ignoredDiagnostics IgnoredDiagnostic[]
 
   @@index([projectId])
   @@index([projectId, published])
@@ -400,4 +403,21 @@ model AIChangeProposal {
   @@index([pageId, status])
   @@index([userId, createdAt])
   @@index([status])
+}
+
+model IgnoredDiagnostic {
+  id        String   @id @default(cuid())
+  projectId String
+  ruleId    String
+  pageId    String?  // null = ignore rule across entire project
+  userId    String   // who ignored it
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  page    DocPage? @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, ruleId, pageId])
+  @@index([projectId])
+  @@index([projectId, ruleId])
 }

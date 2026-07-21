@@ -4,8 +4,49 @@ import { requireAuth, requireTeamMember } from '@/lib/authorization';
 import { scanPages } from '@/lib/diagnostics/engine';
 import type { DiagnosticPage } from '@fluid/types';
 
+async function loadIgnoredKeys(projectId: string): Promise<Set<string>> {
+  const records = await prisma.ignoredDiagnostic.findMany({
+    where: { projectId },
+    select: { ruleId: true, pageId: true },
+  });
+  const keys = new Set<string>();
+  for (const r of records) {
+    keys.add(`${r.ruleId}:${r.pageId ?? ''}`);
+  }
+  return keys;
+}
+
+function markIgnored<T extends { rule: string; pageId: string; ignored?: boolean }>(
+  diagnostics: T[],
+  ignoredKeys: Set<string>,
+): T[] {
+  return diagnostics.map((d) => {
+    if (ignoredKeys.has(`${d.rule}:${d.pageId}`) || ignoredKeys.has(`${d.rule}:`)) {
+      return { ...d, ignored: true };
+    }
+    return d;
+  });
+}
+
+async function getDiagnosticPages(projectId: string): Promise<DiagnosticPage[]> {
+  const pages = await prisma.docPage.findMany({
+    where: { projectId },
+    select: {
+      id: true, title: true, slug: true, published: true,
+      viewCount: true, lastViewedAt: true, updatedAt: true, createdAt: true, content: true,
+      description: true,
+    },
+    orderBy: { title: 'asc' },
+  });
+  return pages.map((p) => ({
+    id: p.id, title: p.title, slug: p.slug, content: p.content,
+    description: p.description, published: p.published, viewCount: p.viewCount,
+    lastViewedAt: p.lastViewedAt, createdAt: p.createdAt, updatedAt: p.updatedAt,
+  }));
+}
+
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
@@ -15,29 +56,16 @@ export async function GET(
     }
 
     const { id: projectId } = await params;
-
     const project = await requireTeamMember(projectId, session.user.id);
     if (!project) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
-    const url = new URL(request.url);
-    const limit = Math.min(parseInt(url.searchParams.get('limit') || '10', 10), 50);
+    const [diagnosticPages, ignoredKeys] = await Promise.all([
+      getDiagnosticPages(projectId),
+      loadIgnoredKeys(projectId),
+    ]);
 
-    const pages = await prisma.docPage.findMany({
-      where: { projectId },
-      select: {
-        id: true, title: true, slug: true, published: true,
-        viewCount: true, lastViewedAt: true, updatedAt: true, createdAt: true, content: true,
-      },
-      orderBy: { title: 'asc' },
-    });
-
-    const diagnosticPages: DiagnosticPage[] = pages.map((p) => ({
-      id: p.id, title: p.title, slug: p.slug, content: p.content,
-      description: null, published: p.published, viewCount: p.viewCount,
-      lastViewedAt: p.lastViewedAt, createdAt: p.createdAt, updatedAt: p.updatedAt,
-    }));
     const scanResult = scanPages(diagnosticPages);
 
     const latestReport = await prisma.healthReport.findFirst({
@@ -46,10 +74,12 @@ export async function GET(
       select: { score: true, createdAt: true },
     });
 
+    const diagnostics = markIgnored(scanResult.diagnostics, ignoredKeys);
+
     return NextResponse.json({
       score: scanResult.healthScore.score,
-      totalPages: pages.length,
-      issues: scanResult.diagnostics,
+      totalPages: diagnosticPages.length,
+      issues: diagnostics,
       healthScore: scanResult.healthScore,
       scannedAt: scanResult.scannedAt,
       previousScore: latestReport?.score ?? null,
@@ -62,7 +92,7 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
@@ -72,34 +102,25 @@ export async function POST(
     }
 
     const { id: projectId } = await params;
-
     const project = await requireTeamMember(projectId, session.user.id);
     if (!project) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
-    const pages = await prisma.docPage.findMany({
-      where: { projectId },
-      select: {
-        id: true, title: true, slug: true, published: true,
-        viewCount: true, lastViewedAt: true, updatedAt: true, createdAt: true, content: true,
-      },
-      orderBy: { title: 'asc' },
-    });
+    const [diagnosticPages, ignoredKeys] = await Promise.all([
+      getDiagnosticPages(projectId),
+      loadIgnoredKeys(projectId),
+    ]);
 
-    const diagnosticPages: DiagnosticPage[] = pages.map((p) => ({
-      id: p.id, title: p.title, slug: p.slug, content: p.content,
-      description: null, published: p.published, viewCount: p.viewCount,
-      lastViewedAt: p.lastViewedAt, createdAt: p.createdAt, updatedAt: p.updatedAt,
-    }));
     const scanResult = scanPages(diagnosticPages);
+    const diagnostics = markIgnored(scanResult.diagnostics, ignoredKeys);
 
     const saved = await prisma.healthReport.create({
       data: {
         projectId,
         score: scanResult.healthScore.score,
-        totalPages: pages.length,
-        issues: scanResult.diagnostics as unknown as object[],
+        totalPages: diagnosticPages.length,
+        issues: diagnostics as unknown as object[],
         summary: scanResult.healthScore.categoryBreakdown as unknown as object[],
       },
     });

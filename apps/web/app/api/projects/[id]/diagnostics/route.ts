@@ -40,22 +40,28 @@ export async function GET(
     if (rulesParam) options.rules = rulesParam.split(',');
     if (categoriesParam) options.categories = categoriesParam.split(',');
 
-    const pages = await prisma.docPage.findMany({
-      where: { projectId },
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        content: true,
-        description: true,
-        published: true,
-        viewCount: true,
-        lastViewedAt: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-      orderBy: { title: 'asc' },
-    });
+    const [pages, ignoredRecords] = await Promise.all([
+      prisma.docPage.findMany({
+        where: { projectId },
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          content: true,
+          description: true,
+          published: true,
+          viewCount: true,
+          lastViewedAt: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+        orderBy: { title: 'asc' },
+      }),
+      prisma.ignoredDiagnostic.findMany({
+        where: { projectId },
+        select: { ruleId: true, pageId: true },
+      }),
+    ]);
 
     const diagnosticPages: DiagnosticPage[] = pages.map((p) => ({
       id: p.id,
@@ -72,7 +78,23 @@ export async function GET(
 
     const result = scanPages(diagnosticPages, options);
 
-    return NextResponse.json(result);
+    // Build ignore lookup: "ruleId:pageId" for page-specific, "ruleId:" for project-wide
+    const ignoredKeys = new Set<string>();
+    for (const rec of ignoredRecords) {
+      ignoredKeys.add(`${rec.ruleId}:${rec.pageId ?? ''}`);
+    }
+
+    // Mark ignored diagnostics
+    const diagnostics = result.diagnostics.map((d) => {
+      const pageKey = `${d.rule}:${d.pageId}`;
+      const projectKey = `${d.rule}:`;
+      if (ignoredKeys.has(pageKey) || ignoredKeys.has(projectKey)) {
+        return { ...d, ignored: true };
+      }
+      return d;
+    });
+
+    return NextResponse.json({ ...result, diagnostics });
   } catch (error) {
     console.error('Diagnostics scan error:', error);
     return NextResponse.json(

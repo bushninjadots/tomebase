@@ -6,6 +6,7 @@ import { brokenLinkRule, orphanPageRule, unlinkedPageRule, inconsistentLinkStyle
 import { headingHierarchyRule, multipleH1Rule, missingBlankLineBeforeHeadingRule, missingBlankLineAfterHeadingRule, trailingPunctuationInHeadingRule, headingEndsWithColonRule, structureDepthRule, missingTocRule } from './rules/_heading-rules';
 import { invalidMarkdownRule, duplicateBlankLinesRule, trailingWhitespaceRule, markdownFormattingRule, deprecatedSyntaxRule, inconsistentListMarkersRule, multipleSpacesRule, missingNewlineEofRule, missingAltTextRule, inconsistentEmphasisRule, spaceBeforePunctuationRule, doublePunctuationRule, htmlEntitiesRule, missingSpaceAfterPunctuationRule, blankLineInBlockquoteRule, missingClosingBacktickRule, unspacedBlockquoteRule, repeatedWordsRule, missingSpaceAroundInlineCodeRule } from './rules/_formatting-rules';
 import { duplicateTitleRule, brokenMermaidRule, brokenImageRule, emptyPageRule, largePageRule, missingCodeBlockLanguageRule, staleDocsRule, indentedCodeBlockRule, horizontalRuleRule, longLineLengthRule, tableMissingHeaderRule, tableInconsistentColumnsRule, missingCodeExamplesRule, tooManyDiagramsRule, codeLanguageDiversityRule, missingRelatedPagesRule } from './rules/_quality-rules';
+import { ADVANCED_RULES } from './rules/_advanced-rules';
 
 export const ALL_RULES: DiagnosticRule[] = [
   brokenLinkRule, missingFrontmatterRule, missingTitleRule, missingDescriptionRule,
@@ -27,6 +28,7 @@ export const ALL_RULES: DiagnosticRule[] = [
   tableMissingHeaderRule, tableInconsistentColumnsRule, lowLinkDensityRule,
   highLinkDensityRule, missingCodeExamplesRule, tooManyDiagramsRule,
   codeLanguageDiversityRule, structureDepthRule, missingRelatedPagesRule,
+  ...ADVANCED_RULES,
 ];
 
 export function getRuleById(id: string): DiagnosticRule | undefined {

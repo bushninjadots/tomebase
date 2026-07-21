@@ -60,7 +60,15 @@ export type DiagnosticCategory =
   | 'missing_code_examples'
   | 'too_many_diagrams'
   | 'missing_related_pages'
-  | 'content_distribution';
+  | 'content_distribution'
+  | 'low_readability'
+  | 'wall_of_text'
+  | 'missing_h1'
+  | 'link_text_generic'
+  | 'long_slug'
+  | 'excessive_headings'
+  | 'long_paragraph'
+  | 'deep_nesting';
 
 export interface DiagnosticPage {
   id: string;

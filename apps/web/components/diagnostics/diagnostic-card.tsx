@@ -7,7 +7,7 @@ import Link from 'next/link';
 import {
   AlertTriangle, AlertCircle, Info, Wand2, Eye, EyeOff,
   Sparkles, ExternalLink, ChevronDown, ChevronUp, CircleDot,
-  ArrowRight,
+  ArrowRight, ClipboardCopy, Check,
 } from 'lucide-react';
 
 interface DiagnosticCardProps {
@@ -55,6 +55,7 @@ export function DiagnosticCard({
   onAIAction,
 }: DiagnosticCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const [copied, setCopied] = useState(false);
   const config = SEVERITY_CONFIG[diagnostic.severity];
 
   return (
@@ -165,6 +166,22 @@ export function DiagnosticCard({
             >
               <EyeOff className="h-3 w-3" />
               Ignore
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                const severity = diagnostic.severity.toUpperCase();
+                const task = `[${severity}] ${diagnostic.title}\n\nPage: ${diagnostic.pageTitle}${diagnostic.line ? ` (line ${diagnostic.line})` : ''}\nRule: ${diagnostic.rule}\nCategory: ${diagnostic.category}\n\n${diagnostic.description}\n\n${diagnostic.explanation}`;
+                navigator.clipboard.writeText(task).then(() => {
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                });
+              }}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-theme-border bg-theme-card px-3.5 py-2 text-xs font-medium text-theme-muted hover:bg-theme-hover transition-all"
+            >
+              {copied ? <Check className="h-3 w-3 text-green-500" /> : <ClipboardCopy className="h-3 w-3" />}
+              {copied ? 'Copied!' : 'Create Task'}
             </button>
 
             <div className="h-4 w-px bg-theme-border mx-1" />
