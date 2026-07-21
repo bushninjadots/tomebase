@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Github, RefreshCw, Check, AlertCircle, ExternalLink } from 'lucide-react';
+import { Github, GitBranch, RefreshCw, Check, AlertCircle, ExternalLink } from 'lucide-react';
 import { Input } from '@fluid/ui';
 
 interface GitSyncProps {
@@ -81,6 +81,14 @@ export function GitSync({ projectId }: GitSyncProps) {
       <p className="text-sm text-theme-subtle">
         Sync Markdown files from a GitHub repository into this project.
       </p>
+
+      {!hasConfig && !syncing && !result && (
+        <div className="rounded-xl border border-dashed border-theme-border py-8 text-center">
+          <GitBranch className="h-8 w-8 mx-auto text-theme-muted mb-2" />
+          <p className="text-sm font-medium text-theme-subtle">Not connected to a repository</p>
+          <p className="text-xs text-theme-muted mt-1">Set up Git sync to version control your documentation.</p>
+        </div>
+      )}
 
       <div className="space-y-3">
         <Input

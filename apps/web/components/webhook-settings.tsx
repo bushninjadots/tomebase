@@ -187,9 +187,11 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
       )}
 
       {webhooks.length === 0 && !showForm && (
-        <p className="text-sm text-theme-muted py-4 text-center">
-          No webhooks configured. Add one to get notified of page events.
-        </p>
+        <div className="rounded-xl border border-dashed border-theme-border py-8 text-center">
+          <Webhook className="h-8 w-8 mx-auto text-theme-muted mb-2" />
+          <p className="text-sm font-medium text-theme-subtle">No webhooks configured</p>
+          <p className="text-xs text-theme-muted mt-1">Add a webhook to get notified about project events.</p>
+        </div>
       )}
 
       <div className="space-y-2">

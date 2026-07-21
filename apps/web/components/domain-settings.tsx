@@ -230,6 +230,14 @@ export function DomainSettings({ projectId, customDomain: initialDomain, publish
         </div>
       )}
 
+      {!hasDomain && !error && (
+        <div className="rounded-xl border border-dashed border-theme-border py-6 text-center mb-4">
+          <Globe className="h-8 w-8 mx-auto text-theme-muted mb-2" />
+          <p className="text-sm font-medium text-theme-subtle">No custom domain configured</p>
+          <p className="text-xs text-theme-muted mt-1">Add a custom domain to serve your docs from your own URL.</p>
+        </div>
+      )}
+
       {/* Input + actions */}
       <div className="flex items-end gap-2">
         <div className="flex-1">
