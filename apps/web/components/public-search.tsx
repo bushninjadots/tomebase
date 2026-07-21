@@ -121,6 +121,7 @@ export function PublicSearchOverlay({ projectId }: PublicSearchOverlayProps) {
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Search docs..."
+                aria-label="Search documentation"
                 className="flex-1 bg-transparent text-sm text-theme-main outline-none placeholder:text-theme-muted"
                 autoFocus
               />

@@ -116,24 +116,28 @@ export function SchedulePublish({ pageId }: { pageId: string }) {
       </div>
       <div className="space-y-3">
         <div>
-          <label className="block text-xs font-medium text-theme-muted mb-1">
+          <label htmlFor="schedule-publish-at" className="block text-xs font-medium text-theme-muted mb-1">
             Publish at
           </label>
           <input
+            id="schedule-publish-at"
             type="datetime-local"
             value={publishAt}
             onChange={(e) => setPublishAt(e.target.value)}
+            aria-label="Publish at date and time"
             className="input-field"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-theme-muted mb-1">
+          <label htmlFor="schedule-unpublish-at" className="block text-xs font-medium text-theme-muted mb-1">
             Unpublish at (optional)
           </label>
           <input
+            id="schedule-unpublish-at"
             type="datetime-local"
             value={unpublishAt}
             onChange={(e) => setUnpublishAt(e.target.value)}
+            aria-label="Unpublish at date and time"
             className="input-field"
           />
         </div>

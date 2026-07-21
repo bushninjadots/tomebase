@@ -340,6 +340,7 @@ const components: Components = {
       type="checkbox"
       checked={checked}
       readOnly
+      aria-label="Task list item"
       className="mr-2 h-4 w-4 rounded border-theme-border accent-theme-accent"
       {...props}
     />

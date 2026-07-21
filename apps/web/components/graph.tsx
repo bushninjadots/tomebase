@@ -346,6 +346,7 @@ function GraphModal({ projectId, pages, healthData, onClose, currentPageId }: Gr
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Filter nodes..."
+                aria-label="Filter graph nodes"
                 className="w-40 rounded-lg border border-theme-border py-1.5 pl-7 pr-2 text-xs outline-none focus:border-fluid-500 focus:ring-1 focus:ring-fluid-500/20 bg-transparent"
               />
             </div>

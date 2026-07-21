@@ -1,0 +1,63 @@
+{
+  "timestamp": "2026-07-21T10:44:41.853Z",
+  "duration": 514,
+  "checks": [
+    {
+      "name": "Linting",
+      "status": "pass",
+      "message": "Clean (5 warnings)"
+    },
+    {
+      "name": "TypeScript",
+      "status": "pass",
+      "message": "No type errors"
+    },
+    {
+      "name": "Tests",
+      "status": "pass",
+      "message": "? tests passed"
+    },
+    {
+      "name": "Security",
+      "status": "pass",
+      "message": "No security issues detected"
+    },
+    {
+      "name": "Dead Code",
+      "status": "pass",
+      "message": "No obvious dead code detected"
+    },
+    {
+      "name": "Accessibility",
+      "status": "pass",
+      "message": "Basic accessibility checks passed"
+    },
+    {
+      "name": "UI Consistency",
+      "status": "pass",
+      "message": "Good theme usage (3293 themed, 746 semantic)"
+    },
+    {
+      "name": "Bundle Size",
+      "status": "pass",
+      "message": "11 files over 20KB",
+      "details": [
+        "apps/web/app/docs/[project]/editor.tsx (42KB)",
+        "apps/web/components/graph.tsx (36KB)",
+        "apps/web/app/help/page.tsx (35KB)",
+        "apps/web/components/import/import-wizard.tsx (34KB)",
+        "apps/web/components/interactive-demo.tsx (33KB)"
+      ]
+    },
+    {
+      "name": "Error Handling",
+      "status": "pass",
+      "message": "All API routes have try/catch"
+    }
+  ],
+  "summary": {
+    "pass": 9,
+    "warn": 0,
+    "fail": 0
+  }
+}

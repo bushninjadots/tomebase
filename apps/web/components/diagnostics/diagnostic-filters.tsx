@@ -148,6 +148,7 @@ export function DiagnosticFilters({
             placeholder="Search diagnostics..."
             value={filter.search}
             onChange={(e) => updateFilter({ search: e.target.value })}
+            aria-label="Search diagnostics"
             className="w-full rounded-lg border border-theme-border bg-theme-card pl-9 pr-3 py-2 text-xs text-theme-main placeholder:text-theme-muted focus:outline-none focus:border-theme-accent/40 focus:ring-1 focus:ring-theme-accent/20 transition-all"
           />
           {filter.search && (
@@ -163,6 +164,7 @@ export function DiagnosticFilters({
         <select
           value={filter.category}
           onChange={(e) => updateFilter({ category: e.target.value as DiagnosticCategory | 'all' })}
+          aria-label="Filter by category"
           className="rounded-lg border border-theme-border bg-theme-card px-3 py-2 text-xs text-theme-main focus:outline-none focus:border-theme-accent/40 focus:ring-1 focus:ring-theme-accent/20 transition-all appearance-none cursor-pointer"
         >
           {CATEGORY_OPTIONS.map((opt) => (

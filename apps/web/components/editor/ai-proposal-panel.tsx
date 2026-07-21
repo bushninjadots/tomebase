@@ -140,6 +140,7 @@ export function AIProposalPanel({ pageId, pageTitle, onContentUpdate }: AIPropos
             onChange={(e) => setInstruction(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleGenerate()}
             placeholder="e.g. Add installation instructions..."
+            aria-label="AI instruction prompt"
             className="flex-1 rounded-md border border-theme-border bg-theme-page px-2.5 py-1.5 text-[11px] text-theme-main placeholder:text-theme-muted focus:border-theme-accent focus:outline-none focus:ring-1 focus:ring-theme-accent/20"
             disabled={generating}
           />

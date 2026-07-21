@@ -270,6 +270,7 @@ export function AIProviderSettings() {
                               ? `Key saved (${saved.apiKeyHint ?? '***'})`
                               : 'sk-...'
                           }
+                          aria-label={`${meta.name} API key`}
                           className="block w-full rounded-lg border border-theme-border bg-theme-card px-3 py-2 pr-10 text-sm text-theme-main placeholder:text-theme-muted focus:border-theme-accent focus:outline-none focus:ring-1 focus:ring-theme-accent font-mono"
                         />
                         <button
@@ -300,6 +301,7 @@ export function AIProviderSettings() {
                     <select
                       value={model}
                       onChange={(e) => setModel(e.target.value)}
+                      aria-label={`${meta.name} model`}
                       className="block w-full rounded-lg border border-theme-border bg-theme-card px-3 py-2 text-sm text-theme-main focus:border-theme-accent focus:outline-none focus:ring-1 focus:ring-theme-accent appearance-none"
                     >
                       <option value="">
@@ -334,6 +336,7 @@ export function AIProviderSettings() {
                                 ? 'https://your-resource.openai.azure.com'
                                 : 'https://api.example.com/v1'
                         }
+                        aria-label={`${meta.name} base URL`}
                         className="block w-full rounded-lg border border-theme-border bg-theme-card px-3 py-2 text-sm text-theme-main placeholder:text-theme-muted focus:border-theme-accent focus:outline-none focus:ring-1 focus:ring-theme-accent font-mono"
                       />
                     </div>

@@ -81,6 +81,7 @@ export function TemplateGallery({ mode, onSelect, onClose }: TemplateGalleryProp
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search templates..."
+              aria-label="Search templates"
               className="w-full rounded-lg border border-theme-border bg-theme-page pl-9 pr-3 py-2 text-sm text-theme-main placeholder:text-theme-muted focus:border-theme-accent focus:outline-none focus:ring-1 focus:ring-theme-accent/20"
             />
           </div>
