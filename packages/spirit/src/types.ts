@@ -142,6 +142,7 @@ export interface SpiritStore {
   isFirstVisit: boolean;
   lastMousePosition: { x: number; y: number };
   isMouseMoving: boolean;
+  pendingInput: string | null;
 
   setMode: (mode: SpiritMode) => void;
   toggle: () => void;
@@ -172,6 +173,7 @@ export interface SpiritStore {
   setFirstVisit: (v: boolean) => void;
   setLastMousePosition: (pos: { x: number; y: number }) => void;
   setMouseMoving: (moving: boolean) => void;
+  setPendingInput: (input: string | null) => void;
 }
 
 export const DEFAULT_POSITION = { x: 24, y: 24 };

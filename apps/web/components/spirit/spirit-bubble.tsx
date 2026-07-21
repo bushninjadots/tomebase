@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
 import { useSpiritStore, DEFAULT_POSITION } from '@fluid/spirit';
 import { SpiritGhost } from './spirit-ghost';
 import { SpiritWindow } from './spirit-window';
@@ -34,10 +33,11 @@ export function SpiritBubble({ projectId }: SpiritBubbleProps) {
   const dragStartRef = useRef<{ x: number; y: number; posX: number; posY: number } | null>(null);
   const didDrag = useRef(false);
   const initialized = useRef(false);
-  const bubbleRef = useRef<HTMLDivElement>(null);
+  const outerRef = useRef<HTMLDivElement>(null);
+  const transformRef = useRef<HTMLDivElement>(null);
   const velocityFramesRef = useRef<{ dx: number; dy: number; dt: number }[]>([]);
 
-  useSpiritMovement({ bubbleRef, enabled: mode === 'floating', isDragging });
+  useSpiritMovement({ bubbleRef: transformRef, enabled: mode === 'floating', isDragging });
 
   // On first mount: if position is still the static default, recompute to bottom-right
   useEffect(() => {
@@ -74,7 +74,7 @@ export function SpiritBubble({ projectId }: SpiritBubbleProps) {
   const onPointerDown = useCallback((e: React.PointerEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    const el = bubbleRef.current;
+    const el = outerRef.current;
     if (!el) return;
     el.setPointerCapture(e.pointerId);
 
@@ -112,7 +112,6 @@ export function SpiritBubble({ projectId }: SpiritBubbleProps) {
     } else {
       frames.push({ dx: e.movementX, dy: e.movementY, dt: 16 } as unknown as { dx: number; dy: number; dt: number } & { time: number });
     }
-    // Attach timestamp for next frame's dt calc
     (frames[frames.length - 1] as unknown as { time: number }).time = now;
     if (frames.length > VELOCITY_TRACK_FRAMES) frames.shift();
 
@@ -125,7 +124,7 @@ export function SpiritBubble({ projectId }: SpiritBubbleProps) {
   }, [setPosition]);
 
   const onPointerUp = useCallback((e: React.PointerEvent) => {
-    const el = bubbleRef.current;
+    const el = outerRef.current;
     if (el) el.releasePointerCapture(e.pointerId);
 
     if (didDrag.current) {
@@ -176,43 +175,48 @@ export function SpiritBubble({ projectId }: SpiritBubbleProps) {
 
   return (
     <>
-      <motion.div
-        ref={bubbleRef}
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{
-          scale: isHovered ? 1.12 : 1,
-          opacity: 1,
-        }}
-        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+      {/* Outer div: handles position via style.left/top (no Framer Motion) */}
+      <div
+        ref={outerRef}
         style={{
           position: 'fixed',
           zIndex: 9999,
           cursor: isDragging ? 'grabbing' : 'grab',
           left: position.x,
           top: position.y,
+          transition: isDragging ? 'none' : 'left 0.05s linear, top 0.05s linear',
         }}
-        className="select-none spirit-breathing"
+        className="select-none"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onClick={handleClick}
-        onHoverStart={() => setIsHovered(true)}
-        onHoverEnd={() => setIsHovered(false)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
+        {/* Inner div: movement engine applies transforms here (breathing, squash, cursor lean) */}
         <div
-          className={`relative flex items-center justify-center rounded-2xl bg-theme-card shadow-lg transition-all duration-300 ${
-            isHovered
-              ? 'shadow-xl border-theme-accent/50'
-              : 'border-theme-accent/20'
-          } border-2`}
-          style={{ width: BUBBLE_SIZE, height: BUBBLE_SIZE }}
+          ref={transformRef}
+          style={{
+            transform: 'scale(1)',
+            willChange: 'transform',
+          }}
         >
-          <SpiritGhost state={aiState} size="medium" />
-          {aiState === 'thinking' && (
-            <div className="absolute inset-0 rounded-2xl spirit-pulse-ring" />
-          )}
+          <div
+            className={`relative flex items-center justify-center rounded-2xl bg-theme-card shadow-lg transition-all duration-300 ${
+              isHovered
+                ? 'shadow-xl border-theme-accent/50 scale-110'
+                : 'border-theme-accent/20'
+            } border-2`}
+            style={{ width: BUBBLE_SIZE, height: BUBBLE_SIZE }}
+          >
+            <SpiritGhost state={aiState} size="medium" />
+            {aiState === 'thinking' && (
+              <div className="absolute inset-0 rounded-2xl spirit-pulse-ring" />
+            )}
+          </div>
         </div>
-      </motion.div>
+      </div>
 
       <SpiritSpeechBubble />
       <SpiritWindow

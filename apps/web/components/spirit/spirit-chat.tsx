@@ -41,6 +41,8 @@ export function SpiritChat({ projectId, pageId }: SpiritChatProps) {
     aiState,
     setAIState,
     context,
+    pendingInput,
+    setPendingInput,
   } = useSpiritStore();
 
   const { activeProvider, chat } = useAI();
@@ -65,6 +67,15 @@ export function SpiritChat({ projectId, pageId }: SpiritChatProps) {
       createConversation();
     }
   }, [activeConversationId, conversations.length, createConversation]);
+
+  // Consume pending input from context actions or keyboard shortcut
+  useEffect(() => {
+    if (pendingInput) {
+      setInput(pendingInput);
+      setPendingInput(null);
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
+  }, [pendingInput, setPendingInput]);
 
   const handleProposalRequest = useCallback(async (text: string) => {
     if (!resolvedPageId) {

@@ -58,24 +58,16 @@ export function SpiritContextActions() {
   const handleAction = useCallback(
     (action: string) => {
       setContext({ currentSelection: selectedText });
+      const safeText = selectedText || '';
+      const prompts: Record<string, string> = {
+        explain: `Explain this text: "${safeText}"`,
+        rewrite: `Rewrite this text for clarity: "${safeText}"`,
+        improve: `Improve this text: "${safeText}"`,
+        ask: `About this text: "${safeText}"`,
+      };
+      useSpiritStore.getState().setPendingInput(prompts[action] ?? `About this text: "${safeText}"`);
       open();
       setShow(false);
-      // Pre-fill Spirit chat with action-specific prompt after a short delay
-      setTimeout(() => {
-        const input = document.querySelector<HTMLTextAreaElement>('[data-spirit-input="true"]');
-        if (input) {
-          const safeText = selectedText || '';
-          const prompts: Record<string, string> = {
-            explain: `Explain this text: "${safeText}"`,
-            rewrite: `Rewrite this text for clarity: "${safeText}"`,
-            improve: `Improve this text: "${safeText}"`,
-            ask: `About this text: "${safeText}"`,
-          };
-          input.value = prompts[action] ?? `About this text: "${safeText}"`;
-          input.dispatchEvent(new Event('input', { bubbles: true }));
-          input.focus();
-        }
-      }, 200);
     },
     [selectedText, setContext, open],
   );

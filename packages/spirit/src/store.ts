@@ -42,6 +42,7 @@ export const useSpiritStore = create<SpiritStore>()(
       isFirstVisit: !localStorage.getItem('tome-spirit-seen'),
       lastMousePosition: { x: 0, y: 0 },
       isMouseMoving: false,
+      pendingInput: null,
 
       setMode: (mode) => set({ mode }),
 
@@ -181,6 +182,7 @@ export const useSpiritStore = create<SpiritStore>()(
 
       setLastMousePosition: (pos) => set({ lastMousePosition: pos }),
       setMouseMoving: (moving) => set({ isMouseMoving: moving }),
+      setPendingInput: (input) => set({ pendingInput: input }),
     }),
     {
       name: 'tome-spirit',
