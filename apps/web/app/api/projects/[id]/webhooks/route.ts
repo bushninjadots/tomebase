@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import { requireTeamMember } from '@/lib/authorization';
 import { withAuth, unauthorized, notFound, badRequest } from '@/lib/api-helpers';
 import { isValidWebhookUrl } from '@/lib/webhooks';
+import { createWebhookSchema, validateBody } from '@/lib/validations';
 
 export const GET = withAuth(async (session, _request, { params }) => {
   const { id } = await params;
@@ -26,11 +27,9 @@ export const POST = withAuth(async (session, request, { params }) => {
   if (!project) return notFound();
 
   const body = await request.json();
-  const { url, events } = body;
-
-  if (!url || typeof url !== 'string') {
-    return badRequest('URL is required');
-  }
+  const v = validateBody(body, createWebhookSchema);
+  if (!v.success) return v.error;
+  const { url, events } = v.data;
 
   if (!isValidWebhookUrl(url)) {
     return badRequest('Invalid webhook URL');
@@ -42,7 +41,7 @@ export const POST = withAuth(async (session, request, { params }) => {
     data: {
       url,
       secret,
-      events: events || 'page.created,page.updated,page.published',
+      events: events.join(','),
       projectId: id,
     },
   });

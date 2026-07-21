@@ -1,6 +1,7 @@
 import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
+import { createSnapshotSchema, validateBody } from '@/lib/validations';
 
 export async function POST(
   request: Request,
@@ -13,7 +14,10 @@ export async function POST(
     }
 
     const { id } = await params;
-    const { title, content, reason } = await request.json();
+    const body = await request.json();
+    const v = validateBody(body, createSnapshotSchema);
+    if (!v.success) return v.error;
+    const { title, content, reason } = v.data;
 
     const page = await prisma.docPage.findFirst({
       where: {

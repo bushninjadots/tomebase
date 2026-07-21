@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@fluid/database';
 import bcrypt from 'bcryptjs';
 import { enforceRateLimit } from '@/lib/api-helpers';
+import { changePasswordSchema, validateBody } from '@/lib/validations';
 
 export async function PATCH(request: Request) {
   try {
@@ -15,23 +16,9 @@ export async function PATCH(request: Request) {
     }
 
     const body = await request.json();
-    const { currentPassword, newPassword } = body;
-
-    if (!currentPassword || !newPassword) {
-      return NextResponse.json({ error: 'Current and new password are required' }, { status: 400 });
-    }
-
-    if (typeof currentPassword !== 'string' || typeof newPassword !== 'string') {
-      return NextResponse.json({ error: 'Passwords must be strings' }, { status: 400 });
-    }
-
-    if (newPassword.length < 8) {
-      return NextResponse.json({ error: 'New password must be at least 8 characters' }, { status: 400 });
-    }
-
-    if (newPassword.length > 128) {
-      return NextResponse.json({ error: 'New password is too long' }, { status: 400 });
-    }
+    const v = validateBody(body, changePasswordSchema);
+    if (!v.success) return v.error;
+    const { currentPassword, newPassword } = v.data;
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },

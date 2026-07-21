@@ -5,6 +5,7 @@ import { auth } from '@/lib/auth';
 import { templateService } from '@/lib/templates';
 import { logActivity } from '@/lib/activity';
 import { enforceRateLimit } from '@/lib/api-helpers';
+import { createProjectSchema, validateBody } from '@/lib/validations';
 
 export async function POST(request: Request) {
   try {
@@ -16,19 +17,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { name, description, templateId } = await request.json();
-
-    if (!name || typeof name !== 'string') {
-      return NextResponse.json({ error: 'Name is required' }, { status: 400 });
-    }
-
-    if (name.length > 100) {
-      return NextResponse.json({ error: 'Name must be 100 characters or less' }, { status: 400 });
-    }
-
-    if (description && typeof description === 'string' && description.length > 500) {
-      return NextResponse.json({ error: 'Description must be 500 characters or less' }, { status: 400 });
-    }
+    const body = await request.json();
+    const v = validateBody(body, createProjectSchema);
+    if (!v.success) return v.error;
+    const { name, description } = v.data;
+    const { templateId } = body;
 
     const { getOrCreatePersonalTeam } = await import('@/lib/team');
     const team = await getOrCreatePersonalTeam(session.user.id);

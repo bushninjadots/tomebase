@@ -5,6 +5,7 @@ import { triggerWebhooks } from '@/lib/webhooks';
 import { logActivity } from '@/lib/activity';
 import { eventBus } from '@/lib/events';
 import { enforceRateLimit } from '@/lib/api-helpers';
+import { updatePageSchema, validateBody } from '@/lib/validations';
 
 export async function PATCH(
   request: Request,
@@ -20,7 +21,10 @@ export async function PATCH(
     }
 
     const { id } = await params;
-    const { title, content } = await request.json();
+    const body = await request.json();
+    const v = validateBody(body, updatePageSchema);
+    if (!v.success) return v.error;
+    const { title, content } = v.data;
 
     const page = await prisma.docPage.findFirst({
       where: {

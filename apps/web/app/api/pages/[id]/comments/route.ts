@@ -2,6 +2,7 @@ import { prisma } from '@fluid/database';
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { enforceRateLimit } from '@/lib/api-helpers';
+import { createCommentSchema, validateBody } from '@/lib/validations';
 
 export async function GET(
   _request: Request,
@@ -64,11 +65,11 @@ export async function POST(
     }
 
     const { id } = await params;
-    const { content, parentId } = await request.json();
-
-    if (!content || typeof content !== 'string' || content.trim().length === 0) {
-      return NextResponse.json({ error: 'Content is required' }, { status: 400 });
-    }
+    const body = await request.json();
+    const v = validateBody(body, createCommentSchema);
+    if (!v.success) return v.error;
+    const { content } = v.data;
+    const { parentId } = body;
 
     const page = await prisma.docPage.findFirst({
       where: {

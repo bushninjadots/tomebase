@@ -5,6 +5,7 @@ import { auth } from '@/lib/auth';
 import { triggerWebhooks } from '@/lib/webhooks';
 import { logActivity } from '@/lib/activity';
 import { enforceRateLimit } from '@/lib/api-helpers';
+import { createPageSchema, validateBody } from '@/lib/validations';
 
 export async function POST(request: Request) {
   try {
@@ -16,19 +17,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { title, content, projectId, parentId } = await request.json();
-
-    if (!title || typeof title !== 'string') {
-      return NextResponse.json({ error: 'Title is required' }, { status: 400 });
-    }
-
-    if (title.length > 200) {
-      return NextResponse.json({ error: 'Title must be 200 characters or less' }, { status: 400 });
-    }
-
-    if (content && typeof content === 'string' && content.length > 1_000_000) {
-      return NextResponse.json({ error: 'Content is too large (max 1MB)' }, { status: 400 });
-    }
+    const body = await request.json();
+    const v = validateBody(body, createPageSchema);
+    if (!v.success) return v.error;
+    const { title, content, parentId } = v.data;
+    const { projectId } = body;
 
     const project = await prisma.project.findFirst({
       where: {
