@@ -47,7 +47,12 @@ export function ScoreRing({
   const diff = previousScore != null ? score - previousScore : null;
 
   return (
-    <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+    <div
+      className="relative flex items-center justify-center"
+      style={{ width: size, height: size }}
+      role="img"
+      aria-label={`Score: ${score} out of 100${grade ? `, Grade ${grade}` : ''}${label ? `. ${label}` : ''}${diff != null ? `. Trend: ${diff === 0 ? 'no change' : diff > 0 ? `up ${diff}` : `down ${Math.abs(diff)}`}` : ''}`}
+    >
       <svg width={size} height={size} className="-rotate-90">
         {/* Track */}
         <circle

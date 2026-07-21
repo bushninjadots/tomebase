@@ -107,6 +107,7 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
+          aria-label={showForm ? 'Hide webhook form' : 'Add new webhook'}
           className="inline-flex items-center gap-1.5 rounded-lg bg-theme-accent px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors"
         >
           <Plus className="h-3.5 w-3.5" />
@@ -118,22 +119,24 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
         <div className="rounded-xl border border-theme-border bg-theme-card p-4">
           <div className="space-y-3">
             <div>
-              <label className="block text-xs font-medium text-theme-muted mb-1">
+              <label htmlFor="webhook-url" className="block text-xs font-medium text-theme-muted mb-1">
                 URL
               </label>
               <input
+                id="webhook-url"
                 type="url"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://example.com/webhook"
                 className="input-field"
+                aria-required="true"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-theme-muted mb-1">
+              <span id="webhook-events-label" className="block text-xs font-medium text-theme-muted mb-1">
                 Events
-              </label>
-              <div className="flex flex-wrap gap-2">
+              </span>
+              <div className="flex flex-wrap gap-2" role="group" aria-labelledby="webhook-events-label">
                 {allEvents.map((event) => (
                   <label
                     key={event}
@@ -157,7 +160,7 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
               </div>
             </div>
             {error && (
-              <div className="flex items-center gap-1.5 rounded-lg bg-red-50 p-2 text-xs text-red-600">
+              <div className="flex items-center gap-1.5 rounded-lg bg-red-50 p-2 text-xs text-red-600" role="alert">
                 <AlertCircle className="h-3 w-3 shrink-0" />
                 {error}
               </div>
@@ -166,12 +169,14 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
               <button
                 onClick={create}
                 disabled={!url.trim() || saving}
+                aria-label="Create webhook"
                 className="rounded-lg bg-theme-accent px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors disabled:opacity-50"
               >
                 {saving ? 'Creating...' : 'Create'}
               </button>
               <button
                 onClick={() => setShowForm(false)}
+                aria-label="Cancel adding webhook"
                 className="rounded-lg border border-theme-border px-3 py-1.5 text-sm font-medium text-theme-subtle hover:bg-theme-hover transition-colors"
               >
                 Cancel
@@ -211,7 +216,7 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
                 <button
                   onClick={() => copySecret(webhook.secret)}
                   className="text-xs text-theme-muted hover:text-theme-subtle"
-                  title="Copy signing secret"
+                  aria-label="Copy webhook signing secret"
                 >
                   {copiedSecret === webhook.secret ? (
                     <Check className="h-3 w-3 text-green-500" />
@@ -229,16 +234,16 @@ export function WebhookSettings({ projectId }: { projectId: string }) {
                     ? 'text-green-600 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-900/30'
                     : 'text-theme-muted hover:bg-theme-hover'
                 }`}
-                title={webhook.active ? 'Disable' : 'Enable'}
+                aria-label={webhook.active ? `Disable webhook for ${webhook.url}` : `Enable webhook for ${webhook.url}`}
               >
-                <RefreshCw className="h-3.5 w-3.5" />
+                <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
               </button>
               <button
                 onClick={() => remove(webhook.id)}
                 className="rounded p-1.5 text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
-                title="Delete"
+                aria-label={`Delete webhook for ${webhook.url}`}
               >
-                <Trash2 className="h-3.5 w-3.5" />
+                <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
               </button>
             </div>
           </div>

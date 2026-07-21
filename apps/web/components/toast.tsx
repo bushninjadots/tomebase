@@ -65,6 +65,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           <div
             key={toast.id}
             role={toast.type === 'error' ? 'alert' : 'status'}
+            aria-atomic="true"
             className="pointer-events-auto flex items-center gap-3 rounded-xl border border-theme-border bg-theme-card px-4 py-3 shadow-lg animate-[slideUp_0.3s_ease-out]"
           >
             {toast.type === 'success' && (

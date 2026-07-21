@@ -60,7 +60,7 @@ export function HealthScoreCard({
   const diff = previousScore != null ? healthScore.score - previousScore : null;
 
   return (
-    <div className="rounded-2xl border border-theme-border bg-theme-card overflow-hidden">
+    <div className="rounded-2xl border border-theme-border bg-theme-card overflow-hidden" role="region" aria-label="Health score">
       <div className="grid grid-cols-1 lg:grid-cols-12">
         {/* Score Ring Section */}
         <div className="lg:col-span-4 p-6 flex flex-col items-center justify-center border-b lg:border-b-0 lg:border-r border-theme-border bg-theme-page/30">
@@ -89,7 +89,7 @@ export function HealthScoreCard({
         {/* Summary + Categories */}
         <div className="lg:col-span-8 p-6">
           {/* Severity summary */}
-          <div className="grid grid-cols-3 gap-3 mb-5">
+          <div className="grid grid-cols-3 gap-3 mb-5" role="group" aria-label="Issue severity summary">
             <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-3 text-center">
               <div className="text-2xl font-bold text-red-500 tabular-nums">{healthScore.errorCount}</div>
               <div className="text-[10px] font-medium text-red-500/70 uppercase tracking-wider">Errors</div>

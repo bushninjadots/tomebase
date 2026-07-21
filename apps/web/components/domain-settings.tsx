@@ -31,6 +31,7 @@ export function DomainSettings({ projectId, customDomain: initialDomain, publish
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const domainHelpId = 'domain-input-help';
 
   const fetchStatus = useCallback(async () => {
     try {
@@ -166,7 +167,7 @@ export function DomainSettings({ projectId, customDomain: initialDomain, publish
               type="button"
               onClick={copyHostname}
               className="shrink-0 rounded-lg border border-theme-border p-2 text-theme-muted hover:bg-theme-hover transition-colors"
-              title="Copy domain"
+              aria-label="Copy domain name"
             >
               {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
             </button>
@@ -238,10 +239,12 @@ export function DomainSettings({ projectId, customDomain: initialDomain, publish
             value={domain}
             onChange={(e) => setDomain(e.target.value)}
             placeholder="docs.yourcompany.com"
+            aria-label="Custom domain name"
+            aria-describedby={domainHelpId}
           />
         </div>
         {!hasDomain ? (
-          <Button type="button" onClick={handleSave} disabled={loading || !domain.trim()}>
+          <Button type="button" onClick={handleSave} disabled={loading || !domain.trim()} aria-label="Add custom domain">
             {loading ? 'Saving...' : 'Add Domain'}
           </Button>
         ) : (
@@ -251,6 +254,7 @@ export function DomainSettings({ projectId, customDomain: initialDomain, publish
               onClick={handleVerify}
               disabled={verifying || isVerified}
               variant="secondary"
+              aria-label={isVerified ? 'Domain already verified' : 'Verify domain DNS'}
             >
               {verifying ? (
                 <RefreshCw className="h-4 w-4 animate-spin" />
@@ -265,6 +269,7 @@ export function DomainSettings({ projectId, customDomain: initialDomain, publish
               disabled={removing}
               variant="secondary"
               className="text-red-600 hover:bg-red-50"
+              aria-label="Remove custom domain"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -279,7 +284,7 @@ export function DomainSettings({ projectId, customDomain: initialDomain, publish
       )}
 
       {!hasDomain && (
-        <p className="mt-1.5 text-xs text-theme-muted">
+        <p id={domainHelpId} className="mt-1.5 text-xs text-theme-muted">
           Point your own domain to your published documentation site.
         </p>
       )}

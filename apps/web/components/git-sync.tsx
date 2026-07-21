@@ -120,9 +120,10 @@ export function GitSync({ projectId }: GitSyncProps) {
         <button
           onClick={handleSync}
           disabled={syncing || !repo}
+          aria-label={syncing ? 'Syncing repository...' : 'Sync now from GitHub'}
           className="inline-flex items-center gap-2 rounded-lg bg-theme-main px-5 py-2 text-sm font-medium text-theme-page hover:opacity-90 transition-colors disabled:opacity-50"
         >
-          <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} aria-hidden="true" />
           {syncing ? 'Syncing...' : 'Sync Now'}
         </button>
       </div>
@@ -142,8 +143,9 @@ export function GitSync({ projectId }: GitSyncProps) {
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1 text-xs text-theme-muted hover:text-theme-subtle transition-colors"
+          aria-label={`Open ${repo} on GitHub`}
         >
-          <ExternalLink className="h-3 w-3" />
+          <ExternalLink className="h-3 w-3" aria-hidden="true" />
           {repo}
         </a>
       )}

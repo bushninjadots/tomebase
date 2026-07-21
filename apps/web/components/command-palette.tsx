@@ -565,7 +565,7 @@ export function CommandPalette({ pages, projects, currentProjectId }: CommandPal
                             <p className="mt-0.5 text-[11px] text-theme-muted truncate">{item.description}</p>
                           )}
                         </div>
-                        <ArrowRight className="h-3.5 w-3.5 shrink-0 text-theme-muted" />
+                        <ArrowRight className="h-3.5 w-3.5 shrink-0 text-theme-muted" aria-hidden="true" />
                       </button>
                     );
                   })}
@@ -586,7 +586,7 @@ export function CommandPalette({ pages, projects, currentProjectId }: CommandPal
             </div>
 
             {/* Footer hint */}
-            <div className="border-t border-theme-border px-4 py-2 flex items-center justify-between text-[11px] text-theme-muted">
+            <div className="border-t border-theme-border px-4 py-2 flex items-center justify-between text-[11px] text-theme-muted" role="group" aria-label="Keyboard shortcuts">
               <div className="flex items-center gap-3">
                 <span className="flex items-center gap-1">
                   <kbd className="rounded border border-theme-border bg-theme-page px-1 py-0.5 text-[9px]">↑↓</kbd>

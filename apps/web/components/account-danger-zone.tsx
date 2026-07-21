@@ -14,6 +14,7 @@ export function AccountDangerZone({ userId }: AccountDangerZoneProps) {
   const [typedText, setTypedText] = useState('');
   const [deleting, setDeleting] = useState(false);
   const canDelete = typedText === 'DELETE';
+  const confirmDescId = 'delete-account-desc';
 
   async function handleDelete() {
     if (!canDelete) return;
@@ -59,6 +60,7 @@ export function AccountDangerZone({ userId }: AccountDangerZoneProps) {
           </div>
           <button
             onClick={() => setShowModal(true)}
+            aria-label="Delete account"
             className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-400 hover:bg-red-500/20 transition-colors"
           >
             Delete Account
@@ -68,13 +70,19 @@ export function AccountDangerZone({ userId }: AccountDangerZoneProps) {
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !deleting && setShowModal(false)} />
-          <div className="relative w-full max-w-md rounded-2xl border border-red-500/20 bg-theme-card p-6 shadow-2xl">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !deleting && setShowModal(false)} aria-hidden="true" />
+          <div
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="delete-account-title"
+            aria-describedby={confirmDescId}
+            className="relative w-full max-w-md rounded-2xl border border-red-500/20 bg-theme-card p-6 shadow-2xl"
+          >
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10">
               <AlertTriangle className="h-6 w-6 text-red-400" />
             </div>
-            <h3 className="text-lg font-semibold text-theme-main">Delete Account</h3>
-            <p className="mt-2 text-sm text-theme-subtle">
+            <h3 id="delete-account-title" className="text-lg font-semibold text-theme-main">Delete Account</h3>
+            <p id={confirmDescId} className="mt-2 text-sm text-theme-subtle">
               You are about to permanently delete your account. This will remove all of your projects, documentation, published sites, API keys, team memberships, uploads, and account data.
             </p>
             <div className="mt-3 rounded-xl border border-red-500/20 bg-red-500/5 p-3 text-xs text-red-400">
@@ -100,6 +108,7 @@ export function AccountDangerZone({ userId }: AccountDangerZoneProps) {
               <button
                 onClick={() => { setShowModal(false); setTypedText(''); }}
                 disabled={deleting}
+                aria-label="Cancel account deletion"
                 className="rounded-xl px-4 py-2 text-sm font-medium text-theme-muted hover:bg-theme-hover transition-colors disabled:opacity-50"
               >
                 Cancel
@@ -107,6 +116,7 @@ export function AccountDangerZone({ userId }: AccountDangerZoneProps) {
               <button
                 onClick={handleDelete}
                 disabled={!canDelete || deleting}
+                aria-label="Permanently delete account"
                 className="rounded-xl bg-red-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {deleting ? 'Deleting...' : 'Delete Account'}

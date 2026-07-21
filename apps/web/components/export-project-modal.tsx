@@ -53,6 +53,8 @@ export function ExportProjectModal({ projectId, projectName, open, onClose }: Ex
   const [exporting, setExporting] = useState(false);
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState('');
+  const titleId = 'export-modal-title';
+  const descId = 'export-modal-desc';
 
   if (!open) return null;
 
@@ -130,25 +132,32 @@ export function ExportProjectModal({ projectId, projectName, open, onClose }: Ex
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={exporting ? undefined : onClose} />
-      <div className="relative w-full max-w-lg rounded-2xl border border-theme-border bg-theme-card p-6 shadow-2xl">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={exporting ? undefined : onClose} aria-hidden="true" />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        aria-describedby={descId}
+        className="relative w-full max-w-lg rounded-2xl border border-theme-border bg-theme-card p-6 shadow-2xl"
+      >
         <button
           onClick={exporting ? undefined : onClose}
+          aria-label="Close export dialog"
           className="absolute right-4 top-4 text-theme-muted hover:text-theme-main transition-colors"
         >
-          <X className="h-4 w-4" />
+          <X className="h-4 w-4" aria-hidden="true" />
         </button>
 
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-theme-main">Export Project</h2>
-          <p className="mt-1 text-sm text-theme-subtle">
+          <h2 id={titleId} className="text-lg font-semibold text-theme-main">Export Project</h2>
+          <p id={descId} className="mt-1 text-sm text-theme-subtle">
             Download <span className="font-medium text-theme-main">{projectName}</span> as documentation files.
           </p>
         </div>
 
         {!exporting ? (
           <>
-            <div className="space-y-2 mb-6">
+            <div className="space-y-2 mb-6" role="radiogroup" aria-label="Export format">
               {EXPORT_OPTIONS.map((option) => {
                 const Icon = option.icon;
                 const isSelected = selected === option.id;
@@ -156,6 +165,9 @@ export function ExportProjectModal({ projectId, projectName, open, onClose }: Ex
                   <button
                     key={option.id}
                     onClick={() => setSelected(option.id)}
+                    role="radio"
+                    aria-checked={isSelected}
+                    aria-label={`${option.label}${option.recommended ? ' (recommended)' : ''}`}
                     className={`w-full rounded-xl border p-4 text-left transition-all ${
                       isSelected
                         ? 'border-theme-accent bg-theme-accent/5 ring-1 ring-theme-accent'
@@ -189,12 +201,14 @@ export function ExportProjectModal({ projectId, projectName, open, onClose }: Ex
             <div className="flex items-center justify-end gap-3">
               <button
                 onClick={onClose}
+                aria-label="Cancel export"
                 className="rounded-xl px-4 py-2 text-sm font-medium text-theme-muted hover:bg-theme-hover transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleExport}
+                aria-label={`Export as ${selected}`}
                 className="inline-flex items-center gap-2 rounded-xl bg-theme-accent px-5 py-2.5 text-sm font-semibold text-gray-900 hover:bg-theme-accent-hover transition-colors"
               >
                 <Download className="h-4 w-4" />
@@ -203,13 +217,20 @@ export function ExportProjectModal({ projectId, projectName, open, onClose }: Ex
             </div>
           </>
         ) : (
-          <div className="py-6">
+          <div className="py-6" aria-live="polite">
             <div className="mb-4">
               <div className="flex items-center justify-between text-sm mb-2">
                 <span className="text-theme-subtle">{phase}</span>
                 <span className="font-medium text-theme-main">{progress}%</span>
               </div>
-              <div className="h-2 w-full rounded-full bg-theme-hover overflow-hidden">
+              <div
+                role="progressbar"
+                aria-valuenow={progress}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label="Export progress"
+                className="h-2 w-full rounded-full bg-theme-hover overflow-hidden"
+              >
                 <div
                   className="h-full rounded-full bg-theme-accent transition-all duration-300"
                   style={{ width: `${progress}%` }}
