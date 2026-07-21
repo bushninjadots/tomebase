@@ -30,6 +30,18 @@ export const useSpiritStore = create<SpiritStore>()(
       landingComment: null,
       context: { ...DEFAULT_CONTEXT },
       preferences: { ...DEFAULT_PREFERENCES },
+      movement: {
+        velocity: { x: 0, y: 0 },
+        target: null,
+        isWandering: false,
+        wanderTimer: null,
+        lastActivity: Date.now(),
+        breathPhase: 0,
+      },
+      speechBubbles: [],
+      isFirstVisit: !localStorage.getItem('tome-spirit-seen'),
+      lastMousePosition: { x: 0, y: 0 },
+      isMouseMoving: false,
 
       setMode: (mode) => set({ mode }),
 
@@ -133,6 +145,42 @@ export const useSpiritStore = create<SpiritStore>()(
         })),
 
       resetPosition: () => set({ position: { ...DEFAULT_POSITION } }),
+
+      setMovement: (movement) =>
+        set((state) => ({ movement: { ...state.movement, ...movement } })),
+
+      setTarget: (target) =>
+        set((state) => ({ movement: { ...state.movement, target } })),
+
+      setWandering: (wandering) =>
+        set((state) => ({ movement: { ...state.movement, isWandering: wandering } })),
+
+      setLastActivity: (time) =>
+        set((state) => ({ movement: { ...state.movement, lastActivity: time } })),
+
+      addSpeechBubble: (bubble) =>
+        set((state) => ({
+          speechBubbles: [...state.speechBubbles.slice(-2), {
+            ...bubble,
+            id: generateId(),
+            createdAt: Date.now(),
+          }],
+        })),
+
+      removeSpeechBubble: (id) =>
+        set((state) => ({
+          speechBubbles: state.speechBubbles.filter((b) => b.id !== id),
+        })),
+
+      clearSpeechBubbles: () => set({ speechBubbles: [] }),
+
+      setFirstVisit: (isFirstVisit) => {
+        if (!isFirstVisit) localStorage.setItem('tome-spirit-seen', '1');
+        set({ isFirstVisit });
+      },
+
+      setLastMousePosition: (pos) => set({ lastMousePosition: pos }),
+      setMouseMoving: (moving) => set({ isMouseMoving: moving }),
     }),
     {
       name: 'tome-spirit',
@@ -144,6 +192,7 @@ export const useSpiritStore = create<SpiritStore>()(
         conversations: state.conversations,
         activeConversationId: state.activeConversationId,
         preferences: state.preferences,
+        isFirstVisit: state.isFirstVisit,
       }),
     },
   ),

@@ -13,6 +13,8 @@ export type {
   SpiritContext,
   SpiritPreferences,
   SpiritLandingComment,
+  SpiritMovement,
+  SpiritSpeechBubble,
   SpiritStore,
 } from './types';
 export {

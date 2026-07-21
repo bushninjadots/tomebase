@@ -8,6 +8,7 @@ import { SpiritSuggestions } from './spirit-suggestions';
 import { SpiritContextActions } from './spirit-context-actions';
 import { useSpiritSuggestions } from './use-spirit-suggestions';
 import { useLandingSpirit } from './use-landing-spirit';
+import { useSpiritBehavior } from './hooks/use-spirit-behavior';
 
 function useSpiritKeyboard() {
   const toggle = useSpiritStore((s) => s.toggle);
@@ -64,6 +65,7 @@ export function Spirit() {
   useSpiritKeyboard();
   useSpiritSuggestions();
   useLandingSpirit();
+  useSpiritBehavior({ enabled: enabled && mode === 'floating' });
 
   if (!enabled || mode === 'hidden') return null;
 

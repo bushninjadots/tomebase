@@ -9,7 +9,11 @@ export type SpiritAIState =
   | 'publishing'
   | 'warning'
   | 'offline'
-  | 'error';
+  | 'error'
+  | 'wandering'
+  | 'excited'
+  | 'celebrating'
+  | 'sad';
 
 export type SpiritGhostSize = 'small' | 'medium' | 'large';
 
@@ -103,6 +107,23 @@ export interface SpiritLandingComment {
   text: string;
 }
 
+export interface SpiritMovement {
+  velocity: { x: number; y: number };
+  target: { x: number; y: number } | null;
+  isWandering: boolean;
+  wanderTimer: number | null;
+  lastActivity: number;
+  breathPhase: number;
+}
+
+export interface SpiritSpeechBubble {
+  id: string;
+  text: string;
+  createdAt: number;
+  duration: number;
+  variant: 'ambient' | 'reaction' | 'greeting' | 'idle';
+}
+
 export interface SpiritStore {
   mode: SpiritMode;
   aiState: SpiritAIState;
@@ -115,6 +136,12 @@ export interface SpiritStore {
   landingComment: SpiritLandingComment | null;
   context: SpiritContext;
   preferences: SpiritPreferences;
+
+  movement: SpiritMovement;
+  speechBubbles: SpiritSpeechBubble[];
+  isFirstVisit: boolean;
+  lastMousePosition: { x: number; y: number };
+  isMouseMoving: boolean;
 
   setMode: (mode: SpiritMode) => void;
   toggle: () => void;
@@ -135,6 +162,16 @@ export interface SpiritStore {
   clearLandingComment: () => void;
   updatePreferences: (prefs: Partial<SpiritPreferences>) => void;
   resetPosition: () => void;
+  setMovement: (movement: Partial<SpiritMovement>) => void;
+  setTarget: (target: { x: number; y: number } | null) => void;
+  setWandering: (wandering: boolean) => void;
+  setLastActivity: (time: number) => void;
+  addSpeechBubble: (bubble: Omit<SpiritSpeechBubble, 'id' | 'createdAt'>) => void;
+  removeSpeechBubble: (id: string) => void;
+  clearSpeechBubbles: () => void;
+  setFirstVisit: (v: boolean) => void;
+  setLastMousePosition: (pos: { x: number; y: number }) => void;
+  setMouseMoving: (moving: boolean) => void;
 }
 
 export const DEFAULT_POSITION = { x: 24, y: 24 };
