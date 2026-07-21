@@ -175,3 +175,107 @@ export interface DiagnosticExportData {
   diagnostics: Diagnostic[];
   exportedAt: string;
 }
+
+// ─── AI Auto-Fix Engine Types ──────────────────────────────────────────
+
+export type FixClassification = 'safe' | 'review';
+
+export interface GroupedIssue {
+  rule: string;
+  title: string;
+  description: string;
+  category: DiagnosticCategory;
+  severity: DiagnosticSeverity;
+  affectedPages: GroupedIssuePage[];
+  totalCount: number;
+  fixableCount: number;
+  classification: FixClassification;
+  canFixAll: boolean;
+}
+
+export interface GroupedIssuePage {
+  pageId: string;
+  pageTitle: string;
+  pageSlug: string;
+  diagnosticId: string;
+  line: number | null;
+  fixPreview: FixPreview | null;
+}
+
+export interface AIRepairPlan {
+  id: string;
+  projectId: string;
+  createdAt: string;
+  summary: AIRepairSummary;
+  groups: RepairPlanGroup[];
+  estimatedScoreImprovement: number;
+  totalPagesAffected: number;
+}
+
+export interface AIRepairSummary {
+  totalFixable: number;
+  safeFixCount: number;
+  reviewFixCount: number;
+  estimatedNewScore: number;
+  estimatedImprovement: number;
+}
+
+export interface RepairPlanGroup {
+  rule: string;
+  title: string;
+  category: DiagnosticCategory;
+  severity: DiagnosticSeverity;
+  affectedPages: string[];
+  fixType: FixClassification;
+  description: string;
+}
+
+export interface ScanProgress {
+  phase: 'idle' | 'scanning' | 'analyzing' | 'complete' | 'error';
+  currentPage: number;
+  totalPages: number;
+  currentRule: string | null;
+  percentComplete: number;
+  diagnosticsFound: number;
+  startedAt: string | null;
+  estimatedTimeRemaining: number | null;
+}
+
+export interface HealthTimelineEntry {
+  id: string;
+  projectId: string;
+  score: number;
+  errorCount: number;
+  warningCount: number;
+  infoCount: number;
+  totalPages: number;
+  scannedAt: string;
+}
+
+export interface FixResult {
+  success: boolean;
+  diagnosticId: string;
+  pageId: string;
+  pageTitle: string;
+  originalContent: string;
+  fixedContent: string;
+  description: string;
+  confidence: 'high' | 'medium' | 'low';
+  appliedAt: string;
+}
+
+export interface BatchFixPlan {
+  groups: BatchFixGroup[];
+  totalFixable: number;
+  estimatedImprovement: number;
+}
+
+export interface BatchFixGroup {
+  rule: string;
+  title: string;
+  category: DiagnosticCategory;
+  severity: DiagnosticSeverity;
+  count: number;
+  classification: FixClassification;
+  selected: boolean;
+}
